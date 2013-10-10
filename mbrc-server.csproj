@@ -111,7 +111,8 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingSearch.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingTrackRemoval.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlaybackPosition.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistList.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestAvailablePlaylists.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistFiles.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPluginVersion.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestRating.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestRepeat.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="AndroidRemote\Entities\Artist.cs" />
     <Compile Include="AndroidRemote\Entities\Genre.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingListTrack.cs" />
+    <Compile Include="AndroidRemote\Entities\Playlist.cs" />
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
     <Compile Include="AndroidRemote\Entities\Track.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingTrack.cs" />
@@ -231,7 +233,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />

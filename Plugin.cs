@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Drawing.Imaging;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -136,6 +138,7 @@ namespace MusicBeePlugin
             if (mbApiInterface.Player_GetPlayState() == PlayState.Playing)
             {
                 RequestPlayPosition("status");    
+                testPlaylistSorting();
             }
         }
 
@@ -840,15 +843,46 @@ namespace MusicBeePlugin
         /// <summary>
         /// The function checks the MusicBee api and gets all the available playlist urls.
         /// </summary>
-        public void GetAvailablePlaylistUrls()
+        public void GetAvailablePlaylists()
         {
             mbApiInterface.Playlist_QueryPlaylists();
             string playlistUrl;
+            List<Playlist> availablePlaylists = new List<Playlist>();
             while (true)
             {
                 playlistUrl = mbApiInterface.Playlist_QueryGetNextPlaylist();
                 if (string.IsNullOrEmpty(playlistUrl)) break;
+                string name = mbApiInterface.Playlist_GetName(playlistUrl);
+                Playlist playlist = new Playlist(name, playlistUrl);
+                availablePlaylists.Add(playlist);
             }
+
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistList, Constants.Reply, availablePlaylists).toJsonString()));
+        }
+
+        public void GetTracksForPlaylist(string url, string clientId)
+        {
+            if (!mbApiInterface.Playlist_QueryFiles(url))
+            {
+                return;
+            }
+
+            List<Track> playlistTracks = new List<Track>();
+
+            while (true)
+            {
+                string fileUrl = mbApiInterface.Playlist_QueryGetNextFile();
+                if (String.IsNullOrEmpty(fileUrl)) break;
+                string artist = mbApiInterface.Library_GetFileTag(fileUrl, MetaDataType.Artist);
+                string track = mbApiInterface.Library_GetFileTag(fileUrl, MetaDataType.TrackTitle);
+                Track curTrack = new Track(artist, track, fileUrl);
+                playlistTracks.Add(curTrack);
+            }
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistGetFiles, Constants.Reply, playlistTracks).toJsonString()));
         }
 
         /// <summary>
@@ -1252,6 +1286,22 @@ namespace MusicBeePlugin
             EventBus.FireEvent(
                 new MessageEvent(EventType.ReplyAvailable,
                     new SocketMessage(Constants.NowPlayingListSearch, Constants.Reply,result).toJsonString(), clientId));
+        }
+
+        public void testPlaylistSorting()
+        {
+            mbApiInterface.Playlist_QueryPlaylists();
+            string playlistUrl;
+            while (true)
+            {
+                playlistUrl = mbApiInterface.Playlist_QueryGetNextPlaylist();
+                int[] array = {1};
+                if (string.IsNullOrEmpty(playlistUrl)) break;
+                bool jb = mbApiInterface.Playlist_MoveFiles(playlistUrl, array, 5);
+                Debug.WriteLine("success -> " + jb.ToString() + " for " + mbApiInterface.Playlist_GetName(playlistUrl));
+               
+            }
+            mbApiInterface.MB_RefreshPanels();
         }
     }
 }

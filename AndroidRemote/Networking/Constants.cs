@@ -58,6 +58,12 @@
 
         #endregion
 
+        #region Protocol 2.1. API calls
+
+        public const string PlaylistGetFiles = "playlistgetfiles";
+
+        #endregion
+
         #region Protocol 2. SocketMessage type identifiers.
 
         public const string Request = "req";
