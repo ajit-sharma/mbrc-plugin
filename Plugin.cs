@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Drawing.Imaging;
+using System.Security.Policy;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -864,6 +865,12 @@ namespace MusicBeePlugin
                     new SocketMessage(Constants.PlaylistList, Constants.Reply, availablePlaylists).toJsonString()));
         }
 
+        /// <summary>
+        /// Given the url of a playlist and the id of a client the method sends a message to the specified client
+        /// including the tracks in the specified playlist.
+        /// </summary>
+        /// <param name="url">The playlist url</param>
+        /// <param name="clientId">The id of the client</param>
         public void GetTracksForPlaylist(string url, string clientId)
         {
 
@@ -889,11 +896,28 @@ namespace MusicBeePlugin
                     new SocketMessage(Constants.PlaylistGetFiles, Constants.Reply, playlistTracks).toJsonString()));
         }
 
+        /// <summary>
+        /// Given the url of a playlist it plays the specified playlist.
+        /// </summary>
+        /// <param name="url">The playlist url</param>
         public void RequestPlaylistPlayNow(string url)
         {
             EventBus.FireEvent(
                 new MessageEvent(EventType.ReplyAvailable,
                     new SocketMessage(Constants.PlaylistPlayNow, Constants.Reply, mbApiInterface.Playlist_PlayNow(url)).toJsonString()));
+        }
+
+        /// <summary>
+        /// Given the url of the playlist and the index of a track it removes the specified track,
+        /// from the playlist.
+        /// </summary>
+        /// <param name="url">The url of th playlist</param>
+        /// <param name="index">The index of the track to remove</param>
+        public void RequestPlaylistTrackRemove(string url,int index)
+        {
+            EventBus.FireEvent(
+                new MessageEvent(
+                    new SocketMessage(Constants.PlaylistRemove, Constants.Reply, mbApiInterface.Playlist_RemoveAt(url, index)).toJsonString()));
         }
 
         /// <summary>
