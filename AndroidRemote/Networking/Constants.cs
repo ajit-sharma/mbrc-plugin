@@ -61,6 +61,7 @@
         #region Protocol 2.1. API calls
 
         public const string PlaylistGetFiles = "playlistgetfiles";
+        public const string PlaylistPlayNow = "playlistplaynow";
 
         #endregion
 

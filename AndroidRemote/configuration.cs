@@ -64,6 +64,7 @@
             controller.AddCommand(Constants.LibraryAlbumTracks, typeof(RequestLibAlbumTracks));
             controller.AddCommand(Constants.LibraryGenreArtists, typeof(RequestLibGenreArtists));
             controller.AddCommand(Constants.PlaylistGetFiles, typeof(RequestPlaylistFiles));
+            controller.AddCommand(Constants.PlaylistPlayNow, typeof(RequestPlaylistPlayNow));
         }
     }
 }

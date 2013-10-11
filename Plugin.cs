@@ -853,7 +853,9 @@ namespace MusicBeePlugin
                 playlistUrl = mbApiInterface.Playlist_QueryGetNextPlaylist();
                 if (string.IsNullOrEmpty(playlistUrl)) break;
                 string name = mbApiInterface.Playlist_GetName(playlistUrl);
-                Playlist playlist = new Playlist(name, playlistUrl);
+                string[] files = { };
+                mbApiInterface.Playlist_QueryFilesEx(playlistUrl, ref files);
+                Playlist playlist = new Playlist(name, files.Count(), playlistUrl);
                 availablePlaylists.Add(playlist);
             }
 
@@ -864,25 +866,34 @@ namespace MusicBeePlugin
 
         public void GetTracksForPlaylist(string url, string clientId)
         {
-            if (!mbApiInterface.Playlist_QueryFiles(url))
+
+            string[] trackUrlList = {};
+
+            if (!mbApiInterface.Playlist_QueryFilesEx(url, ref trackUrlList))
             {
                 return;
             }
 
             List<Track> playlistTracks = new List<Track>();
 
-            while (true)
+            foreach (string trackUrl in trackUrlList)
             {
-                string fileUrl = mbApiInterface.Playlist_QueryGetNextFile();
-                if (String.IsNullOrEmpty(fileUrl)) break;
-                string artist = mbApiInterface.Library_GetFileTag(fileUrl, MetaDataType.Artist);
-                string track = mbApiInterface.Library_GetFileTag(fileUrl, MetaDataType.TrackTitle);
-                Track curTrack = new Track(artist, track, fileUrl);
+                string artist = mbApiInterface.Library_GetFileTag(trackUrl, MetaDataType.Artist);
+                string track = mbApiInterface.Library_GetFileTag(trackUrl, MetaDataType.TrackTitle);
+                Track curTrack = new Track(artist, track, trackUrl);
                 playlistTracks.Add(curTrack);
             }
+
             EventBus.FireEvent(
                 new MessageEvent(EventType.ReplyAvailable,
                     new SocketMessage(Constants.PlaylistGetFiles, Constants.Reply, playlistTracks).toJsonString()));
+        }
+
+        public void RequestPlaylistPlayNow(string url)
+        {
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistPlayNow, Constants.Reply, mbApiInterface.Playlist_PlayNow(url)).toJsonString()));
         }
 
         /// <summary>
