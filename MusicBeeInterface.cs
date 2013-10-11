@@ -185,11 +185,13 @@ namespace MusicBeePlugin
             public Sync_FileStartDelegate Sync_FileStart;
             public Sync_FileEndDelegate Sync_FileEnd;
             // api version 33
-            public Playlist_MoveFilesDelegate Playlist_MoveFiles;
-            public NowPlaying_IsSoundtrackDelegate NowPlaying_IsSoundtrack;
-            public NowPlaying_GetArtistPictureUrlsDelegate NowPlaying_GetSoundtrackPictureUrls;
             public Library_QueryFilesExDelegate Library_QueryFilesEx;
             public Library_QueryFilesExDelegate NowPlayingList_QueryFilesEx;
+            public Playlist_QueryFilesExDelegate Playlist_QueryFilesEx;
+            public Playlist_MoveFilesDelegate Playlist_MoveFiles;
+            public Playlist_PlayNowDelegate Playlist_PlayNow;
+            public NowPlaying_IsSoundtrackDelegate NowPlaying_IsSoundtrack;
+            public NowPlaying_GetArtistPictureUrlsDelegate NowPlaying_GetSoundtrackPictureUrls;
         }
 
         public enum MusicBeeVersion
@@ -586,11 +588,13 @@ namespace MusicBeePlugin
         public delegate string Playlist_QueryGetNextPlaylistDelegate();
         public delegate bool Playlist_IsInListDelegate(string playlistUrl, string filename);
         public delegate bool Playlist_QueryFilesDelegate(string playlistUrl);
+        public delegate bool Playlist_QueryFilesExDelegate(string playlistUrl, ref string[] filenames);
         public delegate string Playlist_CreatePlaylistDelegate(string folderName, string playlistName, string[] filenames);
         public delegate bool Playlist_SetFilesDelegate(string playlistUrl, string[] filenames);
         public delegate bool Playlist_AddFilesDelegate(string playlistUrl, string[] filenames);
         public delegate bool Playlist_RemoveAtDelegate(string playlistUrl, int index);
         public delegate bool Playlist_MoveFilesDelegate(string playlistUrl, int[] fromIndices, int toIndex);
+        public delegate bool Playlist_PlayNowDelegate(string playlistUrl);
         public delegate string Pending_GetFileUrlDelegate();
         public delegate string Pending_GetFilePropertyDelegate(FilePropertyType field);
         public delegate string Pending_GetFileTagDelegate(MetaDataType field);
