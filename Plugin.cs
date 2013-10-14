@@ -356,12 +356,10 @@ namespace MusicBeePlugin
 
         private NowPlayingTrack GetTrackInfo()
         {
-            NowPlayingTrack nowPlayingTrack = new NowPlayingTrack
-                {
-                    Artist = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Artist),
-                    Album = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Album),
-                    Year = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Year)
-                };
+            NowPlayingTrack nowPlayingTrack = new NowPlayingTrack();
+            nowPlayingTrack.Artist = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Artist);
+            nowPlayingTrack.Album = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Album);
+            nowPlayingTrack.Year = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Year);
             nowPlayingTrack.SetTitle(mbApiInterface.NowPlaying_GetFileTag(MetaDataType.TrackTitle),
                                      mbApiInterface.NowPlaying_GetFileUrl());
             return nowPlayingTrack;
