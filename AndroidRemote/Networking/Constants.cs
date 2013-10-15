@@ -58,6 +58,17 @@
 
         #endregion
 
+        #region Protocol 2.1. API calls
+
+        public const string PlaylistGetFiles = "playlistgetfiles";
+        public const string PlaylistPlayNow = "playlistplaynow";
+        public const string PlaylistRemove = "playlistremove";
+        public const string PlaylistMove = "playlistmove";
+        public const string PlaylistAddFiles = "playlistaddfiles";
+        public const string PlaylistCreate = "playlistcreate";
+
+        #endregion
+
         #region Protocol 2. SocketMessage type identifiers.
 
         public const string Request = "req";

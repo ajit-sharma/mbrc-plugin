@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using System.Drawing.Imaging;
+using System.Security.Policy;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin
@@ -136,6 +139,7 @@ namespace MusicBeePlugin
             if (mbApiInterface.Player_GetPlayState() == PlayState.Playing)
             {
                 RequestPlayPosition("status");    
+                testPlaylistSorting();
             }
         }
 
@@ -352,12 +356,10 @@ namespace MusicBeePlugin
 
         private NowPlayingTrack GetTrackInfo()
         {
-            NowPlayingTrack nowPlayingTrack = new NowPlayingTrack
-                {
-                    Artist = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Artist),
-                    Album = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Album),
-                    Year = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Year)
-                };
+            NowPlayingTrack nowPlayingTrack = new NowPlayingTrack();
+            nowPlayingTrack.Artist = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Artist);
+            nowPlayingTrack.Album = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Album);
+            nowPlayingTrack.Year = mbApiInterface.NowPlaying_GetFileTag(MetaDataType.Year);
             nowPlayingTrack.SetTitle(mbApiInterface.NowPlaying_GetFileTag(MetaDataType.TrackTitle),
                                      mbApiInterface.NowPlaying_GetFileUrl());
             return nowPlayingTrack;
@@ -840,15 +842,80 @@ namespace MusicBeePlugin
         /// <summary>
         /// The function checks the MusicBee api and gets all the available playlist urls.
         /// </summary>
-        public void GetAvailablePlaylistUrls()
+        public void GetAvailablePlaylists()
         {
             mbApiInterface.Playlist_QueryPlaylists();
             string playlistUrl;
+            List<Playlist> availablePlaylists = new List<Playlist>();
             while (true)
             {
                 playlistUrl = mbApiInterface.Playlist_QueryGetNextPlaylist();
                 if (string.IsNullOrEmpty(playlistUrl)) break;
+                string name = mbApiInterface.Playlist_GetName(playlistUrl);
+                string[] files = { };
+                mbApiInterface.Playlist_QueryFilesEx(playlistUrl, ref files);
+                Playlist playlist = new Playlist(name, files.Count(), playlistUrl);
+                availablePlaylists.Add(playlist);
             }
+
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistList, Constants.Reply, availablePlaylists).toJsonString()));
+        }
+
+        /// <summary>
+        /// Given the url of a playlist and the id of a client the method sends a message to the specified client
+        /// including the tracks in the specified playlist.
+        /// </summary>
+        /// <param name="url">The playlist url</param>
+        /// <param name="clientId">The id of the client</param>
+        public void GetTracksForPlaylist(string url, string clientId)
+        {
+
+            string[] trackUrlList = {};
+
+            if (!mbApiInterface.Playlist_QueryFilesEx(url, ref trackUrlList))
+            {
+                return;
+            }
+
+            List<Track> playlistTracks = new List<Track>();
+
+            foreach (string trackUrl in trackUrlList)
+            {
+                string artist = mbApiInterface.Library_GetFileTag(trackUrl, MetaDataType.Artist);
+                string track = mbApiInterface.Library_GetFileTag(trackUrl, MetaDataType.TrackTitle);
+                Track curTrack = new Track(artist, track, trackUrl);
+                playlistTracks.Add(curTrack);
+            }
+
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistGetFiles, Constants.Reply, playlistTracks).toJsonString()));
+        }
+
+        /// <summary>
+        /// Given the url of a playlist it plays the specified playlist.
+        /// </summary>
+        /// <param name="url">The playlist url</param>
+        public void RequestPlaylistPlayNow(string url)
+        {
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistPlayNow, Constants.Reply, mbApiInterface.Playlist_PlayNow(url)).toJsonString()));
+        }
+
+        /// <summary>
+        /// Given the url of the playlist and the index of a track it removes the specified track,
+        /// from the playlist.
+        /// </summary>
+        /// <param name="url">The url of th playlist</param>
+        /// <param name="index">The index of the track to remove</param>
+        public void RequestPlaylistTrackRemove(string url,int index)
+        {
+            EventBus.FireEvent(
+                new MessageEvent(
+                    new SocketMessage(Constants.PlaylistRemove, Constants.Reply, mbApiInterface.Playlist_RemoveAt(url, index)).toJsonString()));
         }
 
         /// <summary>
@@ -1252,6 +1319,22 @@ namespace MusicBeePlugin
             EventBus.FireEvent(
                 new MessageEvent(EventType.ReplyAvailable,
                     new SocketMessage(Constants.NowPlayingListSearch, Constants.Reply,result).toJsonString(), clientId));
+        }
+
+        public void testPlaylistSorting()
+        {
+            mbApiInterface.Playlist_QueryPlaylists();
+            string playlistUrl;
+            while (true)
+            {
+                playlistUrl = mbApiInterface.Playlist_QueryGetNextPlaylist();
+                int[] array = {1};
+                if (string.IsNullOrEmpty(playlistUrl)) break;
+                bool jb = mbApiInterface.Playlist_MoveFiles(playlistUrl, array, 5);
+                Debug.WriteLine("success -> " + jb.ToString() + " for " + mbApiInterface.Playlist_GetName(playlistUrl));
+               
+            }
+            mbApiInterface.MB_RefreshPanels();
         }
     }
 }

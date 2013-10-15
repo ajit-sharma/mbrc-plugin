@@ -48,8 +48,10 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <PlatformTarget>x86</PlatformTarget>
-    <DocumentationFile>MB_REMOTE.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -68,9 +70,6 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Ninject">
-      <HintPath>lib\Ninject.dll</HintPath>
-    </Reference>
     <Reference Include="ServiceStack.Text, Version=3.9.45.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\ServiceStack.Text.3.9.49\lib\net35\ServiceStack.Text.dll</HintPath>
@@ -111,7 +110,9 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingSearch.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingTrackRemoval.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlaybackPosition.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistList.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestAvailablePlaylists.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistFiles.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistPlayNow.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPluginVersion.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestRating.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestRepeat.cs" />
@@ -143,6 +144,7 @@
     <Compile Include="AndroidRemote\Entities\Artist.cs" />
     <Compile Include="AndroidRemote\Entities\Genre.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingListTrack.cs" />
+    <Compile Include="AndroidRemote\Entities\Playlist.cs" />
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
     <Compile Include="AndroidRemote\Entities\Track.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingTrack.cs" />
