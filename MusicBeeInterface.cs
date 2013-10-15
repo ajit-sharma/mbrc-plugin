@@ -192,6 +192,10 @@ namespace MusicBeePlugin
             public Playlist_PlayNowDelegate Playlist_PlayNow;
             public NowPlaying_IsSoundtrackDelegate NowPlaying_IsSoundtrack;
             public NowPlaying_GetArtistPictureUrlsDelegate NowPlaying_GetSoundtrackPictureUrls;
+            public Library_GetDevicePersistentIdDelegate Library_GetDevicePersistentId;
+            public Library_SetDevicePersistentIdDelegate Library_SetDevicePersistentId;
+            public Library_FindDevicePersistentIdDelegate Library_FindDevicePersistentId;
+            public Setting_GetValueDelegate Setting_GetValue;
         }
 
         public enum MusicBeeVersion
@@ -382,12 +386,23 @@ namespace MusicBeePlugin
             Year = 88
         }
 
+        public enum DeviceIdType
+        {
+            GooglePlay = 1,
+            AppleDevice = 2
+        }
+
         public enum DataType
         {
             String = 0,
             Number = 1,
             DateTime = 2,
             Rating = 3
+        }
+
+        public enum SettingId
+        {
+            CompactPlayerFlickrEnabled = 1
         }
 
         public enum ComparisonType
@@ -512,9 +527,13 @@ namespace MusicBeePlugin
         public delegate DataType Setting_GetDataTypeDelegate(MetaDataType field);
         public delegate string Setting_GetLastFmUserIdDelegate();
         public delegate string Setting_GetWebProxyDelegate();
+        public delegate bool Setting_GetValueDelegate(SettingId settingId, ref object value);
         public delegate string Library_GetFilePropertyDelegate(string sourceFileUrl, FilePropertyType type);
         public delegate string Library_GetFileTagDelegate(string sourceFileUrl, MetaDataType field);
         public delegate bool Library_SetFileTagDelegate(string sourceFileUrl, MetaDataType field, string value);
+        public delegate string Library_GetDevicePersistentIdDelegate(string sourceFileUrl, DeviceIdType idType);
+        public delegate bool Library_SetDevicePersistentIdDelegate(string sourceFileUrl, DeviceIdType idType, string value);
+        public delegate bool Library_FindDevicePersistentIdDelegate(DeviceIdType idType, string[] ids, ref string[] values);
         public delegate bool Library_CommitTagsToFileDelegate(string sourceFileUrl);
         public delegate string Library_GetLyricsDelegate(string sourceFileUrl, LyricsType type);
         public delegate string Library_GetArtworkDelegate(string sourceFileUrl, int index);
