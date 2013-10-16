@@ -138,8 +138,7 @@ namespace MusicBeePlugin
         {
             if (mbApiInterface.Player_GetPlayState() == PlayState.Playing)
             {
-                RequestPlayPosition("status");    
-                testPlaylistSorting();
+                RequestPlayPosition("status");
             }
         }
 
