@@ -1319,21 +1319,5 @@ namespace MusicBeePlugin
                 new MessageEvent(EventType.ReplyAvailable,
                     new SocketMessage(Constants.NowPlayingListSearch, Constants.Reply,result).toJsonString(), clientId));
         }
-
-        public void testPlaylistSorting()
-        {
-            mbApiInterface.Playlist_QueryPlaylists();
-            string playlistUrl;
-            while (true)
-            {
-                playlistUrl = mbApiInterface.Playlist_QueryGetNextPlaylist();
-                int[] array = {1};
-                if (string.IsNullOrEmpty(playlistUrl)) break;
-                bool jb = mbApiInterface.Playlist_MoveFiles(playlistUrl, array, 5);
-                Debug.WriteLine("success -> " + jb.ToString() + " for " + mbApiInterface.Playlist_GetName(playlistUrl));
-               
-            }
-            mbApiInterface.MB_RefreshPanels();
-        }
     }
 }
