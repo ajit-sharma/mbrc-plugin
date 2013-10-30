@@ -912,9 +912,38 @@ namespace MusicBeePlugin
         /// <param name="index">The index of the track to remove</param>
         public void RequestPlaylistTrackRemove(string url,int index)
         {
+            bool success = mbApiInterface.Playlist_RemoveAt(url, index);
             EventBus.FireEvent(
-                new MessageEvent(
-                    new SocketMessage(Constants.PlaylistRemove, Constants.Reply, mbApiInterface.Playlist_RemoveAt(url, index)).toJsonString()));
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistRemove, Constants.Reply, success).toJsonString()));
+        }
+
+        public void RequestPlaylistMove(string clientId,string src, int from, int to)
+        {
+            bool success;
+            int[] aFrom = { from };
+            int dIn;
+            if (from > to)
+            {
+                dIn = to - 1;
+            }
+            else
+            {
+                dIn = to;
+            }
+
+            success = mbApiInterface.Playlist_MoveFiles(src, aFrom, dIn);
+
+            var reply = new
+            {
+                success,
+                from,
+                to
+            };
+
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new SocketMessage(Constants.PlaylistMove, Constants.Reply, reply).toJsonString(), clientId));
         }
 
         /// <summary>

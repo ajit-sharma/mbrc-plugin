@@ -65,6 +65,8 @@
             controller.AddCommand(Constants.LibraryGenreArtists, typeof(RequestLibGenreArtists));
             controller.AddCommand(Constants.PlaylistGetFiles, typeof(RequestPlaylistFiles));
             controller.AddCommand(Constants.PlaylistPlayNow, typeof(RequestPlaylistPlayNow));
+            controller.AddCommand(Constants.PlaylistRemove, typeof(RequestPlaylistRemove));
+            controller.AddCommand(Constants.PlaylistMove, typeof(RequestPlaylistMove));
         }
     }
 }
