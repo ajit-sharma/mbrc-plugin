@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using MusicBeePlugin.AndroidRemote.Enumerations;
-using MusicBeePlugin.AndroidRemote.Interfaces;
+﻿using ServiceStack.Text;
 
 namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 {
-    class RequestLibQueueArtist:ICommand
+    using System.Collections.Generic;
+    using Enumerations;
+    using Interfaces;
+    class RequestLibQueueArtist : ICommand
     {
         public void Dispose()
         {
@@ -14,7 +14,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
         public void Execute(IEvent eEvent)
         {
             string type, query;
-
+            
             ((Dictionary<string, string>)eEvent.Data).TryGetValue("type", out type);
             ((Dictionary<string, string>)eEvent.Data).TryGetValue("query", out query);
 

@@ -1,10 +1,8 @@
 using System.Diagnostics;
-using System.Drawing.Imaging;
-using System.Security.Policy;
-using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
+    using System.Windows.Forms;
     using System.Collections.Generic;
     using System.Linq;
     using System.Xml.Linq;
@@ -918,6 +916,18 @@ namespace MusicBeePlugin
                     new SocketMessage(Constants.PlaylistRemove, Constants.Reply, success).toJsonString()));
         }
 
+        public void RequestPlaylistCreate(string client, string name, MetaTag tag, string query, string[] files)
+        {
+            if (tag != MetaTag.title)
+            {
+                files = GetUrlsForTag(tag, query);
+            }
+            string url = mbApiInterface.Playlist_CreatePlaylist(String.Empty, name, files);
+            SocketMessage msg = new SocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
+            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString(), client);
+            EventBus.FireEvent(mEvent);
+        }
+
         public void RequestPlaylistMove(string clientId,string src, int from, int to)
         {
             bool success;
@@ -1169,6 +1179,7 @@ namespace MusicBeePlugin
             artistList = null;
         }
 
+
         /// <summary>
         /// 
         /// </summary>
@@ -1213,11 +1224,10 @@ namespace MusicBeePlugin
 
                     int trackNumber = 0;
                     int.TryParse(mbApiInterface.Library_GetFileTag(currentTrack, MetaDataType.TrackNo), out trackNumber);
-                    string src = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(currentTrack));
 
                     tracks.Add(new Track(mbApiInterface.Library_GetFileTag(currentTrack, MetaDataType.Artist),
                                          mbApiInterface.Library_GetFileTag(currentTrack, MetaDataType.TrackTitle),
-                                         trackNumber, src));
+                                         trackNumber, currentTrack));
                 }
             }
 
@@ -1261,6 +1271,28 @@ namespace MusicBeePlugin
             trackList = null;
         }
 
+        private string[] GetUrlsForTag(MetaTag tag, string query)
+        {
+            string filter = String.Empty;
+            string[] tracks = {};
+            switch (tag)
+            {
+                case MetaTag.artist:
+                    filter = XmlFilter(new[] { "ArtistPeople" }, query, true);
+                    break;
+                case MetaTag.album:
+                    filter = XmlFilter(new[] { "Album" }, query, true);
+                    break;
+                case MetaTag.genre:
+                    filter = XmlFilter(new[] { "Genre" }, query, true);
+                    break;
+            }
+
+            mbApiInterface.Library_QueryFilesEx(filter, ref tracks);
+
+            return tracks;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -1284,7 +1316,7 @@ namespace MusicBeePlugin
                     filter = XmlFilter(new[] {"Genre"}, query, true);
                     break;
                 case MetaTag.title:
-                    trackList.Add(System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(query)));
+                    trackList.Add(query);
                     loop = false;
                     break;
                 case MetaTag.none:
