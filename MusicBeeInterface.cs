@@ -196,6 +196,9 @@ namespace MusicBeePlugin
             public Library_SetDevicePersistentIdDelegate Library_SetDevicePersistentId;
             public Library_FindDevicePersistentIdDelegate Library_FindDevicePersistentId;
             public Setting_GetValueDelegate Setting_GetValue;
+            public Library_AddFileToLibraryDelegate Library_AddFileToLibrary;
+            public Playlist_DeletePlaylistDelegate Playlist_DeletePlaylist;
+            public Library_GetSyncDeltaDelegate Library_GetSyncDelta;
         }
 
         public enum MusicBeeVersion
@@ -386,10 +389,21 @@ namespace MusicBeePlugin
             Year = 88
         }
 
+        [Flags()]
+        public enum LibraryCategory
+        {
+            Music = 0,
+            Audiobook = 1,
+            Video = 2,
+            Inbox = 4
+        }
+
         public enum DeviceIdType
         {
             GooglePlay = 1,
-            AppleDevice = 2
+            AppleDevice = 2,
+            GooglePlay2 = 3,
+            AppleDevice2 = 4
         }
 
         public enum DataType
@@ -535,6 +549,8 @@ namespace MusicBeePlugin
         public delegate bool Library_SetDevicePersistentIdDelegate(string sourceFileUrl, DeviceIdType idType, string value);
         public delegate bool Library_FindDevicePersistentIdDelegate(DeviceIdType idType, string[] ids, ref string[] values);
         public delegate bool Library_CommitTagsToFileDelegate(string sourceFileUrl);
+        public delegate string Library_AddFileToLibraryDelegate(string sourceFileUrl, LibraryCategory category);
+        public delegate bool Library_GetSyncDeltaDelegate(string[] cachedFiles, DateTime updatedSince, LibraryCategory categories, ref string[] newFiles, ref string[] updatedFiles, ref string[] deletedFiles);
         public delegate string Library_GetLyricsDelegate(string sourceFileUrl, LyricsType type);
         public delegate string Library_GetArtworkDelegate(string sourceFileUrl, int index);
         public delegate string Library_GetArtistPictureDelegate(string artistName, int fadingPercent, int fadingColor);
@@ -609,6 +625,7 @@ namespace MusicBeePlugin
         public delegate bool Playlist_QueryFilesDelegate(string playlistUrl);
         public delegate bool Playlist_QueryFilesExDelegate(string playlistUrl, ref string[] filenames);
         public delegate string Playlist_CreatePlaylistDelegate(string folderName, string playlistName, string[] filenames);
+        public delegate bool Playlist_DeletePlaylistDelegate(string playlistUrl);
         public delegate bool Playlist_SetFilesDelegate(string playlistUrl, string[] filenames);
         public delegate bool Playlist_AddFilesDelegate(string playlistUrl, string[] filenames);
         public delegate bool Playlist_RemoveAtDelegate(string playlistUrl, int index);
