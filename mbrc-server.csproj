@@ -100,6 +100,7 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibQueueArtist.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibQueueGenre.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibQueueTrack.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestLibrarySync.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibSearchAlbum.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibSearchArtist.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibSearchGenre.cs" />
@@ -151,6 +152,7 @@
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
     <Compile Include="AndroidRemote\Entities\Track.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingTrack.cs" />
+    <Compile Include="AndroidRemote\Entities\TrackEntry.cs" />
     <Compile Include="AndroidRemote\Enumerations\MetaTag.cs" />
     <Compile Include="AndroidRemote\Enumerations\LastfmStatus.cs" />
     <Compile Include="AndroidRemote\Enumerations\PlayerState.cs" />
@@ -236,7 +238,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" />
+      <UserProperties BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

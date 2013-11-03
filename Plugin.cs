@@ -1380,5 +1380,53 @@ namespace MusicBeePlugin
                 new MessageEvent(EventType.ReplyAvailable,
                     new SocketMessage(Constants.NowPlayingListSearch, Constants.Reply,result).toJsonString(), clientId));
         }
+
+        private string[] sync;
+        private DateTime lastsync;
+
+        public void CheckForLibaryChanges()
+        {
+            string[] newFiles = {};
+            string[] removed = {};
+            string[] modified ={};
+            mbApiInterface.Library_GetSyncDelta(sync, lastsync, LibraryCategory.Music, ref newFiles, ref modified, ref removed);
+        }
+
+        public void SyncLibrary()
+        {
+            string[] files = {};
+            int part = 0;
+            mbApiInterface.Library_QueryFilesEx(String.Empty, ref files);
+
+            int length = files.Length;
+            int splitEvery = 1000;
+
+            sync = files;
+
+            for (int i = 0; i < length; i = i + splitEvery)
+            {
+                string[] subArray = new string[splitEvery];
+
+                if (length < i + splitEvery)
+                {
+                    splitEvery = length - i;
+                }
+                Array.Copy(files, i, subArray, 0, splitEvery);
+
+                ++part;
+
+                var lib = new
+                {
+                    files = subArray,
+                    sync = "full",
+                    part
+                };
+//                SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, lib);
+//                MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+//                EventBus.FireEvent(mEvent);    
+
+            }
+            lastsync = DateTime.Now;
+        }
     }
 }

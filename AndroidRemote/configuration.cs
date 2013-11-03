@@ -68,6 +68,7 @@
             controller.AddCommand(Constants.PlaylistRemove, typeof(RequestPlaylistRemove));
             controller.AddCommand(Constants.PlaylistMove, typeof(RequestPlaylistMove));
             controller.AddCommand(Constants.PlaylistCreate, typeof(RequestPlaylistCreate));
+            controller.AddCommand(Constants.LibrarySync, typeof(RequestLibrarySync));
         }
     }
 }
