@@ -1,9 +1,8 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
-
-namespace MusicBeePlugin.AndroidRemote.Error
+﻿namespace MusicBeePlugin.AndroidRemote.Error
 {
+    using System;
+    using System.Diagnostics;
+    using System.IO;
     internal static class ErrorHandler
     {
         private static string logFilePath;

@@ -1,7 +1,6 @@
-using System.Diagnostics;
-
 namespace MusicBeePlugin
 {
+    using Debugging;
     using System.Windows.Forms;
     using System.Collections.Generic;
     using System.Linq;
@@ -71,6 +70,9 @@ namespace MusicBeePlugin
         private static Plugin selfInstance;
         private InfoWindow mWindow;
 
+#if DEBUG
+        private DebugTool dTool;
+#endif
 
 
         /// <summary>
@@ -128,6 +130,11 @@ namespace MusicBeePlugin
             positionUpdateTimer = new Timer(20000);
             positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             positionUpdateTimer.Enabled = true;
+
+#if DEBUG
+            mbApiInterface.MB_AddMenuItem("mnuTools/MusicBee Remote Debug Tool", "DebugTool",
+                                          DisplayDebugWindow);
+#endif
 
             return about;
         }
@@ -234,6 +241,17 @@ namespace MusicBeePlugin
 
             mWindow.Show();    
         } 
+
+#if DEBUG
+        public void DisplayDebugWindow(object sender, EventArgs eventArgs)
+        {
+            if (dTool == null || !dTool.Visible)
+            {
+                dTool = new DebugTool();    
+            }
+            dTool.Show();
+        }
+#endif
 
         /// <summary>
         /// Creates the MusicBee plugin Configuration panel.
@@ -1381,15 +1399,24 @@ namespace MusicBeePlugin
                     new SocketMessage(Constants.NowPlayingListSearch, Constants.Reply,result).toJsonString(), clientId));
         }
 
-        private string[] sync;
+        
         private DateTime lastsync;
 
         public void CheckForLibaryChanges()
         {
-            string[] newFiles = {};
-            string[] removed = {};
-            string[] modified ={};
-            mbApiInterface.Library_GetSyncDelta(sync, lastsync, LibraryCategory.Music, ref newFiles, ref modified, ref removed);
+            
+//            string[] newFiles = {};
+//            string[] deletedFiles = {};
+//            string[] updatedFiles ={};
+//            lastsync = new DateTime(2013,11,1);
+//
+//            mbApiInterface.Library_GetSyncDelta(sync, lastsync, LibraryCategory.Music, ref newFiles, ref updatedFiles, ref deletedFiles);
+//            System.Diagnostics.Debug.WriteLine(String.Format("Last updated on {0}", lastsync));
+//            System.Diagnostics.Debug.WriteLine(String.Format("Found {0} new files", newFiles.Length));
+//            System.Diagnostics.Debug.WriteLine(String.Format("Found {0} deleted files", deletedFiles.Length));
+//            System.Diagnostics.Debug.WriteLine(String.Format("Found {0} modified files", updatedFiles.Length));
+//            
+
         }
 
         public void SyncLibrary()
@@ -1400,8 +1427,6 @@ namespace MusicBeePlugin
 
             int length = files.Length;
             int splitEvery = 1000;
-
-            sync = files;
 
             for (int i = 0; i < length; i = i + splitEvery)
             {
@@ -1415,18 +1440,17 @@ namespace MusicBeePlugin
 
                 ++part;
 
-                var lib = new
+                var sync = new
                 {
                     files = subArray,
                     sync = "full",
                     part
                 };
-//                SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, lib);
-//                MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
-//                EventBus.FireEvent(mEvent);    
-
+                SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, sync);
+                MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+                EventBus.FireEvent(mEvent);    
             }
-            lastsync = DateTime.Now;
         }
+
     }
 }
