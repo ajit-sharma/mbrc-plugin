@@ -12,17 +12,17 @@ namespace MusicBeePlugin.Debugging
 
         private void SyncLibary(object sender, EventArgs e)
         {
-            Plugin.Instance.SyncLibrary();
+            Plugin.Instance.SyncGetFilenames();
         }
 
         private void CheckForChanges(object sender, EventArgs e)
         {
-            Plugin.Instance.CheckForLibaryChanges();
+            Plugin.Instance.SyncCheckForChanges(new DateTime(2013,11,1));
         }
 
         private void getmetatags_Click(object sender, EventArgs e)
         {
-            Plugin.Instance.GetMetaData(metafile.Text);
+            Plugin.Instance.SyncGetMetaData(metafile.Text);
         }
     }
 }

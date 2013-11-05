@@ -1403,93 +1403,122 @@ namespace MusicBeePlugin
                     new SocketMessage(Constants.NowPlayingListSearch, Constants.Reply,result).toJsonString(), clientId));
         }
 
-        
-        private DateTime lastsync;
-
-        public void CheckForLibaryChanges()
+        public void SyncCheckForChanges(string[] cachedFiles ,DateTime lastSync)
         {
-            
-//            string[] newFiles = {};
-//            string[] deletedFiles = {};
-//            string[] updatedFiles ={};
-//            lastsync = new DateTime(2013,11,1);
-//
-//            mbApiInterface.Library_GetSyncDelta(sync, lastsync, LibraryCategory.Music, ref newFiles, ref updatedFiles, ref deletedFiles);
-//            System.Diagnostics.Debug.WriteLine(String.Format("Last updated on {0}", lastsync));
-//            System.Diagnostics.Debug.WriteLine(String.Format("Found {0} new files", newFiles.Length));
-//            System.Diagnostics.Debug.WriteLine(String.Format("Found {0} deleted files", deletedFiles.Length));
-//            System.Diagnostics.Debug.WriteLine(String.Format("Found {0} modified files", updatedFiles.Length));
-//            
+            string[] newFiles = {};
+            string[] deletedFiles = {};
+            string[] updatedFiles ={};
+
+            mbApiInterface.Library_GetSyncDelta(cachedFiles, lastSync, LibraryCategory.Music,
+                ref newFiles, ref updatedFiles, ref deletedFiles);
+
+            var jsonData = new
+            {
+                type = "partial",
+                update = updatedFiles,
+                deleted = deletedFiles,
+                newfiles = newFiles
+            };
+
+            SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
+            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+            EventBus.FireEvent(mEvent);
 
         }
 
-        public void SyncLibrary()
+        public void SyncGetFilenames()
         {
             string[] files = {};
-            int part = 0;
             mbApiInterface.Library_QueryFilesEx(String.Empty, ref files);
-
-//            int length = files.Length;
-//            int splitEvery = 1000;
-//
-//            for (int i = 0; i < length; i = i + splitEvery)
-//            {
-//                string[] subArray = new string[splitEvery];
-//
-//                if (length < i + splitEvery)
-//                {
-//                    splitEvery = length - i;
-//                }
-//                Array.Copy(files, i, subArray, 0, splitEvery);
-//
-//                ++part;
-//
-//                var sync = new
-//                {
-//                    files = subArray,
-//                    sync = "full",
-//                    part
-//                };
-//       
-//            }
-            var sync = new
+            var jsonData = new
             {
-                files,
-                sync = "full",
-                part
+                type = "full",
+                payload = files
+                
             };
-            SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, sync);
+            SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
             MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
             EventBus.FireEvent(mEvent);
         }
 
-        public void GetMetaData(string text)
+        public void SyncGetCover(string text, bool hash)
         {
-            var metaData = new
-            {
-                cover = mbApiInterface.Library_GetArtwork(text, 0),
-                title = mbApiInterface.Library_GetFileTag(text, MetaDataType.TrackTitle),
-                artist = mbApiInterface.Library_GetFileTag(text, MetaDataType.Artist),
-                album_artist = mbApiInterface.Library_GetFileTag(text, MetaDataType.AlbumArtist),
-                album = mbApiInterface.Library_GetFileTag(text, MetaDataType.Album),
-                year = mbApiInterface.Library_GetFileTag(text, MetaDataType.Year),
-                genre = mbApiInterface.Library_GetFileTag(text, MetaDataType.Genre),
-                track_no = mbApiInterface.Library_GetFileTag(text, MetaDataType.TrackNo)
-            };
-
+            string cover = mbApiInterface.Library_GetArtwork(text, 0);
+             
             // calculating sha1 for the cover.
             SHA1Managed sha1 = new SHA1Managed();
-            byte[] bytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(metaData.cover));
+            byte[] bytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(cover));
             var sb = new StringBuilder();
             foreach (byte b in bytes)
             {
                 var hex = b.ToString("x2");
                 sb.Append(hex);
             }
-             
-            Debug.WriteLine(sb.ToString());
 
-            SocketMessage msg = new SocketMessage(Constants.LibraryMeta, Constants.Reply, metaData);
+            object jsonData;
+
+            if (hash)
+            {
+                var payload = new
+                {
+                    sha1 = sb.ToString(),
+                    length = cover.Length
+                };
+
+                jsonData = new
+                {
+                    type = "cover",
+                    file = text,
+                    hash = true,
+                    payload
+                };
+            }
+            else
+            {
+                var payload = new
+                {
+                    sha1 = sb.ToString(),
+                    length = cover.Length,
+                    base64 = cover
+                };
+
+                jsonData = new
+                {
+                    type = "cover",
+                    file = text,
+                    hash = false,
+                    payload
+                };
+            }
+
+            SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
+            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+            EventBus.FireEvent(mEvent);
+
+        }
+
+        //todo: move the socket message creation and firing here
+        public void SendEvent(string command, object data)
+        {
+            
+        }
+
+        public void SyncGetMetaData(string file)
+        {
+            var jsonData = new
+            {
+                type = "meta",
+                file,
+                artist = mbApiInterface.Library_GetFileTag(file, MetaDataType.Artist),
+                album_artist = mbApiInterface.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+                album = mbApiInterface.Library_GetFileTag(file, MetaDataType.Album),
+                title = mbApiInterface.Library_GetFileTag(file, MetaDataType.TrackTitle),
+                genre = mbApiInterface.Library_GetFileTag(file, MetaDataType.Genre),
+                year = mbApiInterface.Library_GetFileTag(file, MetaDataType.Year),
+                track_no = mbApiInterface.Library_GetFileTag(file, MetaDataType.TrackNo)
+            };
+
+            SocketMessage msg = new SocketMessage(Constants.LibraryMeta, Constants.Reply, jsonData);
             MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
             EventBus.FireEvent(mEvent);
         }
