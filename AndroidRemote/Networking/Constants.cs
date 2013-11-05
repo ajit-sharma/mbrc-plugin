@@ -67,6 +67,7 @@
         public const string PlaylistAddFiles = "playlistaddfiles";
         public const string PlaylistCreate = "playlistcreate";
         public const string LibrarySync = "librarysync";
+        public const string LibraryMeta = "librarymeta";
 
         #endregion
 
@@ -78,6 +79,6 @@
 
         #endregion
 
-
+        
     }
 }

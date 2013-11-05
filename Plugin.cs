@@ -1,3 +1,7 @@
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text;
+
 namespace MusicBeePlugin
 {
     using Debugging;
@@ -132,7 +136,7 @@ namespace MusicBeePlugin
             positionUpdateTimer.Enabled = true;
 
 #if DEBUG
-            mbApiInterface.MB_AddMenuItem("mnuTools/MusicBee Remote Debug Tool", "DebugTool",
+            mbApiInterface.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
                                           DisplayDebugWindow);
 #endif
 
@@ -1425,32 +1429,69 @@ namespace MusicBeePlugin
             int part = 0;
             mbApiInterface.Library_QueryFilesEx(String.Empty, ref files);
 
-            int length = files.Length;
-            int splitEvery = 1000;
-
-            for (int i = 0; i < length; i = i + splitEvery)
+//            int length = files.Length;
+//            int splitEvery = 1000;
+//
+//            for (int i = 0; i < length; i = i + splitEvery)
+//            {
+//                string[] subArray = new string[splitEvery];
+//
+//                if (length < i + splitEvery)
+//                {
+//                    splitEvery = length - i;
+//                }
+//                Array.Copy(files, i, subArray, 0, splitEvery);
+//
+//                ++part;
+//
+//                var sync = new
+//                {
+//                    files = subArray,
+//                    sync = "full",
+//                    part
+//                };
+//       
+//            }
+            var sync = new
             {
-                string[] subArray = new string[splitEvery];
-
-                if (length < i + splitEvery)
-                {
-                    splitEvery = length - i;
-                }
-                Array.Copy(files, i, subArray, 0, splitEvery);
-
-                ++part;
-
-                var sync = new
-                {
-                    files = subArray,
-                    sync = "full",
-                    part
-                };
-                SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, sync);
-                MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
-                EventBus.FireEvent(mEvent);    
-            }
+                files,
+                sync = "full",
+                part
+            };
+            SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, sync);
+            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+            EventBus.FireEvent(mEvent);
         }
 
+        public void GetMetaData(string text)
+        {
+            var metaData = new
+            {
+                cover = mbApiInterface.Library_GetArtwork(text, 0),
+                title = mbApiInterface.Library_GetFileTag(text, MetaDataType.TrackTitle),
+                artist = mbApiInterface.Library_GetFileTag(text, MetaDataType.Artist),
+                album_artist = mbApiInterface.Library_GetFileTag(text, MetaDataType.AlbumArtist),
+                album = mbApiInterface.Library_GetFileTag(text, MetaDataType.Album),
+                year = mbApiInterface.Library_GetFileTag(text, MetaDataType.Year),
+                genre = mbApiInterface.Library_GetFileTag(text, MetaDataType.Genre),
+                track_no = mbApiInterface.Library_GetFileTag(text, MetaDataType.TrackNo)
+            };
+
+            // calculating sha1 for the cover.
+            SHA1Managed sha1 = new SHA1Managed();
+            byte[] bytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(metaData.cover));
+            var sb = new StringBuilder();
+            foreach (byte b in bytes)
+            {
+                var hex = b.ToString("x2");
+                sb.Append(hex);
+            }
+             
+            Debug.WriteLine(sb.ToString());
+
+            SocketMessage msg = new SocketMessage(Constants.LibraryMeta, Constants.Reply, metaData);
+            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+            EventBus.FireEvent(mEvent);
+        }
     }
 }

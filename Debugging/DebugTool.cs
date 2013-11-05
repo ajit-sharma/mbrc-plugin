@@ -19,5 +19,10 @@ namespace MusicBeePlugin.Debugging
         {
             Plugin.Instance.CheckForLibaryChanges();
         }
+
+        private void getmetatags_Click(object sender, EventArgs e)
+        {
+            Plugin.Instance.GetMetaData(metafile.Text);
+        }
     }
 }
