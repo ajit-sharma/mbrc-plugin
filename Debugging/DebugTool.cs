@@ -17,7 +17,7 @@ namespace MusicBeePlugin.Debugging
 
         private void CheckForChanges(object sender, EventArgs e)
         {
-            Plugin.Instance.SyncCheckForChanges(new DateTime(2013,11,1));
+            //Plugin.Instance.SyncCheckForChanges(new DateTime(2013,11,1));
         }
 
         private void getmetatags_Click(object sender, EventArgs e)

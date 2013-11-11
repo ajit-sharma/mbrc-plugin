@@ -21,6 +21,9 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     Plugin.Instance.SyncGetFilenames();
                     break;
                 case "partial":
+
+                    string[] cachedFiles = obj.Get<string[]>("files");
+                    string lastSync = obj.Get("lastsync");
                     //todo: fix partial sync call
                     break;
                 case "cover":
