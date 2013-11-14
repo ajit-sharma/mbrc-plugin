@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using MusicBeePlugin.AndroidRemote.Entities;
 
 namespace MusicBeePlugin.AndroidRemote.Networking
@@ -230,7 +232,11 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 
                     // Let the worker Socket do the further processing 
                     // for the just connected client.
-                    WaitForData(workerSocket, clientId);
+                    SocketState socketState = new SocketState();
+                    socketState.ClientSocket = workerSocket;
+                    socketState.ClientId = clientId;
+                    
+                    WaitForData(socketState);
                 }
             }
             catch (ObjectDisposedException)
@@ -271,7 +277,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         }
 
         // Start waiting for data from the client
-        private void WaitForData(Socket socket, string clientId)
+        private void WaitForData(SocketState state)
         {
             try
             {
@@ -283,10 +289,8 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     workerCallback = OnDataReceived;
                 }
 
-                SocketPacket socketPacket = new SocketPacket(socket, clientId);
-
-                socket.BeginReceive(socketPacket.DataBuffer, 0, socketPacket.DataBuffer.Length, SocketFlags.None,
-                                    workerCallback, socketPacket);
+                state.ClientSocket.BeginReceive(state.DataBuffer, 0, state.DataBuffer.Length, SocketFlags.None,
+                                    workerCallback, state);
             }
             catch (SocketException se)
             {
@@ -302,7 +306,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 }
                 else
                 {
-                    EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, clientId));
+                    EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, state.ClientId));
                 }
             }
         }
@@ -314,37 +318,47 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             string clientId = String.Empty;
             try
             {
-                SocketPacket socketData = (SocketPacket) ar.AsyncState;
+                SocketState socketState = (SocketState) ar.AsyncState;
                 // Complete the BeginReceive() asynchronus call by EndReceive() method
                 // which will return the number of characters written to the stream
                 // by the client.
 
-                clientId = socketData.ClientId;
+                clientId = socketState.ClientId;
 
-                int iRx = socketData.MCurrentSocket.EndReceive(ar);
+                int iRx = socketState.ClientSocket.EndReceive(ar);
                 char[] chars = new char[iRx + 1];
 
                 System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder();
 
-                decoder.GetChars(socketData.DataBuffer, 0, iRx, chars, 0);
+                decoder.GetChars(socketState.DataBuffer, 0, iRx, chars, 0);
                 if(chars.Length==1&&chars[0]==0)
                 {
-                    socketData.MCurrentSocket.Close();
-                    socketData.MCurrentSocket.Dispose();
+                    socketState.ClientSocket.Close();
+                    socketState.ClientSocket.Dispose();
                     return;
                 }
-                String message = new string(chars);
 
-                if (String.IsNullOrEmpty(message))
-                    return;
+                socketState.mBuilder.Append(chars);
 
-#if DEBUG
-                Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) + " : message Received : " + message);
-#endif
-                handler.ProcessIncomingMessage(message,socketData.ClientId);
-                
+                string message = socketState.mBuilder.ToString();
+                List<string> messages = new List<string>(message.Split(new[] { "\r\n\n\0", "\r\n\n" }, StringSplitOptions.RemoveEmptyEntries));
+                string last = messages.Last();
+                if (last.Contains("\0\0\0"))
+                {
+                    messages.Remove(last);
+                    last = last.Substring(0, last.IndexOf("\0\0\0", StringComparison.Ordinal));
+                    socketState.mBuilder.Clear();
+                    socketState.mBuilder.Append(last);
+                }
+                else
+                {
+                    socketState.mBuilder.Clear();
+                }
+
+                handler.ProcessIncomingMessage(messages, socketState.ClientId);
+
                 // Continue the waiting for data on the Socket.
-                WaitForData(socketData.MCurrentSocket, socketData.ClientId);
+                WaitForData(socketState);
             }
             catch (ObjectDisposedException)
             {

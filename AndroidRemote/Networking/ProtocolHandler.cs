@@ -23,33 +23,17 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// <summary>
         /// Processes the incoming message and answer's sending back the needed data.
         /// </summary>
-        /// <param name="incomingMessage">The incoming message.</param>
+        /// <param name="messages">The incoming message.</param>
         /// <param name="clientId"> </param>
-        public void ProcessIncomingMessage(string incomingMessage, string clientId)
+        public void ProcessIncomingMessage(List<string> messages, string clientId)
         {
             try
             {
                 List<SocketMessage> msgList = new List<SocketMessage>();
-                if (String.IsNullOrEmpty(incomingMessage))
-                {
-                    return;
-                }
+                
                 try
-                {
-#if DEBUG
-                    Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) + " : Proccessing : " + incomingMessage + "\n");
-                    
-                    HttpHandler http = new HttpHandler();
-                    if (http.IsHttpRequest(incomingMessage))
-                    {
-                        //OnReplyAvailable(new MessageEventArgs(http.GetHttpReply(), clientId));
-                    }
-
-#endif
-                    
-                    foreach (
-                        string msg in
-                            incomingMessage.Replace("\0","").Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries))
+                {                    
+                    foreach (string msg in messages)
                     {
                         if (msg.Equals("\n")) continue;
                         msgList.Add(new SocketMessage(JsonObject.Parse(msg)));
@@ -59,11 +43,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 {
 #if DEBUG
                     ErrorHandler.LogError(ex);
-                    ErrorHandler.LogValue(incomingMessage);
-                    Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) + " : Exception at : " +
-                                    incomingMessage + "\n");
-#endif               
-                    
+#endif                 
                 }
 
                 foreach (SocketMessage msg in msgList)
