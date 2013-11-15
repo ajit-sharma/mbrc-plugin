@@ -1433,8 +1433,8 @@ namespace MusicBeePlugin
             var jsonData = new
             {
                 type = "full",
-                payload = files
-                
+                payload = new string[] {}
+                //payload = files
             };
             SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
             MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());

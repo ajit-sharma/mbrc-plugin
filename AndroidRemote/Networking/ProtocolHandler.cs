@@ -35,7 +35,6 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 {                    
                     foreach (string msg in messages)
                     {
-                        if (msg.Equals("\n")) continue;
                         msgList.Add(new SocketMessage(JsonObject.Parse(msg)));
                     }
                 }
@@ -43,6 +42,12 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 {
 #if DEBUG
                     ErrorHandler.LogError(ex);
+                    Debug.WriteLine("elements: {0}",messages.Count);
+                    Debug.WriteLine("-----------------------------");
+                    foreach (var message in messages)
+                    {
+                        Debug.WriteLine("message:" + message);
+                    }
 #endif                 
                 }
 

@@ -326,27 +326,38 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 clientId = socketState.ClientId;
 
                 int iRx = socketState.ClientSocket.EndReceive(ar);
-                char[] chars = new char[iRx + 1];
+
+                char[] chars = new char[iRx];
 
                 System.Text.Decoder decoder = System.Text.Encoding.UTF8.GetDecoder();
 
                 decoder.GetChars(socketState.DataBuffer, 0, iRx, chars, 0);
-                if(chars.Length==1&&chars[0]==0)
+                int length = chars.Length;
+                
+                if (length == 0)
                 {
-                    socketState.ClientSocket.Close();
-                    socketState.ClientSocket.Dispose();
+                    WaitForData(socketState);
                     return;
                 }
 
                 socketState.mBuilder.Append(chars);
 
-                string message = socketState.mBuilder.ToString();
-                List<string> messages = new List<string>(message.Split(new[] { "\r\n\n\0", "\r\n\n" }, StringSplitOptions.RemoveEmptyEntries));
-                string last = messages.Last();
-                if (last.Contains("\0\0\0"))
+                string message = socketState.mBuilder.ToString().Replace("\0","");
+                if (!message.Contains(Environment.NewLine))
                 {
+                    WaitForData(socketState);
+                    return;
+                }
+
+                int lastIndex = message.LastIndexOf(Environment.NewLine, StringComparison.Ordinal);
+                string afterLast = message.Substring(lastIndex + 2);
+
+                List<string> messages = new List<string>(message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
+
+                if (afterLast.Length > 0)
+                {
+                    string last = messages.Last();
                     messages.Remove(last);
-                    last = last.Substring(0, last.IndexOf("\0\0\0", StringComparison.Ordinal));
                     socketState.mBuilder.Clear();
                     socketState.mBuilder.Append(last);
                 }
@@ -355,7 +366,10 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     socketState.mBuilder.Clear();
                 }
 
-                handler.ProcessIncomingMessage(messages, socketState.ClientId);
+                if (messages.Count > 0)
+                {
+                    handler.ProcessIncomingMessage(messages, clientId);
+                }
 
                 // Continue the waiting for data on the Socket.
                 WaitForData(socketState);
@@ -393,7 +407,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         public void Send(string message, string clientId)
         {
 #if DEBUG
-            Debug.WriteLine("Send: " + message + " to client: " + clientId);
+            //Debug.WriteLine("Send: " + message + " to client: " + clientId);
 #endif
             if(clientId.Equals("all"))
             {
