@@ -22,7 +22,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                 switch (syncType)
                 {
                     case "full":
-                        Plugin.Instance.SyncGetFilenames();
+                        Plugin.Instance.SyncGetFilenames(eEvent.ClientId);
                         break;
                     case "partial":
 
@@ -31,13 +31,12 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         //todo: fix partial sync call
                         break;
                     case "cover":
-                        file = obj.Get("file");
-                        bool hash = obj.Get<bool>("hash");
-                        Plugin.Instance.SyncGetCover(file, hash);
+                        file = obj.Get("hash");
+                        Plugin.Instance.SyncGetCover(file);
                         break;
                     case "meta":
-                        file = obj.Get("file");
-                        Plugin.Instance.SyncGetMetaData(file);
+                        int track = obj.Get<int>("file");
+                        Plugin.Instance.SyncGetMetaData(track);
                         break;
                 }
             }

@@ -12,7 +12,7 @@ namespace MusicBeePlugin.Debugging
 
         private void SyncLibary(object sender, EventArgs e)
         {
-            Plugin.Instance.SyncGetFilenames();
+            Plugin.Instance.SyncGetFilenames("all");
         }
 
         private void CheckForChanges(object sender, EventArgs e)
@@ -22,7 +22,7 @@ namespace MusicBeePlugin.Debugging
 
         private void getmetatags_Click(object sender, EventArgs e)
         {
-            Plugin.Instance.SyncGetMetaData(metafile.Text);
+            Plugin.Instance.SyncGetMetaData(1);
         }
     }
 }

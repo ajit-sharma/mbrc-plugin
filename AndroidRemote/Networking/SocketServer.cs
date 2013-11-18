@@ -289,8 +289,8 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     workerCallback = OnDataReceived;
                 }
 
-                state.ClientSocket.BeginReceive(state.DataBuffer, 0, state.DataBuffer.Length, SocketFlags.None,
-                                    workerCallback, state);
+                state.ClientSocket.BeginReceive(state.DataBuffer, 0, SocketState.BufferSize,
+                    SocketFlags.None, workerCallback, state);
             }
             catch (SocketException se)
             {

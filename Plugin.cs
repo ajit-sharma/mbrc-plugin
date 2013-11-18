@@ -1426,28 +1426,68 @@ namespace MusicBeePlugin
 
         }
 
-        public void SyncGetFilenames()
+        private Dictionary<string, string> fileMap;
+        private List<string> hashes;
+
+        public void SyncGetFilenames(string clientId)
         {
             string[] files = {};
             mbApiInterface.Library_QueryFilesEx(String.Empty, ref files);
+            fileMap = new Dictionary<string, string>();
+            hashes = new List<string>();
+
+            foreach (var file in files)
+            {
+                var sha1hash = Sha1Hash(file);
+                fileMap.Add(sha1hash, file);
+                hashes.Add(sha1hash);
+            }
+
             var jsonData = new
             {
                 type = "full",
-                payload = new string[] {}
-                //payload = files
+                payload = files.Length
             };
+
             SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
-            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString(), clientId);
             EventBus.FireEvent(mEvent);
         }
 
-        public void SyncGetCover(string text, bool hash)
+        public void SyncGetCover(string hash)
         {
-            string cover = mbApiInterface.Library_GetArtwork(text, 0);
-             
-            // calculating sha1 for the cover.
+            string file = String.Empty;
+            if (fileMap.TryGetValue(hash, out file))
+            {
+                string cover = mbApiInterface.Library_GetArtwork(file, 0);
+                var sha1hash = Sha1Hash(cover);
+
+                var payload = new
+                {
+                    sha1 = sha1hash,
+                    length = cover.Length,
+                    image = cover
+                };
+
+                var jsonData = new
+                {
+                    type = "cover",
+                    file = hash,
+                    hash = true,
+                    payload
+                };
+
+                SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
+                MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+                EventBus.FireEvent(mEvent);
+            }
+
+        }
+
+        private static string Sha1Hash(string value)
+        {
             SHA1Managed sha1 = new SHA1Managed();
-            byte[] bytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(cover));
+            byte[] bytes = sha1.ComputeHash(Encoding.UTF8.GetBytes(value));
             var sb = new StringBuilder();
             foreach (byte b in bytes)
             {
@@ -1455,46 +1495,7 @@ namespace MusicBeePlugin
                 sb.Append(hex);
             }
 
-            object jsonData;
-
-            if (hash)
-            {
-                var payload = new
-                {
-                    sha1 = sb.ToString(),
-                    length = cover.Length
-                };
-
-                jsonData = new
-                {
-                    type = "cover",
-                    file = text,
-                    hash = true,
-                    payload
-                };
-            }
-            else
-            {
-                var payload = new
-                {
-                    sha1 = sb.ToString(),
-                    length = cover.Length,
-                    base64 = cover
-                };
-
-                jsonData = new
-                {
-                    type = "cover",
-                    file = text,
-                    hash = false,
-                    payload
-                };
-            }
-
-            SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
-            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
-            EventBus.FireEvent(mEvent);
-
+            return sb.ToString();
         }
 
         //todo: move the socket message creation and firing here
@@ -1503,24 +1504,33 @@ namespace MusicBeePlugin
             
         }
 
-        public void SyncGetMetaData(string file)
+        public void SyncGetMetaData(int track)
         {
-            var jsonData = new
-            {
-                type = "meta",
-                file,
-                artist = mbApiInterface.Library_GetFileTag(file, MetaDataType.Artist),
-                album_artist = mbApiInterface.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-                album = mbApiInterface.Library_GetFileTag(file, MetaDataType.Album),
-                title = mbApiInterface.Library_GetFileTag(file, MetaDataType.TrackTitle),
-                genre = mbApiInterface.Library_GetFileTag(file, MetaDataType.Genre),
-                year = mbApiInterface.Library_GetFileTag(file, MetaDataType.Year),
-                track_no = mbApiInterface.Library_GetFileTag(file, MetaDataType.TrackNo)
-            };
 
-            SocketMessage msg = new SocketMessage(Constants.LibraryMeta, Constants.Reply, jsonData);
-            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
-            EventBus.FireEvent(mEvent);
+            string file = String.Empty;
+            string hash = hashes[track];
+            if (fileMap.TryGetValue(hash, out file))
+            {
+                var cover = Sha1Hash(mbApiInterface.Library_GetArtwork(file, 0));
+                var jsonData = new
+                {
+                    type = "meta",
+                    sha1 = hash,
+                    artist = mbApiInterface.Library_GetFileTag(file, MetaDataType.Artist),
+                    album_artist = mbApiInterface.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+                    album = mbApiInterface.Library_GetFileTag(file, MetaDataType.Album),
+                    title = mbApiInterface.Library_GetFileTag(file, MetaDataType.TrackTitle),
+                    genre = mbApiInterface.Library_GetFileTag(file, MetaDataType.Genre),
+                    year = mbApiInterface.Library_GetFileTag(file, MetaDataType.Year),
+                    track_no = mbApiInterface.Library_GetFileTag(file, MetaDataType.TrackNo),
+                    cover
+                };
+
+
+                SocketMessage msg = new SocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
+                MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+                EventBus.FireEvent(mEvent);                
+            }
         }
     }
 }
