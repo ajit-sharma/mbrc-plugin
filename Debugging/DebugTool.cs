@@ -22,7 +22,7 @@ namespace MusicBeePlugin.Debugging
 
         private void getmetatags_Click(object sender, EventArgs e)
         {
-            Plugin.Instance.SyncGetMetaData(1);
+            Plugin.Instance.SyncGetMetaData(1, "all");
         }
     }
 }

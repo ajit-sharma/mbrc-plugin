@@ -32,11 +32,11 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         break;
                     case "cover":
                         file = obj.Get("hash");
-                        Plugin.Instance.SyncGetCover(file);
+                        Plugin.Instance.SyncGetCover(file, eEvent.ClientId);
                         break;
                     case "meta":
                         int track = obj.Get<int>("file");
-                        Plugin.Instance.SyncGetMetaData(track);
+                        Plugin.Instance.SyncGetMetaData(track, eEvent.ClientId);
                         break;
                 }
             }
