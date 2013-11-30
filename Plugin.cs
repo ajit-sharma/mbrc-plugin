@@ -1334,11 +1334,12 @@ namespace MusicBeePlugin
             if (fileMap.TryGetValue(hash, out file))
             {
                 string cover = api.Library_GetArtwork(file, 0);
-                var sha1hash = Utilities.Sha1Hash(cover);
+                var sha1hash = cover != null ? Utilities.Sha1Hash(cover) : new string('0', 40);
+                cover = cover ?? "";
 
                 var payload = new
                 {
-                    sha1 = sha1hash,
+                    hash = sha1hash,
                     length = cover.Length,
                     image = cover
                 };
@@ -1370,11 +1371,13 @@ namespace MusicBeePlugin
             string hash = hashes[track];
             if (fileMap.TryGetValue(hash, out file))
             {
-                var cover = Utilities.Sha1Hash(api.Library_GetArtwork(file, 0));
+                var coverBase64 = api.Library_GetArtwork(file, 0);
+
+                var cover = coverBase64 != null ? Utilities.Sha1Hash(coverBase64) : new string('0', 40);
                 var jsonData = new
                 {
                     type = "meta",
-                    sha1 = hash,
+                    hash,
                     artist = api.Library_GetFileTag(file, MetaDataType.Artist),
                     album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
                     album = api.Library_GetFileTag(file, MetaDataType.Album),

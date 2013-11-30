@@ -40,9 +40,10 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         break;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Debug.WriteLine("Type: " +eEvent.Data.GetType() + "\t data: " + eEvent.Data);
+                Debug.WriteLine(ex);
             }
         }
     }
