@@ -74,9 +74,9 @@ namespace MusicBeePlugin
         private static Plugin selfInstance;
         private InfoWindow mWindow;
 
-#if DEBUG
+
         private DebugTool dTool;
-#endif
+
 
 
         /// <summary>
@@ -135,10 +135,10 @@ namespace MusicBeePlugin
             positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             positionUpdateTimer.Enabled = true;
 
-#if DEBUG
+
             api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
                                           DisplayDebugWindow);
-#endif
+
 
             return about;
         }
@@ -235,7 +235,7 @@ namespace MusicBeePlugin
             mWindow.Show();    
         } 
 
-#if DEBUG
+
         public void DisplayDebugWindow(object sender, EventArgs eventArgs)
         {
             if (dTool == null || !dTool.Visible)
@@ -244,7 +244,7 @@ namespace MusicBeePlugin
             }
             dTool.Show();
         }
-#endif
+
 
         /// <summary>
         /// Creates the MusicBee plugin Configuration panel.
@@ -1372,11 +1372,24 @@ namespace MusicBeePlugin
             string hash = hashes[track];
             if (fileMap.TryGetValue(hash, out file))
             {
-                var coverBase64 = api.Library_GetArtwork(file, 0);
+                var artworkUrl = api.Library_GetArtworkUrl(file, 0);
+                string cover;
+                Debug.WriteLine("URL: " + artworkUrl);
+                if (artworkUrl != null)
+                {
+                    using (var fs = new FileStream(artworkUrl, FileMode.Open, FileAccess.Read))
+                    {
+                        cover = Utilities.Sha1Hash(fs);
+                    }
+                }
+                else
+                {
+                    cover = new string('0', 40);
+                }
+                
                 var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
                 string[] url = {};
                 api.Library_GetArtistPictureUrls(artist, false, ref url);
-                var cover = coverBase64 != null ? Utilities.Sha1Hash(coverBase64) : new string('0', 40);
                 var jsonData = new
                 {
                     type = "meta",
@@ -1392,10 +1405,8 @@ namespace MusicBeePlugin
                     cover
                 };
 
-                SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);     
-#if DEBUG
-                Debug.WriteLine(DateTime.Now + " Sending Reply");
-#endif
+                SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
+                Debug.WriteLine(jsonData.Dump());
             }
         }
     }
