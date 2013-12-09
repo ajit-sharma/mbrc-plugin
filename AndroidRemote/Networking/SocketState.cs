@@ -11,7 +11,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
     /// </summary>
     public class SocketState
     {
-        public const int BufferSize = 1024;
+        public const int BufferSize = 8192;
         /// <summary>
         /// 
         /// </summary>

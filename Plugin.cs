@@ -1364,21 +1364,25 @@ namespace MusicBeePlugin
             EventBus.FireEvent(mEvent);
         }
 
+        private Stopwatch bt;
+
         public void SyncGetMetaData(int track, string client)
         {
-
             string file = String.Empty;
             string hash = hashes[track];
             if (fileMap.TryGetValue(hash, out file))
             {
                 var coverBase64 = api.Library_GetArtwork(file, 0);
-
+                var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
+                string[] url = {};
+                api.Library_GetArtistPictureUrls(artist, false, ref url);
                 var cover = coverBase64 != null ? Utilities.Sha1Hash(coverBase64) : new string('0', 40);
                 var jsonData = new
                 {
                     type = "meta",
                     hash,
-                    artist = api.Library_GetFileTag(file, MetaDataType.Artist),
+                    artist,
+                    artist_image_url = url.Length >= 1 ? url[0] : string.Empty,
                     album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
                     album = api.Library_GetFileTag(file, MetaDataType.Album),
                     title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
@@ -1389,6 +1393,9 @@ namespace MusicBeePlugin
                 };
 
                 SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);     
+#if DEBUG
+                Debug.WriteLine(DateTime.Now + " Sending Reply");
+#endif
             }
         }
     }

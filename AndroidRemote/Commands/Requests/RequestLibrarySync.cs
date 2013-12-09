@@ -14,6 +14,9 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
+#if DEBUG
+            Debug.WriteLine(DateTime.Now + " Processing Library Request");
+#endif
             try
             {
                 JsonObject obj = (JsonObject)eEvent.Data;
@@ -43,6 +46,10 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             catch (Exception ex)
             {
                 Debug.WriteLine("Type: " +eEvent.Data.GetType() + "\t data: " + eEvent.Data);
+                if (eEvent.Data.GetType() == typeof (JsonObject))
+                {
+                    Debug.WriteLine(((JsonObject)eEvent.Data).Dump());
+                }
                 Debug.WriteLine(ex);
             }
         }
