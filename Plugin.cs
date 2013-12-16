@@ -1,6 +1,6 @@
 using System.Diagnostics;
-using System.Security.Cryptography;
-using System.Text;
+using Db4objects.Db4o;
+using Db4objects.Db4o.Config;
 
 namespace MusicBeePlugin
 {
@@ -74,10 +74,10 @@ namespace MusicBeePlugin
         private static Plugin selfInstance;
         private InfoWindow mWindow;
 
-
+#if DEBUG
         private DebugTool dTool;
-
-
+#endif
+        private string mStoragePath;
 
         /// <summary>
         /// This function initialized the Plugin.
@@ -120,6 +120,7 @@ namespace MusicBeePlugin
             }
 
             ErrorHandler.SetLogFilePath(api.Setting_GetPersistentStoragePath());
+            mStoragePath = api.Setting_GetPersistentStoragePath() + "\\mb_remote";
 
             StartPlayerStatusMonitoring();
 
@@ -135,10 +136,10 @@ namespace MusicBeePlugin
             positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             positionUpdateTimer.Enabled = true;
 
-
+#if DEBUG
             api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
                                           DisplayDebugWindow);
-
+#endif
 
             return about;
         }
@@ -235,7 +236,7 @@ namespace MusicBeePlugin
             mWindow.Show();    
         } 
 
-
+#if DEBUG
         public void DisplayDebugWindow(object sender, EventArgs eventArgs)
         {
             if (dTool == null || !dTool.Visible)
@@ -244,7 +245,7 @@ namespace MusicBeePlugin
             }
             dTool.Show();
         }
-
+#endif
 
         /// <summary>
         /// Creates the MusicBee plugin Configuration panel.
@@ -1404,6 +1405,17 @@ namespace MusicBeePlugin
                     track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
                     cover
                 };
+
+                using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+                {
+                    var data = new LibraryData
+                    {
+                        Hash = hash,
+                        Artist = artist,
+                    };
+                    db.Store(data);
+                }
+                
 
                 SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
                 Debug.WriteLine(jsonData.Dump());
