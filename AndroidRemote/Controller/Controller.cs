@@ -32,11 +32,6 @@ namespace MusicBeePlugin.AndroidRemote.Controller
 
         public void CommandExecute(IEvent e)
         {
-            ThreadPool.QueueUserWorkItem(BgCommandExecutor, e);
-        }
-
-        private void BgCommandExecutor(object e)
-        {
             if (!commandMap.ContainsKey(((IEvent)e).Type)) return;
             Type commandType = commandMap[((IEvent)e).Type];
             using (ICommand command = (ICommand)Activator.CreateInstance(commandType))
