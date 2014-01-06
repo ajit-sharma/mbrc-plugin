@@ -1358,7 +1358,7 @@ namespace MusicBeePlugin
 
         }
 
-        private void BuildCache()
+        public void BuildCache()
         {
             string[] files = {};
             api.Library_QueryFilesEx(String.Empty, ref files);
@@ -1372,7 +1372,7 @@ namespace MusicBeePlugin
             }
         }
 
-        private void BuildCoverCache()
+        public void BuildCoverCache()
         {
             foreach (var hash in hashes)
             {
@@ -1380,9 +1380,7 @@ namespace MusicBeePlugin
                 if (fileMap.TryGetValue(hash, out file))
                 {
                     var cover = api.Library_GetArtwork(file, 0);
-                    var coverHash = Utilities.Sha1Hash(cover);
-                    
-                    
+                    Utilities.CacheImage(cover);
                 } 
             }   
         }

@@ -40,6 +40,71 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
          
         }
 
+        public static void CacheImage(string base64, int width = 400, int height = 400)
+        {
+            try
+            {
+                var directory = Settings.UserSettings.Instance.StoragePath + @"cache\";
+                var hash = Sha1Hash(base64);
+                if (String.IsNullOrEmpty(base64))
+                {
+                    return;
+                }
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+                using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64)))
+                using (Image albumCover = Image.FromStream(ms, true))
+                {
+                    ms.Flush();
+                    int sourceWidth = albumCover.Width;
+                    int sourceHeight = albumCover.Height;
+                    int destWidth = sourceWidth;
+                    int destHeight = sourceHeight;
+
+                    if (sourceWidth > width || sourceHeight > height)
+                    {
+                        float nPercentW = (width/(float) sourceWidth);
+                        float nPercentH = (height/(float) sourceHeight);
+
+                        var nPercent = nPercentH < nPercentW ? nPercentH : nPercentW;
+                        destWidth = (int) (sourceWidth*nPercent);
+                        destHeight = (int) (sourceHeight*nPercent);
+                    } 
+
+                    using (var bmp = new Bitmap(destWidth, destHeight))
+                    {
+                        Graphics graph = Graphics.FromImage(bmp);
+                        graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                        graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
+                        graph.Dispose();
+                        var filepath = directory + hash;
+                        bmp.Save(filepath, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    }
+                   
+                } 
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                ErrorHandler.LogError(ex);
+#endif
+            }
+        }
+
+        private static void MemoryStreamToFile(string hash, MemoryStream stream)
+        {
+            using (var file = new FileStream(Settings.UserSettings.Instance.StoragePath + @"cache\" + hash, FileMode.Create, FileAccess.Write))
+            {
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int) stream.Length);
+                file.Write(bytes, 0, bytes.Length);
+                stream.Close();
+            }
+        }
+
         public static string ImageResize(string base64, int width = 300, int height = 300)
         {
             var cover = String.Empty;
@@ -70,7 +135,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                         graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                         graph.Dispose();
 
-                        bmp.Save(ms2, System.Drawing.Imaging.ImageFormat.Png);
+                        bmp.Save(ms2, System.Drawing.Imaging.ImageFormat.Jpeg);
                         cover = Convert.ToBase64String(ms2.ToArray());
                     }
                 }
