@@ -1331,31 +1331,60 @@ namespace MusicBeePlugin
 
         public void SyncGetCover(string hash, string clientId)
         {
-            string file = String.Empty;
-            if (fileMap.TryGetValue(hash, out file))
+//            string file = String.Empty;
+//            if (fileMap.TryGetValue(hash, out file))
+//            {
+//                string cover = api.Library_GetArtwork(file, 0);
+//                var sha1hash = cover != null ? Utilities.Sha1Hash(cover) : new string('0', 40);
+//                cover = cover ?? "";
+//
+//                var payload = new
+//                {
+//                    hash = sha1hash,
+//                    length = cover.Length,
+//                    image = cover
+//                };
+//
+//                var jsonData = new
+//                {
+//                    type = "cover",
+//                    file = hash,
+//                    hash = true,
+//                    payload
+//                };
+//
+//                SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
+//            }
+
+        }
+
+        private void BuildCache()
+        {
+            string[] files = {};
+            api.Library_QueryFilesEx(String.Empty, ref files);
+            fileMap = new Dictionary<string, string>();
+            hashes = new List<string>();
+            foreach (var file in files)
             {
-                string cover = api.Library_GetArtwork(file, 0);
-                var sha1hash = cover != null ? Utilities.Sha1Hash(cover) : new string('0', 40);
-                cover = cover ?? "";
-
-                var payload = new
-                {
-                    hash = sha1hash,
-                    length = cover.Length,
-                    image = cover
-                };
-
-                var jsonData = new
-                {
-                    type = "cover",
-                    file = hash,
-                    hash = true,
-                    payload
-                };
-
-                SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
+                var sha1hash = Utilities.Sha1Hash(file);
+                fileMap.Add(sha1hash, file);
+                hashes.Add(sha1hash);
             }
+        }
 
+        private void BuildCoverCache()
+        {
+            foreach (var hash in hashes)
+            {
+                string file = String.Empty;
+                if (fileMap.TryGetValue(hash, out file))
+                {
+                    var cover = api.Library_GetArtwork(file, 0);
+                    var coverHash = Utilities.Sha1Hash(cover);
+                    
+                    
+                } 
+            }   
         }
 
         private void SendSocketMessage(string command, string type, object data, string client = "all")
@@ -1365,60 +1394,37 @@ namespace MusicBeePlugin
             EventBus.FireEvent(mEvent);
         }
 
-        private Stopwatch bt;
+        private Stopwatch bt = new Stopwatch();
 
         public void SyncGetMetaData(int track, string client)
         {
+            if (bt != null && bt.IsRunning)
+            {
+                bt.Stop();
+                Debug.WriteLine("Elapsed {0} ms", bt.ElapsedMilliseconds);
+                bt.Reset();
+            }
             string file = String.Empty;
             string hash = hashes[track];
             if (fileMap.TryGetValue(hash, out file))
             {
-                var artworkUrl = api.Library_GetArtworkUrl(file, 0);
-                string cover;
-                Debug.WriteLine("URL: " + artworkUrl);
-                if (artworkUrl != null)
-                {
-                    using (var fs = new FileStream(artworkUrl, FileMode.Open, FileAccess.Read))
-                    {
-                        cover = Utilities.Sha1Hash(fs);
-                    }
-                }
-                else
-                {
-                    cover = new string('0', 40);
-                }
-                
                 var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
-                string[] url = {};
-                api.Library_GetArtistPictureUrls(artist, false, ref url);
+               
                 var jsonData = new
                 {
                     type = "meta",
                     hash,
                     artist,
-                    artist_image_url = url.Length >= 1 ? url[0] : string.Empty,
                     album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
                     album = api.Library_GetFileTag(file, MetaDataType.Album),
                     title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
                     genre = api.Library_GetFileTag(file, MetaDataType.Genre),
                     year = api.Library_GetFileTag(file, MetaDataType.Year),
                     track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
-                    cover
                 };
 
-                using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-                {
-                    var data = new LibraryData
-                    {
-                        Hash = hash,
-                        Artist = artist,
-                    };
-                    db.Store(data);
-                }
-                
-
                 SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
-                Debug.WriteLine(jsonData.Dump());
+                bt.Start();
             }
         }
     }
