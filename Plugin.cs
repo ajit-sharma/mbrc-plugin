@@ -1,6 +1,8 @@
 using System.Diagnostics;
+using System.Text;
 using Db4objects.Db4o;
 using Db4objects.Db4o.Config;
+using Db4objects.Db4o.Linq;
 
 namespace MusicBeePlugin
 {
@@ -39,7 +41,7 @@ namespace MusicBeePlugin
         /// <summary>
         /// The _about.
         /// </summary>
-        private readonly PluginInfo about = new Plugin.PluginInfo();
+        private readonly PluginInfo about = new PluginInfo();
 
         /// <summary>
         /// The timer.
@@ -84,13 +86,13 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="apiInterfacePtr"></param>
         /// <returns></returns>
-        public Plugin.PluginInfo Initialise(IntPtr apiInterfacePtr)
+        public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             selfInstance = this;
             JsConfig.ExcludeTypeInfo = true;
             Configuration.Register(Controller.Instance);
 
-            api = new Plugin.MusicBeeApiInterface();
+            api = new MusicBeeApiInterface();
             api.Initialise(apiInterfacePtr);
 
             UserSettings.Instance.SetStoragePath(api.Setting_GetPersistentStoragePath());
@@ -222,7 +224,7 @@ namespace MusicBeePlugin
         public void OpenInfoWindow()
         {
             IntPtr hwnd = api.MB_GetWindowHandle();
-            Form MB = (Form)Form.FromHandle(hwnd);
+            Form MB = (Form)Control.FromHandle(hwnd);
             MB.Invoke(new MethodInvoker(DisplayInfoWindow));
         }
 
@@ -538,7 +540,7 @@ namespace MusicBeePlugin
                 char a = Convert.ToChar(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
                 rating = rating.Replace('.', a);
                 float fRating;
-                if (!float.TryParse(rating, out fRating))
+                if (!Single.TryParse(rating, out fRating))
                 {
                     fRating = -1;
                 }
@@ -625,7 +627,7 @@ namespace MusicBeePlugin
             if (!request.Contains("status"))
             {
                 int newPosition;
-                if (int.TryParse(request, out newPosition))
+                if (Int32.TryParse(request, out newPosition))
                 {
                     api.Player_SetPosition(newPosition);
                 }
@@ -651,7 +653,7 @@ namespace MusicBeePlugin
         {
             bool result = false;
             int trackIndex;
-            if (int.TryParse(index, out trackIndex))
+            if (Int32.TryParse(index, out trackIndex))
             {
                 api.NowPlayingList_QueryFiles(null);
                 string trackToPlay = String.Empty;
@@ -714,7 +716,7 @@ namespace MusicBeePlugin
         public void RequestLoveStatus(string action)
         {
             IntPtr hwnd = api.MB_GetWindowHandle();
-            Form MB = (Form) Form.FromHandle(hwnd);
+            Form MB = (Form) Control.FromHandle(hwnd);
 
             if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
             {
@@ -787,7 +789,7 @@ namespace MusicBeePlugin
             while (true)
             {
                 playlistUrl = api.Playlist_QueryGetNextPlaylist();
-                if (string.IsNullOrEmpty(playlistUrl)) break;
+                if (String.IsNullOrEmpty(playlistUrl)) break;
                 string name = api.Playlist_GetName(playlistUrl);
                 string[] files = { };
                 api.Playlist_QueryFilesEx(playlistUrl, ref files);
@@ -1054,7 +1056,7 @@ namespace MusicBeePlugin
                 foreach (string entry in api.Library_QueryGetLookupTableValue(null).Split(new[] {"\0\0"}, StringSplitOptions.None))
                 {
                     string[] artistInfo = entry.Split(new[] { '\0' });
-                    artistList.Add(new Artist(artistInfo[0], int.Parse(artistInfo[1])));
+                    artistList.Add(new Artist(artistInfo[0], Int32.Parse(artistInfo[1])));
                 }
             }
 
@@ -1080,7 +1082,7 @@ namespace MusicBeePlugin
                 foreach (string entry in api.Library_QueryGetLookupTableValue(null).Split(new[] {"\0\0"}, StringSplitOptions.None))
                 {
                     string[] artistInfo = entry.Split(new[] {'\0'});
-                    artistList.Add(new Artist(artistInfo[0], int.Parse(artistInfo[1])));        
+                    artistList.Add(new Artist(artistInfo[0], Int32.Parse(artistInfo[1])));        
                 }
             }
 
@@ -1105,7 +1107,7 @@ namespace MusicBeePlugin
                 foreach (string entry in api.Library_QueryGetLookupTableValue(null).Split(new[] {"\0\0"}, StringSplitOptions.None))
                 {
                     string[] genreInfo = entry.Split(new[] {'\0'}, StringSplitOptions.None);
-                    genreList.Add(new Genre(genreInfo[0], int.Parse(genreInfo[1])));   
+                    genreList.Add(new Genre(genreInfo[0], Int32.Parse(genreInfo[1])));   
                 }
             }
             api.Library_QueryLookupTable(null, null, null);
@@ -1128,10 +1130,10 @@ namespace MusicBeePlugin
                 while (true)
                 {
                     string currentTrack = api.Library_QueryGetNextFile();
-                    if (string.IsNullOrEmpty(currentTrack)) break;
+                    if (String.IsNullOrEmpty(currentTrack)) break;
 
                     int trackNumber = 0;
-                    int.TryParse(api.Library_GetFileTag(currentTrack, MetaDataType.TrackNo), out trackNumber);
+                    Int32.TryParse(api.Library_GetFileTag(currentTrack, MetaDataType.TrackNo), out trackNumber);
 
                     tracks.Add(new Track(api.Library_GetFileTag(currentTrack, MetaDataType.Artist),
                                          api.Library_GetFileTag(currentTrack, MetaDataType.TrackTitle),
@@ -1158,11 +1160,11 @@ namespace MusicBeePlugin
                 while (true)
                 {
                     string currentTrack = api.Library_QueryGetNextFile();
-                    if (string.IsNullOrEmpty(currentTrack)) break;
+                    if (String.IsNullOrEmpty(currentTrack)) break;
 
                     int trackNumber = 0;
-                    int.TryParse(api.Library_GetFileTag(currentTrack, MetaDataType.TrackNo), out trackNumber);
-                    string src = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(currentTrack));
+                    Int32.TryParse(api.Library_GetFileTag(currentTrack, MetaDataType.TrackNo), out trackNumber);
+                    string src = Convert.ToBase64String(Encoding.UTF8.GetBytes(currentTrack));
 
                     trackList.Add(new Track(api.Library_GetFileTag(currentTrack, MetaDataType.Artist),
                                               api.Library_GetFileTag(currentTrack, MetaDataType.TrackTitle), trackNumber, src));
@@ -1303,30 +1305,27 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
         }
 
-        private Dictionary<string, string> fileMap;
-        private List<string> hashes;
-
         public void SyncGetFilenames(string clientId)
         {
-            string[] files = {};
-            api.Library_QueryFilesEx(String.Empty, ref files);
-            fileMap = new Dictionary<string, string>();
-            hashes = new List<string>();
+//            string[] files = {};
+//            api.Library_QueryFilesEx(String.Empty, ref files);
+//            fileMap = new Dictionary<string, string>();
+//            hashes = new List<string>();
+//
+//            foreach (var file in files)
+//            {
+//                var sha1hash = Utilities.Sha1Hash(file);
+//                fileMap.Add(sha1hash, file);
+//                hashes.Add(sha1hash);
+//            }
+//
+//            var jsonData = new
+//            {
+//                type = "full",
+//                payload = files.Length
+//            };
 
-            foreach (var file in files)
-            {
-                var sha1hash = Utilities.Sha1Hash(file);
-                fileMap.Add(sha1hash, file);
-                hashes.Add(sha1hash);
-            }
-
-            var jsonData = new
-            {
-                type = "full",
-                payload = files.Length
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
+//            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
         }
 
         public void SyncGetCover(string hash, string clientId)
@@ -1362,27 +1361,30 @@ namespace MusicBeePlugin
         {
             string[] files = {};
             api.Library_QueryFilesEx(String.Empty, ref files);
-            fileMap = new Dictionary<string, string>();
-            hashes = new List<string>();
-            foreach (var file in files)
+            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
             {
-                var sha1hash = Utilities.Sha1Hash(file);
-                fileMap.Add(sha1hash, file);
-                hashes.Add(sha1hash);
+                foreach (var file in files)
+                {    
+                    var fileHash = Utilities.Sha1Hash(file);
+                    var data = new LibraryData(fileHash, file);
+                    db.Store(data);
+                }
+                db.Close();
             }
         }
 
         public void BuildCoverCache()
         {
-            foreach (var hash in hashes)
+            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
             {
-                string file = String.Empty;
-                if (fileMap.TryGetValue(hash, out file))
+                var data = from LibraryData ldata in db select ldata;
+                foreach (var entry in data)
                 {
-                    var cover = api.Library_GetArtwork(file, 0);
-                    Utilities.CacheImage(cover);
-                } 
-            }   
+                    var cover = api.Library_GetArtwork(entry.Filepath, 0);
+                    entry.CoverHash = Utilities.CacheImage(cover);
+                    db.Store(entry);
+                }   
+            }
         }
 
         private void SendSocketMessage(string command, string type, object data, string client = "all")
@@ -1402,27 +1404,45 @@ namespace MusicBeePlugin
                 Debug.WriteLine("Elapsed {0} ms", bt.ElapsedMilliseconds);
                 bt.Reset();
             }
-            string file = String.Empty;
-            string hash = hashes[track];
-            if (fileMap.TryGetValue(hash, out file))
-            {
-                var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
-               
-                var jsonData = new
-                {
-                    type = "meta",
-                    hash,
-                    artist,
-                    album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-                    album = api.Library_GetFileTag(file, MetaDataType.Album),
-                    title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
-                    genre = api.Library_GetFileTag(file, MetaDataType.Genre),
-                    year = api.Library_GetFileTag(file, MetaDataType.Year),
-                    track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
-                };
 
-                SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
-                bt.Start();
+            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+            {
+                var data = from LibraryData ldata in db select ldata;
+                foreach (var entry in data)
+                {
+                    var file = entry.Filepath;
+                    var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
+
+                    var jsonData = new
+                    {
+                        type = "meta",
+                        hash = entry.Hash,
+                        artist,
+                        album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+                        album = api.Library_GetFileTag(file, MetaDataType.Album),
+                        title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
+                        genre = api.Library_GetFileTag(file, MetaDataType.Genre),
+                        year = api.Library_GetFileTag(file, MetaDataType.Year),
+                        track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
+                        cover_hash = entry.CoverHash
+                    };
+
+                    SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
+                    bt.Start();
+                }
+            }
+        }
+
+        public void DumpDb()
+        {
+            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+            {
+                var data = from LibraryData ldata in db select ldata;
+                Debug.WriteLine("Total entries stored {0}", data.Count());
+                foreach (var entry in data)
+                {
+                    Debug.WriteLine(entry.Dump());
+                }
             }
         }
     }

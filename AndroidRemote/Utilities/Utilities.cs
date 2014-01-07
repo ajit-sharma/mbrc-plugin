@@ -40,20 +40,26 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
          
         }
 
-        public static void CacheImage(string base64, int width = 400, int height = 400)
+        public static string CacheImage(string base64, int width = 400, int height = 400)
         {
+            var hash = Sha1Hash(base64);
             try
             {
                 var directory = Settings.UserSettings.Instance.StoragePath + @"cache\";
-                var hash = Sha1Hash(base64);
+                var filepath = directory + hash;
                 if (String.IsNullOrEmpty(base64))
                 {
-                    return;
+                    return hash;
                 }
 
                 if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
+                }
+
+                if (File.Exists(filepath))
+                {
+                    return hash;
                 }
                 using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64)))
                 using (Image albumCover = Image.FromStream(ms, true))
@@ -80,7 +86,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                         graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                         graph.Dispose();
-                        var filepath = directory + hash;
+                        
                         bmp.Save(filepath, System.Drawing.Imaging.ImageFormat.Jpeg);
                     }
                    
@@ -92,17 +98,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                 ErrorHandler.LogError(ex);
 #endif
             }
-        }
-
-        private static void MemoryStreamToFile(string hash, MemoryStream stream)
-        {
-            using (var file = new FileStream(Settings.UserSettings.Instance.StoragePath + @"cache\" + hash, FileMode.Create, FileAccess.Write))
-            {
-                var bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, (int) stream.Length);
-                file.Write(bytes, 0, bytes.Length);
-                stream.Close();
-            }
+            return hash;
         }
 
         public static string ImageResize(string base64, int width = 300, int height = 300)

@@ -1,6 +1,11 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Windows.Forms;
+using Db4objects.Db4o;
+using Db4objects.Db4o.Linq;
+using MusicBeePlugin.AndroidRemote.Entities;
+using MusicBeePlugin.AndroidRemote.Utilities;
+using ServiceStack.Text;
 
 namespace MusicBeePlugin.Debugging
 {
@@ -38,6 +43,10 @@ namespace MusicBeePlugin.Debugging
         {
 
         }
-        
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Plugin.Instance.DumpDb();
+        }
     }
 }

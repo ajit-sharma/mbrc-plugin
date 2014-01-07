@@ -1,5 +1,14 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Drawing;
 using System.Runtime.InteropServices;
+using System.Security;
+using System.Threading;
+using System.Windows.Forms;
+using Db4objects.Db4o;
+using Db4objects.Db4o.Linq;
+using MusicBeePlugin.AndroidRemote.Entities;
+using ServiceStack.Text;
 
 namespace MusicBeePlugin
 {
@@ -14,24 +23,24 @@ namespace MusicBeePlugin
         {
             public void Initialise(IntPtr apiInterfacePtr)
             {
-                Plugin.CopyMemory(ref this, apiInterfacePtr, 4);
-                if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_0)
+                CopyMemory(ref this, apiInterfacePtr, 4);
+                if (MusicBeeVersion == MusicBeeVersion.v2_0)
                     // MusicBee version 2.0 - Api methods > revision 25 are not available
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, 456);
-                else if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_1)
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, 516);
+                    CopyMemory(ref this, apiInterfacePtr, 456);
+                else if (MusicBeeVersion == MusicBeeVersion.v2_1)
+                    CopyMemory(ref this, apiInterfacePtr, 516);
                 else
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, Marshal.SizeOf(this));
+                    CopyMemory(ref this, apiInterfacePtr, Marshal.SizeOf(this));
             }
             public MusicBeeVersion MusicBeeVersion
             {
                 get {
                     if (ApiRevision <= 25)
-                        return Plugin.MusicBeeVersion.v2_0;
+                        return MusicBeeVersion.v2_0;
                     else if (ApiRevision <= 31)
-                        return Plugin.MusicBeeVersion.v2_1;
+                        return MusicBeeVersion.v2_1;
                     else
-                        return Plugin.MusicBeeVersion.v2_2;
+                        return MusicBeeVersion.v2_2;
                 }
             }
             public short InterfaceVersion;
@@ -518,15 +527,15 @@ namespace MusicBeePlugin
         public delegate IntPtr MB_WindowHandleDelegate();
         public delegate void MB_RefreshPanelsDelegate();
         public delegate void MB_SendNotificationDelegate(CallbackType type);
-        public delegate System.Windows.Forms.ToolStripItem MB_AddMenuItemDelegate(string menuPath, string hotkeyDescription, EventHandler handler);
+        public delegate ToolStripItem MB_AddMenuItemDelegate(string menuPath, string hotkeyDescription, EventHandler handler);
         public delegate void MB_RegisterCommandDelegate(string command, EventHandler handler);
-        public delegate void MB_CreateBackgroundTaskDelegate(System.Threading.ThreadStart taskCallback, System.Windows.Forms.Form owner);
-        public delegate void MB_CreateParameterisedBackgroundTaskDelegate(System.Threading.ParameterizedThreadStart taskCallback, object parameters, System.Windows.Forms.Form owner);
+        public delegate void MB_CreateBackgroundTaskDelegate(ThreadStart taskCallback, Form owner);
+        public delegate void MB_CreateParameterisedBackgroundTaskDelegate(ParameterizedThreadStart taskCallback, object parameters, Form owner);
         public delegate void MB_SetBackgroundTaskMessageDelegate(string message);
-        public delegate System.Drawing.Rectangle MB_GetPanelBoundsDelegate(PluginPanelDock dock);
-        public delegate bool MB_SetPanelScrollableAreaDelegate(System.Windows.Forms.Control panel, System.Drawing.Size scrollArea, bool alwaysShowScrollBar);
-        public delegate System.Windows.Forms.Control MB_AddPanelDelegate(System.Windows.Forms.Control panel, PluginPanelDock dock);
-        public delegate void MB_RemovePanelDelegate(System.Windows.Forms.Control panel);
+        public delegate Rectangle MB_GetPanelBoundsDelegate(PluginPanelDock dock);
+        public delegate bool MB_SetPanelScrollableAreaDelegate(Control panel, Size scrollArea, bool alwaysShowScrollBar);
+        public delegate Control MB_AddPanelDelegate(Control panel, PluginPanelDock dock);
+        public delegate void MB_RemovePanelDelegate(Control panel);
         public delegate string MB_GetLocalisationDelegate(string id, string defaultText);
         public delegate bool MB_ShowNowPlayingAssistantDelegate();
         public delegate bool MB_InvokeCommandDelegate(Command command, object parameter);
@@ -537,7 +546,7 @@ namespace MusicBeePlugin
         public delegate string Setting_GetSkinDelegate();
         public delegate int Setting_GetSkinElementColourDelegate(SkinElement element, ElementState state, ElementComponent component);
         public delegate bool Setting_IsWindowBordersSkinnedDelegate();
-        public delegate System.Drawing.Font Setting_GetDefaultFontDelegate();
+        public delegate Font Setting_GetDefaultFontDelegate();
         public delegate DataType Setting_GetDataTypeDelegate(MetaDataType field);
         public delegate string Setting_GetLastFmUserIdDelegate();
         public delegate string Setting_GetWebProxyDelegate();
@@ -637,8 +646,8 @@ namespace MusicBeePlugin
         public delegate string Sync_FileStartDelegate(string filename);
         public delegate void Sync_FileEndDelegate(string filename, bool success, string errorMessage);
 
-        [System.Security.SuppressUnmanagedCodeSecurity()]
+        [SuppressUnmanagedCodeSecurity()]
         [DllImport("kernel32.dll")]
-        private static extern void CopyMemory(ref Plugin.MusicBeeApiInterface mbApiInterface, IntPtr src, int length);
+        private static extern void CopyMemory(ref MusicBeeApiInterface mbApiInterface, IntPtr src, int length);
     }
 }
