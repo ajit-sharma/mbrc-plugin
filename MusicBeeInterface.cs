@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Threading;
 using System.Windows.Forms;
-using Db4objects.Db4o;
-using Db4objects.Db4o.Linq;
-using MusicBeePlugin.AndroidRemote.Entities;
-using ServiceStack.Text;
 
 namespace MusicBeePlugin
 {

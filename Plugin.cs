@@ -1,8 +1,6 @@
 using System.Diagnostics;
 using System.Text;
-using Db4objects.Db4o;
-using Db4objects.Db4o.Config;
-using Db4objects.Db4o.Linq;
+using MusicBeePlugin.AndroidRemote.Data;
 
 namespace MusicBeePlugin
 {
@@ -75,6 +73,7 @@ namespace MusicBeePlugin
 
         private static Plugin selfInstance;
         private InfoWindow mWindow;
+        private SqlHelper mHelper;
 
 #if DEBUG
         private DebugTool dTool;
@@ -137,6 +136,8 @@ namespace MusicBeePlugin
             positionUpdateTimer = new Timer(20000);
             positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             positionUpdateTimer.Enabled = true;
+
+            mHelper = new SqlHelper(mStoragePath);
 
 #if DEBUG
             api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -1361,30 +1362,30 @@ namespace MusicBeePlugin
         {
             string[] files = {};
             api.Library_QueryFilesEx(String.Empty, ref files);
-            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-            {
-                foreach (var file in files)
-                {    
-                    var fileHash = Utilities.Sha1Hash(file);
-                    var data = new LibraryData(fileHash, file);
-                    db.Store(data);
-                }
-                db.Close();
-            }
+//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+//            {
+//                foreach (var file in files)
+//                {    
+//                    var fileHash = Utilities.Sha1Hash(file);
+//                    var data = new LibraryData(fileHash, file);
+//                    db.Store(data);
+//                }
+//                db.Close();
+//            }
         }
 
         public void BuildCoverCache()
         {
-            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-            {
-                var data = from LibraryData ldata in db select ldata;
-                foreach (var entry in data)
-                {
-                    var cover = api.Library_GetArtwork(entry.Filepath, 0);
-                    entry.CoverHash = Utilities.CacheImage(cover);
-                    db.Store(entry);
-                }   
-            }
+//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+//            {
+//                var data = from LibraryData ldata in db select ldata;
+//                foreach (var entry in data)
+//                {
+//                    var cover = api.Library_GetArtwork(entry.Filepath, 0);
+//                    entry.CoverHash = Utilities.CacheImage(cover);
+//                    db.Store(entry);
+//                }   
+//            }
         }
 
         private void SendSocketMessage(string command, string type, object data, string client = "all")
@@ -1405,45 +1406,45 @@ namespace MusicBeePlugin
                 bt.Reset();
             }
 
-            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-            {
-                var data = from LibraryData ldata in db select ldata;
-                foreach (var entry in data)
-                {
-                    var file = entry.Filepath;
-                    var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
-
-                    var jsonData = new
-                    {
-                        type = "meta",
-                        hash = entry.Hash,
-                        artist,
-                        album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-                        album = api.Library_GetFileTag(file, MetaDataType.Album),
-                        title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
-                        genre = api.Library_GetFileTag(file, MetaDataType.Genre),
-                        year = api.Library_GetFileTag(file, MetaDataType.Year),
-                        track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
-                        cover_hash = entry.CoverHash
-                    };
-
-                    SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
-                    bt.Start();
-                }
-            }
+//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+//            {
+//                var data = from LibraryData ldata in db select ldata;
+//                foreach (var entry in data)
+//                {
+//                    var file = entry.Filepath;
+//                    var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
+//
+//                    var jsonData = new
+//                    {
+//                        type = "meta",
+//                        hash = entry.Hash,
+//                        artist,
+//                        album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+//                        album = api.Library_GetFileTag(file, MetaDataType.Album),
+//                        title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
+//                        genre = api.Library_GetFileTag(file, MetaDataType.Genre),
+//                        year = api.Library_GetFileTag(file, MetaDataType.Year),
+//                        track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
+//                        cover_hash = entry.CoverHash
+//                    };
+//
+//                    SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
+//                    bt.Start();
+//                }
+//            }
         }
 
         public void DumpDb()
         {
-            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-            {
-                var data = from LibraryData ldata in db select ldata;
-                Debug.WriteLine("Total entries stored {0}", data.Count());
-                foreach (var entry in data)
-                {
-                    Debug.WriteLine(entry.Dump());
-                }
-            }
+//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
+//            {
+//                var data = from LibraryData ldata in db select ldata;
+//                Debug.WriteLine("Total entries stored {0}", data.Count());
+//                foreach (var entry in data)
+//                {
+//                    Debug.WriteLine(entry.Dump());
+//                }
+//            }
         }
     }
 }
