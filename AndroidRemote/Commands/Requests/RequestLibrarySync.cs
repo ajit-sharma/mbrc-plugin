@@ -45,12 +45,14 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             }
             catch (Exception ex)
             {
+#if DEBUG
                 Debug.WriteLine("Type: " +eEvent.Data.GetType() + "\t data: " + eEvent.Data);
                 if (eEvent.Data.GetType() == typeof (JsonObject))
                 {
                     Debug.WriteLine(((JsonObject)eEvent.Data).Dump());
                 }
                 Debug.WriteLine(ex);
+#endif
             }
         }
     }

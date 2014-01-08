@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using MusicBeePlugin.AndroidRemote.Error;
+using Encoder = System.Drawing.Imaging.Encoder;
 
 namespace MusicBeePlugin.AndroidRemote.Utilities
 {
@@ -43,6 +45,42 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
 
             return sb.ToString();
          
+        }
+
+        public static string GetCachedImage(string coverHash)
+        {
+            string base64 = String.Empty;
+            try
+            {
+                var directory = Settings.UserSettings.Instance.StoragePath + @"cache\";
+                var filepath = directory + coverHash;
+                using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
+                {
+                    var buffer = new byte[fs.Length];
+                    fs.Read(buffer, 0, (int) fs.Length);
+                    base64 = Convert.ToBase64String(buffer);
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+            return base64;
+        }
+
+        private static ImageCodecInfo GetEncoder(ImageFormat format)
+        {
+            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
+            foreach (ImageCodecInfo codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+            return null;
         }
 
         public static string CacheImage(string base64, int width = 400, int height = 400)
@@ -91,8 +129,13 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                         graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                         graph.Dispose();
-                        
-                        bmp.Save(filepath, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                        ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
+                        Encoder mEncoder = Encoder.Quality;
+                        EncoderParameters mParams = new EncoderParameters(1);
+                        EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
+                        mParams.Param[0] = mParam;
+                        bmp.Save(filepath, mInfo, mParams);
                     }
                    
                 } 
@@ -136,7 +179,13 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                         graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                         graph.Dispose();
 
-                        bmp.Save(ms2, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
+                        Encoder mEncoder = Encoder.Quality;
+                        EncoderParameters mParams = new EncoderParameters(1);
+                        EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
+                        mParams.Param[0] = mParam;
+
+                        bmp.Save(ms2, mInfo, mParams);
                         cover = Convert.ToBase64String(ms2.ToArray());
                     }
                 }

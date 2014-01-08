@@ -73,7 +73,7 @@ namespace MusicBeePlugin
 
         private static Plugin selfInstance;
         private InfoWindow mWindow;
-        private SqlHelper mHelper;
+        private CacheHelper mHelper;
 
 #if DEBUG
         private DebugTool dTool;
@@ -137,7 +137,7 @@ namespace MusicBeePlugin
             positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             positionUpdateTimer.Enabled = true;
 
-            mHelper = new SqlHelper(mStoragePath);
+            mHelper = new CacheHelper(mStoragePath);
 
 #if DEBUG
             api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -360,7 +360,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// When called plays the next track.
+        /// When called plays the next index.
         /// </summary>
         /// <returns></returns>
         public void RequestNextTrack(string clientId)
@@ -378,7 +378,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// When called changes the play/pause state or starts playing a track if the status is stopped.
+        /// When called changes the play/pause state or starts playing a index if the status is stopped.
         /// </summary>
         /// <returns></returns>
         public void RequestPlayPauseTrack(string clientId)
@@ -387,7 +387,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// When called plays the previous track.
+        /// When called plays the previous index.
         /// </summary>
         /// <returns></returns>
         public void RequestPreviousTrack(string clientId)
@@ -528,8 +528,8 @@ namespace MusicBeePlugin
 
         /// <summary>
         /// If the given rating string is not null or empty and the value of the string is a float number in the [0,5]
-        /// the function will set the new rating as the current track's new track rating. In any other case it will
-        /// just return the rating for the current track.
+        /// the function will set the new rating as the current index's new index rating. In any other case it will
+        /// just return the rating for the current index.
         /// </summary>
         /// <param name="rating">New Track Rating</param>
         /// <param name="clientId"> </param>
@@ -566,7 +566,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Requests the Now Playing track lyrics. If the lyrics are available then they are dispatched along with
+        /// Requests the Now Playing index lyrics. If the lyrics are available then they are dispatched along with
         /// and event. If not, and the ApiRevision is equal or greater than r17 a request for the downloaded lyrics
         /// is initiated. The lyrics are dispatched along with and event when ready.
         /// </summary>
@@ -646,9 +646,9 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Searches in the Now playing list for the track specified and plays it.
+        /// Searches in the Now playing list for the index specified and plays it.
         /// </summary>
-        /// <param name="index">The track to play</param>
+        /// <param name="index">The index to play</param>
         /// <returns></returns>
         public void NowPlayingPlay(string index)
         {
@@ -709,7 +709,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// This function is used to change the playing track's last.fm love rating.
+        /// This function is used to change the playing index's last.fm love rating.
         /// </summary>
         /// <param name="action">
         /// The action can be either love, or ban.
@@ -840,11 +840,11 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Given the url of the playlist and the index of a track it removes the specified track,
+        /// Given the url of the playlist and the index of a index it removes the specified index,
         /// from the playlist.
         /// </summary>
         /// <param name="url">The url of th playlist</param>
-        /// <param name="index">The index of the track to remove</param>
+        /// <param name="index">The index of the index to remove</param>
         public void RequestPlaylistTrackRemove(string url,int index)
         {
             bool success = api.Playlist_RemoveAt(url, index);
@@ -920,7 +920,7 @@ namespace MusicBeePlugin
 
 
         /// <summary>
-        /// Moves a track of the now playing list to a new position.
+        /// Moves a index of the now playing list to a new position.
         /// </summary>
         /// <param name="clientId">The Id of the client that initiated the request</param>
         /// <param name="from">The initial position</param>
@@ -1260,7 +1260,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Takes a given query string and searches the Now Playing list for any track with a matching title or artist.
+        /// Takes a given query string and searches the Now Playing list for any index with a matching title or artist.
         /// The title is checked first.
         /// </summary>
         /// <param name="query">The string representing the query</param>
@@ -1308,54 +1308,36 @@ namespace MusicBeePlugin
 
         public void SyncGetFilenames(string clientId)
         {
-//            string[] files = {};
-//            api.Library_QueryFilesEx(String.Empty, ref files);
-//            fileMap = new Dictionary<string, string>();
-//            hashes = new List<string>();
-//
-//            foreach (var file in files)
-//            {
-//                var sha1hash = Utilities.Sha1Hash(file);
-//                fileMap.Add(sha1hash, file);
-//                hashes.Add(sha1hash);
-//            }
-//
-//            var jsonData = new
-//            {
-//                type = "full",
-//                payload = files.Length
-//            };
+            string[] files = {};
+            api.Library_QueryFilesEx(String.Empty, ref files);
+            var jsonData = new
+            {
+                type = "full",
+                payload = files.Length
+            };
 
-//            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
+            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
         }
 
         public void SyncGetCover(string hash, string clientId)
         {
-//            string file = String.Empty;
-//            if (fileMap.TryGetValue(hash, out file))
-//            {
-//                string cover = api.Library_GetArtwork(file, 0);
-//                var sha1hash = cover != null ? Utilities.Sha1Hash(cover) : new string('0', 40);
-//                cover = cover ?? "";
-//
-//                var payload = new
-//                {
-//                    hash = sha1hash,
-//                    length = cover.Length,
-//                    image = cover
-//                };
-//
-//                var jsonData = new
-//                {
-//                    type = "cover",
-//                    file = hash,
-//                    hash = true,
-//                    payload
-//                };
-//
-//                SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
-//            }
+            var cachedEntry = mHelper.GetEntryByHash(hash);
+            
+            var payload = new
+            {
+                hash = cachedEntry.CoverHash,
+                image = Utilities.GetCachedImage(cachedEntry.CoverHash)
+            };
 
+            var jsonData = new
+            {
+                type = "cover",
+                file = hash,
+                hash = true,
+                payload
+            };
+
+            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
         }
 
         public void BuildCache()
@@ -1389,7 +1371,7 @@ namespace MusicBeePlugin
 
         private Stopwatch bt = new Stopwatch();
 
-        public void SyncGetMetaData(int track, string client)
+        public void SyncGetMetaData(int index, string client)
         {
             if (bt != null && bt.IsRunning)
             {
@@ -1397,33 +1379,27 @@ namespace MusicBeePlugin
                 Debug.WriteLine("Elapsed {0} ms", bt.ElapsedMilliseconds);
                 bt.Reset();
             }
+            var entry = mHelper.GetEntryAt(index);
+            var file = entry.Filepath;
+            var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
 
-//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-//            {
-//                var data = from LibraryData ldata in db select ldata;
-//                foreach (var entry in data)
-//                {
-//                    var file = entry.Filepath;
-//                    var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
-//
-//                    var jsonData = new
-//                    {
-//                        type = "meta",
-//                        hash = entry.Hash,
-//                        artist,
-//                        album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-//                        album = api.Library_GetFileTag(file, MetaDataType.Album),
-//                        title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
-//                        genre = api.Library_GetFileTag(file, MetaDataType.Genre),
-//                        year = api.Library_GetFileTag(file, MetaDataType.Year),
-//                        track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
-//                        cover_hash = entry.CoverHash
-//                    };
-//
-//                    SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
-//                    bt.Start();
-//                }
-//            }
+            var jsonData = new
+            {
+                type = "meta",
+                hash = entry.Hash,
+                artist,
+                album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+                album = api.Library_GetFileTag(file, MetaDataType.Album),
+                title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
+                genre = api.Library_GetFileTag(file, MetaDataType.Genre),
+                year = api.Library_GetFileTag(file, MetaDataType.Year),
+                track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
+                cover_hash = entry.CoverHash
+            };
+
+            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
+            bt.Start();
+
         }
 
         public void DumpDb()

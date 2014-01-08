@@ -149,7 +149,7 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestNextTrack.cs" />
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
-    <Compile Include="AndroidRemote\Data\SqlHelper.cs" />
+    <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Entities\Album.cs" />
     <Compile Include="AndroidRemote\Entities\Artist.cs" />
     <Compile Include="AndroidRemote\Entities\Genre.cs" />

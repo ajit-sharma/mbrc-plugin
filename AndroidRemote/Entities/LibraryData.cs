@@ -6,10 +6,10 @@
         private string cover_hash;
         private string filepath;
 
-        public LibraryData(string hash, string filepath)
+        public LibraryData(string hash, string filepath, string coverhash="")
         {
             this.hash = hash;
-            this.cover_hash = "";
+            this.cover_hash = coverhash;
             this.Filepath = filepath;
         }
 
