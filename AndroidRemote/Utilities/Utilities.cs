@@ -14,16 +14,21 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         private static byte[] hash = new byte[20];
 
         public static string Sha1Hash(string value)
-        {            
-            hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(value));
-            var sb = new StringBuilder();
-            foreach (byte b in hash)
+        {
+            var mHash = new String('0', 40);
+            if (!String.IsNullOrEmpty(value))
             {
-                var hex = b.ToString("x2");
-                sb.Append(hex);
+                hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(value));
+                var sb = new StringBuilder();
+                foreach (byte b in hash)
+                {
+                    var hex = b.ToString("x2");
+                    sb.Append(hex);
+                }
+                mHash = sb.ToString();
             }
 
-            return sb.ToString();
+            return mHash;
         }
 
         public static string Sha1Hash(FileStream fs)

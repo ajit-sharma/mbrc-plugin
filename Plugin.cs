@@ -1362,30 +1362,22 @@ namespace MusicBeePlugin
         {
             string[] files = {};
             api.Library_QueryFilesEx(String.Empty, ref files);
-//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-//            {
-//                foreach (var file in files)
-//                {    
-//                    var fileHash = Utilities.Sha1Hash(file);
-//                    var data = new LibraryData(fileHash, file);
-//                    db.Store(data);
-//                }
-//                db.Close();
-//            }
+
+            foreach (var file in files)
+            {    
+                var fileHash = Utilities.Sha1Hash(file);
+                mHelper.CacheEntry(fileHash,file);
+            }
         }
 
         public void BuildCoverCache()
         {
-//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-//            {
-//                var data = from LibraryData ldata in db select ldata;
-//                foreach (var entry in data)
-//                {
-//                    var cover = api.Library_GetArtwork(entry.Filepath, 0);
-//                    entry.CoverHash = Utilities.CacheImage(cover);
-//                    db.Store(entry);
-//                }   
-//            }
+            foreach (var entry in mHelper.GetCachedFiles())
+            {
+                var cover = api.Library_GetArtwork(entry.Filepath, 0);
+                entry.CoverHash = Utilities.CacheImage(cover);
+                mHelper.UpdateCoverHash(entry.Hash, entry.CoverHash);
+            }   
         }
 
         private void SendSocketMessage(string command, string type, object data, string client = "all")

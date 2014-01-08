@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Drawing;
 using System.IO;
+using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Error;
 
 namespace MusicBeePlugin.AndroidRemote.Data
@@ -65,5 +67,59 @@ namespace MusicBeePlugin.AndroidRemote.Data
 
             }
         }
+
+        public List<LibraryData> GetCachedFiles()
+        {
+            List<LibraryData> data = new List<LibraryData>();
+            try
+            {
+                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
+                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "select * from data";
+                    SQLiteDataReader mReader = mCommand.ExecuteReader();
+                    while (mReader.Read())
+                    {
+                        var dataEntry = new LibraryData(mReader["hash"].ToString(), mReader["filepath"].ToString());
+                        data.Add(dataEntry);
+                    }
+                    mReader.Close();
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+            return data;
+
+        }
+
+        public void UpdateCoverHash(string filehash, string coverHash)
+        {
+            try
+            {
+                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
+                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "update data set coverhash=@coverhash where hash=@hash";
+                    mCommand.Parameters.AddWithValue("@hash", filehash);
+                    mCommand.Parameters.AddWithValue("@coverhash", coverHash);
+                    mCommand.ExecuteNonQuery();
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+        }
+
     }
 }
