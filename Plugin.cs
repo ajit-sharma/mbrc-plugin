@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Diagnostics;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -1372,45 +1373,52 @@ namespace MusicBeePlugin
 
         public void SyncGetMetaData(int index, string client)
         {
-            var entry = mHelper.GetEntryAt(index);
-            var file = entry.Filepath;
-            var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash};
+            var buffer = new List<MetaData>();
+            LibraryData entry;
+            do
+            {
+                entry = mHelper.GetEntryAt(index);
+                var file = entry.Filepath;
+                var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash};
 
-            if (MusicBeeVersion.v2_2 == api.MusicBeeVersion)
-            {
-                
-                meta.artist = api.Library_GetFileTag(file, MetaDataType.Artist);
-                meta.album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist);
-                meta.album = api.Library_GetFileTag(file, MetaDataType.Album);
-                meta.title = api.Library_GetFileTag(file, MetaDataType.TrackTitle);
-                meta.genre = api.Library_GetFileTag(file, MetaDataType.Genre);
-                meta.year = api.Library_GetFileTag(file, MetaDataType.Year);
-                meta.track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo);
-            
-            }
-            else
-            {
-                MetaDataType[] types =
+                if (MusicBeeVersion.v2_2 == api.MusicBeeVersion)
                 {
-                    MetaDataType.Artist,
-                    MetaDataType.AlbumArtist,
-                    MetaDataType.Album,
-                    MetaDataType.TrackTitle,
-                    MetaDataType.Genre,
-                    MetaDataType.Year,
-                    MetaDataType.TrackNo
-                };
-                var i = 0;
-                string[] tags = {};
-                api.Library_GetFileTags(file, types, ref tags);
-                meta.artist = tags[i++];
-                meta.album_artist = tags[i++]; 
-                meta.album = tags[i++];
-                meta.title = tags[i++];
-                meta.genre = tags[i++];
-                meta.year = tags[i++];
-                meta.track_no = tags[i];
-            }
+                    meta.artist = api.Library_GetFileTag(file, MetaDataType.Artist);
+                    meta.album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist);
+                    meta.album = api.Library_GetFileTag(file, MetaDataType.Album);
+                    meta.title = api.Library_GetFileTag(file, MetaDataType.TrackTitle);
+                    meta.genre = api.Library_GetFileTag(file, MetaDataType.Genre);
+                    meta.year = api.Library_GetFileTag(file, MetaDataType.Year);
+                    meta.track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo);
+
+                }
+                else
+                {
+                    MetaDataType[] types =
+                    {
+                        MetaDataType.Artist,
+                        MetaDataType.AlbumArtist,
+                        MetaDataType.Album,
+                        MetaDataType.TrackTitle,
+                        MetaDataType.Genre,
+                        MetaDataType.Year,
+                        MetaDataType.TrackNo
+                    };
+                    var i = 0;
+                    string[] tags = {};
+                    api.Library_GetFileTags(file, types, ref tags);
+                    meta.artist = tags[i++];
+                    meta.album_artist = tags[i++];
+                    meta.album = tags[i++];
+                    meta.title = tags[i++];
+                    meta.genre = tags[i++];
+                    meta.year = tags[i++];
+                    meta.track_no = tags[i];
+                }
+                index++;
+                buffer.Add(meta);
+            } while (entry != null && buffer.Count < 50);
+            
 //            string[] urls = {};
 //            string url = String.Empty;
 //            api.Library_GetArtistPictureUrls(meta.artist, false, ref urls);
@@ -1427,7 +1435,13 @@ namespace MusicBeePlugin
 //            }
 //            meta.artist_image_url = url;
 
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, meta, client);
+            var pack = new
+            {
+                type = "meta",
+                data = buffer
+            };
+
+            SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
         }
 
 
