@@ -14,9 +14,6 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
-#if DEBUG
-            Debug.WriteLine(DateTime.Now + " Processing Library Request");
-#endif
             try
             {
                 JsonObject obj = (JsonObject)eEvent.Data;

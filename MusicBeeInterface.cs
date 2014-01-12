@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Drawing;
 using System.Runtime.InteropServices;
-using System.Security;
-using System.Threading;
-using System.Windows.Forms;
 
 namespace MusicBeePlugin
 {
     public partial class Plugin
     {
         public const short PluginInfoVersion = 1;
+//        public const short MinInterfaceVersion = 30;
+//        public const short MinApiRevision = 35;
         public const short MinInterfaceVersion = 29;
         public const short MinApiRevision = 33;
+
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MusicBeeApiInterface
@@ -24,6 +23,8 @@ namespace MusicBeePlugin
                     CopyMemory(ref this, apiInterfacePtr, 456);
                 else if (MusicBeeVersion == MusicBeeVersion.v2_1)
                     CopyMemory(ref this, apiInterfacePtr, 516);
+                else if (MusicBeeVersion == MusicBeeVersion.v2_2)
+                    CopyMemory(ref this, apiInterfacePtr, 584);
                 else
                     CopyMemory(ref this, apiInterfacePtr, Marshal.SizeOf(this));
             }
@@ -34,8 +35,10 @@ namespace MusicBeePlugin
                         return MusicBeeVersion.v2_0;
                     else if (ApiRevision <= 31)
                         return MusicBeeVersion.v2_1;
-                    else
+                    else if (ApiRevision <= 33)
                         return MusicBeeVersion.v2_2;
+                    else
+                        return MusicBeeVersion.v2_3;
                 }
             }
             public short InterfaceVersion;
@@ -203,13 +206,18 @@ namespace MusicBeePlugin
             public Library_AddFileToLibraryDelegate Library_AddFileToLibrary;
             public Playlist_DeletePlaylistDelegate Playlist_DeletePlaylist;
             public Library_GetSyncDeltaDelegate Library_GetSyncDelta;
+            // api version 35
+            public Library_GetFileTagsDelegate Library_GetFileTags;
+            public NowPlaying_GetFileTagsDelegate NowPlaying_GetFileTags;
+            public NowPlayingList_GetFileTagsDelegate NowPlayingList_GetFileTags;
         }
 
         public enum MusicBeeVersion
         {
             v2_0 = 0,
             v2_1 = 1,
-            v2_2 = 2
+            v2_2 = 2,
+            v2_3 = 3
         }
 
         public enum PluginType
@@ -331,6 +339,11 @@ namespace MusicBeePlugin
             Artist = 32,             // displayed artist
             MultiArtist = 33,        // individual artists, separated by a null char
 			PrimaryArtist = 19,      // first artist from multi-artist tagged file, otherwise displayed artist
+            Artists = 144,
+            ArtistsWithArtistRole = 145,
+            ArtistsWithPerformerRole = 146,
+            ArtistsWithGuestRole = 147,
+            ArtistsWithRemixerRole = 148,
             Artwork = 40,
             BeatsPerMin = 41,
             Composer = 43,           // displayed composer
@@ -357,6 +370,7 @@ namespace MusicBeePlugin
             DiscCount = 54,
             Encoder = 55,
             Genre = 59,
+            Genres = 143,
             GenreCategory = 60,
             Grouping = 61,
             Keywords = 84,
@@ -420,7 +434,8 @@ namespace MusicBeePlugin
 
         public enum SettingId
         {
-            CompactPlayerFlickrEnabled = 1
+            CompactPlayerFlickrEnabled = 1,
+            FileTaggingPreserveModificationTime = 2
         }
 
         public enum ComparisonType
@@ -522,15 +537,15 @@ namespace MusicBeePlugin
         public delegate IntPtr MB_WindowHandleDelegate();
         public delegate void MB_RefreshPanelsDelegate();
         public delegate void MB_SendNotificationDelegate(CallbackType type);
-        public delegate ToolStripItem MB_AddMenuItemDelegate(string menuPath, string hotkeyDescription, EventHandler handler);
+        public delegate System.Windows.Forms.ToolStripItem MB_AddMenuItemDelegate(string menuPath, string hotkeyDescription, EventHandler handler);
         public delegate void MB_RegisterCommandDelegate(string command, EventHandler handler);
-        public delegate void MB_CreateBackgroundTaskDelegate(ThreadStart taskCallback, Form owner);
-        public delegate void MB_CreateParameterisedBackgroundTaskDelegate(ParameterizedThreadStart taskCallback, object parameters, Form owner);
+        public delegate void MB_CreateBackgroundTaskDelegate(System.Threading.ThreadStart taskCallback, System.Windows.Forms.Form owner);
+        public delegate void MB_CreateParameterisedBackgroundTaskDelegate(System.Threading.ParameterizedThreadStart taskCallback, object parameters, System.Windows.Forms.Form owner);
         public delegate void MB_SetBackgroundTaskMessageDelegate(string message);
-        public delegate Rectangle MB_GetPanelBoundsDelegate(PluginPanelDock dock);
-        public delegate bool MB_SetPanelScrollableAreaDelegate(Control panel, Size scrollArea, bool alwaysShowScrollBar);
-        public delegate Control MB_AddPanelDelegate(Control panel, PluginPanelDock dock);
-        public delegate void MB_RemovePanelDelegate(Control panel);
+        public delegate System.Drawing.Rectangle MB_GetPanelBoundsDelegate(PluginPanelDock dock);
+        public delegate bool MB_SetPanelScrollableAreaDelegate(System.Windows.Forms.Control panel, System.Drawing.Size scrollArea, bool alwaysShowScrollBar);
+        public delegate System.Windows.Forms.Control MB_AddPanelDelegate(System.Windows.Forms.Control panel, PluginPanelDock dock);
+        public delegate void MB_RemovePanelDelegate(System.Windows.Forms.Control panel);
         public delegate string MB_GetLocalisationDelegate(string id, string defaultText);
         public delegate bool MB_ShowNowPlayingAssistantDelegate();
         public delegate bool MB_InvokeCommandDelegate(Command command, object parameter);
@@ -541,13 +556,14 @@ namespace MusicBeePlugin
         public delegate string Setting_GetSkinDelegate();
         public delegate int Setting_GetSkinElementColourDelegate(SkinElement element, ElementState state, ElementComponent component);
         public delegate bool Setting_IsWindowBordersSkinnedDelegate();
-        public delegate Font Setting_GetDefaultFontDelegate();
+        public delegate System.Drawing.Font Setting_GetDefaultFontDelegate();
         public delegate DataType Setting_GetDataTypeDelegate(MetaDataType field);
         public delegate string Setting_GetLastFmUserIdDelegate();
         public delegate string Setting_GetWebProxyDelegate();
         public delegate bool Setting_GetValueDelegate(SettingId settingId, ref object value);
         public delegate string Library_GetFilePropertyDelegate(string sourceFileUrl, FilePropertyType type);
         public delegate string Library_GetFileTagDelegate(string sourceFileUrl, MetaDataType field);
+        public delegate bool Library_GetFileTagsDelegate(string sourceFileUrl, MetaDataType[] fields, ref string[] results);
         public delegate bool Library_SetFileTagDelegate(string sourceFileUrl, MetaDataType field, string value);
         public delegate string Library_GetDevicePersistentIdDelegate(string sourceFileUrl, DeviceIdType idType);
         public delegate bool Library_SetDevicePersistentIdDelegate(string sourceFileUrl, DeviceIdType idType, string value);
@@ -601,6 +617,7 @@ namespace MusicBeePlugin
         public delegate int NowPlaying_GetDurationDelegate();
         public delegate string NowPlaying_GetFilePropertyDelegate(FilePropertyType type);
         public delegate string NowPlaying_GetFileTagDelegate(MetaDataType field);
+        public delegate bool NowPlaying_GetFileTagsDelegate(MetaDataType[] fields, ref string[] results);
         public delegate string NowPlaying_GetLyricsDelegate();
         public delegate string NowPlaying_GetArtworkDelegate();
         public delegate string NowPlaying_GetArtistPictureDelegate(int fadingPercent);
@@ -616,6 +633,7 @@ namespace MusicBeePlugin
         public delegate string NowPlayingList_GetFileUrlDelegate(int index);
         public delegate string NowPlayingList_GetFilePropertyDelegate(int index, FilePropertyType type);
         public delegate string NowPlayingList_GetFileTagDelegate(int index, MetaDataType field);
+        public delegate bool NowPlayingList_GetFileTagsDelegate(int index, MetaDataType[] fields, ref string[] results);
         public delegate bool NowPlayingList_ActionDelegate();
         public delegate bool NowPlayingList_FileActionDelegate(string sourceFileUrl);
         public delegate bool NowPlayingList_FilesActionDelegate(string[] sourceFileUrl);
@@ -641,7 +659,7 @@ namespace MusicBeePlugin
         public delegate string Sync_FileStartDelegate(string filename);
         public delegate void Sync_FileEndDelegate(string filename, bool success, string errorMessage);
 
-        [SuppressUnmanagedCodeSecurity()]
+        [System.Security.SuppressUnmanagedCodeSecurity()]
         [DllImport("kernel32.dll")]
         private static extern void CopyMemory(ref MusicBeeApiInterface mbApiInterface, IntPtr src, int length);
     }

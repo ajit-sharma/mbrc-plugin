@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using System.Text.RegularExpressions;
 using MusicBeePlugin.AndroidRemote.Data;
 
 namespace MusicBeePlugin
@@ -1369,38 +1370,66 @@ namespace MusicBeePlugin
             EventBus.FireEvent(mEvent);
         }
 
-        private Stopwatch bt = new Stopwatch();
-
         public void SyncGetMetaData(int index, string client)
         {
-            if (bt != null && bt.IsRunning)
-            {
-                bt.Stop();
-                Debug.WriteLine("Elapsed {0} ms", bt.ElapsedMilliseconds);
-                bt.Reset();
-            }
             var entry = mHelper.GetEntryAt(index);
             var file = entry.Filepath;
-            var artist = api.Library_GetFileTag(file, MetaDataType.Artist);
+            var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash};
 
-            var jsonData = new
+            if (MusicBeeVersion.v2_2 == api.MusicBeeVersion)
             {
-                type = "meta",
-                hash = entry.Hash,
-                artist,
-                album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-                album = api.Library_GetFileTag(file, MetaDataType.Album),
-                title = api.Library_GetFileTag(file, MetaDataType.TrackTitle),
-                genre = api.Library_GetFileTag(file, MetaDataType.Genre),
-                year = api.Library_GetFileTag(file, MetaDataType.Year),
-                track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo),
-                cover_hash = entry.CoverHash
-            };
+                
+                meta.artist = api.Library_GetFileTag(file, MetaDataType.Artist);
+                meta.album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist);
+                meta.album = api.Library_GetFileTag(file, MetaDataType.Album);
+                meta.title = api.Library_GetFileTag(file, MetaDataType.TrackTitle);
+                meta.genre = api.Library_GetFileTag(file, MetaDataType.Genre);
+                meta.year = api.Library_GetFileTag(file, MetaDataType.Year);
+                meta.track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo);
+            
+            }
+            else
+            {
+                MetaDataType[] types =
+                {
+                    MetaDataType.Artist,
+                    MetaDataType.AlbumArtist,
+                    MetaDataType.Album,
+                    MetaDataType.TrackTitle,
+                    MetaDataType.Genre,
+                    MetaDataType.Year,
+                    MetaDataType.TrackNo
+                };
+                var i = 0;
+                string[] tags = {};
+                api.Library_GetFileTags(file, types, ref tags);
+                meta.artist = tags[i++];
+                meta.album_artist = tags[i++]; 
+                meta.album = tags[i++];
+                meta.title = tags[i++];
+                meta.genre = tags[i++];
+                meta.year = tags[i++];
+                meta.track_no = tags[i];
+            }
+//            string[] urls = {};
+//            string url = String.Empty;
+//            api.Library_GetArtistPictureUrls(meta.artist, false, ref urls);
+//            
+//            if (urls.Length > 0)
+//            {
+//                string pattern = "^http";
+//                foreach (var location in urls)
+//                {
+//                    if (!Regex.IsMatch(location, pattern)) continue;
+//                    url = location;
+//                    break;
+//                }
+//            }
+//            meta.artist_image_url = url;
 
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, client);
-            bt.Start();
-
+            SendSocketMessage(Constants.LibrarySync, Constants.Reply, meta, client);
         }
+
 
         public void DumpDb()
         {
