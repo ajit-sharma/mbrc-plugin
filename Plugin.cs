@@ -1364,6 +1364,31 @@ namespace MusicBeePlugin
             }   
         }
 
+        public void BuildArtistCoverCache()
+        {
+            List<Artist> artistList = new List<Artist>();
+            if (api.Library_QueryLookupTable("artist", "count", ""))
+            {
+                foreach (string entry in api.Library_QueryGetLookupTableValue(null).Split(new[] {"\0\0"}, StringSplitOptions.None))
+                {
+                    string[] artistInfo = entry.Split(new[] { '\0' });
+                    artistList.Add(new Artist(artistInfo[0], Int32.Parse(artistInfo[1])));
+                }
+            }
+
+            api.Library_QueryLookupTable(null, null, null);
+            foreach (var entry in artistList)
+            {
+                string[] urls = {};
+                var artist = entry.artist;
+                api.Library_GetArtistPictureUrls(artist, true, ref urls);
+                if (urls.Length <= 0) continue;
+                var hash = Utilities.CacheArtistImage(urls[0], artist);
+                mHelper.CacheArtistUrl(artist, hash);
+            }   
+            
+        }
+
         private void SendSocketMessage(string command, string type, object data, string client = "all")
         {
             SocketMessage msg = new SocketMessage(command, type, data);
@@ -1418,22 +1443,6 @@ namespace MusicBeePlugin
                 index++;
                 buffer.Add(meta);
             } while (entry != null && buffer.Count < 50);
-            
-//            string[] urls = {};
-//            string url = String.Empty;
-//            api.Library_GetArtistPictureUrls(meta.artist, false, ref urls);
-//            
-//            if (urls.Length > 0)
-//            {
-//                string pattern = "^http";
-//                foreach (var location in urls)
-//                {
-//                    if (!Regex.IsMatch(location, pattern)) continue;
-//                    url = location;
-//                    break;
-//                }
-//            }
-//            meta.artist_image_url = url;
 
             var pack = new
             {

@@ -47,7 +47,7 @@
             this.getmetatags.TabIndex = 2;
             this.getmetatags.Text = "GetMetaTags";
             this.getmetatags.UseVisualStyleBackColor = true;
-            this.getmetatags.Click += new System.EventHandler(this.getmetatags_Click);
+            this.getmetatags.Click += new System.EventHandler(this.OnTestButtonClick);
             // 
             // progressBar1
             // 
@@ -78,7 +78,6 @@
             this.label1.Size = new System.Drawing.Size(45, 13);
             this.label1.TabIndex = 6;
             this.label1.Text = "Avg(ms)";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // label2
             // 
@@ -104,7 +103,6 @@
             this.label3.Size = new System.Drawing.Size(45, 13);
             this.label3.TabIndex = 9;
             this.label3.Text = "Elapsed";
-            this.label3.Click += new System.EventHandler(this.label3_Click);
             // 
             // button1
             // 
@@ -114,7 +112,7 @@
             this.button1.TabIndex = 10;
             this.button1.Text = "button1";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button1.Click += new System.EventHandler(this.OnTestButtonTwoClick);
             // 
             // DebugTool
             // 

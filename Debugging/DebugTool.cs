@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace MusicBeePlugin.Debugging
@@ -10,35 +11,31 @@ namespace MusicBeePlugin.Debugging
             InitializeComponent();
         }
 
-        private void getmetatags_Click(object sender, EventArgs e)
+        private void RunCacheBuilding()
         {
 //            Plugin.Instance.BuildCache();
 //            Plugin.Instance.BuildCoverCache();
+            Plugin.Instance.BuildArtistCoverCache();
+        }
 
+        private void OnTestButtonClick(object sender, EventArgs e)
+        {
+            Thread workerThread = new Thread(RunCacheBuilding);
+            workerThread.IsBackground = true;
+            workerThread.Start();
 
 //            Plugin.Instance.SyncGetFilenames("all");
-            DateTime start = DateTime.Now;
-            textBox1.Text = @"Sync in progress...";
-            progressBar1.Maximum = 16262;
-            for (int i = 0; i <= 16262; i++)
-            {
-                Plugin.Instance.SyncGetMetaData(i, "all");
-            }
-            textBox1.Text = @"Sync in complete...";
-            textBox3.Text = (DateTime.Now - start).ToString();
+//            DateTime start = DateTime.Now;
+//            textBox1.Text = @"Sync in progress...";
+//            progressBar1.Maximum = 16262;
+//            {
+//                Plugin.Instance.SyncGetMetaData(i, "all");
+//            }
+//            textBox1.Text = @"Sync in complete...";
+//            textBox3.Text = (DateTime.Now - start).ToString();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void label3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
+        private void OnTestButtonTwoClick(object sender, EventArgs e)
         {
             Plugin.Instance.DumpDb();
         }

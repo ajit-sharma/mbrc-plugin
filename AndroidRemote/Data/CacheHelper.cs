@@ -17,6 +17,10 @@ namespace MusicBeePlugin.AndroidRemote.Data
                                             "\"hash\" TEXT," +
                                             "\"coverhash\" TEXT," +
                                             "\"filepath\" TEXT);";
+
+        private const string ARTIST_IMAGE_TABLE = "CREATE TABLE \"artist_images\" (" +
+                                                  "\"artist\" TEXT," +
+                                                  "\"url\" TEXT);";
         private const string DB_NAME = @"\\cache.db";
         private string storagePath;
         private readonly string dbConnection;
@@ -39,6 +43,9 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     {
                         mConnection.Open();
                         mCommand.CommandText = CREATE_TABLE;
+                        mCommand.ExecuteNonQuery();
+
+                        mCommand.CommandText = ARTIST_IMAGE_TABLE;
                         mCommand.ExecuteNonQuery();
                         mConnection.Close();
                     }
@@ -132,6 +139,35 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     mCommand.Parameters.AddWithValue("@coverhash", coverHash);
                     mCommand.ExecuteNonQuery();
                     mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Caches the artist URL along with the artist name in the database.
+        /// </summary>
+        /// <param name="artist">The artist.</param>
+        /// <param name="url">The URL.</param>
+        public void CacheArtistUrl(string artist, string url)
+        {
+            try
+            {
+                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
+                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "insert into artist_images (artist, url) values (@artist, @url);";
+                    mCommand.Parameters.AddWithValue("@artist", artist);
+                    mCommand.Parameters.AddWithValue("@url", url);
+                    mCommand.ExecuteNonQuery();
+                    mConnection.Close();
+
                 }
             }
             catch (Exception e)
