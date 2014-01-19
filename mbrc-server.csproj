@@ -191,6 +191,7 @@
     <Compile Include="InfoWindow.Designer.cs">
       <DependentUpon>InfoWindow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Messenger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="AndroidRemote\Networking\SocketClient.cs" />
@@ -207,6 +208,7 @@
     <Compile Include="AndroidRemote\Networking\SocketServer.cs" />
     <Compile Include="AndroidRemote\Utilities\Authenticator.cs" />
     <Compile Include="AndroidRemote\Utilities\StateAction.cs" />
+    <Compile Include="SyncModule.cs" />
     <Compile Include="Tools\NetworkTools.cs" />
   </ItemGroup>
   <ItemGroup>

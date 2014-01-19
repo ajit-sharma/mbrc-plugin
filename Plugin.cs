@@ -1,11 +1,6 @@
-using System.Collections;
-using System.Diagnostics;
-using System.Text;
-using System.Text.RegularExpressions;
-using MusicBeePlugin.AndroidRemote.Data;
-
 namespace MusicBeePlugin
 {
+    using System.Text;
     using Debugging;
     using System.Windows.Forms;
     using System.Collections.Generic;
@@ -31,7 +26,7 @@ namespace MusicBeePlugin
     /// <summary>
     /// The MusicBee Plugin class. Used to communicate with the MusicBee API.
     /// </summary>
-    public partial class Plugin
+    public partial class Plugin : Messenger
     {
         /// <summary>
         /// The mb api interface.
@@ -41,7 +36,7 @@ namespace MusicBeePlugin
         /// <summary>
         /// The _about.
         /// </summary>
-        private readonly PluginInfo about = new PluginInfo();
+        private readonly PluginInfo about = new Plugin.PluginInfo();
 
         /// <summary>
         /// The timer.
@@ -70,17 +65,22 @@ namespace MusicBeePlugin
         /// </summary>
         public static Plugin Instance
         {
-            get { return selfInstance; }
+            get { return Plugin.selfInstance; }
         }
 
         private static Plugin selfInstance;
         private InfoWindow mWindow;
-        private CacheHelper mHelper;
 
 #if DEBUG
         private DebugTool dTool;
 #endif
         private string mStoragePath;
+
+        public SyncModule SyncModule {
+            get { return mSyncModule; }
+        }
+
+        private SyncModule mSyncModule;
 
         /// <summary>
         /// This function initialized the Plugin.
@@ -93,7 +93,7 @@ namespace MusicBeePlugin
             JsConfig.ExcludeTypeInfo = true;
             Configuration.Register(Controller.Instance);
 
-            api = new MusicBeeApiInterface();
+            api = new Plugin.MusicBeeApiInterface();
             api.Initialise(apiInterfacePtr);
 
             UserSettings.Instance.SetStoragePath(api.Setting_GetPersistentStoragePath());
@@ -138,8 +138,8 @@ namespace MusicBeePlugin
             positionUpdateTimer = new Timer(20000);
             positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             positionUpdateTimer.Enabled = true;
-
-            mHelper = new CacheHelper(mStoragePath);
+            
+            mSyncModule = new SyncModule(api, mStoragePath);
 
 #if DEBUG
             api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -1286,185 +1286,6 @@ namespace MusicBeePlugin
             }
 
             SendSocketMessage(Constants.NowPlayingListSearch, Constants.Reply, result, clientId);
-        }
-
-        public void SyncCheckForChanges(string[] cachedFiles ,DateTime lastSync)
-        {
-            string[] newFiles = {};
-            string[] deletedFiles = {};
-            string[] updatedFiles ={};
-
-            api.Library_GetSyncDelta(cachedFiles, lastSync, LibraryCategory.Music,
-                ref newFiles, ref updatedFiles, ref deletedFiles);
-
-            var jsonData = new
-            {
-                type = "partial",
-                update = updatedFiles,
-                deleted = deletedFiles,
-                newfiles = newFiles
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
-        }
-
-        public void SyncGetFilenames(string clientId)
-        {
-            string[] files = {};
-            api.Library_QueryFilesEx(String.Empty, ref files);
-            var jsonData = new
-            {
-                type = "full",
-                payload = files.Length
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
-        }
-
-        public void SyncGetCover(string hash, string clientId)
-        {
-            var cachedEntry = mHelper.GetEntryByHash(hash);
-            
-            var payload = new
-            {
-                hash = cachedEntry.CoverHash,
-                image = Utilities.GetCachedImage(cachedEntry.CoverHash)
-            };
-
-            var jsonData = new
-            {
-                type = "cover",
-                file = hash,
-                hash = true,
-                payload
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
-        }
-
-        public void BuildCache()
-        {
-            string[] files = {};
-            api.Library_QueryFilesEx(String.Empty, ref files);
-
-            foreach (var file in files)
-            {    
-                var fileHash = Utilities.Sha1Hash(file);
-                mHelper.CacheEntry(fileHash,file);
-            }
-        }
-
-        public void BuildCoverCache()
-        {
-            foreach (var entry in mHelper.GetCachedFiles())
-            {
-                var cover = api.Library_GetArtwork(entry.Filepath, 0);
-                entry.CoverHash = Utilities.CacheImage(cover);
-                mHelper.UpdateCoverHash(entry.Hash, entry.CoverHash);
-            }   
-        }
-
-        public void BuildArtistCoverCache()
-        {
-            List<Artist> artistList = new List<Artist>();
-            if (api.Library_QueryLookupTable("artist", "count", ""))
-            {
-                foreach (string entry in api.Library_QueryGetLookupTableValue(null).Split(new[] {"\0\0"}, StringSplitOptions.None))
-                {
-                    string[] artistInfo = entry.Split(new[] { '\0' });
-                    artistList.Add(new Artist(artistInfo[0], Int32.Parse(artistInfo[1])));
-                }
-            }
-
-            api.Library_QueryLookupTable(null, null, null);
-            foreach (var entry in artistList)
-            {
-                string[] urls = {};
-                var artist = entry.artist;
-                api.Library_GetArtistPictureUrls(artist, true, ref urls);
-                if (urls.Length <= 0) continue;
-                var hash = Utilities.CacheArtistImage(urls[0], artist);
-                mHelper.CacheArtistUrl(artist, hash);
-            }   
-            
-        }
-
-        private void SendSocketMessage(string command, string type, object data, string client = "all")
-        {
-            SocketMessage msg = new SocketMessage(command, type, data);
-            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
-            EventBus.FireEvent(mEvent);
-        }
-
-        public void SyncGetMetaData(int index, string client)
-        {
-            var buffer = new List<MetaData>();
-            LibraryData entry;
-            do
-            {
-                entry = mHelper.GetEntryAt(index);
-                var file = entry.Filepath;
-                var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash};
-
-                if (MusicBeeVersion.v2_2 == api.MusicBeeVersion)
-                {
-                    meta.artist = api.Library_GetFileTag(file, MetaDataType.Artist);
-                    meta.album_artist = api.Library_GetFileTag(file, MetaDataType.AlbumArtist);
-                    meta.album = api.Library_GetFileTag(file, MetaDataType.Album);
-                    meta.title = api.Library_GetFileTag(file, MetaDataType.TrackTitle);
-                    meta.genre = api.Library_GetFileTag(file, MetaDataType.Genre);
-                    meta.year = api.Library_GetFileTag(file, MetaDataType.Year);
-                    meta.track_no = api.Library_GetFileTag(file, MetaDataType.TrackNo);
-
-                }
-                else
-                {
-                    MetaDataType[] types =
-                    {
-                        MetaDataType.Artist,
-                        MetaDataType.AlbumArtist,
-                        MetaDataType.Album,
-                        MetaDataType.TrackTitle,
-                        MetaDataType.Genre,
-                        MetaDataType.Year,
-                        MetaDataType.TrackNo
-                    };
-                    var i = 0;
-                    string[] tags = {};
-                    api.Library_GetFileTags(file, types, ref tags);
-                    meta.artist = tags[i++];
-                    meta.album_artist = tags[i++];
-                    meta.album = tags[i++];
-                    meta.title = tags[i++];
-                    meta.genre = tags[i++];
-                    meta.year = tags[i++];
-                    meta.track_no = tags[i];
-                }
-                index++;
-                buffer.Add(meta);
-            } while (entry != null && buffer.Count < 50);
-
-            var pack = new
-            {
-                type = "meta",
-                data = buffer
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
-        }
-
-
-        public void DumpDb()
-        {
-//            using (var db = Db4oEmbedded.OpenFile(mStoragePath + "\\cache.db"))
-//            {
-//                var data = from LibraryData ldata in db select ldata;
-//                Debug.WriteLine("Total entries stored {0}", data.Count());
-//                foreach (var entry in data)
-//                {
-//                    Debug.WriteLine(entry.Dump());
-//                }
-//            }
         }
     }
 }

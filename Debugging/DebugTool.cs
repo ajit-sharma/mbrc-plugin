@@ -13,15 +13,16 @@ namespace MusicBeePlugin.Debugging
 
         private void RunCacheBuilding()
         {
-//            Plugin.Instance.BuildCache();
-//            Plugin.Instance.BuildCoverCache();
-            Plugin.Instance.BuildArtistCoverCache();
+            Plugin.Instance.SyncModule.BuildCache();
+            Plugin.Instance.SyncModule.BuildCoverCache();
+            Plugin.Instance.SyncModule.BuildArtistCoverCache();
         }
 
         private void OnTestButtonClick(object sender, EventArgs e)
         {
             Thread workerThread = new Thread(RunCacheBuilding);
             workerThread.IsBackground = true;
+            workerThread.Priority = ThreadPriority.AboveNormal;
             workerThread.Start();
 
 //            Plugin.Instance.SyncGetFilenames("all");
@@ -36,8 +37,7 @@ namespace MusicBeePlugin.Debugging
         }
 
         private void OnTestButtonTwoClick(object sender, EventArgs e)
-        {
-            Plugin.Instance.DumpDb();
+        {            
         }
     }
 }

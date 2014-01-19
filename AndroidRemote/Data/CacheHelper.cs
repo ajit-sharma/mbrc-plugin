@@ -226,10 +226,10 @@ namespace MusicBeePlugin.AndroidRemote.Data
             {
                 mData = GetCachedFiles();
             }
-            if (index >= 0)
+            if (index >= 0 && index >= mData.Count)
             {
                 lData = mData[index];
-                if (index >= mData.Count)
+                if (index == mData.Count)
                 {
                     mData = null;
                 }
