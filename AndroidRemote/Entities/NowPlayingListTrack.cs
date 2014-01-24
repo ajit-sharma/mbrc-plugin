@@ -2,31 +2,37 @@
 {
     class NowPlayingListTrack
     {
-        private readonly int position;
-        private readonly string artist;
-        private readonly string title;
+        private readonly int _position;
+        private readonly string _artist;
+        private readonly string _title;
+        private readonly string _hash;
 
-        public NowPlayingListTrack(string artist, string title, int position)
+        public NowPlayingListTrack(string artist, string title, int position, string hash)
         {
-            this.position = position;
-            this.artist = artist;
-            this.title = title;
+            _position = position;
+            _hash = hash;
+            _artist = artist;
+            _title = title;
         }
 
-        public string Artist
+        public string artist
         {
-            get { return artist; }
+            get { return _artist; }
         }
 
-        public string Title
+        public string title
         {
-            get { return title; }
+            get { return _title; }
         }
 
-        public int Position
+        public int position
         {
-            get { return position; }
+            get { return _position; }
         }
 
+        public string hash
+        {
+            get { return _hash; }
+        }
     }
 }

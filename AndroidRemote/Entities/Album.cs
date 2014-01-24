@@ -23,14 +23,6 @@ namespace MusicBeePlugin.AndroidRemote.Entities
 
         public int TrackCount { get; private set; }
 
-        public XElement toXElement()
-        {
-            return new XElement("album", 
-                new XElement("albumartist", artist),
-                new XElement("albumname", album),
-                new XElement("count", TrackCount));
-        }
-
         public bool Equals(Album other)
         {
             return other.artist.Equals(artist) && other.album.Equals(album);

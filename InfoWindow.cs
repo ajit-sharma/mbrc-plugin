@@ -63,7 +63,6 @@ namespace MusicBeePlugin
             this.versionLabel.Text = UserSettings.Instance.CurrentVersion;
             this.portNumericUpDown.Value = UserSettings.Instance.ListeningPort;
             this.UpdateFilteringSelection(UserSettings.Instance.FilterSelection);
-            this.nowPlayingListLimit.Value = UserSettings.Instance.NowPlayingListLimit;
             UpdateSocketStatus(SocketServer.Instance.IsRunning);
             allowedAddressesComboBox.DataSource = ipAddressBinding;
         }
@@ -130,7 +129,6 @@ namespace MusicBeePlugin
         private void HandleSaveButtonClick(object sender, EventArgs e)
         {
             UserSettings.Instance.ListeningPort = (uint)this.portNumericUpDown.Value;
-            UserSettings.Instance.NowPlayingListLimit = (uint)this.nowPlayingListLimit.Value;
             switch (selectionFilteringComboBox.SelectedIndex)
             {
                 case 0:

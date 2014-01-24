@@ -1,4 +1,6 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Entities
+﻿using System;
+
+namespace MusicBeePlugin.AndroidRemote.Entities
 {
     /// <summary>
     /// Class MetaData. 
@@ -6,8 +8,7 @@
     /// </summary>
     class MetaData
     {
-        public MetaData() {}
-
+        private string _file;
         private const string _type = "meta";
         private string _hash;
         private string _artist;
@@ -20,22 +21,34 @@
         private string _cover_hash;
         private string _artist_image_url;
 
+        public string file
+        {
+            get { return _file; }
+            set { _file = value; }
+        }
+
         public string album
         {
             get { return _album; }
-            set { _album = value; }
+            set { _album = String.IsNullOrEmpty(value) ? "Unknown Album" : value; }
         }
 
         public string title
         {
             get { return _title; }
-            set { _title = value; }
+            set {
+                _title = !String.IsNullOrEmpty(value)
+                    ? value
+                    : (String.IsNullOrEmpty(_file) 
+                        ? String.Empty 
+                        : _file.Substring(_file.LastIndexOf('\\') + 1));
+            }
         }
 
         public string genre
         {
             get { return _genre; }
-            set { _genre = value; }
+            set { _genre = String.IsNullOrEmpty(value) ? "Unknown Genre" : value; }
         }
 
         public string year
@@ -76,7 +89,7 @@
         public string artist
         {
             get { return _artist; }
-            set { _artist = value; }
+            set { _artist = String.IsNullOrEmpty(value) ? "Unknown Artist" : value; }
         }
 
         public string album_artist

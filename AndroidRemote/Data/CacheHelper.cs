@@ -24,7 +24,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
         private const string DB_NAME = @"\\cache.db";
         private string storagePath;
         private readonly string dbConnection;
-        private List<LibraryData> mData;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CacheHelper"/> class.
         /// </summary>
@@ -212,29 +212,6 @@ namespace MusicBeePlugin.AndroidRemote.Data
 #endif
             }
             return data;
-        }
-
-        /// <summary>
-        /// Gets the entry at a specified index. 
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>LibraryData.</returns>
-        public LibraryData GetEntryAt(int index)
-        {
-            LibraryData lData = null;
-            if (mData == null)
-            {
-                mData = GetCachedFiles();
-            }
-            if (index >= 0 && index >= mData.Count)
-            {
-                lData = mData[index];
-                if (index == mData.Count)
-                {
-                    mData = null;
-                }
-            }
-            return lData;
         }
     }
 }

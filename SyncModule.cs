@@ -122,19 +122,16 @@ namespace MusicBeePlugin
             }   
             
         }
-
+               
         public void SyncGetMetaData(int index, string client, int limit = 50)
         {
-#if DEBUG
-            Debug.WriteLine("Processing batch from {0}",index);
-#endif
             var buffer = new List<MetaData>();
             LibraryData entry;
             do
             {
                 entry = mData[index];
                 var file = entry.Filepath;
-                var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash};
+                var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash, file = file};
 
                 if (Plugin.MusicBeeVersion.v2_2 == api.MusicBeeVersion)
                 {
@@ -145,7 +142,6 @@ namespace MusicBeePlugin
                     meta.genre = api.Library_GetFileTag(file, Plugin.MetaDataType.Genre);
                     meta.year = api.Library_GetFileTag(file, Plugin.MetaDataType.Year);
                     meta.track_no = api.Library_GetFileTag(file, Plugin.MetaDataType.TrackNo);
-
                 }
                 else
                 {
@@ -165,7 +161,6 @@ namespace MusicBeePlugin
                     meta.track_no = tags[i];
                 }
                 index++;
-                Debug.WriteLine("ci: {0}", index);
                 buffer.Add(meta);
             } while (entry != null && index < mData.Count && buffer.Count < limit);
 

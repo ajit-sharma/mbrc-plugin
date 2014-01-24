@@ -50,20 +50,15 @@ namespace MusicBeePlugin
             this.portLabel = new System.Windows.Forms.Label();
             this.seperator1 = new System.Windows.Forms.Label();
             this.connectionSettingsCategoryLabel = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.nowPlayingListLimit = new System.Windows.Forms.NumericUpDown();
             this.saveButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.rangeNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.portNumericUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nowPlayingListLimit)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(20, 304);
+            this.label1.Location = new System.Drawing.Point(20, 270);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(77, 13);
             this.label1.TabIndex = 0;
@@ -72,7 +67,7 @@ namespace MusicBeePlugin
             // versionLabel
             // 
             this.versionLabel.AutoSize = true;
-            this.versionLabel.Location = new System.Drawing.Point(115, 304);
+            this.versionLabel.Location = new System.Drawing.Point(121, 270);
             this.versionLabel.Name = "versionLabel";
             this.versionLabel.Size = new System.Drawing.Size(40, 13);
             this.versionLabel.TabIndex = 1;
@@ -118,7 +113,7 @@ namespace MusicBeePlugin
             // 
             // helpButton
             // 
-            this.helpButton.Location = new System.Drawing.Point(324, 299);
+            this.helpButton.Location = new System.Drawing.Point(324, 265);
             this.helpButton.Name = "helpButton";
             this.helpButton.Size = new System.Drawing.Size(119, 23);
             this.helpButton.TabIndex = 9;
@@ -291,57 +286,9 @@ namespace MusicBeePlugin
             this.connectionSettingsCategoryLabel.TabIndex = 16;
             this.connectionSettingsCategoryLabel.Text = "Connection Settings";
             // 
-            // label4
-            // 
-            this.label4.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.label4.Location = new System.Drawing.Point(18, 250);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(265, 1);
-            this.label4.TabIndex = 31;
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(19, 235);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(29, 13);
-            this.label5.TabIndex = 32;
-            this.label5.Text = "Misc";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(20, 265);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(93, 13);
-            this.label6.TabIndex = 33;
-            this.label6.Text = "Now Playing Limit:";
-            // 
-            // nowPlayingListLimit
-            // 
-            this.nowPlayingListLimit.Location = new System.Drawing.Point(124, 263);
-            this.nowPlayingListLimit.Maximum = new decimal(new int[] {
-            100000,
-            0,
-            0,
-            0});
-            this.nowPlayingListLimit.Minimum = new decimal(new int[] {
-            500,
-            0,
-            0,
-            0});
-            this.nowPlayingListLimit.Name = "nowPlayingListLimit";
-            this.nowPlayingListLimit.Size = new System.Drawing.Size(159, 20);
-            this.nowPlayingListLimit.TabIndex = 34;
-            this.nowPlayingListLimit.Value = new decimal(new int[] {
-            5000,
-            0,
-            0,
-            0});
-            // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(208, 299);
+            this.saveButton.Location = new System.Drawing.Point(208, 265);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 35;
@@ -353,12 +300,8 @@ namespace MusicBeePlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(457, 336);
+            this.ClientSize = new System.Drawing.Size(457, 298);
             this.Controls.Add(this.saveButton);
-            this.Controls.Add(this.nowPlayingListLimit);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.rangeNumericUpDown);
             this.Controls.Add(this.addAddressButton);
             this.Controls.Add(this.allowedLabel);
@@ -390,7 +333,6 @@ namespace MusicBeePlugin
             this.Load += new System.EventHandler(this.InfoWindowLoad);
             ((System.ComponentModel.ISupportInitialize)(this.rangeNumericUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.portNumericUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.nowPlayingListLimit)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -420,10 +362,6 @@ namespace MusicBeePlugin
         private System.Windows.Forms.Label portLabel;
         private System.Windows.Forms.Label seperator1;
         private System.Windows.Forms.Label connectionSettingsCategoryLabel;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown nowPlayingListLimit;
         private System.Windows.Forms.Button saveButton;
     }
 }

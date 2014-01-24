@@ -500,11 +500,14 @@ namespace MusicBeePlugin
 
             List<NowPlayingListTrack> trackList = new List<NowPlayingListTrack>();
             int position = 1;
-            while (position <= UserSettings.Instance.NowPlayingListLimit)
+
+            while (true)
             {
                 string playListTrack = api.NowPlayingList_QueryGetNextFile();
                 if (String.IsNullOrEmpty(playListTrack))
+                {
                     break;
+                }
 
                 string artist = api.Library_GetFileTag(playListTrack, MetaDataType.Artist);
                 string title = api.Library_GetFileTag(playListTrack, MetaDataType.TrackTitle);
@@ -520,8 +523,7 @@ namespace MusicBeePlugin
                     title = playListTrack.Substring(index + 1);
                 }
 
-                trackList.Add(
-                    new NowPlayingListTrack(artist, title, position));
+                trackList.Add(new NowPlayingListTrack(artist, title, position, Utilities.Sha1Hash(playListTrack)));
                 position++;
             }
 
