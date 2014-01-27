@@ -161,7 +161,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             var hash = Sha1Hash(base64);
             try
             {
-                var directory = Settings.UserSettings.Instance.StoragePath + @"cache\";
+                var directory = Settings.UserSettings.Instance.StoragePath + @"cache\cover\";
                 var filepath = directory + hash;
                 if (String.IsNullOrEmpty(base64))
                 {

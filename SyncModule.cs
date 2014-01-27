@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Networking;
@@ -14,6 +15,7 @@ namespace MusicBeePlugin
         private CacheHelper mHelper;
         private Plugin.MusicBeeApiInterface api;
         private List<LibraryData> mData;
+        private List<String> coverHashList;
 
         public SyncModule(Plugin.MusicBeeApiInterface api, String storagePath)
         {
@@ -57,45 +59,27 @@ namespace MusicBeePlugin
 
         public void SyncGetCover(string hash, string clientId)
         {
-            var cachedEntry = mHelper.GetEntryByHash(hash);
-            
-            var payload = new
-            {
-                hash = cachedEntry.CoverHash,
-                image = Utilities.GetCachedImage(cachedEntry.CoverHash)
-            };
+            coverHashList = mHelper.GetCoverHashes();
 
-            var jsonData = new
-            {
-                type = "cover",
-                file = hash,
-                hash = true,
-                payload
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
         }
 
         public void BuildCache()
         {
             string[] files = {};
             api.Library_QueryFilesEx(String.Empty, ref files);
-
-            foreach (var file in files)
-            {    
-                var fileHash = Utilities.Sha1Hash(file);
-                mHelper.CacheEntry(fileHash,file);
-            }
+            mHelper.CreateCache(files);
         }
 
         public void BuildCoverCache()
         {
+            var update = new List<LibraryData>();
             foreach (var entry in mHelper.GetCachedFiles())
             {
                 var cover = api.Library_GetArtwork(entry.Filepath, 0);
                 entry.CoverHash = Utilities.CacheImage(cover);
-                mHelper.UpdateCoverHash(entry.Hash, entry.CoverHash);
+                update.Add(entry);
             }   
+            mHelper.UpdateImageCache(update);
         }
 
         public void BuildArtistCoverCache()
@@ -121,6 +105,30 @@ namespace MusicBeePlugin
                 mHelper.CacheArtistUrl(artist, hash);
             }   
             
+        }
+
+        public void SyncGetCovers(int index, string client, int limit = 5)
+        {
+            var buffer = new List<ImageData>();
+            string imageData;
+            do
+            {
+                var hash = coverHashList[index];
+                imageData = Utilities.GetCachedImage(hash);
+                var image = new ImageData(hash, imageData);
+                buffer.Add(image);
+                index++;
+            } while (index < coverHashList.Count && buffer.Count < limit);
+
+            var pack = new
+            {
+                type = "cover",
+                data = buffer
+            };
+
+
+
+            SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
         }
                
         public void SyncGetMetaData(int index, string client, int limit = 50)

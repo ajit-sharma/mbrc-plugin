@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
+using System.Diagnostics;
 using System.IO;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Error;
@@ -59,32 +60,69 @@ namespace MusicBeePlugin.AndroidRemote.Data
             }
         }
 
-        /// <summary>
-        /// Creates a new entry in the song cache, with the specified hash and file path.
-        /// </summary>
-        /// <param name="hash">The hash.</param>
-        /// <param name="path">The path.</param>
-        public void CacheEntry(string hash, string path)
+        public void CreateCache(string[] filenames)
         {
             try
             {
-                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
-                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                using (var mConnection = new SQLiteConnection(dbConnection))
                 {
                     mConnection.Open();
-                    mCommand.CommandText = "insert into data(hash,filepath) values (@hash, @filepath);";
-                    mCommand.Parameters.AddWithValue("@hash", hash);
-                    mCommand.Parameters.AddWithValue("@filepath", path);
-                    mCommand.ExecuteNonQuery();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    using (var mTransaction = mConnection.BeginTransaction())
+                    {
+
+                        foreach (var filename in filenames)
+                        {
+                            mCommand.CommandText = "insert into data(hash,filepath) values (@hash, @filepath);";
+                            mCommand.Parameters.AddWithValue("@hash", Utilities.Utilities.Sha1Hash(filename));
+                            mCommand.Parameters.AddWithValue("@filepath", filename);
+                            mCommand.ExecuteNonQuery();    
+                            mCommand.Parameters.Clear();
+                        }
+                        mTransaction.Commit();
+                    }
                     mConnection.Close();
                 }
             }
-            catch (Exception e)
+            catch (Exception)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif                
+                
+                throw;
+            }
+        }
 
+        public void UpdateImageCache(List<LibraryData> data)
+        {
+            try
+            {
+                using (var mConnection = new SQLiteConnection(dbConnection))
+                {
+                    Stopwatch sw = new Stopwatch();
+                    sw.Start();
+                    mConnection.Open();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    using (var mTransaction = mConnection.BeginTransaction())
+                    {
+                        foreach (var entry in data)
+                        {
+                            mCommand.CommandText = "update data set coverhash=@coverhash where hash=@hash";
+                            mCommand.Parameters.AddWithValue("@hash", entry.Hash);
+                            mCommand.Parameters.AddWithValue("@coverhash", entry.CoverHash);
+                            mCommand.ExecuteNonQuery();
+                            mCommand.Parameters.Clear();
+                        }
+                        mTransaction.Commit();
+                    }
+                    mConnection.Close();
+                    sw.Stop();
+                    Debug.WriteLine("Update transaction time {0}", sw.Elapsed);
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
             }
         }
 
@@ -107,6 +145,38 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     {
                         var dataEntry = new LibraryData(mReader["hash"].ToString(), mReader["filepath"].ToString(), mReader["coverhash"].ToString());
                         data.Add(dataEntry);
+                    }
+                    mReader.Close();
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+            return data;
+        }
+
+        /// <summary>
+        /// Retrieves a list of all the available hashes for the covers from the cache
+        /// </summary>
+        /// <returns>List{String}.</returns>
+        public List<String> GetCoverHashes()
+        {
+            List<String> data = new List<string>();
+            try
+            {
+                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
+                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "select coverhash from data group by coverhash";
+                    SQLiteDataReader mReader = mCommand.ExecuteReader();
+                    while (mReader.Read())
+                    {
+                        data.Add(mReader["coverhash"].ToString());
                     }
                     mReader.Close();
                     mConnection.Close();
