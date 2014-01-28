@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Error;
 
@@ -15,13 +16,18 @@ namespace MusicBeePlugin.AndroidRemote.Data
     class CacheHelper
     {
         private const string CREATE_TABLE = "CREATE TABLE \"data\" (" +
+                                            "\"_id\" integer primary key," +
                                             "\"hash\" TEXT," +
                                             "\"coverhash\" TEXT," +
+                                            "\"updated\" TEXT," +
                                             "\"filepath\" TEXT);";
 
         private const string ARTIST_IMAGE_TABLE = "CREATE TABLE \"artist_images\" (" +
+                                                  "\"_id\" integer primary key," +
                                                   "\"artist\" TEXT," +
+                                                  "\"updated\" TEXT," +
                                                   "\"url\" TEXT);";
+
         private const string DB_NAME = @"\\cache.db";
         private string storagePath;
         private readonly string dbConnection;
@@ -70,24 +76,34 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     using (var mCommand = new SQLiteCommand(mConnection))
                     using (var mTransaction = mConnection.BeginTransaction())
                     {
+                        mCommand.CommandText = "insert into data(hash, filepath, updated) values (@hash, @filepath, @updated);";
+                        var hashParam = mCommand.CreateParameter();
+                        var fileParam = mCommand.CreateParameter();
+                        var updatedParam = mCommand.CreateParameter();
+                        hashParam.ParameterName = "@hash";
+                        fileParam.ParameterName = "@filepath";
+                        updatedParam.ParameterName = "@updated";
+                        mCommand.Parameters.Add(hashParam);
+                        mCommand.Parameters.Add(fileParam);
+                        mCommand.Parameters.Add(updatedParam);
 
                         foreach (var filename in filenames)
                         {
-                            mCommand.CommandText = "insert into data(hash,filepath) values (@hash, @filepath);";
-                            mCommand.Parameters.AddWithValue("@hash", Utilities.Utilities.Sha1Hash(filename));
-                            mCommand.Parameters.AddWithValue("@filepath", filename);
+                            hashParam.Value = Utilities.Utilities.Sha1Hash(filename);
+                            fileParam.Value = filename;
+                            updatedParam.Value = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
                             mCommand.ExecuteNonQuery();    
-                            mCommand.Parameters.Clear();
                         }
                         mTransaction.Commit();
                     }
                     mConnection.Close();
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                
-                throw;
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
             }
         }
 
@@ -103,13 +119,30 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     using (var mCommand = new SQLiteCommand(mConnection))
                     using (var mTransaction = mConnection.BeginTransaction())
                     {
+                        mCommand.CommandText = "delete from data";
+                        mCommand.ExecuteNonQuery();
+
+                        var cHashParam = mCommand.CreateParameter();
+                        var hashParam = mCommand.CreateParameter();
+                        var fileParam = mCommand.CreateParameter();
+                        var updated = mCommand.CreateParameter();
+                        mCommand.CommandText = "insert into data(hash, filepath, coverhash, updated) values (@hash, @filepath, @coverhash, @updated);";
+                        cHashParam.ParameterName = "@coverhash";
+                        hashParam.ParameterName = "@hash";
+                        fileParam.ParameterName = "@filepath";
+                        updated.ParameterName = "@updated";
+                        mCommand.Parameters.Add(cHashParam);
+                        mCommand.Parameters.Add(hashParam);
+                        mCommand.Parameters.Add(fileParam);
+                        mCommand.Parameters.Add(updated);
+
                         foreach (var entry in data)
                         {
-                            mCommand.CommandText = "update data set coverhash=@coverhash where hash=@hash";
-                            mCommand.Parameters.AddWithValue("@hash", entry.Hash);
-                            mCommand.Parameters.AddWithValue("@coverhash", entry.CoverHash);
-                            mCommand.ExecuteNonQuery();
-                            mCommand.Parameters.Clear();
+                            cHashParam.Value = entry.CoverHash;
+                            hashParam.Value = entry.Hash;
+                            fileParam.Value = entry.Filepath;
+                            updated.Value = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                            mCommand.ExecuteNonQuery();   
                         }
                         mTransaction.Commit();
                     }
@@ -119,10 +152,11 @@ namespace MusicBeePlugin.AndroidRemote.Data
 
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
             }
         }
 
@@ -189,34 +223,6 @@ namespace MusicBeePlugin.AndroidRemote.Data
 #endif
             }
             return data;
-        }
-
-        /// <summary>
-        /// Updates the cover hash in the cached data for the specified file hash.
-        /// </summary>
-        /// <param name="filehash">The filehash.</param>
-        /// <param name="coverHash">The cover hash.</param>
-        public void UpdateCoverHash(string filehash, string coverHash)
-        {
-            try
-            {
-                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
-                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
-                {
-                    mConnection.Open();
-                    mCommand.CommandText = "update data set coverhash=@coverhash where hash=@hash";
-                    mCommand.Parameters.AddWithValue("@hash", filehash);
-                    mCommand.Parameters.AddWithValue("@coverhash", coverHash);
-                    mCommand.ExecuteNonQuery();
-                    mConnection.Close();
-                }
-            }
-            catch (Exception e)
-            {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
-            }
         }
 
         /// <summary>

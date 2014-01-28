@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
+using System.Threading;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Networking;
@@ -73,10 +74,12 @@ namespace MusicBeePlugin
         public void BuildCoverCache()
         {
             var update = new List<LibraryData>();
-            foreach (var entry in mHelper.GetCachedFiles())
+            var total = mHelper.GetCachedFiles();
+
+            foreach (var entry in total)
             {
-                var cover = api.Library_GetArtwork(entry.Filepath, 0);
-                entry.CoverHash = Utilities.CacheImage(cover);
+                var cover = api.Library_GetArtworkUrl(entry.Filepath, 0);
+                entry.CoverHash = Utilities.CacheArtworkImage(cover);
                 update.Add(entry);
             }   
             mHelper.UpdateImageCache(update);
@@ -125,8 +128,6 @@ namespace MusicBeePlugin
                 type = "cover",
                 data = buffer
             };
-
-
 
             SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
         }

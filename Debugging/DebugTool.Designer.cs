@@ -30,6 +30,10 @@
         {
             this.buildCache = new System.Windows.Forms.Button();
             this.getCoverButton = new System.Windows.Forms.Button();
+            this.artworkTime = new System.Windows.Forms.TextBox();
+            this.artistTime = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buildCache
@@ -52,17 +56,56 @@
             this.getCoverButton.UseVisualStyleBackColor = true;
             this.getCoverButton.Click += new System.EventHandler(this.getCoverButton_Click);
             // 
+            // artworkTime
+            // 
+            this.artworkTime.Location = new System.Drawing.Point(93, 14);
+            this.artworkTime.Name = "artworkTime";
+            this.artworkTime.ReadOnly = true;
+            this.artworkTime.Size = new System.Drawing.Size(100, 20);
+            this.artworkTime.TabIndex = 12;
+            // 
+            // artistTime
+            // 
+            this.artistTime.Location = new System.Drawing.Point(93, 43);
+            this.artistTime.Name = "artistTime";
+            this.artistTime.ReadOnly = true;
+            this.artistTime.Size = new System.Drawing.Size(100, 20);
+            this.artistTime.TabIndex = 13;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(199, 17);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(43, 13);
+            this.label1.TabIndex = 14;
+            this.label1.Text = "Artwork";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(199, 46);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(69, 13);
+            this.label2.TabIndex = 15;
+            this.label2.Text = "Artist Artwork";
+            // 
             // DebugTool
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(508, 152);
+            this.ClientSize = new System.Drawing.Size(286, 82);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.artistTime);
+            this.Controls.Add(this.artworkTime);
             this.Controls.Add(this.getCoverButton);
             this.Controls.Add(this.buildCache);
             this.Name = "DebugTool";
             this.Text = "DebugTool";
             this.Load += new System.EventHandler(this.DebugTool_Load);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -70,5 +113,9 @@
 
         private System.Windows.Forms.Button buildCache;
         private System.Windows.Forms.Button getCoverButton;
+        private System.Windows.Forms.TextBox artworkTime;
+        private System.Windows.Forms.TextBox artistTime;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
     }
 }

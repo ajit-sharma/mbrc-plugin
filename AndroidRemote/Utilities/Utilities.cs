@@ -156,6 +156,76 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             return hash; 
         }
 
+        public static string CacheArtworkImage(string url, int width = 400, int height = 400)
+        {
+            var hash = new string('0', 40);
+            if (String.IsNullOrEmpty(url))
+            {
+                return hash;
+            }
+            try
+            {
+                var directory = Settings.UserSettings.Instance.StoragePath + @"cache\cover\";
+                var filepath = string.Empty;
+
+                if (!Directory.Exists(directory))
+                {
+                    Directory.CreateDirectory(directory);
+                }
+
+                using (var fs = new FileStream(url, FileMode.Open, FileAccess.Read))
+                {
+                    hash = Sha1Hash(fs);
+                    filepath = directory + hash;
+                    if (File.Exists(filepath))
+                    {
+                        return hash;
+                    }
+
+                    using (Image albumCover = Image.FromStream(fs, true))
+                    {
+
+                        int sourceWidth = albumCover.Width;
+                        int sourceHeight = albumCover.Height;
+                        int destWidth = sourceWidth;
+                        int destHeight = sourceHeight;
+
+                        if (sourceWidth > width || sourceHeight > height)
+                        {
+                            float nPercentW = (width / (float)sourceWidth);
+                            float nPercentH = (height / (float)sourceHeight);
+
+                            var nPercent = nPercentH < nPercentW ? nPercentH : nPercentW;
+                            destWidth = (int)(sourceWidth * nPercent);
+                            destHeight = (int)(sourceHeight * nPercent);
+                        }
+
+                        using (var bmp = new Bitmap(destWidth, destHeight))
+                        {
+                            Graphics graph = Graphics.FromImage(bmp);
+                            graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                            graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
+                            graph.Dispose();
+
+                            ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
+                            Encoder mEncoder = Encoder.Quality;
+                            EncoderParameters mParams = new EncoderParameters(1);
+                            EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
+                            mParams.Param[0] = mParam;
+                            bmp.Save(filepath, mInfo, mParams);
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                ErrorHandler.LogError(ex);
+#endif
+            }
+            return hash;
+        }
+
         public static string CacheImage(string base64, int width = 400, int height = 400)
         {
             var hash = Sha1Hash(base64);

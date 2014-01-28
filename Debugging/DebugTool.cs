@@ -16,29 +16,31 @@ namespace MusicBeePlugin.Debugging
         {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            Plugin.Instance.SyncModule.BuildCache();
-            sw.Stop();
-            Debug.WriteLine("Basic Cache build in {0}", sw.Elapsed);
-            sw.Reset();
-            sw.Start();
             Plugin.Instance.SyncModule.BuildCoverCache();
             sw.Stop();
             Debug.WriteLine("Artwork Cache build in {0}", sw.Elapsed);
-            sw.Reset();
+//            BuildArtistCache();   
+        }
+
+        private void BuildArtistCache()
+        {
+            Stopwatch sw = new Stopwatch();
             sw.Start();
             Plugin.Instance.SyncModule.BuildArtistCoverCache();
             sw.Stop();
             Debug.WriteLine("Artist Artwork Cache build in {0}", sw.Elapsed);
-            sw.Reset();
-            sw.Start();
         }
 
         private void OnTestButtonClick(object sender, EventArgs e)
         {
+            Plugin.Instance.SyncModule.BuildCache();
             Thread workerThread = new Thread(RunCacheBuilding);
+            Thread artistThread = new Thread(BuildArtistCache);
             workerThread.IsBackground = true;
             workerThread.Priority = ThreadPriority.AboveNormal;
             workerThread.Start();
+            artistThread.IsBackground = true;
+//            artistThread.Start();
         }
 
         private void getCoverButton_Click(object sender, EventArgs e)
