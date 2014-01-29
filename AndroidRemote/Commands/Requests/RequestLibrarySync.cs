@@ -35,8 +35,9 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         Plugin.Instance.SyncModule.SyncGetCover(file, eEvent.ClientId);
                         break;
                     case "meta":
-                        int track = obj.Get<int>("file");
-                        Plugin.Instance.SyncModule.SyncGetMetaData(track, eEvent.ClientId);
+                        int offset = obj.Get<int>("offset");
+                        int limit = obj.Get<int>("limit");
+                        Plugin.Instance.SyncModule.SyncGetMetaData(offset, eEvent.ClientId, limit);
                         break;
                 }
             }

@@ -132,15 +132,15 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
         }
                
-        public void SyncGetMetaData(int index, string client, int limit = 50)
+        public void SyncGetMetaData(int offset, string client, int limit = 50)
         {
             var buffer = new List<MetaData>();
             LibraryData entry;
             do
             {
-                entry = mData[index];
+                entry = mData[offset];
                 var file = entry.Filepath;
-                var meta = new MetaData {hash = entry.Hash, cover_hash = entry.CoverHash, file = file};
+                var meta = new MetaData {hash = entry.Hash, file = file};
 
                 if (Plugin.MusicBeeVersion.v2_2 == api.MusicBeeVersion)
                 {
@@ -169,11 +169,11 @@ namespace MusicBeePlugin
                     meta.year = tags[i++];
                     meta.track_no = tags[i];
                 }
-                index++;
+                offset++;
                 buffer.Add(meta);
-            } while (entry != null && index < mData.Count && buffer.Count < limit);
+            } while (entry != null && offset < mData.Count && buffer.Count < limit);
 
-            if (index == mData.Count + 1)
+            if (offset == mData.Count + 1)
             {
                 mData = null;
             }

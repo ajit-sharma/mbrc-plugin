@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 
 namespace MusicBeePlugin.AndroidRemote.Entities
 {
@@ -9,7 +10,6 @@ namespace MusicBeePlugin.AndroidRemote.Entities
     class MetaData
     {
         private string _file;
-        private const string _type = "meta";
         private string _hash;
         private string _artist;
         private string _album_artist;
@@ -18,9 +18,8 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         private string _genre;
         private string _year;
         private string _track_no;
-        private string _cover_hash;
-        private string _artist_image_url;
 
+        [IgnoreDataMember]
         public string file
         {
             get { return _file; }
@@ -61,23 +60,6 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         {
             get { return _track_no; }
             set { _track_no = value; }
-        }
-
-        public string cover_hash
-        {
-            get { return _cover_hash; }
-            set { _cover_hash = value; }
-        }
-
-        public string artist_image_url
-        {
-            get { return _artist_image_url; }
-            set { _artist_image_url = value; }
-        }
-
-        public string type
-        {
-            get { return _type; }
         }
 
         public string hash
