@@ -1,6 +1,4 @@
-﻿
-
-using MusicBeePlugin.AndroidRemote.Interfaces;
+﻿using MusicBeePlugin.AndroidRemote.Interfaces;
 
 namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 {

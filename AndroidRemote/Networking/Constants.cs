@@ -66,6 +66,8 @@
         public const string PlaylistMove = "playlistmove";
         public const string PlaylistAddFiles = "playlistaddfiles";
         public const string PlaylistCreate = "playlistcreate";
+
+        public const string Playlists = "playlists";
         public const string LibrarySync = "librarysync";
         public const string LibraryMeta = "librarymeta";
 

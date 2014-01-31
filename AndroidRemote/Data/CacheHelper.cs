@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.SQLite;
 using System.Diagnostics;
 using System.IO;
-using System.Runtime.InteropServices;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Error;
 
@@ -27,6 +26,12 @@ namespace MusicBeePlugin.AndroidRemote.Data
                                                   "\"artist\" TEXT," +
                                                   "\"updated\" TEXT," +
                                                   "\"url\" TEXT);";
+
+        private const string PLAYLIST_TABLE = "create table \"playlists\" (" +
+                                              "\"_id\" integer primary key," +
+                                              "\"name\" text," +
+                                              "\"path\" text," +
+                                              "\"hash\" text)";
 
         private const string DB_NAME = @"\\cache.db";
         private string storagePath;
@@ -54,6 +59,9 @@ namespace MusicBeePlugin.AndroidRemote.Data
 
                         mCommand.CommandText = ARTIST_IMAGE_TABLE;
                         mCommand.ExecuteNonQuery();
+
+                        mCommand.CommandText = PLAYLIST_TABLE;
+                        mCommand.ExecuteNonQuery();
                         mConnection.Close();
                     }
                 }
@@ -62,6 +70,49 @@ namespace MusicBeePlugin.AndroidRemote.Data
             {
 #if DEBUG
                 ErrorHandler.LogError(e);
+#endif
+            }
+        }
+
+        public void CachePlaylists(List<Playlist> playlists)
+        {
+            try
+            {
+                using (var mConnection = new SQLiteConnection(dbConnection))
+                {
+                    mConnection.Open();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    using (var mTransaction = mConnection.BeginTransaction())
+                    {
+                        mCommand.CommandText = "delete from playlists";
+                        mCommand.ExecuteNonQuery();
+                        mCommand.CommandText = "insert into playlists (name, path, hash) values (@name, @path, @hash);";
+                        var nameParam = mCommand.CreateParameter();
+                        var pathParam = mCommand.CreateParameter();
+                        var hashParam = mCommand.CreateParameter();
+                        nameParam.ParameterName = "@name";
+                        pathParam.ParameterName = "@path";
+                        hashParam.ParameterName = "@hash";
+                        mCommand.Parameters.Add(nameParam);
+                        mCommand.Parameters.Add(pathParam);
+                        mCommand.Parameters.Add(hashParam);
+
+                        foreach (var playlist in playlists)
+                        {
+                            nameParam.Value = playlist.name;
+                            pathParam.Value = playlist.hash;
+                            hashParam.Value = Utilities.Utilities.Sha1Hash(playlist.hash);
+                            mCommand.ExecuteNonQuery();
+                        }
+                        mTransaction.Commit();
+                    }
+                    mConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                ErrorHandler.LogError(ex);
 #endif
             }
         }

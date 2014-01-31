@@ -118,12 +118,7 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingSearch.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingTrackRemoval.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlaybackPosition.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestAvailablePlaylists.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistCreate.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistFiles.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistMove.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistPlayNow.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylistRemove.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylists.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPluginVersion.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestRating.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestRepeat.cs" />
@@ -145,8 +140,6 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlayer.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestSongInfo.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlayerStatus.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlayPauseTrackCommand.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPreviousTrackCommand.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\InitializeModelStateCommand.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestNextTrack.cs" />
     <Compile Include="AndroidRemote\configuration.cs" />
@@ -163,7 +156,6 @@
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
     <Compile Include="AndroidRemote\Entities\Track.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingTrack.cs" />
-    <Compile Include="AndroidRemote\Entities\TrackEntry.cs" />
     <Compile Include="AndroidRemote\Enumerations\MetaTag.cs" />
     <Compile Include="AndroidRemote\Enumerations\LastfmStatus.cs" />
     <Compile Include="AndroidRemote\Enumerations\PlayerState.cs" />

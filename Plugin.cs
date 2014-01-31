@@ -1,3 +1,5 @@
+using MusicBeePlugin.AndroidRemote.Data;
+
 namespace MusicBeePlugin
 {
     using System.Text;
@@ -789,17 +791,19 @@ namespace MusicBeePlugin
         public void GetAvailablePlaylists()
         {
             api.Playlist_QueryPlaylists();
-            string playlistUrl;
-            List<Playlist> availablePlaylists = new List<Playlist>();
+            string path;
+            var availablePlaylists = new List<Playlist>();
+            var ch = new CacheHelper(mStoragePath);
             while (true)
             {
-                playlistUrl = api.Playlist_QueryGetNextPlaylist();
-                if (String.IsNullOrEmpty(playlistUrl)) break;
-                string name = api.Playlist_GetName(playlistUrl);
                 string[] files = { };
-                api.Playlist_QueryFilesEx(playlistUrl, ref files);
-                Playlist playlist = new Playlist(name, files.Count(), playlistUrl);
+                path = api.Playlist_QueryGetNextPlaylist();
+                if (String.IsNullOrEmpty(path)) break;
+                var name = api.Playlist_GetName(path);
+                api.Playlist_QueryFilesEx(path, ref files);
+                var playlist = new Playlist(name, files.Count(), Utilities.Sha1Hash(path), path);
                 availablePlaylists.Add(playlist);
+                ch.CachePlaylists(availablePlaylists);
             }
 
             SendSocketMessage(Constants.PlaylistList, Constants.Reply, availablePlaylists);

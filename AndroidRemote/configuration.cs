@@ -28,7 +28,6 @@
             controller.AddCommand(Constants.Player, typeof (RequestPlayer));
             controller.AddCommand(Constants.Protocol, typeof (RequestProtocol));            
             controller.AddCommand(Constants.PluginVersion, typeof (RequestPluginVersion));
-            controller.AddCommand(Constants.PlaylistList, typeof (RequestAvailablePlaylists));
             controller.AddCommand(Constants.PlayerNext, typeof(RequestNextTrack));
             controller.AddCommand(Constants.PlayerPlayPause, typeof(RequestPlayPause));
             controller.AddCommand(Constants.PlayerPrevious, typeof(RequestPreviousTrack));
@@ -63,11 +62,7 @@
             controller.AddCommand(Constants.LibraryArtistAlbums, typeof(RequestLibArtistAlbums));
             controller.AddCommand(Constants.LibraryAlbumTracks, typeof(RequestLibAlbumTracks));
             controller.AddCommand(Constants.LibraryGenreArtists, typeof(RequestLibGenreArtists));
-            controller.AddCommand(Constants.PlaylistGetFiles, typeof(RequestPlaylistFiles));
-            controller.AddCommand(Constants.PlaylistPlayNow, typeof(RequestPlaylistPlayNow));
-            controller.AddCommand(Constants.PlaylistRemove, typeof(RequestPlaylistRemove));
-            controller.AddCommand(Constants.PlaylistMove, typeof(RequestPlaylistMove));
-            controller.AddCommand(Constants.PlaylistCreate, typeof(RequestPlaylistCreate));
+            controller.AddCommand(Constants.Playlists, typeof(RequestPlaylists));
             controller.AddCommand(Constants.LibrarySync, typeof(RequestLibrarySync));
         }
     }

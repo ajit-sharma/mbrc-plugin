@@ -1,15 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Threading;
-using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.AndroidRemote.Utilities;
-
 namespace MusicBeePlugin
 {
+    using System;
+    using System.Collections.Generic;
+    using AndroidRemote.Data;
+    using AndroidRemote.Entities;
+    using AndroidRemote.Networking;
+    using AndroidRemote.Utilities;
     public class SyncModule : Messenger
     {
         
@@ -131,7 +127,13 @@ namespace MusicBeePlugin
 
             SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
         }
-               
+
+        /// <summary>
+        /// Used to get a batch of meta data from the api.
+        /// </summary>
+        /// <param name="offset">The offset number of the first result.</param>
+        /// <param name="client">The id of the client.</param>
+        /// <param name="limit">The limit.</param>
         public void SyncGetMetaData(int offset, string client, int limit = 50)
         {
             var buffer = new List<MetaData>();

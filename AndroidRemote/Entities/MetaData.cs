@@ -9,6 +9,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
     /// </summary>
     class MetaData
     {
+        private const String Empty = @"[Empty]";
         private string _file;
         private string _hash;
         private string _artist;
@@ -29,7 +30,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         public string album
         {
             get { return _album; }
-            set { _album = String.IsNullOrEmpty(value) ? "Unknown Album" : value; }
+            set { _album = String.IsNullOrEmpty(value) ? Empty : value; }
         }
 
         public string title
@@ -47,7 +48,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         public string genre
         {
             get { return _genre; }
-            set { _genre = String.IsNullOrEmpty(value) ? "Unknown Genre" : value; }
+            set { _genre = String.IsNullOrEmpty(value) ? Empty : value; }
         }
 
         public string year
@@ -71,7 +72,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         public string artist
         {
             get { return _artist; }
-            set { _artist = String.IsNullOrEmpty(value) ? "Unknown Artist" : value; }
+            set { _artist = String.IsNullOrEmpty(value) ? Empty : value; }
         }
 
         public string album_artist
