@@ -813,14 +813,16 @@ namespace MusicBeePlugin
         /// Given the url of a playlist and the id of a client the method sends a message to the specified client
         /// including the tracks in the specified playlist.
         /// </summary>
-        /// <param name="url">The playlist url</param>
+        /// <param name="hash">sha1 hash identifying the playlist</param>
         /// <param name="clientId">The id of the client</param>
-        public void GetTracksForPlaylist(string url, string clientId)
+        public void GetTracksForPlaylist(string hash, string clientId)
         {
 
             string[] trackUrlList = {};
+            var ch = new CacheHelper(mStoragePath);
+            var playlist = ch.GetPlaylistByHash(hash);
 
-            if (!api.Playlist_QueryFilesEx(url, ref trackUrlList))
+            if (!api.Playlist_QueryFilesEx(playlist.path, ref trackUrlList))
             {
                 return;
             }

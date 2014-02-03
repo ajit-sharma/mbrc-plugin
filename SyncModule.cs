@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace MusicBeePlugin
 {
     using System;
@@ -60,6 +62,9 @@ namespace MusicBeePlugin
 
         }
 
+        /// <summary>
+        /// Builds the cache. Creates an association of SHA1 hashes and file paths on the local filesystem.
+        /// </summary>
         public void BuildCache()
         {
             string[] files = {};
@@ -69,18 +74,75 @@ namespace MusicBeePlugin
 
         public void BuildCoverCache()
         {
+
+        }
+
+        /// <summary>
+        /// Builds the cover cache per track.
+        /// Due to calling the artwork api for each track this method is slower and will take more time
+        /// but it will not miss a single cover associated with a file;
+        /// </summary>
+        private void BuildCoverCachePerTrack()
+        {
             var update = new List<LibraryData>();
             var total = mHelper.GetCachedFiles();
 
             foreach (var entry in total)
             {
-                var cover = api.Library_GetArtworkUrl(entry.Filepath, 0);
+                var cover = api.Library_GetArtworkUrl(entry.Filepath, -1);
                 entry.CoverHash = Utilities.CacheArtworkImage(cover);
                 update.Add(entry);
-            }   
+            }
             mHelper.UpdateImageCache(update);
         }
 
+        /// <summary>
+        /// Builds the cover cache per album.
+        /// This method is faster because it calls the GetArtworkUrl method for the first track of each album,
+        /// however it might miss a number of covers;
+        /// </summary>
+        private void BuildCoverCachePerAlbum()
+        {
+            var total = mHelper.GetCachedFiles();
+            var map = new Dictionary<string, AlbumEntry>();
+
+            foreach (var libraryData in total)
+            {
+                var path = libraryData.Filepath;
+                var id = api.Library_GetFileTag(path, Plugin.MetaDataType.AlbumId);
+                AlbumEntry ab;
+                if (!map.TryGetValue(id, out ab))
+                {
+                    ab = new AlbumEntry(id);
+                    map.Add(id, ab);
+                }
+                var track_id = api.Library_GetFileTag(path, Plugin.MetaDataType.TrackNo);
+                var track = new AlbumTrack(path, !string.IsNullOrEmpty(track_id) ? int.Parse(track_id, NumberStyles.Any) : 0);
+                ab.Tracklist.Add(track);
+
+            }
+
+            var list = new List<AlbumEntry>(map.Values);
+
+            foreach (var albumEntry in list)
+            {
+                albumEntry.Tracklist.Sort();
+                var path = albumEntry.Tracklist[0].Path;
+                var cover = api.Library_GetArtworkUrl(path, 0);
+                if (string.IsNullOrEmpty(cover))
+                {
+                    continue;
+                }
+
+                Utilities.CacheArtworkImage(cover);
+            }   
+        }
+
+        /// <summary>
+        /// Builds the artist cover cache. 
+        /// Method is really slow, due to multiple threads being called.
+        /// Should be better called on a low priority thread.
+        /// </summary>
         public void BuildArtistCoverCache()
         {
             List<Artist> artistList = new List<Artist>();

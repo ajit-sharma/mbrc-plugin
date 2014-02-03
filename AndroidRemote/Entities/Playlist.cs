@@ -25,5 +25,9 @@ namespace MusicBeePlugin.AndroidRemote.Entities
             this.tracks = tracks;
             this.path = path;
         }
+
+        public Playlist()
+        {
+        }
     }
 }

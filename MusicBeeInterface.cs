@@ -404,7 +404,9 @@ namespace MusicBeePlugin
             Virtual14 = 139,
             Virtual15 = 140,
             Virtual16 = 141,
-            Year = 88
+            Year = 88,
+            /** addition **/
+            AlbumId = 108
         }
 
         [Flags()]

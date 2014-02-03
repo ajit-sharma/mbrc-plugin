@@ -117,6 +117,39 @@ namespace MusicBeePlugin.AndroidRemote.Data
             }
         }
 
+        public Playlist GetPlaylistByHash(string hash)
+        {
+            var playlist = new Playlist();
+            try
+            {
+                using (var mConnection = new SQLiteConnection(dbConnection))
+                {
+                    mConnection.Open();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    {
+                        mCommand.CommandText = "select * from playlists where hash=@hash";
+                        mCommand.Parameters.AddWithValue("@hash", hash);
+                        SQLiteDataReader mReader = mCommand.ExecuteReader();
+                        while (mReader.Read())
+                        {
+                            playlist.hash = mReader["hash"].ToString();
+                            playlist.name = mReader["name"].ToString();
+                            playlist.path = mReader["path"].ToString();
+                        }
+                        mReader.Close();
+                    }
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+            return playlist;
+        }
+
         public void CreateCache(string[] filenames)
         {
             try
