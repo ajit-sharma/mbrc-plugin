@@ -19,13 +19,13 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             switch (commandType)
             {
                 case "get":
-                    Plugin.Instance.GetAvailablePlaylists();
+                    Plugin.Instance.PlaylistModule.GetAvailablePlaylists();
                     break;
                 case "getfiles":
-                    Plugin.Instance.GetTracksForPlaylist(eEvent.DataToString(), eEvent.ClientId);
+                    Plugin.Instance.PlaylistModule.GetTracksForPlaylist(eEvent.DataToString(), eEvent.ClientId);
                     break;
                 case "play":
-                    Plugin.Instance.RequestPlaylistPlayNow(eEvent.DataToString());
+                    Plugin.Instance.PlaylistModule.RequestPlaylistPlayNow(eEvent.DataToString());
                     break;
                 case "move":
                     moveTracks(eEvent);
@@ -51,7 +51,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             src = obj.Get("src");
             index = int.Parse(obj.Get("index"));
 
-            Plugin.Instance.RequestPlaylistTrackRemove(src, index);
+            Plugin.Instance.PlaylistModule.RequestPlaylistTrackRemove(src, index);
         }
 
         private void moveTracks(IEvent eEvent)
@@ -62,7 +62,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             src = obj.Get("src");
             @from = int.Parse(obj.Get("from"));
             to = int.Parse(obj.Get("to"));
-            Plugin.Instance.RequestPlaylistMove(eEvent.ClientId, src, @from, to);
+            Plugin.Instance.PlaylistModule.RequestPlaylistMove(eEvent.ClientId, src, @from, to);
         }
 
         private void createPlaylist(IEvent eEvent)
@@ -76,7 +76,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             files = obj.Get<string[]>("data");
             MetaTag tag = (MetaTag) Enum.Parse(typeof (MetaTag), type);
 
-            Plugin.Instance.RequestPlaylistCreate(eEvent.ClientId, name, tag, query, files);
+            Plugin.Instance.PlaylistModule.RequestPlaylistCreate(eEvent.ClientId, name, tag, query, files);
         }
     }
 }

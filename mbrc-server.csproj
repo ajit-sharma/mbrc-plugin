@@ -189,6 +189,7 @@
     </Compile>
     <Compile Include="Messenger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
+    <Compile Include="PlaylistModule.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="AndroidRemote\Networking\SocketClient.cs" />
     <Compile Include="AndroidRemote\Networking\SocketState.cs" />
@@ -255,7 +256,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_StartDate="2010/1/1" BuildVersion_UseUniversalClock="True" BuildVersion_DetectChanges="False" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_DetectChanges="False" BuildVersion_UseUniversalClock="True" BuildVersion_StartDate="2010/1/1" BuildVersion_UseGlobalSettings="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

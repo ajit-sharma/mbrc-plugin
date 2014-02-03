@@ -74,7 +74,7 @@ namespace MusicBeePlugin
 
         public void BuildCoverCache()
         {
-
+            BuildCoverCachePerAlbum();
         }
 
         /// <summary>
@@ -128,7 +128,7 @@ namespace MusicBeePlugin
             {
                 albumEntry.Tracklist.Sort();
                 var path = albumEntry.Tracklist[0].Path;
-                var cover = api.Library_GetArtworkUrl(path, 0);
+                var cover = api.Library_GetArtworkUrl(path, -1);
                 if (string.IsNullOrEmpty(cover))
                 {
                     continue;
