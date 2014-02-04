@@ -90,6 +90,74 @@ After each batch request the client will reply
 ```
 
 ## Playlist Sync
+
+### Getting the available playlists
+In order to get the available playlists the user has to send a message like the following:
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "get"
+    }
+}
+```
+
+In reply the plugin must send a message in the following format.
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "get",
+        "playlists": [
+            {
+                "name": "Name of the playlist",
+                "tracks": 31,
+                "hash": "6b541fd56872432839d3eb77b8212eb004c50129"
+            },
+            ...
+        ]
+    }
+}
+```
+**name**: is the name of the playlist,
+**tracks**: is the number of tracks in the specified playlist,
+**hash**: is a sha1 hash of the playlist path on the filesystem
+
+
+### Getting Tracks
+In order to get the tracks for a playlist the client has to send a message like the following to the plugin.
+
+**hash**: is a sha1 hash of the path of the playlist in the computer's filesystem. The plugin should have a cache, mapping the sha1 hashes to the path.
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "gettracks",
+        "hash": "6b541fd56872432839d3eb77b8212eb004c50129"
+    }
+}
+```
+
+After the request the client should receive a package containing the following
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "gettracks",
+        "files": [
+            {
+                "artist": "Artist Name",
+                "title": "Track title",
+                "hash": "6b541fd56872432839d3eb77b8212eb004c50129"
+        ]
+    }
+}
+```
+
 ### Creating a new playlist
 ```
 {
@@ -112,8 +180,8 @@ After each batch request the client will reply
     "context": "playlists",
     "type": "req",
     "data": {
-        "type": "create",
-        "name": "playlist name",
+        "type": "add",
+        "hash": "6b541fd56872432839d3eb77b8212eb004c50129",
         "files: [
             "6b541fd56872432839d3eb77b8212eb004c50129",
             "6b541fd23572432839d3eb77b8212eb004c50129",
@@ -122,4 +190,6 @@ After each batch request the client will reply
     }
 }
 ```
+**hash**: It is the hash of the playlist we want to add tracks to.
+**files**: It is an array containing the hashes of the files we want to add to the specified playlist
 
