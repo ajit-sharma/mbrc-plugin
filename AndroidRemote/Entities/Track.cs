@@ -4,23 +4,23 @@ namespace MusicBeePlugin.AndroidRemote.Entities
 {
     class Track :IEquatable<Track>, IComparable<Track>
     {
-        public Track(string artist, string title, string src)
+        public Track(string artist, string title, string hash)
         {
             this.title = title;
             this.artist = artist;
             this.trackno = 0;
-            this.src = src;
+            this.hash = hash;
         }
 
-        public Track(string artist, string title, int trackNo, string src)
+        public Track(string artist, string title, int trackNo, string hash)
         {
             this.artist = artist;
             this.title = title;
-            this.src = src;
+            this.hash = hash;
             this.trackno = trackNo;
         }
 
-        public string src { get; private set; }
+        public string hash { get; private set; }
 
         public string artist { get; private set; }
 

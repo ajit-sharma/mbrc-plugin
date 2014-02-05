@@ -193,3 +193,73 @@ After the request the client should receive a package containing the following
 **hash**: It is the hash of the playlist we want to add tracks to.
 **files**: It is an array containing the hashes of the files we want to add to the specified playlist
 
+### Playing a playlist
+
+To add a playlist for immediated playback:
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "play",
+        "hash": "6b541fd56872432839d3eb77b8212eb004c50129",
+    }
+}
+```
+
+**hash**: Is the sha1 hash obtained by the path of the playlist on the filesystem.
+
+### Removing a track from a playlist
+
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "remove",
+        "playlist": "6b541fd56872432839d3eb77b8212eb004c50129",
+        "index": 1
+    }
+}
+```
+
+**playlist**: The sha1 hash representing the playlist.
+**index**: The index of the file in the playlist.
+
+### Rearranging tracks in a playlist
+Though the MusicBee API supports moving multiple tracks at this point the protocol only supports moving a single track to a new position.
+
+To move a track the client has to send the following message:
+
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "move",
+        "playlist": "6b541fd56872432839d3eb77b8212eb004c50129",
+        "from": 1,
+        "to": 2
+    }
+}
+```
+The message will be processed by the plugin and it will send a reply containing whether the track move was successful or not. 
+```
+{
+    "context": "playlists",
+    "type": "req",
+    "data": {
+        "type": "move",
+        "playlist": "6b541fd56872432839d3eb77b8212eb004c50129",
+        "success": true
+        "from": 1,
+        "to": 2
+    }
+}
+```
+
+**playlist**: Contains the sha1 hash representing the playlist.
+**from**: Contains the former position of the track to be moved.
+**to**: Contains the new position where the track will be moved.
+
+----------

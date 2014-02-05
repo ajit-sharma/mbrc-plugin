@@ -27,7 +27,7 @@ namespace MusicBeePlugin
         {
             api.Playlist_QueryPlaylists();
             string path;
-            var availablePlaylists = new List<Playlist>();
+            var playlists = new List<Playlist>();
             var ch = new CacheHelper(mStoragePath);
             while (true)
             {
@@ -37,11 +37,17 @@ namespace MusicBeePlugin
                 var name = api.Playlist_GetName(path);
                 api.Playlist_QueryFilesEx(path, ref files);
                 var playlist = new Playlist(name, files.Count(), Utilities.Sha1Hash(path), path);
-                availablePlaylists.Add(playlist);
-                ch.CachePlaylists(availablePlaylists);
+                playlists.Add(playlist);
+                ch.CachePlaylists(playlists);
             }
 
-            SendSocketMessage(Constants.PlaylistList, Constants.Reply, availablePlaylists);
+            var message = new
+            {
+                type = "get",
+                playlists
+            };
+
+            SendSocketMessage(Constants.Playlists, Constants.Reply, message);
         }
 
         /// <summary>
@@ -53,26 +59,32 @@ namespace MusicBeePlugin
         public void GetTracksForPlaylist(string hash, string clientId)
         {
 
-            string[] trackUrlList = {};
+            string[] pathList = {};
             var ch = new CacheHelper(mStoragePath);
             var playlist = ch.GetPlaylistByHash(hash);
 
-            if (!api.Playlist_QueryFilesEx(playlist.path, ref trackUrlList))
+            if (!api.Playlist_QueryFilesEx(playlist.path, ref pathList))
             {
                 return;
             }
 
-            List<Track> playlistTracks = new List<Track>();
+            var trackList = new List<Track>();
 
-            foreach (string trackUrl in trackUrlList)
+            foreach (var path in pathList)
             {
-                string artist = api.Library_GetFileTag(trackUrl, Plugin.MetaDataType.Artist);
-                string track = api.Library_GetFileTag(trackUrl, Plugin.MetaDataType.TrackTitle);
-                Track curTrack = new Track(artist, track, trackUrl);
-                playlistTracks.Add(curTrack);
+                var artist = api.Library_GetFileTag(path, Plugin.MetaDataType.Artist);
+                var track = api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle);
+                var curTrack = new Track(artist, track, Utilities.Sha1Hash(path));
+                trackList.Add(curTrack);
             }
 
-            SendSocketMessage(Constants.PlaylistGetFiles, Constants.Reply, playlistTracks);
+            var message = new
+            {
+                type = "gettracks",
+                files = trackList
+            };
+
+            SendSocketMessage(Constants.PlaylistGetFiles, Constants.Reply, message);
         }
 
         /// <summary>
@@ -106,7 +118,7 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
         }
 
-        public void RequestPlaylistMove(string clientId,string src, int from, int to)
+        public void RequestPlaylistMove(string clientId, string src, int from, int to)
         {
             bool success;
             int[] aFrom = { @from };
@@ -122,14 +134,15 @@ namespace MusicBeePlugin
 
             success = api.Playlist_MoveFiles(src, aFrom, dIn);
 
-            var reply = new
+            var message = new
             {
+                type = "move",
                 success,
                 @from,
                 to
             };
 
-            SendSocketMessage(Constants.PlaylistMove, Constants.Reply, reply, clientId);
+            SendSocketMessage(Constants.Playlists, Constants.Reply, message, clientId);
         }
     }
 }
