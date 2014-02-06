@@ -21,8 +21,8 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                 case "get":
                     Plugin.Instance.PlaylistModule.GetAvailablePlaylists();
                     break;
-                case "getfiles":
-                    Plugin.Instance.PlaylistModule.GetTracksForPlaylist(eEvent.DataToString(), eEvent.ClientId);
+                case "gettracks":
+                    Plugin.Instance.PlaylistModule.GetTracksForPlaylist(obj.Get("hash"), eEvent.ClientId);
                     break;
                 case "play":
                     Plugin.Instance.PlaylistModule.RequestPlaylistPlayNow(eEvent.DataToString());

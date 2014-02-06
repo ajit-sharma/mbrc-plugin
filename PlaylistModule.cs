@@ -84,7 +84,7 @@ namespace MusicBeePlugin
                 files = trackList
             };
 
-            SendSocketMessage(Constants.PlaylistGetFiles, Constants.Reply, message);
+            SendSocketMessage(Constants.Playlists, Constants.Reply, message);
         }
 
         /// <summary>

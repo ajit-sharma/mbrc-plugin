@@ -100,8 +100,8 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         foreach (var playlist in playlists)
                         {
                             nameParam.Value = playlist.name;
-                            pathParam.Value = playlist.hash;
-                            hashParam.Value = Utilities.Utilities.Sha1Hash(playlist.hash);
+                            pathParam.Value = playlist.path;
+                            hashParam.Value = playlist.hash;
                             mCommand.ExecuteNonQuery();
                         }
                         mTransaction.Commit();
