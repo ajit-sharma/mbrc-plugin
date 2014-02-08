@@ -99,9 +99,13 @@ In order to get the available playlists the user has to send a message like the 
     "type": "req",
     "data": {
         "type": "get"
+        "limit": 50,
+        "offset": 0
     }
 }
 ```
+> **offset**: The index of the first track contained in the requested data.
+> **limit**: The number of tracks requested in the current batch.
 
 In reply the plugin must send a message in the following format.
 ```
@@ -121,33 +125,38 @@ In reply the plugin must send a message in the following format.
     }
 }
 ```
-**name**: is the name of the playlist,
-**tracks**: is the number of tracks in the specified playlist,
-**hash**: is a sha1 hash of the playlist path on the filesystem
+> **name**: is the name of the playlist,
+> **tracks**: is the number of tracks in the specified playlist,
+> **hash**: is a sha1 hash of the playlist path on the filesystem
 
 
 ### Getting Tracks
 In order to get the tracks for a playlist the client has to send a message like the following to the plugin.
 
-**hash**: is a sha1 hash of the path of the playlist in the computer's filesystem. The plugin should have a cache, mapping the sha1 hashes to the path.
 ```
 {
     "context": "playlists",
     "type": "req",
     "data": {
         "type": "gettracks",
+        "limit": 50,
+        "offset": 0,
         "hash": "6b541fd56872432839d3eb77b8212eb004c50129"
     }
 }
 ```
 
-After the request the client should receive a package containing the following
+> **offset**: The index of the first track contained in the requested data.
+> **limit**: The number of tracks requested in the current batch.
+> **hash**: The sha1 hash of the playlist.
+
 ```
 {
     "context": "playlists",
     "type": "req",
     "data": {
         "type": "gettracks",
+        "total": 1284,
         "files": [
             {
                 "artist": "Artist Name",
@@ -157,6 +166,7 @@ After the request the client should receive a package containing the following
     }
 }
 ```
+**total**: Contains the total number of available tracks in the requested playlist.
 
 ### Creating a new playlist
 ```
@@ -190,8 +200,8 @@ After the request the client should receive a package containing the following
     }
 }
 ```
-**hash**: It is the hash of the playlist we want to add tracks to.
-**files**: It is an array containing the hashes of the files we want to add to the specified playlist
+> **hash**: It is the hash of the playlist we want to add tracks to.
+> **files**: It is an array containing the hashes of the files we want to add to the specified playlist
 
 ### Playing a playlist
 
@@ -207,7 +217,7 @@ To add a playlist for immediated playback:
 }
 ```
 
-**hash**: Is the sha1 hash obtained by the path of the playlist on the filesystem.
+> **hash**: Is the sha1 hash obtained by the path of the playlist on the filesystem.
 
 ### Removing a track from a playlist
 
@@ -223,8 +233,8 @@ To add a playlist for immediated playback:
 }
 ```
 
-**playlist**: The sha1 hash representing the playlist.
-**index**: The index of the file in the playlist.
+> **playlist**: The sha1 hash representing the playlist.
+> **index**: The index of the file in the playlist.
 
 ### Rearranging tracks in a playlist
 Though the MusicBee API supports moving multiple tracks at this point the protocol only supports moving a single track to a new position.
@@ -258,8 +268,8 @@ The message will be processed by the plugin and it will send a reply containing 
 }
 ```
 
-**playlist**: Contains the sha1 hash representing the playlist.
-**from**: Contains the former position of the track to be moved.
-**to**: Contains the new position where the track will be moved.
+> **playlist**: Contains the sha1 hash representing the playlist.
+> **from**: Contains the former position of the track to be moved.
+> **to**: Contains the new position where the track will be moved.
 
 ----------
