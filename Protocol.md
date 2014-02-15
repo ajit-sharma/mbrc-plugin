@@ -21,33 +21,6 @@ Commands
 ### Full Sync
 The full sync procedure consists of two phases. The in the first phase tha client gets all the paths of the files in the libary. In the second phase the client syncs the metadata and covers for these files.
 
-#### Initiate full sync
-To initiate the full sync process the client has to sent a ```full``` sync command with an ```init``` action.
-```
-{
-    "context": "librarysync",
-    "type": "req",
-    "data": {
-        "type": "full"
-        "action": "init"
-    }
-}
-```
-
-The plugin will reply with the number of tracks available.
-```
-{   
-    "context":"librarysync",
-    "type":"rep",
-    "data":{
-        "type":"full",
-        "payload":16262
-    }
-}
-```
-
-Generally the payload contains the number of the tracks currently in the library.
-
 #### Get metadata batch
 Since now the clients knows the number of tracks it has to start requesting batches of metadata to process and store.
 
@@ -72,6 +45,7 @@ After each batch request the client will reply
     "type":"rep",
     "data":{
         "type":"meta",
+        "total": 16262,
         "data":[
             {
                 "album":"Idja",
@@ -88,7 +62,7 @@ After each batch request the client will reply
 }
 
 ```
-
+> **total**: The total number of tracks in the library during the sync. This is used to know the number of tracks to request.
 ## Playlist Sync
 
 ### Getting the available playlists
@@ -114,6 +88,7 @@ In reply the plugin must send a message in the following format.
     "type": "req",
     "data": {
         "type": "get",
+        "total": 16,
         "playlists": [
             {
                 "name": "Name of the playlist",
@@ -128,6 +103,7 @@ In reply the plugin must send a message in the following format.
 > **name**: is the name of the playlist,
 > **tracks**: is the number of tracks in the specified playlist,
 > **hash**: is a sha1 hash of the playlist path on the filesystem
+> **total**: The total number of playlists available.
 
 
 ### Getting Tracks
