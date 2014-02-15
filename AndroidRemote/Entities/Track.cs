@@ -9,6 +9,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
             this.title = title;
             this.artist = artist;
             this.trackno = 0;
+            this.index = 0;
             this.hash = hash;
         }
 
@@ -16,9 +17,12 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         {
             this.artist = artist;
             this.title = title;
+            this.index = 0;
             this.hash = hash;
             this.trackno = trackNo;
         }
+
+        public int index { get; set; }
 
         public string hash { get; private set; }
 

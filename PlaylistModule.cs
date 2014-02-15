@@ -69,18 +69,22 @@ namespace MusicBeePlugin
             }
 
             var trackList = new List<Track>();
+            var index = 0;
 
             foreach (var path in pathList)
             {
                 var artist = api.Library_GetFileTag(path, Plugin.MetaDataType.Artist);
                 var track = api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle);
                 var curTrack = new Track(artist, track, Utilities.Sha1Hash(path));
+                curTrack.index = ++index;
                 trackList.Add(curTrack);
             }
 
             var message = new
             {
                 type = "gettracks",
+                playlist_hash = hash,
+                total = trackList.Count,
                 files = trackList
             };
 
