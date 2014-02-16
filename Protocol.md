@@ -89,6 +89,8 @@ In reply the plugin must send a message in the following format.
     "data": {
         "type": "get",
         "total": 16,
+        "limit": 50,
+        "offset": 0,
         "playlists": [
             {
                 "name": "Name of the playlist",
@@ -132,12 +134,14 @@ In order to get the tracks for a playlist the client has to send a message like 
     "type": "req",
     "data": {
         "type": "gettracks",
+        "playlist_hash": "6b541fd56872432839d3eb77b8212eb004c50129"
         "total": 1284,
         "files": [
             {
                 "artist": "Artist Name",
                 "title": "Track title",
                 "hash": "6b541fd56872432839d3eb77b8212eb004c50129"
+            },...
         ]
     }
 }
