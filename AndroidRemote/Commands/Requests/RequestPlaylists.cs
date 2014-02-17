@@ -16,13 +16,27 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             JsonObject obj = (JsonObject)eEvent.Data;
             string commandType = obj.Get("type");
 
+            int offset;
+            int limit;
             switch (commandType)
             {
                 case "get":
-                    Plugin.Instance.PlaylistModule.GetAvailablePlaylists();
+                    offset = obj.Get<int>("offset");
+                    limit = obj.Get<int>("limit");
+                    if (limit == 0)
+                    {
+                        limit = 50;
+                    }
+                    Plugin.Instance.PlaylistModule.GetAvailablePlaylists(eEvent.ClientId, limit, offset);
                     break;
                 case "gettracks":
-                    Plugin.Instance.PlaylistModule.GetTracksForPlaylist(obj.Get("hash"), eEvent.ClientId);
+                    offset = obj.Get<int>("offset");
+                    limit = obj.Get<int>("limit");
+                    if (limit == 0)
+                    {
+                        limit = 50;
+                    }
+                    Plugin.Instance.PlaylistModule.GetTracksForPlaylist(obj.Get("playlist_hash"), eEvent.ClientId, limit, offset);
                     break;
                 case "play":
                     Plugin.Instance.PlaylistModule.RequestPlaylistPlayNow(eEvent.DataToString());

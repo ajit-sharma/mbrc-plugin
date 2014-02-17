@@ -23,7 +23,10 @@ namespace MusicBeePlugin
         /// <summary>
         /// The function checks the MusicBee api and gets all the available playlist urls.
         /// </summary>
-        public void GetAvailablePlaylists()
+        /// <param name="client"></param>
+        /// <param name="limit"></param>
+        /// <param name="offset"></param>
+        public void GetAvailablePlaylists(string client, int limit = 50, int offset = 0)
         {
             api.Playlist_QueryPlaylists();
             string path;
@@ -41,13 +44,26 @@ namespace MusicBeePlugin
                 ch.CachePlaylists(playlists);
             }
 
+            var count = playlists.Count;
+            var afterOffset = (count - offset);
+            int internalLimit = limit;
+            if (afterOffset - limit < 0)
+            {
+                internalLimit = afterOffset;
+            }
+
+            playlists = playlists.GetRange(offset, internalLimit);
+
             var message = new
             {
                 type = "get",
+                limit,
+                offset,
+                total = count,
                 playlists
             };
 
-            SendSocketMessage(Constants.Playlists, Constants.Reply, message);
+            SendSocketMessage(Constants.Playlists, Constants.Reply, message, client);
         }
 
         /// <summary>
@@ -56,7 +72,9 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="hash">sha1 hash identifying the playlist</param>
         /// <param name="clientId">The id of the client</param>
-        public void GetTracksForPlaylist(string hash, string clientId)
+        /// <param name="limit"></param>
+        /// <param name="offset"></param>
+        public void GetTracksForPlaylist(string hash, string clientId, int limit = 50, int offset = 0)
         {
 
             string[] pathList = {};
@@ -75,20 +93,31 @@ namespace MusicBeePlugin
             {
                 var artist = api.Library_GetFileTag(path, Plugin.MetaDataType.Artist);
                 var track = api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle);
-                var curTrack = new Track(artist, track, Utilities.Sha1Hash(path));
-                curTrack.index = ++index;
+                var curTrack = new Track(artist, track, Utilities.Sha1Hash(path)) {index = ++index};
                 trackList.Add(curTrack);
             }
+
+            var count = trackList.Count;
+            var afterOffset = (count - offset);
+            var internalLimit = limit;
+            if (afterOffset - limit < 0)
+            {
+                internalLimit = afterOffset;
+            }
+
+            trackList = trackList.GetRange(offset, internalLimit);
 
             var message = new
             {
                 type = "gettracks",
                 playlist_hash = hash,
-                total = trackList.Count,
+                limit,
+                offset,
+                total = count,
                 files = trackList
             };
 
-            SendSocketMessage(Constants.Playlists, Constants.Reply, message);
+            SendSocketMessage(Constants.Playlists, Constants.Reply, message, clientId);
         }
 
         /// <summary>
