@@ -39,22 +39,9 @@ namespace MusicBeePlugin
                 newfiles = newFiles
             };
 
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData);
+            SendSocketMessage(Constants.Library, Constants.Reply, jsonData);
         }
 
-        public void SyncGetFilenames(string clientId)
-        {
-            string[] files = {};
-            api.Library_QueryFilesEx(String.Empty, ref files);
-            mData = mHelper.GetCachedFiles();
-            var jsonData = new
-            {
-                type = "full",
-                payload = files.Length
-            };
-
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, jsonData, clientId);
-        }
 
         public void SyncGetCover(string hash, string clientId)
         {
@@ -187,7 +174,7 @@ namespace MusicBeePlugin
                 data = buffer
             };
 
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
+            SendSocketMessage(Constants.Library, Constants.Reply, pack, client);
         }
 
         /// <summary>
@@ -198,13 +185,23 @@ namespace MusicBeePlugin
         /// <param name="limit">The limit.</param>
         public void SyncGetMetaData(int offset, string client, int limit = 50)
         {
-            var buffer = new List<MetaData>();
-            LibraryData entry;
-            do
+            var cached = mHelper.GetCachedFiles();
+            var count = cached.Count;
+            
+            var afterOffset = (count - offset);
+            int internalLimit = limit;
+            if (afterOffset - limit < 0)
             {
-                entry = mData[offset];
-                var file = entry.Filepath;
-                var meta = new MetaData {hash = entry.Hash, file = file};
+                internalLimit = afterOffset;
+            }
+
+            var buffer = new List<MetaData>();
+            cached = cached.GetRange(offset, internalLimit);
+
+            foreach (var data in cached)
+            {
+                var file = data.Filepath;
+                var meta = new MetaData { hash = data.Hash, file = file };
 
                 if (Plugin.MusicBeeVersion.v2_2 == api.MusicBeeVersion)
                 {
@@ -220,10 +217,17 @@ namespace MusicBeePlugin
                 {
                     Plugin.MetaDataType[] types =
                     {
-                        Plugin.MetaDataType.Artist, Plugin.MetaDataType.AlbumArtist, Plugin.MetaDataType.Album, Plugin.MetaDataType.TrackTitle, Plugin.MetaDataType.Genre, Plugin.MetaDataType.Year, Plugin.MetaDataType.TrackNo
+                        Plugin.MetaDataType.Artist,
+                        Plugin.MetaDataType.AlbumArtist,
+                        Plugin.MetaDataType.Album,
+                        Plugin.MetaDataType.TrackTitle,
+                        Plugin.MetaDataType.Genre,
+                        Plugin.MetaDataType.Year,
+                        Plugin.MetaDataType.TrackNo
                     };
+
                     var i = 0;
-                    string[] tags = {};
+                    string[] tags = { };
                     api.Library_GetFileTags(file, types, ref tags);
                     meta.artist = tags[i++];
                     meta.album_artist = tags[i++];
@@ -233,22 +237,20 @@ namespace MusicBeePlugin
                     meta.year = tags[i++];
                     meta.track_no = tags[i];
                 }
-                offset++;
-                buffer.Add(meta);
-            } while (entry != null && offset < mData.Count && buffer.Count < limit);
 
-            if (offset == mData.Count + 1)
-            {
-                mData = null;
+                buffer.Add(meta);
             }
 
             var pack = new
             {
                 type = "meta",
+                total = count,
+                limit,
+                offset,
                 data = buffer
             };
 
-            SendSocketMessage(Constants.LibrarySync, Constants.Reply, pack, client);
+            SendSocketMessage(Constants.Library, Constants.Reply, pack, client);
         }
     }
 }

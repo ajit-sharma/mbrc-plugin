@@ -5,7 +5,7 @@ using ServiceStack.Text;
 namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 {
     using Interfaces;
-    class RequestLibrarySync : ICommand
+    class RequestLibrary : ICommand
     {
         public void Dispose()
         {
@@ -21,9 +21,6 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                 string file;
                 switch (syncType)
                 {
-                    case "full":
-                        Plugin.Instance.SyncModule.SyncGetFilenames(eEvent.ClientId);
-                        break;
                     case "partial":
 
                         string[] cachedFiles = obj.Get<string[]>("files");
@@ -37,6 +34,10 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     case "meta":
                         int offset = obj.Get<int>("offset");
                         int limit = obj.Get<int>("limit");
+                        if (limit == 0)
+                        {
+                            limit = 50;;
+                        }
                         Plugin.Instance.SyncModule.SyncGetMetaData(offset, eEvent.ClientId, limit);
                         break;
                 }

@@ -68,7 +68,7 @@
         public const string PlaylistCreate = "playlistcreate";
 
         public const string Playlists = "playlists";
-        public const string LibrarySync = "librarysync";
+        public const string Library = "library";
         public const string LibraryMeta = "librarymeta";
 
         #endregion
