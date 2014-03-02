@@ -45,12 +45,13 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     moveTracks(eEvent);
                     break;
                 case "add":
+                    
                     break;
                 case "remove":
                     removeTrack(eEvent);
                     break;
                 case "create":
-                    createPlaylist(eEvent);
+                    CreatePlaylist(eEvent);
                     break;
             }
 
@@ -79,18 +80,15 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             Plugin.Instance.PlaylistModule.RequestPlaylistMove(eEvent.ClientId, src, @from, to);
         }
 
-        private void createPlaylist(IEvent eEvent)
+        private void CreatePlaylist(IEvent eEvent)
         {
-            JsonObject obj = (JsonObject) eEvent.Data;
-            string type, name, query;
-            string[] files = {};
-            type = obj.Get("type");
-            name = obj.Get("name");
-            query = obj.Get("query");
-            files = obj.Get<string[]>("data");
-            MetaTag tag = (MetaTag) Enum.Parse(typeof (MetaTag), type);
+            var obj = (JsonObject) eEvent.Data;
+            var name = obj.Get("name");
+            var data = obj.Get("data");
+            var selection = obj.Get("selection");
+            var tag = (MetaTag) Enum.Parse(typeof (MetaTag), selection);
 
-            Plugin.Instance.PlaylistModule.RequestPlaylistCreate(eEvent.ClientId, name, tag, query, files);
+            Plugin.Instance.PlaylistModule.RequestPlaylistCreate(eEvent.ClientId, name, tag, data);
         }
     }
 }

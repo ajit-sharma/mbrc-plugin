@@ -19,6 +19,8 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                 JsonObject obj = (JsonObject)eEvent.Data;
                 string syncType = obj.Get("type");
                 string file;
+                int offset;
+                int limit;
                 switch (syncType)
                 {
                     case "partial":
@@ -28,12 +30,17 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         //todo: fix partial sync call
                         break;
                     case "cover":
-                        file = obj.Get("hash");
-                        Plugin.Instance.SyncModule.SyncGetCover(file, eEvent.ClientId);
+                        offset = obj.Get<int>("offset");
+                        limit = obj.Get<int>("limit");
+                        if (limit == 0)
+                        {
+                            limit = 50;
+                        }
+                        Plugin.Instance.SyncModule.SyncGetCovers(eEvent.ClientId, offset, limit);
                         break;
                     case "meta":
-                        int offset = obj.Get<int>("offset");
-                        int limit = obj.Get<int>("limit");
+                        offset = obj.Get<int>("offset");
+                        limit = obj.Get<int>("limit");
                         if (limit == 0)
                         {
                             limit = 50;;

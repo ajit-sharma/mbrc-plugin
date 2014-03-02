@@ -141,13 +141,14 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
         }
 
-        public void RequestPlaylistCreate(string client, string name, MetaTag tag, string query, string[] files)
+        public void RequestPlaylistCreate(string client, string name, MetaTag selection, string data)
         {
-            if (tag != MetaTag.title)
+            var files = new string[] {};
+            if (selection != MetaTag.title)
             {
-                //files = _plugin.GetUrlsForTag(tag, query);
+                files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
-            string url = api.Playlist_CreatePlaylist(String.Empty, name, files);
+            var url = api.Playlist_CreatePlaylist(String.Empty, name, files);
             SendSocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
         }
 

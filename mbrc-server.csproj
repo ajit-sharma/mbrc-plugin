@@ -100,9 +100,6 @@
     <Compile Include="AndroidRemote\Commands\InstaReplies\RequestCover.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLfmLoveRating.cs" />
     <Compile Include="AndroidRemote\Commands\InstaReplies\RequestLyrics.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestLibAlbumTracks.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestLibArtistAlbums.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestLibGenreArtists.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibQueueAlbum.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibQueueArtist.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibQueueGenre.cs" />

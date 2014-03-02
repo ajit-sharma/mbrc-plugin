@@ -35,12 +35,9 @@ namespace MusicBeePlugin.Debugging
         {
             Plugin.Instance.SyncModule.BuildCache();
             Thread workerThread = new Thread(RunCacheBuilding);
-            Thread artistThread = new Thread(BuildArtistCache);
             workerThread.IsBackground = true;
             workerThread.Priority = ThreadPriority.AboveNormal;
             workerThread.Start();
-            artistThread.IsBackground = true;
-//            artistThread.Start();
         }
 
         private void getCoverButton_Click(object sender, EventArgs e)
@@ -53,18 +50,7 @@ namespace MusicBeePlugin.Debugging
 
         private void GetCovers()
         {
-            Plugin.Instance.SyncModule.SyncGetCover("","");
-            int count = 0;
-            int limit = 5;
-            Stopwatch sw = new Stopwatch();
-            sw.Start();
-            while (count < 1000)
-            {
-                Plugin.Instance.SyncModule.SyncGetCovers(count,"all", limit);
-                count += limit;
-            }
-            sw.Stop();
-            Debug.WriteLine("Time Elapsed {0}", sw.Elapsed);
+            Plugin.Instance.SyncModule.SyncGetCovers("all", 0, 5);
         }
 
         private void DebugTool_Load(object sender, EventArgs e)

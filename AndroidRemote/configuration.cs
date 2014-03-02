@@ -55,9 +55,6 @@
             controller.AddCommand(Constants.LibraryQueueGenre, typeof(RequestLibQueueGenre));
             controller.AddCommand(Constants.LibraryQueueTrack, typeof(RequestLibQueueTrack));
             controller.AddCommand(EventType.ReplyAvailable, typeof(ReplayAvailable));
-            controller.AddCommand(Constants.LibraryArtistAlbums, typeof(RequestLibArtistAlbums));
-            controller.AddCommand(Constants.LibraryAlbumTracks, typeof(RequestLibAlbumTracks));
-            controller.AddCommand(Constants.LibraryGenreArtists, typeof(RequestLibGenreArtists));
             controller.AddCommand(Constants.Playlists, typeof(RequestPlaylists));
             controller.AddCommand(Constants.Library, typeof(RequestLibrary));
         }

@@ -7,7 +7,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
     /// Class MetaData. 
     /// Represents a packet payload for library meta data.
     /// </summary>
-    class MetaData
+    class MetaData : IComparable<MetaData>
     {
         private const String Empty = @"[Empty]";
         private string _file;
@@ -18,6 +18,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         private string _title;
         private string _genre;
         private string _year;
+        private string _disc;
         private string _track_no;
 
         [IgnoreDataMember]
@@ -79,6 +80,30 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         {
             get { return _album_artist; }
             set { _album_artist = value; }
+        }
+
+        public string disc
+        {
+            get { return _disc; }
+            set { _disc = value; }
+        }
+
+        public int CompareTo(MetaData other)
+        {
+            if (!String.IsNullOrEmpty(album_artist) && other.album_artist != album_artist)
+            {
+                return String.Compare(album_artist, other.album_artist, StringComparison.OrdinalIgnoreCase);
+            }
+            if (!String.IsNullOrEmpty(album) && other.album != album)
+            {
+                return String.Compare(album, other.album, StringComparison.OrdinalIgnoreCase);
+            }
+            if (!String.IsNullOrEmpty(disc) && other.disc != disc)
+            {
+                return String.Compare(disc, other.disc, StringComparison.OrdinalIgnoreCase);
+            }
+            return String.Compare(track_no, other.track_no, StringComparison.OrdinalIgnoreCase);
+            
         }
     }
 }

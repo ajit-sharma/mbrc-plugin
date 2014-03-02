@@ -7,6 +7,7 @@
     {
         private string _coverhash;
         private string _image;
+        private string _album_id;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageData"/> class.
@@ -37,6 +38,16 @@
         {
             get { return _image; }
             set { _image = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the album_id.
+        /// </summary>
+        /// <value>The album_id.</value>
+        public string album_id
+        {
+            get { return _album_id; }
+            set { _album_id = value; }
         }
     }
 }
