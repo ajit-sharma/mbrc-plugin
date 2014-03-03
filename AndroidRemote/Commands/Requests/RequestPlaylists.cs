@@ -13,8 +13,8 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
-            JsonObject obj = (JsonObject)eEvent.Data;
-            string commandType = obj.Get("type");
+            var obj = (JsonObject)eEvent.Data;
+            var commandType = obj.Get("type");
 
             int offset;
             int limit;
@@ -42,13 +42,13 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     Plugin.Instance.PlaylistModule.RequestPlaylistPlayNow(eEvent.DataToString());
                     break;
                 case "move":
-                    moveTracks(eEvent);
+                    MoveTracks(eEvent);
                     break;
                 case "add":
-                    
+                    AddToPlaylist(eEvent);
                     break;
                 case "remove":
-                    removeTrack(eEvent);
+                    RemoveTrack(eEvent);
                     break;
                 case "create":
                     CreatePlaylist(eEvent);
@@ -57,38 +57,41 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         }
 
-        private void removeTrack(IEvent eEvent)
+        private static void RemoveTrack(IEvent eEvent)
         {
-            string src;
-            int index;
-
-            JsonObject obj = (JsonObject) eEvent.Data;
-            src = obj.Get("src");
-            index = int.Parse(obj.Get("index"));
-
+            var obj = (JsonObject) eEvent.Data;
+            var src = obj.Get("src");
+            var index = int.Parse(obj.Get("index"));
             Plugin.Instance.PlaylistModule.RequestPlaylistTrackRemove(src, index);
         }
 
-        private void moveTracks(IEvent eEvent)
+        private static void MoveTracks(IEvent eEvent)
         {
-            string src;
-            int from, to;
-            JsonObject obj = (JsonObject) eEvent.Data;
-            src = obj.Get("src");
-            @from = int.Parse(obj.Get("from"));
-            to = int.Parse(obj.Get("to"));
+            var obj = (JsonObject) eEvent.Data;
+            var src = obj.Get("src");
+            var @from = int.Parse(obj.Get("from"));
+            var to = int.Parse(obj.Get("to"));
             Plugin.Instance.PlaylistModule.RequestPlaylistMove(eEvent.ClientId, src, @from, to);
         }
 
-        private void CreatePlaylist(IEvent eEvent)
+        private static void CreatePlaylist(IEvent eEvent)
         {
             var obj = (JsonObject) eEvent.Data;
             var name = obj.Get("name");
             var data = obj.Get("data");
             var selection = obj.Get("selection");
             var tag = (MetaTag) Enum.Parse(typeof (MetaTag), selection);
-
             Plugin.Instance.PlaylistModule.RequestPlaylistCreate(eEvent.ClientId, name, tag, data);
+        }
+
+        private static void AddToPlaylist(IEvent eEvent)
+        {
+            var obj = (JsonObject) eEvent.Data;
+            var hash = obj.Get("hash");
+            var data = obj.Get("data");
+            var selection = obj.Get("selection");
+            var tag = (MetaTag) Enum.Parse(typeof (MetaTag), selection);
+            Plugin.Instance.PlaylistModule.RequestPlaylistAddTracks(eEvent.ClientId, hash, tag, data);
         }
     }
 }

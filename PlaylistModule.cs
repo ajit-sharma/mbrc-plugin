@@ -12,12 +12,14 @@ namespace MusicBeePlugin
     public class PlaylistModule : Messenger
     {
         private Plugin.MusicBeeApiInterface api;
-        private String mStoragePath;
+        private readonly String mStoragePath;
+        private CacheHelper _mHelper;
 
         public PlaylistModule(Plugin.MusicBeeApiInterface api, string mStoragePath)
         {
             this.api = api;
             this.mStoragePath = mStoragePath;
+            _mHelper = new CacheHelper(mStoragePath);
         }
 
         /// <summary>
@@ -31,7 +33,7 @@ namespace MusicBeePlugin
             api.Playlist_QueryPlaylists();
             string path;
             var playlists = new List<Playlist>();
-            var ch = new CacheHelper(mStoragePath);
+            
             while (true)
             {
                 string[] files = { };
@@ -41,7 +43,7 @@ namespace MusicBeePlugin
                 api.Playlist_QueryFilesEx(path, ref files);
                 var playlist = new Playlist(name, files.Count(), Utilities.Sha1Hash(path), path);
                 playlists.Add(playlist);
-                ch.CachePlaylists(playlists);
+                _mHelper.CachePlaylists(playlists);
             }
 
             var count = playlists.Count;
@@ -177,6 +179,26 @@ namespace MusicBeePlugin
             };
 
             SendSocketMessage(Constants.Playlists, Constants.Reply, message, clientId);
+        }
+
+        public void RequestPlaylistAddTracks(string client, string hash, MetaTag selection, string data)
+        {
+            var files = new string[] {};
+            var playlist = _mHelper.GetPlaylistByHash(hash);
+            if (selection != MetaTag.title)
+            {
+                files = Plugin.Instance.GetUrlsForTag(selection, data);
+            }
+            var success = api.Playlist_AppendFiles(playlist.path, files);
+            var message = new
+            {
+                type = "add",
+                hash,
+                selection,
+                data,
+                success
+            };
+            SendSocketMessage(Constants.Playlists, Constants.Reply, message);
         }
     }
 }

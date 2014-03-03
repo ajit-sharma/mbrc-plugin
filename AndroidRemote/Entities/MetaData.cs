@@ -100,10 +100,19 @@ namespace MusicBeePlugin.AndroidRemote.Entities
             }
             if (!String.IsNullOrEmpty(disc) && other.disc != disc)
             {
-                return String.Compare(disc, other.disc, StringComparison.OrdinalIgnoreCase);
+                int thisDisc;
+                int otherDisc;
+                int.TryParse(disc, out thisDisc);
+                int.TryParse(other.disc, out otherDisc);
+                return thisDisc - otherDisc;
             }
-            return String.Compare(track_no, other.track_no, StringComparison.OrdinalIgnoreCase);
-            
+
+            int thisTrack;
+            int otherTrack;
+            int.TryParse(track_no, out thisTrack);
+            int.TryParse(other.track_no, out otherTrack);
+            return thisTrack - otherTrack;
+
         }
     }
 }
