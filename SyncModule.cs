@@ -22,9 +22,9 @@ namespace MusicBeePlugin
         /// <summary>
         /// Initializes a new instance of the <see cref="SyncModule"/> class.
         /// </summary>
-        /// <param name="api">A reference to the MusicBeeApiInterface instance</param>
+        /// <param name="api">The MusicBeeApiInterface instance</param>
         /// <param name="storagePath">The storage path used by MusicBee in the application data</param>
-        public SyncModule(ref Plugin.MusicBeeApiInterface api, String storagePath)
+        public SyncModule(Plugin.MusicBeeApiInterface api, String storagePath)
         {
             _api = api;
             _mHelper = new CacheHelper(storagePath);
@@ -237,6 +237,10 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.Library, Constants.Reply, pack, client);
         }
 
+        /// <summary>
+        /// This method checks the state of the cache and is responsible for either
+        /// building the cache when empty of updating on start.
+        /// </summary>
         public void CheckCacheState()
         {
             var cached = _mHelper.GetCachedEntriesNumber();

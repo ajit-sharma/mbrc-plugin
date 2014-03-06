@@ -86,16 +86,12 @@ namespace MusicBeePlugin
                 return;
             }
 
-            var trackList = new List<Track>();
             var index = 0;
 
-            foreach (var path in pathList)
-            {
-                var artist = _api.Library_GetFileTag(path, Plugin.MetaDataType.Artist);
-                var track = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle);
-                var curTrack = new Track(artist, track, Utilities.Sha1Hash(path)) {index = ++index};
-                trackList.Add(curTrack);
-            }
+            var trackList = (from path in pathList
+                let artist = _api.Library_GetFileTag(path, Plugin.MetaDataType.Artist)
+                let track = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle)
+                select new Track(artist, track, Utilities.Sha1Hash(path)) {index = ++index}).ToList();
 
             var count = trackList.Count;
             var afterOffset = (count - offset);
@@ -137,7 +133,7 @@ namespace MusicBeePlugin
         /// <param name="index">The index of the index to remove</param>
         public void RequestPlaylistTrackRemove(string url,int index)
         {
-            bool success = _api.Playlist_RemoveAt(url, index);
+            var success = _api.Playlist_RemoveAt(url, index);
             SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
         }
 

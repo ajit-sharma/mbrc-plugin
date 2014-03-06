@@ -1,8 +1,7 @@
-using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Events;
-
 namespace MusicBeePlugin
 {
+    using AndroidRemote.Entities;
+    using AndroidRemote.Events;
     /// <summary>
     /// Class Messenger.
     /// A base class that can send messages to the socket.
@@ -18,8 +17,8 @@ namespace MusicBeePlugin
         /// <param name="client">The client.</param>
         protected void SendSocketMessage(string command, string type, object data, string client = "all")
         {
-            SocketMessage msg = new SocketMessage(command, type, data);
-            MessageEvent mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
+            var msg = new SocketMessage(command, type, data);
+            var mEvent = new MessageEvent(EventType.ReplyAvailable, msg.toJsonString());
             EventBus.FireEvent(mEvent);
         }
     }

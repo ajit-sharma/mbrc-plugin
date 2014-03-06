@@ -1,7 +1,6 @@
-using System.Linq;
-
 namespace MusicBeePlugin
 {
+    using System.Linq;
     using Debugging;
     using System.Windows.Forms;
     using System.Collections.Generic;
@@ -23,6 +22,7 @@ namespace MusicBeePlugin
     using AndroidRemote.Enumerations;
     using Timer = System.Timers.Timer;
 
+
     /// <summary>
     /// The MusicBee Plugin class. Used to communicate with the MusicBee API.
     /// </summary>
@@ -38,27 +38,7 @@ namespace MusicBeePlugin
         /// </summary>
         private readonly PluginInfo _about = new PluginInfo();
 
-        /// <summary>
-        /// The timer.
-        /// </summary>
-        private Timer _timer;
-
         private Timer _positionUpdateTimer;
-
-        /// <summary>
-        /// The shuffle.
-        /// </summary>
-        private bool _shuffle;
-
-        /// <summary>
-        /// Represents the current repeat mode.
-        /// </summary>
-        private RepeatMode _repeat;
-
-        /// <summary>
-        /// The scrobble.
-        /// </summary>
-        private bool _scrobble;
 
         /// <summary>
         /// Returns the plugin instance (Singleton);
@@ -124,8 +104,6 @@ namespace MusicBeePlugin
             ErrorHandler.SetLogFilePath(_api.Setting_GetPersistentStoragePath());
             _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
 
-            StartPlayerStatusMonitoring();
-
             _api.MB_AddMenuItem("mnuTools/MusicBee Remote", "Information Panel of the MusicBee Remote",
                                           MenuItemClicked);
 
@@ -179,51 +157,6 @@ namespace MusicBeePlugin
             {
                 _mWindow.UpdateSocketStatus(status);
             }
-        }
-
-        /// <summary>
-        /// The function populates the local player status variables and then
-        /// starts the Monitoring of the player status every 1000 ms to retrieve
-        /// any changes.
-        /// </summary>
-        private void StartPlayerStatusMonitoring()
-        {
-            _scrobble = _api.Player_GetScrobbleEnabled();
-            _repeat = _api.Player_GetRepeat();
-            _shuffle = _api.Player_GetShuffle();
-            _timer = new Timer {Interval = 1000};
-            _timer.Elapsed += HandleTimerElapsed;
-            _timer.Enabled = true;
-        }
-
-        /// <summary>
-        /// This function runs periodically every 1000 ms as the timer ticks and
-        /// checks for changes on the player status.  If a change is detected on
-        /// one of the monitored variables the function will fire an event with
-        /// the new status.
-        /// </summary>
-        /// <param name="sender">
-        /// The sender.
-        /// </param>
-        /// <param name="args">
-        /// The event arguments.
-        /// </param>
-        private void HandleTimerElapsed(object sender, ElapsedEventArgs args)
-        {
-            if (_api.Player_GetShuffle() != _shuffle)
-            {
-                _shuffle = _api.Player_GetShuffle();
-                SendSocketMessage(Constants.PlayerShuffle, Constants.Message, _shuffle);
-            }
-            if (_api.Player_GetScrobbleEnabled() != _scrobble)
-            {
-                _scrobble = _api.Player_GetScrobbleEnabled();
-                SendSocketMessage(Constants.PlayerScrobble, Constants.Message, _scrobble);
-            }
-
-            if (_api.Player_GetRepeat() == _repeat) return;
-            _repeat = _api.Player_GetRepeat();
-            SendSocketMessage(Constants.PlayerRepeat, Constants.Message, _repeat);
         }
 
         public void OpenInfoWindow()
@@ -299,8 +232,7 @@ namespace MusicBeePlugin
         /// </summary>
         public void SaveSettings()
         {
-            //UserSettings.SettingsModel = SettingsController.SettingsModel;
-            //UserSettings.SaveSettings("mbremote");
+            //Unused (Settings are explicitly saved on button click)
         }
 
         /// <summary>
@@ -348,6 +280,18 @@ namespace MusicBeePlugin
                     break;
                 case NotificationType.NowPlayingListChanged:
                     SendSocketMessage(Constants.NowPlayingListChanged, Constants.Message, true);
+                    break;
+                case NotificationType.PlayerRepeatChanged :
+                    var repeat = _api.Player_GetRepeat();
+                    SendSocketMessage(Constants.PlayerRepeat, Constants.Message, repeat);
+                    break;
+                case NotificationType.PlayerShuffleChanged:
+                    var shuffle = _api.Player_GetShuffle();
+                    SendSocketMessage(Constants.PlayerShuffle, Constants.Message, shuffle);
+                    break;
+                case NotificationType.PlayerScrobbleChanged:
+                    var scrobble = _api.Player_GetScrobbleEnabled();
+                    SendSocketMessage(Constants.PlayerScrobble, Constants.Message, scrobble);
                     break;
             }
         }
@@ -588,7 +532,7 @@ namespace MusicBeePlugin
             }
             else if (_api.ApiRevision >= 17)
             {
-                string lyrics = _api.NowPlaying_GetDownloadedLyrics();
+                var lyrics = _api.NowPlaying_GetDownloadedLyrics();
                 SendSocketMessage(Constants.NowPlayingLyrics, Constants.Reply, 
                     !String.IsNullOrEmpty(lyrics) ?
                     lyrics :
@@ -615,7 +559,7 @@ namespace MusicBeePlugin
             }
             else if (_api.ApiRevision >= 17)
             {
-                string cover = _api.NowPlaying_GetDownloadedArtwork();
+                var cover = _api.NowPlaying_GetDownloadedArtwork();
                 if (!String.IsNullOrEmpty(cover))
                 {
                     EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, cover, "",
@@ -643,8 +587,8 @@ namespace MusicBeePlugin
                     _api.Player_SetPosition(newPosition);
                 }
             }
-            int currentPosition = _api.Player_GetPosition();
-            int totalDuration = _api.NowPlaying_GetDuration();
+            var currentPosition = _api.Player_GetPosition();
+            var totalDuration = _api.NowPlaying_GetDuration();
 
             var position = new
                 {
@@ -850,16 +794,15 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.NowPlayingListMove, Constants.Reply, reply, clientId);
         }
 
-        private string XmlFilter(IEnumerable<string> tags, string query, bool isStrict)
+        private static string XmlFilter(IEnumerable<string> tags, string query, bool isStrict)
         {
             var filter = new XElement("Source", new XAttribute("Type", 1));
             var conditions = new XElement("Conditions", new XAttribute("CombineMethod", "Any"));
-            foreach (var tag in tags)
+            foreach (var condition in tags.Select(tag => new XElement("Condition",
+                new XAttribute("Field", tag),
+                new XAttribute("Comparison", isStrict ? "Is" : "Contains"),
+                new XAttribute("Value", query))))
             {
-                var condition = new XElement("Condition",
-                                                  new XAttribute("Field", tag),
-                                                  new XAttribute("Comparison", isStrict ? "Is" : "Contains"),
-                                                  new XAttribute("Value", query));
                 conditions.Add(condition);
             }
             filter.Add(conditions);
@@ -886,24 +829,18 @@ namespace MusicBeePlugin
 
             _api.Library_QueryFilesEx(filter, ref tracks);
 
-            var list = new List<MetaData>();
-            foreach (var file in tracks)
+            var list = tracks.Select(file => new MetaData
             {
-                var meta = new MetaData
-                {
-                    file = file,
-                    artist = _api.Library_GetFileTag(file, MetaDataType.Artist),
-                    album_artist = _api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-                    album = _api.Library_GetFileTag(file, MetaDataType.Album),
-                    title = _api.Library_GetFileTag(file, MetaDataType.TrackTitle),
-                    genre = _api.Library_GetFileTag(file, MetaDataType.Genre),
-                    year = _api.Library_GetFileTag(file, MetaDataType.Year),
-                    track_no = _api.Library_GetFileTag(file, MetaDataType.TrackNo),
-                    disc = _api.Library_GetFileTag(file, MetaDataType.DiscNo)
-                };
-
-                list.Add(meta);
-            }
+                file = file,
+                artist = _api.Library_GetFileTag(file, MetaDataType.Artist),
+                album_artist = _api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+                album = _api.Library_GetFileTag(file, MetaDataType.Album),
+                title = _api.Library_GetFileTag(file, MetaDataType.TrackTitle),
+                genre = _api.Library_GetFileTag(file, MetaDataType.Genre),
+                year = _api.Library_GetFileTag(file, MetaDataType.Year),
+                track_no = _api.Library_GetFileTag(file, MetaDataType.TrackNo),
+                disc = _api.Library_GetFileTag(file, MetaDataType.DiscNo)
+            }).ToList();
             list.Sort();
             tracks = list.Select(r => r.file)
                     .ToArray();
@@ -982,15 +919,15 @@ namespace MusicBeePlugin
         /// <param name="clientId">Client</param>
         public void NowPlayingSearch(string query, string clientId)
         {
-            bool result = false;
+            var result = false;
             _api.NowPlayingList_QueryFiles(XmlFilter(new[] {"ArtistPeople", "Title"}, query, false));
 
             while (true)
             {
-                string currentTrack = _api.NowPlayingList_QueryGetNextFile();
+                var currentTrack = _api.NowPlayingList_QueryGetNextFile();
                 if (String.IsNullOrEmpty(currentTrack)) break;
-                string artist = _api.Library_GetFileTag(currentTrack, MetaDataType.Artist);
-                string title = _api.Library_GetFileTag(currentTrack, MetaDataType.TrackTitle);
+                var artist = _api.Library_GetFileTag(currentTrack, MetaDataType.Artist);
+                var title = _api.Library_GetFileTag(currentTrack, MetaDataType.TrackTitle);
 
                 if (title.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0 &&
                     artist.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0) continue;

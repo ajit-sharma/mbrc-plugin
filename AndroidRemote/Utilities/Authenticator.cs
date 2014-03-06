@@ -1,16 +1,15 @@
-﻿using System.Collections.Concurrent;
-
-namespace MusicBeePlugin.AndroidRemote.Utilities
+﻿namespace MusicBeePlugin.AndroidRemote.Utilities
 {
-    using System.Collections.Generic;
-    using System.Linq;
     using Networking;
+    using System.Collections.Concurrent;
     /// <summary>
     /// Responsible for the client authentication. Keeps a list of the connected clients.
     /// </summary>
     public static class Authenticator
     {
-        private static readonly ConcurrentDictionary<string, SocketClient> ConnectedClients = new ConcurrentDictionary<string, SocketClient>(); 
+        private static readonly ConcurrentDictionary<string, SocketClient> ConnectedClients =
+            new ConcurrentDictionary<string, SocketClient>();
+
         /// <summary>
         /// Returns if a clients has passed the authentication stage and thus can receive data.
         /// </summary>
@@ -18,9 +17,9 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         /// <returns>true or false depending on the authentication state of the client</returns>
         public static bool IsClientAuthenticated(string clientId)
         {
-            bool authenticated = false;
+            var authenticated = false;
             SocketClient client;
-            if(ConnectedClients.TryGetValue(clientId, out client))
+            if (ConnectedClients.TryGetValue(clientId, out client))
             {
                 authenticated = client.Authenticated;
             }
@@ -49,7 +48,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         public static void AddClientOnConnect(string clientId)
         {
             SocketClient client;
-            if(ConnectedClients.ContainsKey(clientId))
+            if (ConnectedClients.ContainsKey(clientId))
             {
                 ConnectedClients.TryRemove(clientId, out client);
             }
