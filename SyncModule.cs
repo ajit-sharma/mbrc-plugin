@@ -1,64 +1,75 @@
-using System.Globalization;
-
 namespace MusicBeePlugin
 {
+    using System.Linq;
+    using System.Threading;
     using System;
+    using System.Globalization;
     using System.Collections.Generic;
     using AndroidRemote.Data;
     using AndroidRemote.Entities;
     using AndroidRemote.Networking;
     using AndroidRemote.Utilities;
+    /// <summary>
+    /// Class SyncModule.
+    /// Hosts the functionality responsible for the library sync operations.
+    /// </summary>
     public class SyncModule : Messenger
     {
         
-        private CacheHelper mHelper;
-        private Plugin.MusicBeeApiInterface api;
-        private List<LibraryData> mData;
+        private readonly CacheHelper _mHelper;
+        private Plugin.MusicBeeApiInterface _api;
 
-        public SyncModule(Plugin.MusicBeeApiInterface api, String storagePath)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SyncModule"/> class.
+        /// </summary>
+        /// <param name="api">A reference to the MusicBeeApiInterface instance</param>
+        /// <param name="storagePath">The storage path used by MusicBee in the application data</param>
+        public SyncModule(ref Plugin.MusicBeeApiInterface api, String storagePath)
         {
-            this.api = api;
-            mHelper = new CacheHelper(storagePath);
+            _api = api;
+            _mHelper = new CacheHelper(storagePath);
         }
 
+        /// <summary>
+        /// Checks for changes in the library and updates the cache.
+        /// </summary>
+        /// <param name="cachedFiles">The cached files.</param>
+        /// <param name="lastSync">The last synchronization date.</param>
         public void SyncCheckForChanges(string[] cachedFiles ,DateTime lastSync)
         {
             string[] newFiles = {};
             string[] deletedFiles = {};
             string[] updatedFiles ={};
 
-            api.Library_GetSyncDelta(cachedFiles, lastSync, Plugin.LibraryCategory.Music,
+            _api.Library_GetSyncDelta(cachedFiles, lastSync, Plugin.LibraryCategory.Music,
                 ref newFiles, ref updatedFiles, ref deletedFiles);
 
-            var jsonData = new
-            {
-                type = "partial",
-                update = updatedFiles,
-                deleted = deletedFiles,
-                newfiles = newFiles
-            };
-
-            SendSocketMessage(Constants.Library, Constants.Reply, jsonData);
+            _mHelper.AddNewFilesToCache(newFiles);
+            _mHelper.DeleteFilesFromCache(deletedFiles);
+            _mHelper.MarkFilesUpdated(updatedFiles);
         }
 
 
+        /// <summary>
+        /// Sends a JSON message to the client containing the base64 encoded covers
+        /// for the specified range.
+        /// </summary>
+        /// <param name="clientId">The identifier of the client that will receive the message.</param>
+        /// <param name="offset">The offset represents the index of the first cover.</param>
+        /// <param name="limit">The limit represents the number of the covers contained in the message.</param>
         public void SyncGetCovers(string clientId, int offset, int limit)
         {
-            var cached = mHelper.GetCoverHashes(limit, offset);
-            var buffer = new List<ImageData>();
-            foreach (var entry in cached)
-            {
-                var data = Utilities.GetCachedImage(entry.CoverHash);
-                var image = new ImageData(entry.CoverHash, data) {album_id = entry.AlbumId};
-                buffer.Add(image);
-            }
+            var cached = _mHelper.GetCoverHashes(limit, offset);
+            var buffer = (from entry in cached
+                let data = Utilities.GetCachedImage(entry.CoverHash)
+                select new ImageData(entry.CoverHash, data) {album_id = entry.AlbumId}).ToList();
 
             var pack = new
             {
                 type = "cover",
                 limit,
                 offset,
-                total = mHelper.GetCoversTotal(),
+                total = _mHelper.GetCoversTotal(),
                 data = buffer
             };
 
@@ -66,18 +77,14 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Builds the cache. Creates an association of SHA1 hashes and file paths on the local filesystem.
+        /// Builds the cache. Creates an association of SHA1 hashes and file paths on the local 
+        /// filesystem and then updates the internal SQLite database.
         /// </summary>
         public void BuildCache()
         {
             string[] files = {};
-            api.Library_QueryFilesEx(String.Empty, ref files);
-            mHelper.CreateCache(files);
-        }
-
-        public void BuildCoverCache()
-        {
-            BuildCoverCachePerAlbum();
+            _api.Library_QueryFilesEx(String.Empty, ref files);
+            _mHelper.AddNewFilesToCache(files);
         }
 
         /// <summary>
@@ -87,21 +94,21 @@ namespace MusicBeePlugin
         /// </summary>
         private void BuildCoverCachePerAlbum()
         {
-            var total = mHelper.GetCachedFiles();
+            var total = _mHelper.GetCachedFiles();
             var map = new Dictionary<string, AlbumEntry>();
 
             foreach (var libraryData in total)
             {
                 var path = libraryData.Filepath;
-                var id = api.Library_GetFileTag(path, Plugin.MetaDataType.AlbumId);
+                var id = _api.Library_GetFileTag(path, Plugin.MetaDataType.AlbumId);
                 AlbumEntry ab;
                 if (!map.TryGetValue(id, out ab))
                 {
                     ab = new AlbumEntry(id);
                     map.Add(id, ab);
                 }
-                var track_id = api.Library_GetFileTag(path, Plugin.MetaDataType.TrackNo);
-                var track = new AlbumTrack(path, !string.IsNullOrEmpty(track_id) ? int.Parse(track_id, NumberStyles.Any) : 0);
+                var trackId = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackNo);
+                var track = new AlbumTrack(path, !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0);
                 ab.Tracklist.Add(track);
 
             }
@@ -112,7 +119,7 @@ namespace MusicBeePlugin
             {
                 albumEntry.Tracklist.Sort();
                 var path = albumEntry.Tracklist[0].Path;
-                var cover = api.Library_GetArtworkUrl(path, -1);
+                var cover = _api.Library_GetArtworkUrl(path, -1);
                 if (string.IsNullOrEmpty(cover))
                 {
                     continue;
@@ -121,7 +128,7 @@ namespace MusicBeePlugin
                 albumEntry.CoverHash = Utilities.CacheArtworkImage(cover);
             }
 
-            mHelper.BuildImageCache(list);
+            _mHelper.BuildImageCache(list);
         }
 
         /// <summary>
@@ -131,25 +138,25 @@ namespace MusicBeePlugin
         /// </summary>
         public void BuildArtistCoverCache()
         {
-            List<Artist> artistList = new List<Artist>();
-            if (api.Library_QueryLookupTable("artist", "count", ""))
+            var artistList = new List<Artist>();
+            if (_api.Library_QueryLookupTable("artist", "count", ""))
             {
-                foreach (string entry in api.Library_QueryGetLookupTableValue(null).Split(new[] {"\0\0"}, StringSplitOptions.None))
-                {
-                    string[] artistInfo = entry.Split(new[] { '\0' });
-                    artistList.Add(new Artist(artistInfo[0], Int32.Parse(artistInfo[1])));
-                }
+                artistList.AddRange(
+                    _api.Library_QueryGetLookupTableValue(null)
+                        .Split(new[] {"\0\0"}, StringSplitOptions.None)
+                        .Select(entry => entry.Split(new[] {'\0'}))
+                        .Select(artistInfo => new Artist(artistInfo[0], Int32.Parse(artistInfo[1]))));
             }
 
-            api.Library_QueryLookupTable(null, null, null);
+            _api.Library_QueryLookupTable(null, null, null);
             foreach (var entry in artistList)
             {
                 string[] urls = {};
                 var artist = entry.artist;
-                api.Library_GetArtistPictureUrls(artist, true, ref urls);
+                _api.Library_GetArtistPictureUrls(artist, true, ref urls);
                 if (urls.Length <= 0) continue;
                 var hash = Utilities.CacheArtistImage(urls[0], artist);
-                mHelper.CacheArtistUrl(artist, hash);
+                _mHelper.CacheArtistUrl(artist, hash);
             }   
             
         }
@@ -162,11 +169,11 @@ namespace MusicBeePlugin
         /// <param name="limit">The limit.</param>
         public void SyncGetMetaData(int offset, string client, int limit = 50)
         {
-            var cached = mHelper.GetCachedFiles();
+            var cached = _mHelper.GetCachedFiles();
             var count = cached.Count;
             
             var afterOffset = (count - offset);
-            int internalLimit = limit;
+            var internalLimit = limit;
             if (afterOffset - limit < 0)
             {
                 internalLimit = afterOffset;
@@ -180,15 +187,15 @@ namespace MusicBeePlugin
                 var file = data.Filepath;
                 var meta = new MetaData { hash = data.Hash, file = file };
 
-                if (Plugin.MusicBeeVersion.v2_2 == api.MusicBeeVersion)
+                if (Plugin.MusicBeeVersion.v2_2 == _api.MusicBeeVersion)
                 {
-                    meta.artist = api.Library_GetFileTag(file, Plugin.MetaDataType.Artist);
-                    meta.album_artist = api.Library_GetFileTag(file, Plugin.MetaDataType.AlbumArtist);
-                    meta.album = api.Library_GetFileTag(file, Plugin.MetaDataType.Album);
-                    meta.title = api.Library_GetFileTag(file, Plugin.MetaDataType.TrackTitle);
-                    meta.genre = api.Library_GetFileTag(file, Plugin.MetaDataType.Genre);
-                    meta.year = api.Library_GetFileTag(file, Plugin.MetaDataType.Year);
-                    meta.track_no = api.Library_GetFileTag(file, Plugin.MetaDataType.TrackNo);
+                    meta.artist = _api.Library_GetFileTag(file, Plugin.MetaDataType.Artist);
+                    meta.album_artist = _api.Library_GetFileTag(file, Plugin.MetaDataType.AlbumArtist);
+                    meta.album = _api.Library_GetFileTag(file, Plugin.MetaDataType.Album);
+                    meta.title = _api.Library_GetFileTag(file, Plugin.MetaDataType.TrackTitle);
+                    meta.genre = _api.Library_GetFileTag(file, Plugin.MetaDataType.Genre);
+                    meta.year = _api.Library_GetFileTag(file, Plugin.MetaDataType.Year);
+                    meta.track_no = _api.Library_GetFileTag(file, Plugin.MetaDataType.TrackNo);
                 }
                 else
                 {
@@ -205,7 +212,7 @@ namespace MusicBeePlugin
 
                     var i = 0;
                     string[] tags = { };
-                    api.Library_GetFileTags(file, types, ref tags);
+                    _api.Library_GetFileTags(file, types, ref tags);
                     meta.artist = tags[i++];
                     meta.album_artist = tags[i++];
                     meta.album = tags[i++];
@@ -228,6 +235,31 @@ namespace MusicBeePlugin
             };
 
             SendSocketMessage(Constants.Library, Constants.Reply, pack, client);
+        }
+
+        public void CheckCacheState()
+        {
+            var cached = _mHelper.GetCachedEntriesNumber();
+
+            if (cached == 0)
+            {
+                Plugin.Instance.SyncModule.BuildCache();
+                var workerThread = new Thread(BuildCoverCachePerAlbum)
+                {
+                    IsBackground = true,
+                    Priority = ThreadPriority.Normal
+                };
+                workerThread.Start();
+            }
+            else
+            {
+                var lastUpdate = _mHelper.GetLastMetaDataUpdate();
+                var files = _mHelper.GetCachedFiles()
+                    .Select(r => r.Filepath)
+                    .ToArray();
+
+                SyncCheckForChanges(files, lastUpdate);
+            }
         }
     }
 }

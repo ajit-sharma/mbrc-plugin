@@ -146,6 +146,8 @@ namespace MusicBeePlugin
                                           DisplayDebugWindow);
 #endif
 
+            SyncModule.CheckCacheState();
+
             return _about;
         }
 

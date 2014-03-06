@@ -1,24 +1,23 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Enumerations;
-using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.AndroidRemote.Utilities;
-
 namespace MusicBeePlugin
 {
+    using AndroidRemote.Data;
+    using AndroidRemote.Entities;
+    using AndroidRemote.Enumerations;
+    using AndroidRemote.Networking;
+    using AndroidRemote.Utilities;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     public class PlaylistModule : Messenger
     {
-        private Plugin.MusicBeeApiInterface api;
-        private readonly String mStoragePath;
-        private CacheHelper _mHelper;
+        private Plugin.MusicBeeApiInterface _api;
+        private readonly String _mStoragePath;
+        private readonly CacheHelper _mHelper;
 
         public PlaylistModule(Plugin.MusicBeeApiInterface api, string mStoragePath)
         {
-            this.api = api;
-            this.mStoragePath = mStoragePath;
+            _api = api;
+            _mStoragePath = mStoragePath;
             _mHelper = new CacheHelper(mStoragePath);
         }
 
@@ -30,17 +29,16 @@ namespace MusicBeePlugin
         /// <param name="offset"></param>
         public void GetAvailablePlaylists(string client, int limit = 50, int offset = 0)
         {
-            api.Playlist_QueryPlaylists();
-            string path;
+            _api.Playlist_QueryPlaylists();
             var playlists = new List<Playlist>();
             
             while (true)
             {
                 string[] files = { };
-                path = api.Playlist_QueryGetNextPlaylist();
+                var path = _api.Playlist_QueryGetNextPlaylist();
                 if (String.IsNullOrEmpty(path)) break;
-                var name = api.Playlist_GetName(path);
-                api.Playlist_QueryFilesEx(path, ref files);
+                var name = _api.Playlist_GetName(path);
+                _api.Playlist_QueryFilesEx(path, ref files);
                 var playlist = new Playlist(name, files.Count(), Utilities.Sha1Hash(path), path);
                 playlists.Add(playlist);
                 _mHelper.CachePlaylists(playlists);
@@ -48,7 +46,7 @@ namespace MusicBeePlugin
 
             var count = playlists.Count;
             var afterOffset = (count - offset);
-            int internalLimit = limit;
+            var internalLimit = limit;
             if (afterOffset - limit < 0)
             {
                 internalLimit = afterOffset;
@@ -80,10 +78,10 @@ namespace MusicBeePlugin
         {
 
             string[] pathList = {};
-            var ch = new CacheHelper(mStoragePath);
+            var ch = new CacheHelper(_mStoragePath);
             var playlist = ch.GetPlaylistByHash(hash);
 
-            if (!api.Playlist_QueryFilesEx(playlist.path, ref pathList))
+            if (!_api.Playlist_QueryFilesEx(playlist.path, ref pathList))
             {
                 return;
             }
@@ -93,8 +91,8 @@ namespace MusicBeePlugin
 
             foreach (var path in pathList)
             {
-                var artist = api.Library_GetFileTag(path, Plugin.MetaDataType.Artist);
-                var track = api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle);
+                var artist = _api.Library_GetFileTag(path, Plugin.MetaDataType.Artist);
+                var track = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle);
                 var curTrack = new Track(artist, track, Utilities.Sha1Hash(path)) {index = ++index};
                 trackList.Add(curTrack);
             }
@@ -128,7 +126,7 @@ namespace MusicBeePlugin
         /// <param name="url">The playlist url</param>
         public void RequestPlaylistPlayNow(string url)
         {
-            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, api.Playlist_PlayNow(url));
+            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(url));
         }
 
         /// <summary>
@@ -139,7 +137,7 @@ namespace MusicBeePlugin
         /// <param name="index">The index of the index to remove</param>
         public void RequestPlaylistTrackRemove(string url,int index)
         {
-            bool success = api.Playlist_RemoveAt(url, index);
+            bool success = _api.Playlist_RemoveAt(url, index);
             SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
         }
 
@@ -150,13 +148,12 @@ namespace MusicBeePlugin
             {
                 files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
-            var url = api.Playlist_CreatePlaylist(String.Empty, name, files);
+            var url = _api.Playlist_CreatePlaylist(String.Empty, name, files);
             SendSocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
         }
 
         public void RequestPlaylistMove(string clientId, string src, int from, int to)
         {
-            bool success;
             int[] aFrom = { @from };
             int dIn;
             if (@from > to)
@@ -168,7 +165,7 @@ namespace MusicBeePlugin
                 dIn = to;
             }
 
-            success = api.Playlist_MoveFiles(src, aFrom, dIn);
+            var success = _api.Playlist_MoveFiles(src, aFrom, dIn);
 
             var message = new
             {
@@ -181,6 +178,13 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.Playlists, Constants.Reply, message, clientId);
         }
 
+        /// <summary>
+        /// Handles the request to add to tracks to an existing playlist
+        /// </summary>
+        /// <param name="client">The client id.</param>
+        /// <param name="hash">The hash representing the playlist.</param>
+        /// <param name="selection">The selection type.</param>
+        /// <param name="data">The data.</param>
         public void RequestPlaylistAddTracks(string client, string hash, MetaTag selection, string data)
         {
             var files = new string[] {};
@@ -189,7 +193,7 @@ namespace MusicBeePlugin
             {
                 files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
-            var success = api.Playlist_AppendFiles(playlist.path, files);
+            var success = _api.Playlist_AppendFiles(playlist.path, files);
             var message = new
             {
                 type = "add",

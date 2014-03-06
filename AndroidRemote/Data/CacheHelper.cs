@@ -1,46 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Diagnostics;
-using System.IO;
-using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Error;
+﻿using System.Diagnostics;
 
 namespace MusicBeePlugin.AndroidRemote.Data
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Data.SQLite;
+    using System.IO;
+    using Entities;
+    using Error;
     /// <summary>
     /// Class CacheHelper.
     /// Is used to handle the library data and cover cache
     /// </summary>
     class CacheHelper
     {
-        private const string CREATE_TABLE = "CREATE TABLE \"data\" (" +
+        private const string CreateTable = "CREATE TABLE \"data\" (" +
                                             "\"_id\" integer primary key," +
                                             "\"hash\" TEXT," +
                                             "\"updated\" TEXT," +
                                             "\"filepath\" TEXT);";
 
-        private const string ARTIST_IMAGE_TABLE = "CREATE TABLE \"artist_images\" (" +
+        private const string ArtistImageTable = "CREATE TABLE \"artist_images\" (" +
                                                   "\"_id\" integer primary key," +
                                                   "\"artist\" TEXT," +
                                                   "\"updated\" TEXT," +
                                                   "\"url\" TEXT);";
 
-        private const string PLAYLIST_TABLE = "create table \"playlists\" (" +
+        private const string PlaylistTable = "create table \"playlists\" (" +
                                               "\"_id\" integer primary key," +
                                               "\"name\" text," +
                                               "\"path\" text," +
                                               "\"hash\" text)";
 
-        private const string COVER_CACHE_TABLE = "create table \"covers\" (" +
+        private const string CoverCacheTable = "create table \"covers\" (" +
                                                  "\"_id\" integer primary key," +
                                                  "\"coverhash\" text," +
                                                  "\"updated\" text," +
                                                  "\"album_id\" text)";
 
-        private const string DB_NAME = @"\\cache.db";
-        private string storagePath;
-        private readonly string dbConnection;
+        private const string DbName = @"\\cache.db";
+        
+        private readonly string _dbConnection;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CacheHelper"/> class.
@@ -48,31 +48,29 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// <param name="storagePath">The storage path.</param>
         public CacheHelper(string storagePath)
         {
-            this.storagePath = storagePath + DB_NAME;
-            this.dbConnection = String.Format("Data Source={0}", this.storagePath);
+            storagePath = storagePath + DbName;
+            _dbConnection = String.Format("Data Source={0}", storagePath);
             try
             {
-                if (!File.Exists(this.storagePath))
+                if (File.Exists(storagePath)) return;
+                SQLiteConnection.CreateFile(storagePath);
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection)) 
                 {
-                    SQLiteConnection.CreateFile(this.storagePath);
-                    using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
-                    using (SQLiteCommand mCommand = new SQLiteCommand(mConnection)) 
-                    {
-                        mConnection.Open();
-                        mCommand.CommandText = CREATE_TABLE;
-                        mCommand.ExecuteNonQuery();
+                    mConnection.Open();
+                    mCommand.CommandText = CreateTable;
+                    mCommand.ExecuteNonQuery();
 
-                        mCommand.CommandText = ARTIST_IMAGE_TABLE;
-                        mCommand.ExecuteNonQuery();
+                    mCommand.CommandText = ArtistImageTable;
+                    mCommand.ExecuteNonQuery();
 
-                        mCommand.CommandText = PLAYLIST_TABLE;
-                        mCommand.ExecuteNonQuery();
+                    mCommand.CommandText = PlaylistTable;
+                    mCommand.ExecuteNonQuery();
                         
-                        mCommand.CommandText = COVER_CACHE_TABLE;
-                        mCommand.ExecuteNonQuery();
+                    mCommand.CommandText = CoverCacheTable;
+                    mCommand.ExecuteNonQuery();
 
-                        mConnection.Close();
-                    }
+                    mConnection.Close();
                 }
             }
             catch (Exception e)
@@ -83,11 +81,43 @@ namespace MusicBeePlugin.AndroidRemote.Data
             }
         }
 
+        /// <summary>
+        /// Gets the cached entries number.
+        /// </summary>
+        /// <returns>System.Int32.</returns>
+        public int GetCachedEntriesNumber()
+        {
+            var total = 0;
+            try
+            {
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "select count(*) as count from data";
+                    var mReader = mCommand.ExecuteReader();
+                    while (mReader.Read())
+                    {
+                        total = int.Parse(mReader["count"].ToString());
+                    }
+                    mReader.Close();
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+            return total;  
+        }
+
         public void CachePlaylists(List<Playlist> playlists)
         {
             try
             {
-                using (var mConnection = new SQLiteConnection(dbConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
                 {
                     mConnection.Open();
                     using (var mCommand = new SQLiteCommand(mConnection))
@@ -131,7 +161,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
             var playlist = new Playlist();
             try
             {
-                using (var mConnection = new SQLiteConnection(dbConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
                 {
                     mConnection.Open();
                     using (var mCommand = new SQLiteCommand(mConnection))
@@ -159,11 +189,16 @@ namespace MusicBeePlugin.AndroidRemote.Data
             return playlist;
         }
 
-        public void CreateCache(string[] filenames)
+
+        /// <summary>
+        /// Adds the new files to cache.
+        /// </summary>
+        /// <param name="files">The paths to the files added in the cache.</param>
+        public void AddNewFilesToCache(string[] files)
         {
             try
             {
-                using (var mConnection = new SQLiteConnection(dbConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
                 {
                     mConnection.Open();
                     using (var mCommand = new SQLiteCommand(mConnection))
@@ -180,11 +215,11 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         mCommand.Parameters.Add(fileParam);
                         mCommand.Parameters.Add(updatedParam);
 
-                        foreach (var filename in filenames)
+                        foreach (var filename in files)
                         {
                             hashParam.Value = Utilities.Utilities.Sha1Hash(filename);
                             fileParam.Value = filename;
-                            updatedParam.Value = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                            updatedParam.Value = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
                             mCommand.ExecuteNonQuery();    
                         }
                         mTransaction.Commit();
@@ -200,14 +235,90 @@ namespace MusicBeePlugin.AndroidRemote.Data
             }
         }
 
+        /// <summary>
+        /// Deletes the files from cache.
+        /// </summary>
+        /// <param name="files">The files.</param>
+        public void DeleteFilesFromCache(string[] files)
+        {
+            try
+            {
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                {
+                    mConnection.Open();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    using (var mTransaction = mConnection.BeginTransaction())
+                    {
+                        mCommand.CommandText = "delete from data where filepath=@filepath";
+                        var fileParam = mCommand.CreateParameter();
+                        fileParam.ParameterName = "@filepath";
+                        mCommand.Parameters.Add(fileParam);
+                        
+                        foreach (var filename in files)
+                        {
+                            fileParam.Value = filename;   
+                            mCommand.ExecuteNonQuery();
+                        }
+                        mTransaction.Commit();
+                    }
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Marks the files as updated in the cache.
+        /// </summary>
+        /// <param name="files">The files.</param>
+        public void MarkFilesUpdated(string[] files)
+        {
+            try
+            {
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                {
+                    mConnection.Open();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    using (var mTransaction = mConnection.BeginTransaction())
+                    {
+                        mCommand.CommandText = "update data set updated=@updated where filepath=@filepath";
+                        var fileParam = mCommand.CreateParameter();
+                        var updatedParam = mCommand.CreateParameter();
+                        fileParam.ParameterName = "@filepath";
+                        updatedParam.ParameterName = "@updated";
+                        mCommand.Parameters.Add(fileParam);
+                        mCommand.Parameters.Add(updatedParam);
+                        foreach (var filename in files)
+                        {
+                            fileParam.Value = filename;
+                            updatedParam.Value = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                            mCommand.ExecuteNonQuery();
+                        }
+                        mTransaction.Commit();
+                    }
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+#if DEBUG
+                ErrorHandler.LogError(e);
+#endif
+            }
+        }
+
+
         public void BuildImageCache(List<AlbumEntry> data)
         {
             try
             {
-                using (var mConnection = new SQLiteConnection(dbConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
                 {
-                    Stopwatch sw = new Stopwatch();
-                    sw.Start();
                     mConnection.Open();
                     using (var mCommand = new SQLiteCommand(mConnection))
                     using (var mTransaction = mConnection.BeginTransaction())
@@ -230,15 +341,12 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         {
                             cHashParam.Value = entry.CoverHash;
                             albumIdParam.Value = entry.AlbumId;
-                            updated.Value = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ssZ");
+                            updated.Value = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
                             mCommand.ExecuteNonQuery();   
                         }
                         mTransaction.Commit();
                     }
                     mConnection.Close();
-                    sw.Stop();
-                    Debug.WriteLine("Update transaction time {0}", sw.Elapsed);
-
                 }
             }
             catch (Exception e)
@@ -255,11 +363,11 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// <returns>List{LibraryData}.</returns>
         public List<LibraryData> GetCachedFiles()
         {
-            List<LibraryData> data = new List<LibraryData>();
+            var data = new List<LibraryData>();
             try
             {
-                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
-                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
                 {
                     mConnection.Open();
                     mCommand.CommandText = "select * from data";
@@ -291,7 +399,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
             var total = 0;
             try
             {
-                using (var mConnection = new SQLiteConnection(dbConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
                 using (var mCommand = new SQLiteCommand(mConnection))
                 {
                     mConnection.Open();
@@ -325,7 +433,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
             var data = new List<AlbumEntry>();
             try
             {
-                using (var mConnection = new SQLiteConnection(dbConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
                 using (var mCommand = new SQLiteCommand(mConnection))
                 {
                     mConnection.Open();
@@ -370,8 +478,8 @@ namespace MusicBeePlugin.AndroidRemote.Data
         {
             try
             {
-                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
-                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
                 {
                     mConnection.Open();
                     mCommand.CommandText = "insert into artist_images (artist, url) values (@artist, @url);";
@@ -391,22 +499,51 @@ namespace MusicBeePlugin.AndroidRemote.Data
         }
 
         /// <summary>
+        /// Returns the date of the latest metadata entry update.
+        /// </summary>
+        /// <returns>DateTime.</returns>
+        public DateTime GetLastMetaDataUpdate()
+        {
+            var date = DateTime.UtcNow;
+            try
+            {
+                using(var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "select updated from data order by updated desc limit 1";
+                    var mReader = mCommand.ExecuteReader();
+                    mReader.Read();
+                    date = DateTime.Parse(mReader["updated"].ToString());
+                    mConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                ErrorHandler.LogError(ex);
+#endif
+            }
+            return date;
+        }
+
+        /// <summary>
         /// Gets the entry by hash.
         /// </summary>
         /// <param name="hash">The hash sha1 hash of the entry.</param>
         /// <returns>LibraryData.</returns>
         public LibraryData GetEntryByHash(string hash)
         {
-            LibraryData data = new LibraryData();
+            var data = new LibraryData();
             try
             {
-                using (SQLiteConnection mConnection = new SQLiteConnection(dbConnection))
-                using (SQLiteCommand mCommand = new SQLiteCommand(mConnection))
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
                 {
                     mConnection.Open();
                     mCommand.CommandText = "select * from data where hash=@hash";
                     mCommand.Parameters.AddWithValue("@hash", hash);
-                    SQLiteDataReader mReader = mCommand.ExecuteReader();
+                    var mReader = mCommand.ExecuteReader();
                     while (mReader.Read())
                     {
                         data.CoverHash = mReader["coverhash"].ToString();
