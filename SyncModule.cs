@@ -61,7 +61,7 @@ namespace MusicBeePlugin
         {
             var cached = _mHelper.GetCoverHashes(limit, offset);
             var buffer = (from entry in cached
-                let data = Utilities.GetCachedImage(entry.CoverHash)
+                let data = Utilities.GetCachedCoverBase64(entry.CoverHash)
                 select new ImageData(entry.CoverHash, data) {album_id = entry.AlbumId}).ToList();
 
             var pack = new
@@ -125,7 +125,7 @@ namespace MusicBeePlugin
                     continue;
                 }
 
-                albumEntry.CoverHash = Utilities.CacheArtworkImage(cover);
+                albumEntry.CoverHash = Utilities.StoreCoverToCache(cover);
             }
 
             _mHelper.BuildImageCache(list);

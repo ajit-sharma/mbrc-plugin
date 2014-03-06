@@ -60,6 +60,11 @@ namespace MusicBeePlugin
 
         public PlaylistModule PlaylistModule { get; private set; }
 
+        private Timer _timer;
+        private bool _scrobble;
+        private RepeatMode _repeat;
+        private bool _shuffle;
+
 
         /// <summary>
         /// This function initialized the Plugin.
@@ -125,8 +130,48 @@ namespace MusicBeePlugin
 #endif
 
             SyncModule.CheckCacheState();
+            StartPlayerStatusMonitoring();
 
             return _about;
+        }
+
+        /// <summary>
+        /// Starts the player status monitoring.
+        /// </summary>
+        private void StartPlayerStatusMonitoring()
+        {
+            _scrobble = _api.Player_GetScrobbleEnabled();
+            _repeat = _api.Player_GetRepeat();
+            _shuffle = _api.Player_GetShuffle();
+            _timer = new Timer { Interval = 1000 };
+            _timer.Elapsed += HandleTimerElapsed;
+            _timer.Enabled = true;
+        }
+
+        /// <summary>
+        /// This function runs periodically every 1000 ms as the timer ticks and
+        /// checks for changes on the player status. If a change is detected on
+        /// one of the monitored variables the function will fire an event with
+        /// the new status.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="args">The event arguments.</param>
+        private void HandleTimerElapsed(object sender, ElapsedEventArgs args)
+        {
+            if (_api.Player_GetShuffle() != _shuffle)
+            {
+                _shuffle = _api.Player_GetShuffle();
+                SendSocketMessage(Constants.PlayerShuffle, Constants.Message, _shuffle);
+            }
+            if (_api.Player_GetScrobbleEnabled() != _scrobble)
+            {
+                _scrobble = _api.Player_GetScrobbleEnabled();
+                SendSocketMessage(Constants.PlayerScrobble, Constants.Message, _scrobble);
+            }
+
+            if (_api.Player_GetRepeat() == _repeat) return;
+            _repeat = _api.Player_GetRepeat();
+            SendSocketMessage(Constants.PlayerRepeat, Constants.Message, _repeat);
         }
 
         private void PositionUpdateTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)

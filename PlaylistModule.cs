@@ -201,4 +201,5 @@ namespace MusicBeePlugin
             SendSocketMessage(Constants.Playlists, Constants.Reply, message);
         }
     }
+
 }
