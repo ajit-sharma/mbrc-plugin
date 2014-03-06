@@ -1,25 +1,18 @@
-﻿using System.Collections.Generic;
-using MusicBeePlugin.AndroidRemote.Entities;
-using ServiceStack.Text;
+﻿using System.Linq;
 
 namespace MusicBeePlugin.AndroidRemote.Networking
 {
+    using System.Collections.Generic;
+    using Entities;
+    using ServiceStack.Text;
     using Events;
     using System;
     using System.Diagnostics;
-    using System.Globalization;
     using Error;
     using Utilities;
 
     internal class ProtocolHandler
     {
-
-
-        public ProtocolHandler()
-        {
-         
-        }
-
         /// <summary>
         /// Processes the incoming message and answer's sending back the needed data.
         /// </summary>
@@ -29,14 +22,11 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         {
             try
             {
-                List<SocketMessage> msgList = new List<SocketMessage>();
+                var msgList = new List<SocketMessage>();
                 
                 try
-                {                    
-                    foreach (string msg in messages)
-                    {
-                        msgList.Add(new SocketMessage(JsonObject.Parse(msg)));
-                    }
+                {
+                    msgList.AddRange(messages.Select(msg => new SocketMessage(JsonObject.Parse(msg))));
                 }
                 catch (Exception ex)
                 {
@@ -51,7 +41,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 #endif                 
                 }
 
-                foreach (SocketMessage msg in msgList)
+                foreach (var msg in msgList)
                 {
                     if (Authenticator.Client(clientId).PacketNumber == 0 && msg.context != Constants.Player)
                     {

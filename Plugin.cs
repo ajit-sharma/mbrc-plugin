@@ -293,6 +293,12 @@ namespace MusicBeePlugin
                     var scrobble = _api.Player_GetScrobbleEnabled();
                     SendSocketMessage(Constants.PlayerScrobble, Constants.Message, scrobble);
                     break;
+                case NotificationType.AutoDjStarted:
+                    SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, true);
+                    break;
+                case NotificationType.AutoDjStopped:
+                    SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, false);
+                    break;
             }
         }
 

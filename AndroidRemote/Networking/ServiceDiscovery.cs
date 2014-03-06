@@ -1,71 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Text;
-using MusicBeePlugin.AndroidRemote.Settings;
-using MusicBeePlugin.Tools;
-using ServiceStack.Text;
-
-namespace MusicBeePlugin.AndroidRemote.Networking
+﻿namespace MusicBeePlugin.AndroidRemote.Networking
 {
-    class ServiceDiscovery
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
+    using Settings;
+    using Tools;
+    using ServiceStack.Text;
+    internal class ServiceDiscovery
     {
-        private const int mPort = 45345;
-        private static readonly IPAddress MulticastAddress = IPAddress.Parse("239.1.5.10");
-        private UdpClient mListener;
-        private readonly static ServiceDiscovery Disc = new ServiceDiscovery();
+        private const int MPort = 45345;
+        private const string MulticastIp = "239.1.5.10";
+        private static readonly IPAddress MulticastAddress = IPAddress.Parse(MulticastIp);
+        private static readonly ServiceDiscovery Disc = new ServiceDiscovery();
+        private UdpClient _mListener;
+
+        private ServiceDiscovery()
+        {
+        }
 
         public static ServiceDiscovery Instance
         {
             get { return Disc; }
         }
 
-        private ServiceDiscovery()
-        {
-        }
-
         public void Start()
         {
-            mListener = new UdpClient(mPort, AddressFamily.InterNetwork) {EnableBroadcast = true};
-            mListener.JoinMulticastGroup(MulticastAddress);
-            mListener.BeginReceive(OnDataReceived, null);
+            _mListener = new UdpClient(MPort, AddressFamily.InterNetwork) {EnableBroadcast = true};
+            _mListener.JoinMulticastGroup(MulticastAddress);
+            _mListener.BeginReceive(OnDataReceived, null);
         }
 
         private void OnDataReceived(IAsyncResult ar)
         {
-            IPEndPoint mEndPoint = new IPEndPoint(IPAddress.Any, mPort);
-            byte[] request = mListener.EndReceive(ar, ref mEndPoint);
-            string mRequest = Encoding.UTF8.GetString(request);
-            JsonObject incoming = JsonObject.Parse(mRequest);
+            var mEndPoint = new IPEndPoint(IPAddress.Any, MPort);
+            var request = _mListener.EndReceive(ar, ref mEndPoint);
+            var mRequest = Encoding.UTF8.GetString(request);
+            var incoming = JsonObject.Parse(mRequest);
 
             if (incoming.Get("context").Contains("discovery"))
             {
-                List<string> addresses = NetworkTools.GetPrivateAddressList();
-                IPAddress clientAddress = IPAddress.Parse(incoming.Get("address"));
-                string interfaceAddress = String.Empty;
-                foreach (string address in addresses)
+                var addresses = NetworkTools.GetPrivateAddressList();
+                var clientAddress = IPAddress.Parse(incoming.Get("address"));
+                var interfaceAddress = String.Empty;
+                foreach (var ifAddress in from address in addresses
+                    let ifAddress = IPAddress.Parse(address)
+                    let subnetMask = NetworkTools.GetSubnetMask(address)
+                    let firstNetwork = NetworkTools.GetNetworkAddress(ifAddress, subnetMask)
+                    let secondNetwork = NetworkTools.GetNetworkAddress(clientAddress, subnetMask)
+                    where firstNetwork.Equals(secondNetwork)
+                    select ifAddress)
                 {
-                    IPAddress ifAddress = IPAddress.Parse(address);
-                    IPAddress subnetMask = NetworkTools.GetSubnetMask(address);
-
-                    IPAddress firstNetwork = NetworkTools.GetNetworkAddress(ifAddress, subnetMask);
-                    IPAddress secondNetwork = NetworkTools.GetNetworkAddress(clientAddress, subnetMask);
-                    if (!firstNetwork.Equals(secondNetwork)) continue;
                     interfaceAddress = ifAddress.ToString();
                     break;
                 }
 
-                Dictionary<string, object> notify = new Dictionary<string, object>();
-                notify.Add("context","notify");
-                notify.Add("address", interfaceAddress);
-                notify.Add("name", Environment.GetEnvironmentVariable("COMPUTERNAME"));
-                notify.Add("port", UserSettings.Instance.ListeningPort);
-                byte[] response = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(notify));
-                mListener.Send(response, response.Length, mEndPoint);                      
+                var notify = new Dictionary<string, object>
+                {
+                    {"context", "notify"},
+                    {"address", interfaceAddress},
+                    {"name", Environment.GetEnvironmentVariable("COMPUTERNAME")},
+                    {"port", UserSettings.Instance.ListeningPort}
+                };
+                var response = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(notify));
+                _mListener.Send(response, response.Length, mEndPoint);
             }
-            mListener.BeginReceive(OnDataReceived, null);
+            _mListener.BeginReceive(OnDataReceived, null);
         }
-
     }
 }

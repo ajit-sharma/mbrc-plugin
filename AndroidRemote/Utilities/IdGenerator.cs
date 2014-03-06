@@ -9,16 +9,14 @@
         {
             const int maxSize = 8;
             const string a = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-            char[] chars = a.ToCharArray();
-            int size = maxSize;
-            byte[] data = new byte[1];
-            RNGCryptoServiceProvider crypto = new RNGCryptoServiceProvider();
+            var chars = a.ToCharArray();
+            var data = new byte[1];
+            var crypto = new RNGCryptoServiceProvider();
             crypto.GetNonZeroBytes(data);
-            size = maxSize;
-            data = new byte[size];
+            data = new byte[maxSize];
             crypto.GetNonZeroBytes(data);
-            StringBuilder result = new StringBuilder(size);
-            foreach (byte b in data)
+            var result = new StringBuilder(maxSize);
+            foreach (var b in data)
             {
                 result.Append(chars[b%(chars.Length - 1)]);
             }

@@ -1,55 +1,65 @@
-﻿using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using MusicBeePlugin.AndroidRemote.Error;
-using Encoder = System.Drawing.Imaging.Encoder;
-
-namespace MusicBeePlugin.AndroidRemote.Utilities
+﻿namespace MusicBeePlugin.AndroidRemote.Utilities
 {
+    using System;
+    using System.Drawing;
+    using System.Drawing.Drawing2D;
+    using System.Drawing.Imaging;
+    using System.IO;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
+    using Error;
+    using Encoder = System.Drawing.Imaging.Encoder;
+
     public class Utilities
     {
-        private static SHA1Managed sha1 = new SHA1Managed();
-        private static byte[] hash = new byte[20];
+        private static readonly SHA1Managed Sha1 = new SHA1Managed();
+        private static byte[] _hash = new byte[20];
 
+        /// <summary>
+        /// Gets a string value and calculates the sha1 hash of the string.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>System.String. The SHA1 hash value of the string</returns>
         public static string Sha1Hash(string value)
         {
             var mHash = new String('0', 40);
-            if (!String.IsNullOrEmpty(value))
+            if (String.IsNullOrEmpty(value)) return mHash;
+            _hash = Sha1.ComputeHash(Encoding.UTF8.GetBytes(value));
+            var sb = new StringBuilder();
+            foreach (var hex in _hash.Select(b => b.ToString("x2")))
             {
-                hash = sha1.ComputeHash(Encoding.UTF8.GetBytes(value));
-                var sb = new StringBuilder();
-                foreach (byte b in hash)
-                {
-                    var hex = b.ToString("x2");
-                    sb.Append(hex);
-                }
-                mHash = sb.ToString();
+                sb.Append(hex);
             }
-
+            mHash = sb.ToString();
             return mHash;
         }
 
+        /// <summary>
+        /// Opens a file stream and calculates the sha1 hash for the stream.
+        /// </summary>
+        /// <param name="fs">The fs.</param>
+        /// <returns>System.String. The SHA1 hash value of the filestream</returns>
         public static string Sha1Hash(FileStream fs)
         {
-            hash = sha1.ComputeHash(fs);
+            _hash = Sha1.ComputeHash(fs);
             var sb = new StringBuilder();
-            foreach (byte b in hash)
+            foreach (var hex in _hash.Select(b => b.ToString("x2")))
             {
-                var hex = b.ToString("x2");
                 sb.Append(hex);
             }
 
             return sb.ToString();
-         
         }
 
-        public static string GetCachedImage(string coverHash)
+        /// <summary>
+        /// Given a sha1 hash gets the Base64 encoded string of the cover image data.
+        /// </summary>
+        /// <param name="coverHash">The SHA1 hash representing the image</param>
+        /// <returns>System.String. The image data encoded in Base64</returns>
+        public static string GetCachedCoverBase64(string coverHash)
         {
-            string base64 = String.Empty;
+            var base64 = String.Empty;
             try
             {
                 var directory = Settings.UserSettings.Instance.StoragePath + @"cache\cover\";
@@ -70,17 +80,15 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             return base64;
         }
 
+        /// <summary>
+        /// Gets the encoder.
+        /// </summary>
+        /// <param name="format">The format.</param>
+        /// <returns>ImageCodecInfo.</returns>
         private static ImageCodecInfo GetEncoder(ImageFormat format)
         {
-            ImageCodecInfo[] codecs = ImageCodecInfo.GetImageDecoders();
-            foreach (ImageCodecInfo codec in codecs)
-            {
-                if (codec.FormatID == format.Guid)
-                {
-                    return codec;
-                }
-            }
-            return null;
+            var codecs = ImageCodecInfo.GetImageDecoders();
+            return codecs.FirstOrDefault(codec => codec.FormatID == format.Guid);
         }
 
         /// <summary>
@@ -97,7 +105,6 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             try
             {
                 var directory = Settings.UserSettings.Instance.StoragePath + @"cache\artist\";
-                var filepath = string.Empty;
 
                 if (!Directory.Exists(directory))
                 {
@@ -107,23 +114,23 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                 using (var fs = new FileStream(url, FileMode.Open, FileAccess.Read))
                 {
                     hash = Sha1Hash(fs);
-                    filepath = directory + hash;
+                    var filepath = directory + hash;
                     if (File.Exists(filepath))
                     {
                         return hash;
                     }
 
-                    using (Image albumCover = Image.FromStream(fs, true)) { 
+                    using (var albumCover = Image.FromStream(fs, true)) { 
                     
-                        int sourceWidth = albumCover.Width;
-                        int sourceHeight = albumCover.Height;
-                        int destWidth = sourceWidth;
-                        int destHeight = sourceHeight;
+                        var sourceWidth = albumCover.Width;
+                        var sourceHeight = albumCover.Height;
+                        var destWidth = sourceWidth;
+                        var destHeight = sourceHeight;
 
                         if (sourceWidth > width || sourceHeight > height)
                         {
-                            float nPercentW = (width / (float)sourceWidth);
-                            float nPercentH = (height / (float)sourceHeight);
+                            var nPercentW = (width / (float)sourceWidth);
+                            var nPercentH = (height / (float)sourceHeight);
 
                             var nPercent = nPercentH < nPercentW ? nPercentH : nPercentW;
                             destWidth = (int)(sourceWidth * nPercent);
@@ -132,15 +139,15 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
 
                         using (var bmp = new Bitmap(destWidth, destHeight))
                         {
-                            Graphics graph = Graphics.FromImage(bmp);
+                            var graph = Graphics.FromImage(bmp);
                             graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
                             graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                             graph.Dispose();
 
-                            ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
-                            Encoder mEncoder = Encoder.Quality;
-                            EncoderParameters mParams = new EncoderParameters(1);
-                            EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
+                            var mInfo = GetEncoder(ImageFormat.Jpeg);
+                            var mEncoder = Encoder.Quality;
+                            var mParams = new EncoderParameters(1);
+                            var mParam = new EncoderParameter(mEncoder, 80L);
                             mParams.Param[0] = mParam;
                             bmp.Save(filepath, mInfo, mParams);
                         }
@@ -156,7 +163,14 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             return hash; 
         }
 
-        public static string CacheArtworkImage(string url, int width = 400, int height = 400)
+        /// <summary>
+        /// Resizes the cover and stores it to cache and returns the hash code for the image.
+        /// </summary>
+        /// <param name="url">The path where the original cover is stored.</param>
+        /// <param name="width">The width of the cached image.</param>
+        /// <param name="height">The height of the cached image.</param>
+        /// <returns>System.String. The SHA1 hash representing the image</returns>
+        public static string StoreCoverToCache(string url, int width = 400, int height = 400)
         {
             var hash = new string('0', 40);
             if (String.IsNullOrEmpty(url))
@@ -166,7 +180,6 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             try
             {
                 var directory = Settings.UserSettings.Instance.StoragePath + @"cache\cover\";
-                var filepath = string.Empty;
 
                 if (!Directory.Exists(directory))
                 {
@@ -176,24 +189,24 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                 using (var fs = new FileStream(url, FileMode.Open, FileAccess.Read))
                 {
                     hash = Sha1Hash(fs);
-                    filepath = directory + hash;
+                    var filepath = directory + hash;
                     if (File.Exists(filepath))
                     {
                         return hash;
                     }
 
-                    using (Image albumCover = Image.FromStream(fs, true))
+                    using (var albumCover = Image.FromStream(fs, true))
                     {
 
-                        int sourceWidth = albumCover.Width;
-                        int sourceHeight = albumCover.Height;
-                        int destWidth = sourceWidth;
-                        int destHeight = sourceHeight;
+                        var sourceWidth = albumCover.Width;
+                        var sourceHeight = albumCover.Height;
+                        var destWidth = sourceWidth;
+                        var destHeight = sourceHeight;
 
                         if (sourceWidth > width || sourceHeight > height)
                         {
-                            float nPercentW = (width / (float)sourceWidth);
-                            float nPercentH = (height / (float)sourceHeight);
+                            var nPercentW = (width / (float)sourceWidth);
+                            var nPercentH = (height / (float)sourceHeight);
 
                             var nPercent = nPercentH < nPercentW ? nPercentH : nPercentW;
                             destWidth = (int)(sourceWidth * nPercent);
@@ -202,15 +215,15 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
 
                         using (var bmp = new Bitmap(destWidth, destHeight))
                         {
-                            Graphics graph = Graphics.FromImage(bmp);
+                            var graph = Graphics.FromImage(bmp);
                             graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
                             graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                             graph.Dispose();
 
-                            ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
-                            Encoder mEncoder = Encoder.Quality;
-                            EncoderParameters mParams = new EncoderParameters(1);
-                            EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
+                            var mInfo = GetEncoder(ImageFormat.Jpeg);
+                            var mEncoder = Encoder.Quality;
+                            var mParams = new EncoderParameters(1);
+                            var mParam = new EncoderParameter(mEncoder, 80L);
                             mParams.Param[0] = mParam;
                             bmp.Save(filepath, mInfo, mParams);
                         }
@@ -226,72 +239,14 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             return hash;
         }
 
-        public static string CacheImage(string base64, int width = 400, int height = 400)
-        {
-            var hash = Sha1Hash(base64);
-            try
-            {
-                var directory = Settings.UserSettings.Instance.StoragePath + @"cache\cover\";
-                var filepath = directory + hash;
-                if (String.IsNullOrEmpty(base64))
-                {
-                    return hash;
-                }
-
-                if (!Directory.Exists(directory))
-                {
-                    Directory.CreateDirectory(directory);
-                }
-
-                if (File.Exists(filepath))
-                {
-                    return hash;
-                }
-                using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64)))
-                using (Image albumCover = Image.FromStream(ms, true))
-                {
-                    ms.Flush();
-                    int sourceWidth = albumCover.Width;
-                    int sourceHeight = albumCover.Height;
-                    int destWidth = sourceWidth;
-                    int destHeight = sourceHeight;
-
-                    if (sourceWidth > width || sourceHeight > height)
-                    {
-                        float nPercentW = (width/(float) sourceWidth);
-                        float nPercentH = (height/(float) sourceHeight);
-
-                        var nPercent = nPercentH < nPercentW ? nPercentH : nPercentW;
-                        destWidth = (int) (sourceWidth*nPercent);
-                        destHeight = (int) (sourceHeight*nPercent);
-                    } 
-
-                    using (var bmp = new Bitmap(destWidth, destHeight))
-                    {
-                        Graphics graph = Graphics.FromImage(bmp);
-                        graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                        graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
-                        graph.Dispose();
-
-                        ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
-                        Encoder mEncoder = Encoder.Quality;
-                        EncoderParameters mParams = new EncoderParameters(1);
-                        EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
-                        mParams.Param[0] = mParam;
-                        bmp.Save(filepath, mInfo, mParams);
-                    }
-                   
-                } 
-            }
-            catch (Exception ex)
-            {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
-            }
-            return hash;
-        }
-
+        /// <summary>
+        /// Given a base64 encoded image it resizes the image to the specified width & height and returns
+        /// the base64 of the resized image.
+        /// </summary>
+        /// <param name="base64">The base64 of the original image.</param>
+        /// <param name="width">The width of the new image.</param>
+        /// <param name="height">The height of the new image.</param>
+        /// <returns>System.String. The base64 of the resized image</returns>
         public static string ImageResize(string base64, int width = 300, int height = 300)
         {
             var cover = String.Empty;
@@ -301,31 +256,31 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                 {
                     return cover;
                 }
-                using (MemoryStream ms = new MemoryStream(Convert.FromBase64String(base64)))
-                using (Image albumCover = Image.FromStream(ms, true))
+                using (var ms = new MemoryStream(Convert.FromBase64String(base64)))
+                using (var albumCover = Image.FromStream(ms, true))
                 {
                     ms.Flush();
-                    int sourceWidth = albumCover.Width;
-                    int sourceHeight = albumCover.Height;
+                    var sourceWidth = albumCover.Width;
+                    var sourceHeight = albumCover.Height;
 
-                    float nPercentW = (width/(float) sourceWidth);
-                    float nPercentH = (height/(float) sourceHeight);
+                    var nPercentW = (width/(float) sourceWidth);
+                    var nPercentH = (height/(float) sourceHeight);
 
                     var nPercent = nPercentH < nPercentW ? nPercentH : nPercentW;
-                    int destWidth = (int) (sourceWidth*nPercent);
-                    int destHeight = (int) (sourceHeight*nPercent);
+                    var destWidth = (int) (sourceWidth*nPercent);
+                    var destHeight = (int) (sourceHeight*nPercent);
                     using (var bmp = new Bitmap(destWidth, destHeight))
                     using (var ms2 = new MemoryStream())
                     {
-                        Graphics graph = Graphics.FromImage(bmp);
+                        var graph = Graphics.FromImage(bmp);
                         graph.InterpolationMode = InterpolationMode.HighQualityBicubic;
                         graph.DrawImage(albumCover, 0, 0, destWidth, destHeight);
                         graph.Dispose();
 
-                        ImageCodecInfo mInfo = GetEncoder(ImageFormat.Jpeg);
-                        Encoder mEncoder = Encoder.Quality;
-                        EncoderParameters mParams = new EncoderParameters(1);
-                        EncoderParameter mParam = new EncoderParameter(mEncoder, 80L);
+                        var mInfo = GetEncoder(ImageFormat.Jpeg);
+                        var mEncoder = Encoder.Quality;
+                        var mParams = new EncoderParameters(1);
+                        var mParam = new EncoderParameter(mEncoder, 80L);
                         mParams.Param[0] = mParam;
 
                         bmp.Save(ms2, mInfo, mParams);
