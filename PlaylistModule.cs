@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace MusicBeePlugin
 {
     using AndroidRemote.Data;
@@ -200,6 +202,23 @@ namespace MusicBeePlugin
             };
             SendSocketMessage(Constants.Playlists, Constants.Reply, message);
         }
-    }
 
+        public void BuildPlaylistCache()
+        {
+            _api.Playlist_QueryPlaylists();
+            var playlists = new List<Playlist>();
+
+            while (true)
+            {
+                string[] files = { };
+                var path = _api.Playlist_QueryGetNextPlaylist();
+                if (String.IsNullOrEmpty(path)) break;
+                var name = _api.Playlist_GetName(path);
+                _api.Playlist_QueryFilesEx(path, ref files);
+                var playlist = new Playlist(name, files.Count(), Utilities.Sha1Hash(path), path);
+                playlists.Add(playlist);
+                _mHelper.CachePlaylists(playlists);
+            }
+        }
+    }
 }
