@@ -604,23 +604,18 @@ namespace MusicBeePlugin
         {
             if (!String.IsNullOrEmpty(_api.NowPlaying_GetArtwork()))
             {
-                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange,
-                                                    _api.NowPlaying_GetArtwork(), "",
-                                                    _api.NowPlaying_GetFileTag(MetaDataType.Album)));
+                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, 
+                    _api.NowPlaying_GetArtwork()));
             }
             else if (_api.ApiRevision >= 17)
             {
                 var cover = _api.NowPlaying_GetDownloadedArtwork();
-                if (!String.IsNullOrEmpty(cover))
-                {
-                    EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, cover, "",
-                                                        _api.NowPlaying_GetFileTag(MetaDataType.Album)));
-                }
+                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange,
+                    !String.IsNullOrEmpty(cover) ? cover : String.Empty));
             }
             else
             {
-                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, String.Empty, "",
-                                                    _api.NowPlaying_GetFileTag(MetaDataType.Album)));
+                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, String.Empty));
             }
         }
 
