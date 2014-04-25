@@ -70,6 +70,7 @@
         public const string Playlists = "playlists";
         public const string Library = "library";
         public const string LibraryMeta = "librarymeta";
+        public const string Ping = "ping";
 
         #endregion
 

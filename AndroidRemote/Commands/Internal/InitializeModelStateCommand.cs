@@ -11,7 +11,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 
         public void Execute(IEvent eEvent)
         {
-            Plugin plugin = Plugin.Instance;
+            var plugin = Plugin.Instance;
             plugin.RequestNowPlayingTrackCover();
             plugin.RequestNowPlayingTrackLyrics();
         }

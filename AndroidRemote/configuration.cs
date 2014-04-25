@@ -53,6 +53,7 @@
             controller.AddCommand(EventType.ReplyAvailable, typeof(ReplayAvailable));
             controller.AddCommand(Constants.Playlists, typeof(RequestPlaylists));
             controller.AddCommand(Constants.Library, typeof(RequestLibrary));
+            controller.AddCommand(Constants.Ping, typeof(Ping));
         }
     }
 }

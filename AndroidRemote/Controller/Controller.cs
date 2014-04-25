@@ -37,11 +37,11 @@
             {
                 try
                 {
-                    command.Execute((IEvent)e);
+                    command.Execute(e);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Trace(ex);
+                    Logger.TraceException("Controller",ex);
                 }
                 
             }

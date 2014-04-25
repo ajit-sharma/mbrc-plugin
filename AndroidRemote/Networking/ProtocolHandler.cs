@@ -29,7 +29,7 @@
                 }
                 catch (Exception ex)
                 {
-                    Logger.Debug(ex);
+                    Logger.DebugException("Incoming:32", ex);
                     Logger.Info("elements: {0}", messages.Count);
                 }
 
@@ -52,7 +52,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Debug(ex);
+                Logger.DebugException("Incoming:55", ex);
             }
         }
     }

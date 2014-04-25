@@ -11,7 +11,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 
         public string GetHttpReply()
         {
-            StringBuilder content = new StringBuilder();
+            var content = new StringBuilder();
             content.Append("<!doctype html>\r\n");
             content.Append("<html lang=\"en\">\r\n");
             content.Append("<head>\r\n");
@@ -30,9 +30,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             content.Append("</body>\r\n");
             content.Append("</html>\r\n");
 
-            int length = Encoding.UTF8.GetByteCount(content.ToString());
+            var length = Encoding.UTF8.GetByteCount(content.ToString());
 
-            StringBuilder str = new StringBuilder();
+            var str = new StringBuilder();
             str.Append("HTTP/1.1 200 OK\r\n");
             str.Append("Date: Tue, 17 Aug 2011 11:40:00 EST\r\n");
             str.Append("Server: MusicBee Remote\r\n");

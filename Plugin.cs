@@ -158,7 +158,7 @@ namespace MusicBeePlugin
 
             consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message}";
             fileTarget.FileName = string.Format("{0}\\error.log", _mStoragePath);
-            fileTarget.Layout = "${longdate} - ${callsite} -- ${level} > ${message}";
+            fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}";
 
             var rule1 = new LoggingRule("*", LogLevel.Info, consoleTarget);
             config.LoggingRules.Add(rule1);
@@ -556,7 +556,7 @@ namespace MusicBeePlugin
             }
             catch (Exception e)
             {
-                Logger.Debug(e);
+                Logger.DebugException("Exception", e);
             }
         }
 
@@ -758,7 +758,6 @@ namespace MusicBeePlugin
         {
             SendSocketMessage(Constants.NowPlayingTrack, Constants.Reply, GetTrackInfo(), clientId);
         }
-
 
         private static string XmlFilter(IEnumerable<string> tags, string query, bool isStrict)
         {
