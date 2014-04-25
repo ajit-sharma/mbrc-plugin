@@ -1,3 +1,5 @@
+using MusicBeePlugin.AndroidRemote.Data;
+
 namespace MusicBeePlugin
 {
     using System.Linq;
@@ -59,11 +61,15 @@ namespace MusicBeePlugin
         public SyncModule SyncModule { get; private set; }
 
         public PlaylistModule PlaylistModule { get; private set; }
+        public  CurrentQueueModule CurrentQueueModule { get; private set; }
+            
 
         private Timer _timer;
         private bool _scrobble;
         private RepeatMode _repeat;
         private bool _shuffle;
+
+        private CacheHelper _mHelper;
 
 
         /// <summary>
@@ -123,6 +129,7 @@ namespace MusicBeePlugin
             
             SyncModule = new SyncModule(_api, _mStoragePath);
             PlaylistModule = new PlaylistModule(_api, _mStoragePath);
+            CurrentQueueModule = new CurrentQueueModule(_api);
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -131,6 +138,7 @@ namespace MusicBeePlugin
 
             SyncModule.CheckCacheState();
             StartPlayerStatusMonitoring();
+            _mHelper = new CacheHelper(_mStoragePath);
 
             return _about;
         }
@@ -217,8 +225,9 @@ namespace MusicBeePlugin
             {
                 _mWindow = new InfoWindow();    
             }
-
+            
             _mWindow.Show();    
+            _mWindow.UpdateCacheStatus(_mHelper.GetCachedCoversCount(), _mHelper.GetCachedTracksCount());
         } 
 
 #if DEBUG
@@ -264,7 +273,7 @@ namespace MusicBeePlugin
         /// </summary>
         public void Uninstall()
         {
-            string settingsFolder = _api.Setting_GetPersistentStoragePath + "\\mb_remote";
+            var settingsFolder = _api.Setting_GetPersistentStoragePath + "\\mb_remote";
             if (Directory.Exists(settingsFolder))
             {
                 Directory.Delete(settingsFolder);
@@ -319,8 +328,7 @@ namespace MusicBeePlugin
                     if (_api.ApiRevision >= 17)
                     {
                         EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange,
-                                                            _api.NowPlaying_GetDownloadedArtwork(), "",
-                                                            _api.NowPlaying_GetFileTag(MetaDataType.Album)));
+                                                            _api.NowPlaying_GetDownloadedArtwork()));
                     }
                     break;
                 case NotificationType.NowPlayingListChanged:
@@ -488,48 +496,6 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// It gets the 100 first tracks of the playlist and returns them in an XML formated String without a root element.
-        /// </summary>
-        /// <param name="clientProtocolVersion"> </param>
-        /// <param name="clientId"> </param>
-        /// <returns>XML formated string without root element</returns>
-        public void RequestNowPlayingList(double clientProtocolVersion, string clientId)
-        {
-            _api.NowPlayingList_QueryFiles(null);
-
-            var trackList = new List<NowPlayingListTrack>();
-            var position = 1;
-
-            while (true)
-            {
-                var playListTrack = _api.NowPlayingList_QueryGetNextFile();
-                if (String.IsNullOrEmpty(playListTrack))
-                {
-                    break;
-                }
-
-                var artist = _api.Library_GetFileTag(playListTrack, MetaDataType.Artist);
-                var title = _api.Library_GetFileTag(playListTrack, MetaDataType.TrackTitle);
-
-                if (String.IsNullOrEmpty(artist))
-                {
-                    artist = "Unknown Artist";
-                }
-
-                if (String.IsNullOrEmpty(title))
-                {
-                    var index = playListTrack.LastIndexOf('\\');
-                    title = playListTrack.Substring(index + 1);
-                }
-
-                trackList.Add(new NowPlayingListTrack(artist, title, position, Utilities.Sha1Hash(playListTrack)));
-                position++;
-            }
-
-            SendSocketMessage(Constants.NowPlayingList, Constants.Reply, trackList, clientId);
-        }
-
-        /// <summary>
         /// If the given rating string is not null or empty and the value of the string is a float number in the [0,5]
         /// the function will set the new rating as the current index's new index rating. In any other case it will
         /// just return the rating for the current index.
@@ -643,47 +609,6 @@ namespace MusicBeePlugin
                 };
             
             SendSocketMessage(Constants.NowPlayingPosition, Constants.Reply, position);
-        }
-
-        /// <summary>
-        /// Searches in the Now playing list for the index specified and plays it.
-        /// </summary>
-        /// <param name="index">The index to play</param>
-        /// <returns></returns>
-        public void NowPlayingPlay(string index)
-        {
-            var result = false;
-            int trackIndex;
-            if (Int32.TryParse(index, out trackIndex))
-            {
-                _api.NowPlayingList_QueryFiles(null);
-                var trackToPlay = String.Empty;
-                var lTrackIndex = 0;
-                while (lTrackIndex != trackIndex)
-                {
-                    trackToPlay = _api.NowPlayingList_QueryGetNextFile();
-                    lTrackIndex++;
-                }
-                if (!String.IsNullOrEmpty(trackToPlay))
-                    result = _api.NowPlayingList_PlayNow(trackToPlay);
-            }
-            
-            SendSocketMessage(Constants.NowPlayingListPlay, Constants.Reply, result);
-         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="index"></param>
-        /// <param name="clientId"></param>
-        public void NowPlayingListRemoveTrack(int index, string clientId)
-        {
-            var reply = new
-            {
-                success = _api.NowPlayingList_RemoveAt(index),
-                index
-            };
-            SendSocketMessage(Constants.NowPlayingListRemove, Constants.Reply,reply, clientId);
         }
 
         /// <summary>
@@ -811,35 +736,6 @@ namespace MusicBeePlugin
         }
 
 
-        /// <summary>
-        /// Moves a index of the now playing list to a new position.
-        /// </summary>
-        /// <param name="clientId">The Id of the client that initiated the request</param>
-        /// <param name="from">The initial position</param>
-        /// <param name="to">The final position</param>
-        public void RequestNowPlayingMove(string clientId, int from, int to)
-        {
-            int[] aFrom = {from};
-            int dIn;
-            if (from > to)
-            {
-                dIn = to - 1;
-            }
-            else
-            {
-                dIn = to;
-            }
-
-            var result = _api.NowPlayingList_MoveFiles(aFrom, dIn);
-
-            var reply = new
-            {
-                success = result, from, to
-            };
-
-            SendSocketMessage(Constants.NowPlayingListMove, Constants.Reply, reply, clientId);
-        }
-
         private static string XmlFilter(IEnumerable<string> tags, string query, bool isStrict)
         {
             var filter = new XElement("Source", new XAttribute("Type", 1));
@@ -892,69 +788,6 @@ namespace MusicBeePlugin
                     .ToArray();
                 
             return tracks;
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="queue"></param>
-        /// <param name="tag"></param>
-        /// <param name="query"></param>
-        public void RequestQueueFiles(QueueType queue, MetaTag tag, string query)
-        {
-            var filter = String.Empty;
-            var trackList = new List<string>();
-            var loop = true;
-            switch (tag)
-            {
-                case MetaTag.artist:
-                    filter = XmlFilter(new[] {"ArtistPeople"}, query, true);
-                    break;
-                case MetaTag.album:
-                    filter = XmlFilter(new[] {"Album"}, query, true);
-                    break;
-                case MetaTag.genre:
-                    filter = XmlFilter(new[] {"Genre"}, query, true);
-                    break;
-                case MetaTag.title:
-                    trackList.Add(query);
-                    loop = false;
-                    break;
-                case MetaTag.none:
-                    return;
-                default:
-                    return;
-            }
-
-            if (trackList.Count == 0)
-            {
-                _api.Library_QueryFiles(filter);
-                if (loop)
-                {
-                    while (true)
-                    {
-                        var current = _api.Library_QueryGetNextFile();
-                        if (String.IsNullOrEmpty(current)) break;
-                        trackList.Add(current);
-                    }    
-                }
-            }
-
-            switch (queue)
-            {
-                case QueueType.Next:
-                    _api.NowPlayingList_QueueFilesNext(trackList.ToArray());
-                    break;
-                case QueueType.Last:
-                    _api.NowPlayingList_QueueFilesLast(trackList.ToArray());
-                    break;
-                case QueueType.PlayNow:
-                    _api.NowPlayingList_Clear();
-                    _api.NowPlayingList_QueueFilesLast(trackList.ToArray());
-                    _api.NowPlayingList_PlayNow(trackList[0]);
-                    break;
-            }
         }
 
         /// <summary>

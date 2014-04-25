@@ -39,7 +39,8 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     Plugin.Instance.PlaylistModule.GetTracksForPlaylist(obj.Get("playlist_hash"), eEvent.ClientId, limit, offset);
                     break;
                 case "play":
-                    Plugin.Instance.PlaylistModule.RequestPlaylistPlayNow(eEvent.DataToString());
+                    var hash = obj.Get("hash");
+                    Plugin.Instance.PlaylistModule.RequestPlaylistPlayNow(hash);
                     break;
                 case "move":
                     MoveTracks(eEvent);

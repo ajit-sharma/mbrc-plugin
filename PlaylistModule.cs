@@ -119,12 +119,13 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Given the url of a playlist it plays the specified playlist.
+        /// Given the hash representing of a playlist it plays the specified playlist.
         /// </summary>
-        /// <param name="url">The playlist url</param>
-        public void RequestPlaylistPlayNow(string url)
+        /// <param name="hash">The playlist hash</param>
+        public void RequestPlaylistPlayNow(string hash)
         {
-            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(url));
+            var url = _mHelper.GetPlaylistByHash(hash);
+            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(url.path));
         }
 
         /// <summary>

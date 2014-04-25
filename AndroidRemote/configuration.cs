@@ -50,10 +50,6 @@
             controller.AddCommand(Constants.NowPlayingRating, typeof(RequestRating));
             controller.AddCommand(Constants.NowPlayingListSearch, typeof(RequestNowPlayingSearch));
             controller.AddCommand(Constants.NowPlayingListMove, typeof(RequestNowPlayingMoveTrack));
-            controller.AddCommand(Constants.LibraryQueueAlbum, typeof(RequestLibQueueAlbum));
-            controller.AddCommand(Constants.LibraryQueueArtist, typeof(RequestLibQueueArtist));
-            controller.AddCommand(Constants.LibraryQueueGenre, typeof(RequestLibQueueGenre));
-            controller.AddCommand(Constants.LibraryQueueTrack, typeof(RequestLibQueueTrack));
             controller.AddCommand(EventType.ReplyAvailable, typeof(ReplayAvailable));
             controller.AddCommand(Constants.Playlists, typeof(RequestPlaylists));
             controller.AddCommand(Constants.Library, typeof(RequestLibrary));

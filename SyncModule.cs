@@ -69,7 +69,7 @@ namespace MusicBeePlugin
                 type = "cover",
                 limit,
                 offset,
-                total = _mHelper.GetCoversTotal(),
+                total = _mHelper.GetCachedCoversCount(),
                 data = buffer
             };
 
@@ -243,7 +243,7 @@ namespace MusicBeePlugin
         /// </summary>
         public void CheckCacheState()
         {
-            var cached = _mHelper.GetCachedEntriesNumber();
+            var cached = _mHelper.GetCachedTracksCount();
 
             if (cached == 0)
             {

@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-
-namespace MusicBeePlugin.AndroidRemote.Data
+﻿namespace MusicBeePlugin.AndroidRemote.Data
 {
     using System;
     using System.Collections.Generic;
@@ -30,6 +28,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                                               "\"_id\" integer primary key," +
                                               "\"name\" text," +
                                               "\"path\" text," +
+                                              "\"updated\" text," +
                                               "\"hash\" text)";
 
         private const string CoverCacheTable = "create table \"covers\" (" +
@@ -85,7 +84,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// Gets the cached entries number.
         /// </summary>
         /// <returns>System.Int32.</returns>
-        public int GetCachedEntriesNumber()
+        public int GetCachedTracksCount()
         {
             var total = 0;
             try
@@ -371,7 +370,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                 {
                     mConnection.Open();
                     mCommand.CommandText = "select * from data";
-                    SQLiteDataReader mReader = mCommand.ExecuteReader();
+                    var mReader = mCommand.ExecuteReader();
                     while (mReader.Read())
                     {
                         var dataEntry = new LibraryData(mReader["hash"].ToString(), mReader["filepath"].ToString());
@@ -394,7 +393,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// Gets the total number of covers available.
         /// </summary>
         /// <returns>System.Int32.</returns>
-        public int GetCoversTotal()
+        public int GetCachedCoversCount()
         {
             var total = 0;
             try

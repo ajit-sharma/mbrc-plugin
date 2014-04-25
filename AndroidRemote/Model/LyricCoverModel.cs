@@ -14,9 +14,8 @@ namespace MusicBeePlugin.AndroidRemote.Model
         /** Singleton **/
         private static readonly LyricCoverModel Model = new LyricCoverModel();
 
-        private string xHash;
-        private string cover;
-        private string lyrics;
+        private string _xHash;
+        private string _lyrics;
 
         public static LyricCoverModel Instance
         {
@@ -32,26 +31,23 @@ namespace MusicBeePlugin.AndroidRemote.Model
         {
             var hash = Utilities.Utilities.Sha1Hash(base64);
             
-            if (xHash != null && xHash.Equals(hash))
+            if (_xHash != null && _xHash.Equals(hash))
             {
                 return;
             }
 
-            cover = String.IsNullOrEmpty(base64)
+            Cover = String.IsNullOrEmpty(base64)
                 ? String.Empty
                 : Utilities.Utilities.ImageResize(base64);
-            xHash = hash;
+            _xHash = hash;
             
             EventBus.FireEvent(
                     new MessageEvent(EventType.ReplyAvailable,
-                        new SocketMessage(Constants.NowPlayingCover, Constants.Message, cover).toJsonString()));
+                        new SocketMessage(Constants.NowPlayingCover, Constants.Message, Cover).toJsonString()));
             
         }
 
-        public string Cover
-        {
-            get { return cover; }
-        }
+        public string Cover { get; private set; }
 
         public string Lyrics
         {
@@ -59,7 +55,7 @@ namespace MusicBeePlugin.AndroidRemote.Model
             {
                 try
                 {
-                    string lStr = value.Trim();
+                    var lStr = value.Trim();
                     if (lStr.Contains("\r\r\n\r\r\n"))
                     {
                         /* Convert new line & empty line to xml safe format */
@@ -67,28 +63,26 @@ namespace MusicBeePlugin.AndroidRemote.Model
                         lStr = lStr.Replace("\r\r\n", " \n ");
                     }
                     lStr = lStr.Replace("\0", " ");
-                    //lStr = lStr.Replace("\r\n", "&lt;p&gt;");
-                    //lStr = lStr.Replace("\n", "&lt;br&gt;");
                     const string pattern = "\\[\\d:\\d{2}.\\d{3}\\] ";
-                    Regex regEx = new Regex(pattern);
-                    lyrics = SecurityElement.Escape(regEx.Replace(lStr, String.Empty));
+                    var regEx = new Regex(pattern);
+                    _lyrics = SecurityElement.Escape(regEx.Replace(lStr, String.Empty));
                 }
                 catch (Exception ex)
                 {
 #if DEBUG
                     ErrorHandler.LogError(ex);
 #endif
-                    lyrics = String.Empty;
+                    _lyrics = String.Empty;
                 }
                 finally
                 {
-                    if (!String.IsNullOrEmpty(lyrics))
+                    if (!String.IsNullOrEmpty(_lyrics))
                         EventBus.FireEvent(
                             new MessageEvent(EventType.ReplyAvailable,
-                                new SocketMessage(Constants.NowPlayingLyrics, Constants.Message, lyrics).toJsonString()));
+                                new SocketMessage(Constants.NowPlayingLyrics, Constants.Message, _lyrics).toJsonString()));
                 }
             }
-            get { return lyrics; }
+            get { return _lyrics; }
         }
     }
 }
