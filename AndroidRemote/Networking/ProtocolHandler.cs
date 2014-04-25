@@ -1,18 +1,17 @@
-﻿using System.Linq;
-
-namespace MusicBeePlugin.AndroidRemote.Networking
+﻿namespace MusicBeePlugin.AndroidRemote.Networking
 {
+    using System.Linq;
+    using NLog;
     using System.Collections.Generic;
     using Entities;
     using ServiceStack.Text;
     using Events;
     using System;
-    using System.Diagnostics;
-    using Error;
     using Utilities;
 
     internal class ProtocolHandler
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// Processes the incoming message and answer's sending back the needed data.
         /// </summary>
@@ -30,15 +29,8 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
-                    ErrorHandler.LogError(ex);
-                    Debug.WriteLine("elements: {0}",messages.Count);
-                    Debug.WriteLine("-----------------------------");
-                    foreach (var message in messages)
-                    {
-                        Debug.WriteLine("message:" + message);
-                    }
-#endif                 
+                    Logger.Debug(ex);
+                    Logger.Info("elements: {0}", messages.Count);
                 }
 
                 foreach (var msg in msgList)
@@ -60,10 +52,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (Exception ex)
             {
-#if DEBUG
-                Debug.WriteLine("Exception: " + ex);
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
         }
     }

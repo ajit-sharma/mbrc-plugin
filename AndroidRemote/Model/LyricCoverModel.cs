@@ -1,16 +1,17 @@
-﻿using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Networking;
-
-namespace MusicBeePlugin.AndroidRemote.Model
+﻿namespace MusicBeePlugin.AndroidRemote.Model
 {
     using System;
     using System.Security;
     using System.Text.RegularExpressions;
-    using Error;
     using Events;
+    using Entities;
+    using Networking;
+    using NLog;
+
 
     internal class LyricCoverModel
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /** Singleton **/
         private static readonly LyricCoverModel Model = new LyricCoverModel();
 
@@ -69,9 +70,7 @@ namespace MusicBeePlugin.AndroidRemote.Model
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
-                    ErrorHandler.LogError(ex);
-#endif
+                    Logger.Debug(ex);
                     _lyrics = String.Empty;
                 }
                 finally

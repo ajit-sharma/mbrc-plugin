@@ -1,15 +1,14 @@
-﻿using System.Threading;
-using MusicBeePlugin.AndroidRemote.Error;
-
-namespace MusicBeePlugin.AndroidRemote.Controller
+﻿namespace MusicBeePlugin.AndroidRemote.Controller
 {
+    using NLog;
     using System;
     using System.Collections.Generic;
     using Interfaces;
  
     internal class Controller
     {
-        private readonly Dictionary<string, Type> commandMap; 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly Dictionary<string, Type> _commandMap; 
 
         private static readonly Controller ClassInstance = new Controller();
 
@@ -20,21 +19,21 @@ namespace MusicBeePlugin.AndroidRemote.Controller
 
         public void AddCommand(string eventType,Type command)
         {
-            if (commandMap.ContainsKey(eventType)) return;
-            commandMap.Add(eventType,command);
+            if (_commandMap.ContainsKey(eventType)) return;
+            _commandMap.Add(eventType,command);
         }
 
         public void RemoveCommand(string eventType)
         {
-            if (commandMap.ContainsKey(eventType))
-                commandMap.Remove(eventType);    
+            if (_commandMap.ContainsKey(eventType))
+                _commandMap.Remove(eventType);    
         }
 
         public void CommandExecute(IEvent e)
         {
-            if (!commandMap.ContainsKey(((IEvent)e).Type)) return;
-            Type commandType = commandMap[((IEvent)e).Type];
-            using (ICommand command = (ICommand)Activator.CreateInstance(commandType))
+            if (!_commandMap.ContainsKey(e.Type)) return;
+            var commandType = _commandMap[e.Type];
+            using (var command = (ICommand)Activator.CreateInstance(commandType))
             {
                 try
                 {
@@ -42,9 +41,7 @@ namespace MusicBeePlugin.AndroidRemote.Controller
                 }
                 catch (Exception ex)
                 {
-#if DEBUG
-                    ErrorHandler.LogError(ex);
-#endif
+                    Logger.Trace(ex);
                 }
                 
             }
@@ -52,7 +49,7 @@ namespace MusicBeePlugin.AndroidRemote.Controller
 
         private Controller()
         {
-            commandMap = new Dictionary<string, Type>();
+            _commandMap = new Dictionary<string, Type>();
         }
     }
 }

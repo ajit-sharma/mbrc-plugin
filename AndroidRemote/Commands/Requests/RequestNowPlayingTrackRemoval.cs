@@ -13,7 +13,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             int index;
             if (int.TryParse(eEvent.DataToString(), out index))
             {
-                Plugin.Instance.NowPlayingListRemoveTrack(index, eEvent.ClientId);    
+                Plugin.Instance.CurrentQueueModule.CurrentQueueRemoveTrack(index, eEvent.ClientId);    
             }
         }
     }

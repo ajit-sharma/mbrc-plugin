@@ -10,7 +10,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.NowPlayingPlay(eEvent.DataToString());
+            Plugin.Instance.CurrentQueueModule.CurrentQueuePlay(eEvent.DataToString());
         }
     }
 }

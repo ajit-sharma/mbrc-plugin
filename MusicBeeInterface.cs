@@ -17,28 +17,28 @@ namespace MusicBeePlugin
         {
             public void Initialise(IntPtr apiInterfacePtr)
             {
-                Plugin.CopyMemory(ref this, apiInterfacePtr, 4);
+                CopyMemory(ref this, apiInterfacePtr, 4);
                 if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_0)
                     // MusicBee version 2.0 - Api methods > revision 25 are not available
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, 456);
+                    CopyMemory(ref this, apiInterfacePtr, 456);
                 else if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_1)
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, 516);
+                    CopyMemory(ref this, apiInterfacePtr, 516);
                 else if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_2)
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, 584);
+                    CopyMemory(ref this, apiInterfacePtr, 584);
                 else
-                    Plugin.CopyMemory(ref this, apiInterfacePtr, Marshal.SizeOf(this));
+                    CopyMemory(ref this, apiInterfacePtr, Marshal.SizeOf(this));
             }
             public MusicBeeVersion MusicBeeVersion
             {
                 get {
                     if (ApiRevision <= 25)
-                        return Plugin.MusicBeeVersion.v2_0;
+                        return MusicBeeVersion.v2_0;
                     else if (ApiRevision <= 31)
-                        return Plugin.MusicBeeVersion.v2_1;
+                        return MusicBeeVersion.v2_1;
                     else if (ApiRevision <= 33)
-                        return Plugin.MusicBeeVersion.v2_2;
+                        return MusicBeeVersion.v2_2;
                     else
-                        return Plugin.MusicBeeVersion.v2_3;
+                        return MusicBeeVersion.v2_3;
                 }
             }
             public short InterfaceVersion;

@@ -18,7 +18,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             ((Dictionary<string, string>)eEvent.Data).TryGetValue("to", out sTo);
             int.TryParse(sFrom, out from);
             int.TryParse(sTo, out to);
-            Plugin.Instance.RequestNowPlayingMove(eEvent.ClientId, from, to);
+            Plugin.Instance.CurrentQueueModule.CurrentQueueMoveTrack(eEvent.ClientId, from, to);
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace MusicBeePlugin.AndroidRemote.Utilities
 {
+    using NLog;
     using System;
     using System.Drawing;
     using System.Drawing.Drawing2D;
@@ -8,11 +9,11 @@
     using System.Linq;
     using System.Security.Cryptography;
     using System.Text;
-    using Error;
     using Encoder = System.Drawing.Imaging.Encoder;
 
     public class Utilities
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly SHA1Managed Sha1 = new SHA1Managed();
         private static byte[] _hash = new byte[20];
 
@@ -73,9 +74,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return base64;
         }
@@ -156,9 +155,7 @@
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
             return hash; 
         }
@@ -232,9 +229,7 @@
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
             return hash;
         }
@@ -290,9 +285,7 @@
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
             return cover;
         }

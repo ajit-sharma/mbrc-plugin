@@ -1,17 +1,19 @@
 ﻿namespace MusicBeePlugin.AndroidRemote.Data
 {
+    using NLog;
     using System;
     using System.Collections.Generic;
     using System.Data.SQLite;
     using System.IO;
     using Entities;
-    using Error;
+
     /// <summary>
     /// Class CacheHelper.
     /// Is used to handle the library data and cover cache
     /// </summary>
     class CacheHelper
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private const string CreateTable = "CREATE TABLE \"data\" (" +
                                             "\"_id\" integer primary key," +
                                             "\"hash\" TEXT," +
@@ -74,9 +76,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
@@ -105,9 +105,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return total;  
         }
@@ -149,9 +147,7 @@
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
         }
 
@@ -181,9 +177,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return playlist;
         }
@@ -228,9 +222,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
@@ -265,9 +257,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
@@ -305,9 +295,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
@@ -350,9 +338,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
@@ -382,9 +368,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return data;
         }
@@ -414,9 +398,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return total;  
         }
@@ -461,9 +443,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return data;
         }
@@ -491,9 +471,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
@@ -519,9 +497,7 @@
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
             return date;
         }
@@ -555,9 +531,7 @@
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
             return data;
         }

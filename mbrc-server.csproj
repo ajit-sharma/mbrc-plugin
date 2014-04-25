@@ -71,6 +71,10 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>packages\NLog.2.1.0\lib\net40\NLog.dll</HintPath>
+    </Reference>
     <Reference Include="ServiceStack.Text, Version=3.9.45.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\ServiceStack.Text.3.9.49\lib\net35\ServiceStack.Text.dll</HintPath>
@@ -163,6 +167,7 @@
     <Compile Include="AndroidRemote\Networking\ServiceDiscovery.cs" />
     <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
     <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
+    <Compile Include="CurrentQueueModule.cs" />
     <Compile Include="Debugging\DebugTool.cs">
       <SubType>Form</SubType>
     </Compile>

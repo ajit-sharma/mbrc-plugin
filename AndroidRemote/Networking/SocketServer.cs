@@ -1,16 +1,14 @@
 namespace MusicBeePlugin.AndroidRemote.Networking
 {
+    using NLog;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Globalization;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
     using Entities;
-    using Error;
     using Events;
     using Settings;
     using Utilities;
@@ -20,6 +18,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
     /// </summary>
     public sealed class SocketServer : IDisposable
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly ProtocolHandler _handler;
 
         private readonly ConcurrentDictionary<string, Socket> _availableWorkerSockets;
@@ -84,9 +83,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
         }
 
@@ -96,6 +93,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// <returns></returns>
         public void Stop()
         {
+            Logger.Info("Stopping Socket Server");
             try
             {
                 if (_mainSocket != null)
@@ -103,9 +101,8 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     _mainSocket.Close();
                 }
 
-                foreach (Socket wSocket in _availableWorkerSockets.Values)
+                foreach (var wSocket in _availableWorkerSockets.Values.Where(wSocket => wSocket != null))
                 {
-                    if (wSocket == null) continue;
                     wSocket.Close();
                     wSocket.Dispose();
                 }
@@ -113,9 +110,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug(ex);
             }
             finally
             {
@@ -131,6 +126,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         {
             try
             {
+                Logger.Info("Starting Socket Server");
                 _mainSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 // Create the listening socket.    
                 var ipLocal = new IPEndPoint(IPAddress.Any, Convert.ToInt32(UserSettings.Instance.ListeningPort));
@@ -144,9 +140,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (SocketException se)
             {
-#if DEBUG
-                ErrorHandler.LogError(se);
-#endif
+                Logger.Debug(se);
             }
         }
 
@@ -211,54 +205,44 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 }
                 if (!isAllowed)
                 {
-                    workerSocket.Send(
-                        Encoding.UTF8.GetBytes(
-                            new SocketMessage(Constants.NotAllowed, Constants.Reply, String.Empty).toJsonString()));
+                    workerSocket.Send(Encoding.UTF8.GetBytes(
+                            new SocketMessage(Constants.NotAllowed,
+                                Constants.Reply,
+                                String.Empty)
+                                .toJsonString()));
                     workerSocket.Close();
-#if DEBUG
-                    Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) +
-                                    " : Force Disconnected not valid range\n");
-#endif
+                    Logger.Debug("Force Disconnected not valid range");
                     _mainSocket.BeginAccept(OnClientConnect, null);
                     return;
                 }
 
                 var clientId = IdGenerator.GetUniqueKey();
 
-                if (_availableWorkerSockets.TryAdd(clientId, workerSocket))
+                if (!_availableWorkerSockets.TryAdd(clientId, workerSocket)) return;
+                // Inform the the Protocol Handler that a new Client has been connected, prepare for handshake.
+                EventBus.FireEvent(new MessageEvent(EventType.ActionClientConnected, string.Empty, clientId));
+
+                // Let the worker Socket do the further processing 
+                // for the just connected client.
+                var socketState = new SocketState
                 {
-                    // Inform the the Protocol Handler that a new Client has been connected, prepare for handshake.
-                    EventBus.FireEvent(new MessageEvent(EventType.ActionClientConnected, string.Empty, clientId));
+                    ClientSocket = workerSocket,
+                    ClientId = clientId
+                };
 
-                    // Let the worker Socket do the further processing 
-                    // for the just connected client.
-                    var socketState = new SocketState();
-                    socketState.ClientSocket = workerSocket;
-                    socketState.ClientId = clientId;
-
-                    WaitForData(socketState);
-                }
+                WaitForData(socketState);
             }
             catch (ObjectDisposedException)
             {
-#if DEBUG
-                Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) +
-                                " : OnClientConnection: Socket has been closed\n");
-#endif
+                Logger.Debug("OnClientConnection: Socket has been closed");
             }
             catch (SocketException se)
             {
-#if DEBUG
-                ErrorHandler.LogError(se);
-#endif
+                Logger.Debug(se);
             }
             catch (Exception ex)
             {
-#if DEBUG
-                Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) + " : OnClientConnect Exception : " +
-                                ex.Message + "\n");
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug("OnClientConnect", ex);
             }
             finally
             {
@@ -270,11 +254,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 }
                 catch (Exception e)
                 {
-#if DEBUG
-                    Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) +
-                                    " : OnClientConnect Exception : " + e.Message + "\n");
-                    ErrorHandler.LogError(e);
-#endif
+                    Logger.Debug("OnClientConnect", e);
                 }
             }
         }
@@ -297,14 +277,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (SocketException se)
             {
-#if DEBUG
-                Debug.WriteLine("mbrc-log [SocketServer] 273: \t" + se);
-#endif
                 if (se.ErrorCode != 10053)
                 {
-#if DEBUG
-                    ErrorHandler.LogError(se);
-#endif
+                    Logger.Debug(se);
                 }
                 else
                 {
@@ -321,7 +296,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             try
             {
                 var socketState = (SocketState) ar.AsyncState;
-                // Complete the BeginReceive() asynchronus call by EndReceive() method
+                // Complete the BeginReceive() asynchronous call by EndReceive() method
                 // which will return the number of characters written to the stream
                 // by the client.
 
@@ -380,10 +355,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             catch (ObjectDisposedException)
             {
                 EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, clientId));
-#if DEBUG
-                Debug.WriteLine(DateTime.Now.ToString(CultureInfo.InvariantCulture) +
-                                " : OnDataReceived: Socket has been closed\n");
-#endif
+                Logger.Debug("OnDataReceived, socket has been closed");
             }
             catch (SocketException se)
             {
@@ -396,9 +368,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 }
                 else
                 {
-#if DEBUG
-                    ErrorHandler.LogError(se);
-#endif
+                    Logger.Debug(se);
                 }
             }
         }
@@ -411,9 +381,6 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// <param name="clientId">The client identifier.</param>
         public void Send(string message, string clientId)
         {
-#if DEBUG
-            //Debug.WriteLine("Send: " + message + " to client: " + clientId);
-#endif
             if (clientId.Equals("all"))
             {
                 Send(message);
@@ -430,9 +397,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug("Send", ex);
             }
         }
 
@@ -479,9 +444,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (Exception ex)
             {
-#if DEBUG
-                ErrorHandler.LogError(ex);
-#endif
+                Logger.Debug("Send (Broadcast)", ex);
             }
         }
 

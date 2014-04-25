@@ -1,7 +1,9 @@
-using MusicBeePlugin.AndroidRemote.Data;
-
 namespace MusicBeePlugin
 {
+    using AndroidRemote.Data;
+    using NLog;
+    using NLog.Config;
+    using NLog.Targets;
     using System.Linq;
     using Debugging;
     using System.Windows.Forms;
@@ -18,18 +20,17 @@ namespace MusicBeePlugin
     using System.Timers;
     using AndroidRemote.Controller;
     using AndroidRemote.Entities;
-    using AndroidRemote.Error;
     using AndroidRemote.Settings;
     using AndroidRemote.Utilities;
     using AndroidRemote.Enumerations;
     using Timer = System.Timers.Timer;
-
 
     /// <summary>
     /// The MusicBee Plugin class. Used to communicate with the MusicBee API.
     /// </summary>
     public partial class Plugin : Messenger
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// The mb api interface.
         /// </summary>
@@ -112,8 +113,9 @@ namespace MusicBeePlugin
                 return _about;
             }
 
-            ErrorHandler.SetLogFilePath(_api.Setting_GetPersistentStoragePath());
             _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
+
+            InitializeLoggingConfiguration();
 
             _api.MB_AddMenuItem("mnuTools/MusicBee Remote", "Information Panel of the MusicBee Remote",
                                           MenuItemClicked);
@@ -141,6 +143,30 @@ namespace MusicBeePlugin
             _mHelper = new CacheHelper(_mStoragePath);
 
             return _about;
+        }
+
+        /// <summary>
+        /// Initializes the logging configuration.
+        /// </summary>
+        private void InitializeLoggingConfiguration()
+        {
+            var config = new LoggingConfiguration();
+            var consoleTarget = new ColoredConsoleTarget();
+            var fileTarget = new FileTarget();
+            config.AddTarget("console", consoleTarget);
+            config.AddTarget("file", fileTarget);
+
+            consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message}";
+            fileTarget.FileName = string.Format("{0}\\error.log", _mStoragePath);
+            fileTarget.Layout = "${longdate} - ${callsite} -- ${level} > ${message}";
+
+            var rule1 = new LoggingRule("*", LogLevel.Info, consoleTarget);
+            config.LoggingRules.Add(rule1);
+
+            var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
+            config.LoggingRules.Add(rule2);
+
+            LogManager.Configuration = config;
         }
 
         /// <summary>
@@ -530,9 +556,7 @@ namespace MusicBeePlugin
             }
             catch (Exception e)
             {
-#if DEBUG
-                ErrorHandler.LogError(e);
-#endif
+                Logger.Debug(e);
             }
         }
 
