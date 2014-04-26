@@ -62,7 +62,7 @@ namespace MusicBeePlugin
         public SyncModule SyncModule { get; private set; }
 
         public PlaylistModule PlaylistModule { get; private set; }
-        public  CurrentQueueModule CurrentQueueModule { get; private set; }
+        public  NowPlayingModule NowPlayingModule { get; private set; }
             
 
         private Timer _timer;
@@ -131,7 +131,7 @@ namespace MusicBeePlugin
             
             SyncModule = new SyncModule(_api, _mStoragePath);
             PlaylistModule = new PlaylistModule(_api, _mStoragePath);
-            CurrentQueueModule = new CurrentQueueModule(_api);
+            NowPlayingModule = new NowPlayingModule(_api);
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -779,36 +779,44 @@ namespace MusicBeePlugin
         {
             var filter = String.Empty;
             string[] tracks = {};
-            switch (tag)
+            if (tag != MetaTag.track)
             {
-                case MetaTag.artist:
-                    filter = XmlFilter(new[] { "ArtistPeople" }, query, true);
-                    break;
-                case MetaTag.album:
-                    filter = XmlFilter(new[] { "Album" }, query, true);
-                    break;
-                case MetaTag.genre:
-                    filter = XmlFilter(new[] { "Genre" }, query, true);
-                    break;
-            }
+                switch (tag)
+                {
+                    case MetaTag.artist:
+                        filter = XmlFilter(new[] {"ArtistPeople"}, query, true);
+                        break;
+                    case MetaTag.album:
+                        filter = XmlFilter(new[] {"Album"}, query, true);
+                        break;
+                    case MetaTag.genre:
+                        filter = XmlFilter(new[] {"Genre"}, query, true);
+                        break;
+                }
 
-            _api.Library_QueryFilesEx(filter, ref tracks);
+                _api.Library_QueryFilesEx(filter, ref tracks);
 
-            var list = tracks.Select(file => new MetaData
-            {
-                file = file,
-                artist = _api.Library_GetFileTag(file, MetaDataType.Artist),
-                album_artist = _api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
-                album = _api.Library_GetFileTag(file, MetaDataType.Album),
-                title = _api.Library_GetFileTag(file, MetaDataType.TrackTitle),
-                genre = _api.Library_GetFileTag(file, MetaDataType.Genre),
-                year = _api.Library_GetFileTag(file, MetaDataType.Year),
-                track_no = _api.Library_GetFileTag(file, MetaDataType.TrackNo),
-                disc = _api.Library_GetFileTag(file, MetaDataType.DiscNo)
-            }).ToList();
-            list.Sort();
-            tracks = list.Select(r => r.file)
+                var list = tracks.Select(file => new MetaData
+                {
+                    file = file,
+                    artist = _api.Library_GetFileTag(file, MetaDataType.Artist),
+                    album_artist = _api.Library_GetFileTag(file, MetaDataType.AlbumArtist),
+                    album = _api.Library_GetFileTag(file, MetaDataType.Album),
+                    title = _api.Library_GetFileTag(file, MetaDataType.TrackTitle),
+                    genre = _api.Library_GetFileTag(file, MetaDataType.Genre),
+                    year = _api.Library_GetFileTag(file, MetaDataType.Year),
+                    track_no = _api.Library_GetFileTag(file, MetaDataType.TrackNo),
+                    disc = _api.Library_GetFileTag(file, MetaDataType.DiscNo)
+                }).ToList();
+                list.Sort();
+                tracks = list.Select(r => r.file)
                     .ToArray();
+            }
+            else
+            {
+                var track = _mHelper.GetEntryByHash(query);
+                tracks = new[] {track.Filepath};
+            }
                 
             return tracks;
         }

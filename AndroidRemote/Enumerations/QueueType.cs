@@ -2,8 +2,8 @@
 {
     public enum QueueType
     {
-        Last,
-        Next,
-        PlayNow
+        last,
+        next,
+        now
     }
 }

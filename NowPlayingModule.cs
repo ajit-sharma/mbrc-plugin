@@ -1,22 +1,23 @@
 using System;
 using System.Collections.Generic;
 using MusicBeePlugin.AndroidRemote.Entities;
+using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Networking;
 using MusicBeePlugin.AndroidRemote.Utilities;
 
 namespace MusicBeePlugin
 {
-    public class CurrentQueueModule : Messenger
+    public class NowPlayingModule : Messenger
     {
         private Plugin.MusicBeeApiInterface _api;
 
-        public CurrentQueueModule(Plugin.MusicBeeApiInterface api)
+        public NowPlayingModule(Plugin.MusicBeeApiInterface api)
         {
             _api = api;
         }
 
         /// <summary>
-        /// Sends the current queue (Now Playing List) of tracks to the client.
+        /// Sends the current queue (Now Playling List) of tracks to the client.
         /// </summary>
         /// <param name="clientProtocolVersion">The client protocol version.</param>
         /// <param name="clientId">The client identifier.</param>
@@ -124,6 +125,27 @@ namespace MusicBeePlugin
             };
 
             SendSocketMessage(Constants.NowPlayingListMove, Constants.Reply, reply, clientId);
+        }
+
+        public void NowPlayingQueueTracks(MetaTag tag, string query, QueueType type)
+        {
+            var tracks = Plugin.Instance.GetUrlsForTag(tag, query);
+
+            switch (type)
+            {
+                case QueueType.last:
+                    _api.NowPlayingList_QueueFilesLast(tracks);
+                    break;
+                case QueueType.next:
+                    _api.NowPlayingList_QueueFilesNext(tracks);
+                    break;
+                case QueueType.now:
+                    _api.NowPlayingList_Clear();
+                    _api.NowPlayingList_QueueFilesNext(tracks);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("type");
+            }
         }
     }
 }

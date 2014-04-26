@@ -1,4 +1,6 @@
-﻿namespace MusicBeePlugin.AndroidRemote
+﻿using System;
+
+namespace MusicBeePlugin.AndroidRemote
 {
     using Commands;
     using Commands.InstaReplies;
@@ -40,16 +42,12 @@
             controller.AddCommand(Constants.PlayerRepeat, typeof(RequestRepeat));
             controller.AddCommand(Constants.PlayerMute, typeof(RequestMute));
             controller.AddCommand(Constants.NowPlayingPosition, typeof(RequestPlaybackPosition));
-            controller.AddCommand(Constants.NowPlayingListRemove, typeof(RequestNowPlayingTrackRemoval));
-            controller.AddCommand(Constants.NowPlayingListPlay, typeof(RequestNowPlayingPlay));
-            controller.AddCommand(Constants.NowPlayingList, typeof(RequestNowPlayingList));
             controller.AddCommand(Constants.NowPlayingLfmRating, typeof(RequestLfmLoveRating));
             controller.AddCommand(Constants.NowPlayingTrack, typeof(RequestSongInfo));
             controller.AddCommand(Constants.NowPlayingCover, typeof(RequestCover));
             controller.AddCommand(Constants.NowPlayingLyrics, typeof(RequestLyrics));
-            controller.AddCommand(Constants.NowPlayingRating, typeof(RequestRating));
-            controller.AddCommand(Constants.NowPlayingListSearch, typeof(RequestNowPlayingSearch));
-            controller.AddCommand(Constants.NowPlayingListMove, typeof(RequestNowPlayingMoveTrack));
+            controller.AddCommand(Constants.NowPlayingRating, typeof(RequestRating));;
+            controller.AddCommand(Constants.Nowplaying, typeof(RequestNowPlaying));
             controller.AddCommand(EventType.ReplyAvailable, typeof(ReplayAvailable));
             controller.AddCommand(Constants.Playlists, typeof(RequestPlaylists));
             controller.AddCommand(Constants.Library, typeof(RequestLibrary));

@@ -8,7 +8,7 @@
         artist,
         album,
         genre,
-        title,
+        track,
         none
     }
 }

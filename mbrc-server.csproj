@@ -106,11 +106,8 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestLfmLoveRating.cs" />
     <Compile Include="AndroidRemote\Commands\InstaReplies\RequestLyrics.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibrary.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingMoveTrack.cs" />
+    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlaying.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestMute.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingPlay.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingSearch.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingTrackRemoval.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlaybackPosition.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylists.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPluginVersion.cs" />
@@ -120,7 +117,6 @@
     <Compile Include="AndroidRemote\Commands\Requests\RequestShuffle.cs" />
     <Compile Include="AndroidRemote\Commands\State\PCoverChanged.cs" />
     <Compile Include="AndroidRemote\Commands\State\PLyricsChanged.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlayingList.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestVolume.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestStop.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlayPause.cs" />
@@ -167,7 +163,7 @@
     <Compile Include="AndroidRemote\Networking\ServiceDiscovery.cs" />
     <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
     <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
-    <Compile Include="CurrentQueueModule.cs" />
+    <Compile Include="NowPlayingModule.cs" />
     <Compile Include="Debugging\DebugTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -250,7 +246,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_DetectChanges="False" BuildVersion_UseUniversalClock="True" BuildVersion_StartDate="2010/1/1" BuildVersion_UseGlobalSettings="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_StartDate="2010/1/1" BuildVersion_UseUniversalClock="True" BuildVersion_DetectChanges="False" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

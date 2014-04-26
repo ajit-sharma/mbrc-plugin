@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 namespace MusicBeePlugin
 {
     using AndroidRemote.Data;
@@ -143,7 +141,7 @@ namespace MusicBeePlugin
         public void RequestPlaylistCreate(string client, string name, MetaTag selection, string data)
         {
             var files = new string[] {};
-            if (selection != MetaTag.title)
+            if (selection != MetaTag.track)
             {
                 files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
@@ -188,7 +186,7 @@ namespace MusicBeePlugin
         {
             var files = new string[] {};
             var playlist = _mHelper.GetPlaylistByHash(hash);
-            if (selection != MetaTag.title)
+            if (selection != MetaTag.track)
             {
                 files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
