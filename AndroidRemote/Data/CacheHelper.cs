@@ -1,4 +1,6 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Data
+﻿using System.Security.Policy;
+
+namespace MusicBeePlugin.AndroidRemote.Data
 {
     using NLog;
     using System;
@@ -39,6 +41,15 @@
                                                  "\"updated\" text," +
                                                  "\"album_id\" text)";
 
+        private const string NowPlayingTracks = "CREATE TABLE \"now_playing\" (" +
+                                                "\"_id\" integer primary key," +
+                                                "\"position\" integer," +
+                                                "\"title\" text," +
+                                                "\"artist\" text," +
+                                                "\"hash\" text)";
+
+
+
         private const string DbName = @"\\cache.db";
         
         private readonly string _dbConnection;
@@ -69,6 +80,9 @@
                     mCommand.ExecuteNonQuery();
                         
                     mCommand.CommandText = CoverCacheTable;
+                    mCommand.ExecuteNonQuery();
+
+                    mCommand.CommandText = NowPlayingTracks;
                     mCommand.ExecuteNonQuery();
 
                     mConnection.Close();
@@ -108,6 +122,121 @@
                 Logger.Debug(e);
             }
             return total;  
+        }
+
+        /// <summary>
+        /// Caches the now playing tracks.
+        /// </summary>
+        /// <param name="tracks">The tracks.</param>
+        public void CacheNowPlayingTracks(List<NowPlayingListTrack> tracks)
+        {
+            try
+            {
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                {
+                    mConnection.Open();
+                    using (var mCommand = new SQLiteCommand(mConnection))
+                    using (var mTransaction = mConnection.BeginTransaction())
+                    {
+                        mCommand.CommandText = "delete from now_playing";
+                        mCommand.ExecuteNonQuery();
+                        mCommand.CommandText =
+                            "insert into now_playing (position, artist, title, hash) values (@position, @artist, @title, @hash)";;
+                        var positionParam = mCommand.CreateParameter();
+                        var artistParam = mCommand.CreateParameter();
+                        var titleParam = mCommand.CreateParameter();
+                        var hashParam = mCommand.CreateParameter();
+                        positionParam.ParameterName = "@position";
+                        artistParam.ParameterName = "@artist";
+                        titleParam.ParameterName = "@title";
+                        hashParam.ParameterName = "@hash";
+                        mCommand.Parameters.Add(positionParam);
+                        mCommand.Parameters.Add(artistParam);
+                        mCommand.Parameters.Add(titleParam);
+                        mCommand.Parameters.Add(hashParam);
+
+                        foreach (var nowPlayingListTrack in tracks)
+                        {
+                            positionParam.Value = nowPlayingListTrack.position;
+                            artistParam.Value = nowPlayingListTrack.artist;
+                            titleParam.Value = nowPlayingListTrack.title;
+                            hashParam.Value = nowPlayingListTrack.hash;
+                            mCommand.ExecuteNonQuery();
+                        }
+                        mTransaction.Commit();
+                    }
+                    mConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(ex);
+            }
+        }
+
+        public long GetCurrentQueueTotalTracks()
+        {
+            var total = 0;
+            try
+            {
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "select count(*) as count from now_playing";
+                    var mReader = mCommand.ExecuteReader();
+                    while (mReader.Read())
+                    {
+                        total = int.Parse(mReader["count"].ToString());
+                    }
+                    mReader.Close();
+                    mConnection.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(ex);
+            }
+            return total;
+        }
+
+        public List<NowPlayingListTrack> GetNowPlayingListTracks(int offset, int limit)
+        {
+            var data = new List<NowPlayingListTrack>();
+            try
+            {
+                using (var mConnection = new SQLiteConnection(_dbConnection))
+                using (var mCommand = new SQLiteCommand(mConnection))
+                {
+                    mConnection.Open();
+                    mCommand.CommandText = "select * from now_playing limit @limit offset @offset";
+                    var limitParam = mCommand.CreateParameter();
+                    var offsetParam = mCommand.CreateParameter();
+                    limitParam.ParameterName = "@limit";
+                    offsetParam.ParameterName = "@offset";
+                    limitParam.Value = limit;
+                    offsetParam.Value = offset;
+                    mCommand.Parameters.Add(limitParam);
+                    mCommand.Parameters.Add(offsetParam);
+                    var mReader = mCommand.ExecuteReader();
+                    while (mReader.Read())
+                    {
+                        var entry = new NowPlayingListTrack(mReader["artist"].ToString(),
+                            mReader["title"].ToString(),
+                            int.Parse(mReader["position"].ToString()),
+                            mReader["hash"].ToString());
+
+                        data.Add(entry);
+                    }
+                    mReader.Close();
+                    mConnection.Close();
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Debug(e);
+            }
+            return data;
         }
 
         public void CachePlaylists(List<Playlist> playlists)

@@ -28,7 +28,13 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     Plugin.Instance.NowPlayingModule.NowPlayingQueueTracks(tag, query, position);
                     break;
                 case "list":
-                    Plugin.Instance.NowPlayingModule.SendCurrentQueue(1.3, eEvent.ClientId);
+                    var offset = obj.Get<int>("offset");
+                    var limit = obj.Get<int>("limit");
+                    if (limit == 0)
+                    {
+                        limit = 50;
+                    }
+                    Plugin.Instance.NowPlayingModule.GetCurrentQueue(eEvent.ClientId, offset, limit);
                     break;
                 case "move":
                     var @from = obj.Get<int>("from");

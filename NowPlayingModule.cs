@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Networking;
@@ -10,18 +11,16 @@ namespace MusicBeePlugin
     public class NowPlayingModule : Messenger
     {
         private Plugin.MusicBeeApiInterface _api;
+        private CacheHelper mHelper;
 
-        public NowPlayingModule(Plugin.MusicBeeApiInterface api)
+        public NowPlayingModule(Plugin.MusicBeeApiInterface api, string storagePath)
         {
             _api = api;
+            mHelper = new CacheHelper(storagePath);
         }
 
-        /// <summary>
-        /// Sends the current queue (Now Playling List) of tracks to the client.
-        /// </summary>
-        /// <param name="clientProtocolVersion">The client protocol version.</param>
-        /// <param name="clientId">The client identifier.</param>
-        public void SendCurrentQueue(double clientProtocolVersion, string clientId)
+        
+        private void BuildCurrentQueue()
         {
             _api.NowPlayingList_QueryFiles(null);
 
@@ -54,7 +53,26 @@ namespace MusicBeePlugin
                 position++;
             }
 
-            SendSocketMessage(Constants.NowPlayingList, Constants.Reply, trackList, clientId);
+            mHelper.CacheNowPlayingTracks(trackList);
+        }
+
+        public void GetCurrentQueue(string clientId, int offset = 0, int limit = 50)
+        {
+            if (offset == 0)
+            {
+                BuildCurrentQueue();
+            }
+
+            var message = new
+            {
+                type = "list",
+                total = mHelper.GetCurrentQueueTotalTracks(),
+                limit,
+                offset,
+                data = mHelper.GetNowPlayingListTracks(offset, limit)
+            };
+            SendSocketMessage(Constants.Nowplaying, Constants.Reply, message, clientId);
+
         }
 
         /// <summary>
@@ -142,6 +160,7 @@ namespace MusicBeePlugin
                 case QueueType.now:
                     _api.NowPlayingList_Clear();
                     _api.NowPlayingList_QueueFilesNext(tracks);
+                    _api.NowPlayingList_PlayNow(tracks[0]);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("type");

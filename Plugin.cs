@@ -131,7 +131,7 @@ namespace MusicBeePlugin
             
             SyncModule = new SyncModule(_api, _mStoragePath);
             PlaylistModule = new PlaylistModule(_api, _mStoragePath);
-            NowPlayingModule = new NowPlayingModule(_api);
+            NowPlayingModule = new NowPlayingModule(_api, _mStoragePath);
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -252,8 +252,15 @@ namespace MusicBeePlugin
                 _mWindow = new InfoWindow();    
             }
             
-            _mWindow.Show();    
-            _mWindow.UpdateCacheStatus(_mHelper.GetCachedCoversCount(), _mHelper.GetCachedTracksCount());
+            _mWindow.Show();
+            if (_mHelper != null)
+            {
+                _mWindow.UpdateCacheStatus(_mHelper.GetCachedCoversCount(), _mHelper.GetCachedTracksCount());
+            }
+            else
+            {
+                _mWindow.UpdateCacheStatus(0, 0);
+            }
         } 
 
 #if DEBUG
@@ -819,33 +826,6 @@ namespace MusicBeePlugin
             }
                 
             return tracks;
-        }
-
-        /// <summary>
-        /// Takes a given query string and searches the Now Playing list for any index with a matching title or artist.
-        /// The title is checked first.
-        /// </summary>
-        /// <param name="query">The string representing the query</param>
-        /// <param name="clientId">Client</param>
-        public void NowPlayingSearch(string query, string clientId)
-        {
-            var result = false;
-            _api.NowPlayingList_QueryFiles(XmlFilter(new[] {"ArtistPeople", "Title"}, query, false));
-
-            while (true)
-            {
-                var currentTrack = _api.NowPlayingList_QueryGetNextFile();
-                if (String.IsNullOrEmpty(currentTrack)) break;
-                var artist = _api.Library_GetFileTag(currentTrack, MetaDataType.Artist);
-                var title = _api.Library_GetFileTag(currentTrack, MetaDataType.TrackTitle);
-
-                if (title.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0 &&
-                    artist.IndexOf(query, StringComparison.OrdinalIgnoreCase) < 0) continue;
-                result = _api.NowPlayingList_PlayNow(currentTrack);
-                break;
-            }
-
-            SendSocketMessage(Constants.NowPlayingListSearch, Constants.Reply, result, clientId);
         }
     }
 }
