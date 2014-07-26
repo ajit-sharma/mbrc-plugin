@@ -1,3 +1,5 @@
+using MusicBeePlugin.Rest;
+
 namespace MusicBeePlugin
 {
     using AndroidRemote.Data;
@@ -141,6 +143,10 @@ namespace MusicBeePlugin
             SyncModule.CheckCacheState();
             StartPlayerStatusMonitoring();
             _mHelper = new CacheHelper(_mStoragePath);
+
+            var appHost = new AppHost();
+            appHost.Init();
+            appHost.Start("http://*:2012/");
 
             return _about;
         }

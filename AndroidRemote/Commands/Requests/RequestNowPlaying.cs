@@ -39,7 +39,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                 case "move":
                     var @from = obj.Get<int>("from");
                     var to = obj.Get<int>("to");
-                    Plugin.Instance.NowPlayingModule.CurrentQueueMoveTrack(eEvent.ClientId, from, to);
+                    Plugin.Instance.NowPlayingModule.CurrentQueueMoveTrack(@from, to);
                     break;
                 case "play":
                     //todo: fix get hash and map to path
@@ -47,7 +47,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                     break;
                 case "remove":
                     var index = obj.Get<int>("index");
-                    Plugin.Instance.NowPlayingModule.CurrentQueueRemoveTrack(index, eEvent.ClientId);
+                    Plugin.Instance.NowPlayingModule.CurrentQueueRemoveTrack(index);
                     break;
                 default:
                     Logger.Info("Unknown Action");

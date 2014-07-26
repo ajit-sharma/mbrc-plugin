@@ -1,30 +1,34 @@
 using System;
 using System.Collections.Generic;
 using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.AndroidRemote.Utilities;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 
 namespace MusicBeePlugin
 {
     public class NowPlayingModule : Messenger
     {
         private Plugin.MusicBeeApiInterface _api;
-        private CacheHelper mHelper;
+        private CacheHelper _mHelper;
 
         public NowPlayingModule(Plugin.MusicBeeApiInterface api, string storagePath)
         {
             _api = api;
-            mHelper = new CacheHelper(storagePath);
+            _mHelper = new CacheHelper(storagePath);
         }
 
-        
-        private void BuildCurrentQueue()
+        public bool NowplayingPlayNow(string path)
+        {
+            return _api.NowPlayingList_PlayNow(path);
+        }
+
+
+        public List<NowPlaying> GetCurrentQueue(string clientId, int offset = 0, int limit = 50)
         {
             _api.NowPlayingList_QueryFiles(null);
 
-            var trackList = new List<NowPlayingListTrack>();
+            var trackList = new List<NowPlaying>();
             var position = 1;
 
             while (true)
@@ -49,30 +53,29 @@ namespace MusicBeePlugin
                     title = playListTrack.Substring(index + 1);
                 }
 
-                trackList.Add(new NowPlayingListTrack(artist, title, position, Utilities.Sha1Hash(playListTrack)));
+                var nowPlaying = new NowPlaying
+                {
+                    artist = artist,
+                    id = position,
+                    path = playListTrack,
+                    position = position,
+                    title = title
+                };
+
+                trackList.Add(nowPlaying);
                 position++;
             }
 
-            mHelper.CacheNowPlayingTracks(trackList);
-        }
-
-        public void GetCurrentQueue(string clientId, int offset = 0, int limit = 50)
-        {
-            if (offset == 0)
-            {
-                BuildCurrentQueue();
-            }
-
-            var message = new
-            {
-                type = "list",
-                total = mHelper.GetCurrentQueueTotalTracks(),
-                limit,
-                offset,
-                data = mHelper.GetNowPlayingListTracks(offset, limit)
-            };
-            SendSocketMessage(Constants.Nowplaying, Constants.Reply, message, clientId);
-
+//            var message = new
+//            {
+//                type = "list",
+//                total = trackList.Count,
+//                limit,
+//                offset,
+//                data = trackList.GetRange(offset, limit)
+//            };
+            //SendSocketMessage(Constants.Nowplaying, Constants.Reply, message, clientId);
+            return trackList;
         }
 
         /// <summary>
@@ -105,24 +108,21 @@ namespace MusicBeePlugin
         /// 
         /// </summary>
         /// <param name="index"></param>
-        /// <param name="clientId"></param>
-        public void CurrentQueueRemoveTrack(int index, string clientId)
+        public bool CurrentQueueRemoveTrack(int index)
         {
-            var reply = new
+            if (index > 0)
             {
-                success = _api.NowPlayingList_RemoveAt(index),
-                index
-            };
-            SendSocketMessage(Constants.NowPlayingListRemove, Constants.Reply,reply, clientId);
+                index--;
+            }
+            return _api.NowPlayingList_RemoveAt(index);
         }
 
         /// <summary>
         /// Moves a index of the now playing list to a new position.
         /// </summary>
-        /// <param name="clientId">The Id of the client that initiated the request</param>
         /// <param name="from">The initial position</param>
         /// <param name="to">The final position</param>
-        public void CurrentQueueMoveTrack(string clientId, int from, int to)
+        public bool CurrentQueueMoveTrack(int @from, int to)
         {
             int[] aFrom = {@from};
             int dIn;
@@ -135,14 +135,7 @@ namespace MusicBeePlugin
                 dIn = to;
             }
 
-            var result = _api.NowPlayingList_MoveFiles(aFrom, dIn);
-
-            var reply = new
-            {
-                success = result, @from, to
-            };
-
-            SendSocketMessage(Constants.NowPlayingListMove, Constants.Reply, reply, clientId);
+            return _api.NowPlayingList_MoveFiles(aFrom, dIn);
         }
 
         public void NowPlayingQueueTracks(MetaTag tag, string query, QueueType type)
