@@ -11,7 +11,7 @@
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.RequestShuffleState(eEvent.Data.Equals("toggle")?StateAction.Toggle : StateAction.State);
+            Plugin.Instance.PlayerModule.RequestShuffleState(eEvent.Data.Equals("toggle")?StateAction.Toggle : StateAction.State);
         }
     }
 }

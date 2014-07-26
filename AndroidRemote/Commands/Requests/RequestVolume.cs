@@ -13,7 +13,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
             int iVolume;
             if (!int.TryParse(eEvent.DataToString(), out iVolume)) return;
 
-            Plugin.Instance.RequestVolumeChange(iVolume);
+            Plugin.Instance.PlayerModule.RequestVolumeChange(iVolume);
         }
     }
 }

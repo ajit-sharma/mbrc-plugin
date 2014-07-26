@@ -12,7 +12,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.RequestAutoDjState((string) eEvent.Data == "toggle" ? StateAction.Toggle : StateAction.State);
+            Plugin.Instance.PlayerModule.RequestAutoDjState((string) eEvent.Data == "toggle" ? StateAction.Toggle : StateAction.State);
         }
     }
 }

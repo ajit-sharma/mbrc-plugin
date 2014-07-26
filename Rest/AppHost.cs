@@ -11,7 +11,9 @@ namespace MusicBeePlugin.Rest
         public override void Configure(Container container)
         {
             Routes.Add<NowPlaying>("/nowplaying")
-                .Add<NowPlaying>("/nowplaying/play");
+                .Add<NowPlaying>("/nowplaying/play")
+                .Add<Track>("/track");
+
         }
     }
 }

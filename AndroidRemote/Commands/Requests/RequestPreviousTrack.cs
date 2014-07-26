@@ -11,7 +11,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.RequestPreviousTrack(eEvent.ClientId);
+            Plugin.Instance.PlayerModule.RequestPreviousTrack(eEvent.ClientId);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.RequestLoveStatus(eEvent.DataToString());
+            Plugin.Instance.TrackModule.RequestLoveStatus(eEvent.DataToString());
         }
     }
 }

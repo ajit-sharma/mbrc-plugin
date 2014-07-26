@@ -142,7 +142,6 @@
     <Compile Include="AndroidRemote\Commands\Internal\StopSocketServer.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\StartSocketServer.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlayer.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestSongInfo.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestPlayerStatus.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\InitializeModelStateCommand.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestNextTrack.cs" />
@@ -177,6 +176,7 @@
     <Compile Include="AndroidRemote\Networking\ServiceDiscovery.cs" />
     <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
     <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
+    <Compile Include="PlayerModule.cs" />
     <Compile Include="Rest\AppHost.cs" />
     <Compile Include="NowPlayingModule.cs" />
     <Compile Include="Debugging\DebugTool.cs">
@@ -210,11 +210,19 @@
     <Compile Include="AndroidRemote\Networking\SocketServer.cs" />
     <Compile Include="AndroidRemote\Utilities\Authenticator.cs" />
     <Compile Include="AndroidRemote\Utilities\StateAction.cs" />
+    <Compile Include="Rest\ServiceInterface\LibraryService.cs" />
     <Compile Include="Rest\ServiceInterface\NowPlayingService.cs" />
+    <Compile Include="Rest\ServiceInterface\PlayerService.cs" />
+    <Compile Include="Rest\ServiceInterface\PlaylistService.cs" />
+    <Compile Include="Rest\ServiceInterface\TrackService.cs" />
     <Compile Include="Rest\ServiceModel\NowPlaying.cs" />
+    <Compile Include="Rest\ServiceModel\Player.cs" />
+    <Compile Include="Rest\ServiceModel\Track.cs" />
     <Compile Include="Rest\ServiceModel\Type\NowPlaying.cs" />
+    <Compile Include="Rest\ServiceModel\Type\Track.cs" />
     <Compile Include="SyncModule.cs" />
     <Compile Include="Tools\NetworkTools.cs" />
+    <Compile Include="TrackModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

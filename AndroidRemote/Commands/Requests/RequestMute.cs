@@ -12,7 +12,7 @@
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.RequestMuteState(eEvent.Data.Equals("toggle")?StateAction.Toggle : StateAction.State);
+            Plugin.Instance.PlayerModule.RequestMuteState(eEvent.Data.Equals("toggle")?StateAction.Toggle : StateAction.State);
         }
     }
 }

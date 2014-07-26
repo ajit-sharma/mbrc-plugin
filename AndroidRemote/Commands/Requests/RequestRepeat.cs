@@ -11,7 +11,7 @@
 
         public void Execute(IEvent eEvent)
         {
-            Plugin.Instance.RequestRepeatState(eEvent.Data.Equals("toggle")?StateAction.Toggle : StateAction.State);
+            Plugin.Instance.PlayerModule.RequestRepeatState(eEvent.Data.Equals("toggle")?StateAction.Toggle : StateAction.State);
         }
     }
 }

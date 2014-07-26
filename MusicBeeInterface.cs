@@ -6,8 +6,8 @@ namespace MusicBeePlugin
     public partial class Plugin
     {
         public const short PluginInfoVersion = 1;
-//        public const short MinInterfaceVersion = 30;
-//        public const short MinApiRevision = 35;
+        //        public const short MinInterfaceVersion = 30;
+        //        public const short MinApiRevision = 35;
         public const short MinInterfaceVersion = 29;
         public const short MinApiRevision = 33;
 
@@ -18,19 +18,20 @@ namespace MusicBeePlugin
             public void Initialise(IntPtr apiInterfacePtr)
             {
                 CopyMemory(ref this, apiInterfacePtr, 4);
-                if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_0)
+                if (MusicBeeVersion == MusicBeeVersion.v2_0)
                     // MusicBee version 2.0 - Api methods > revision 25 are not available
                     CopyMemory(ref this, apiInterfacePtr, 456);
-                else if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_1)
+                else if (MusicBeeVersion == MusicBeeVersion.v2_1)
                     CopyMemory(ref this, apiInterfacePtr, 516);
-                else if (MusicBeeVersion == Plugin.MusicBeeVersion.v2_2)
+                else if (MusicBeeVersion == MusicBeeVersion.v2_2)
                     CopyMemory(ref this, apiInterfacePtr, 584);
                 else
                     CopyMemory(ref this, apiInterfacePtr, Marshal.SizeOf(this));
             }
             public MusicBeeVersion MusicBeeVersion
             {
-                get {
+                get
+                {
                     if (ApiRevision <= 25)
                         return MusicBeeVersion.v2_0;
                     else if (ApiRevision <= 31)
@@ -338,7 +339,7 @@ namespace MusicBeePlugin
             AlbumArtistRaw = 34,     // stored album artist
             Artist = 32,             // displayed artist
             MultiArtist = 33,        // individual artists, separated by a null char
-			PrimaryArtist = 19,      // first artist from multi-artist tagged file, otherwise displayed artist
+            PrimaryArtist = 19,      // first artist from multi-artist tagged file, otherwise displayed artist
             Artists = 144,
             ArtistsWithArtistRole = 145,
             ArtistsWithPerformerRole = 146,
@@ -520,7 +521,7 @@ namespace MusicBeePlugin
             TrackAndArtistPanel = 1
         }
 
-        
+
         public enum ReplayGainMode
         {
             Off = 0,

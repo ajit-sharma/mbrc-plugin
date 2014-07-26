@@ -32,7 +32,6 @@ namespace MusicBeePlugin
     /// </summary>
     public partial class Plugin : Messenger
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         /// <summary>
         /// The mb api interface.
         /// </summary>
@@ -41,7 +40,7 @@ namespace MusicBeePlugin
         /// <summary>
         /// The _about.
         /// </summary>
-        private readonly PluginInfo _about = new PluginInfo();
+        private readonly PluginInfo _about = new Plugin.PluginInfo();
 
         private Timer _positionUpdateTimer;
 
@@ -50,7 +49,7 @@ namespace MusicBeePlugin
         /// </summary>
         public static Plugin Instance
         {
-            get { return _selfInstance; }
+            get { return Plugin._selfInstance; }
         }
 
         private static Plugin _selfInstance;
@@ -65,7 +64,10 @@ namespace MusicBeePlugin
 
         public PlaylistModule PlaylistModule { get; private set; }
         public  NowPlayingModule NowPlayingModule { get; private set; }
-            
+
+        public PlayerModule PlayerModule { get; private set; }
+
+        public TrackModule TrackModule { get; private set; }
 
         private Timer _timer;
         private bool _scrobble;
@@ -80,13 +82,13 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="apiInterfacePtr"></param>
         /// <returns></returns>
-        public PluginInfo Initialise(IntPtr apiInterfacePtr)
+        public Plugin.PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
             _selfInstance = this;
             JsConfig.ExcludeTypeInfo = true;
             Configuration.Register(Controller.Instance);
 
-            _api = new MusicBeeApiInterface();
+            _api = new Plugin.MusicBeeApiInterface();
             _api.Initialise(apiInterfacePtr);
 
             UserSettings.Instance.SetStoragePath(_api.Setting_GetPersistentStoragePath());
@@ -134,6 +136,8 @@ namespace MusicBeePlugin
             SyncModule = new SyncModule(_api, _mStoragePath);
             PlaylistModule = new PlaylistModule(_api, _mStoragePath);
             NowPlayingModule = new NowPlayingModule(_api, _mStoragePath);
+            PlayerModule = new PlayerModule(_api);
+            TrackModule = new TrackModule(_api);
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -218,7 +222,7 @@ namespace MusicBeePlugin
         {
             if (_api.Player_GetPlayState() == PlayState.Playing)
             {
-                RequestPlayPosition("status");
+                //PlayerModule.RequestPlayPosition("status");
             }
         }
 
@@ -339,12 +343,12 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.TrackChanged:
-                    RequestNowPlayingTrackCover();
-                    RequestTrackRating(String.Empty, String.Empty);
-                    RequestLoveStatus("status");
-                    RequestNowPlayingTrackLyrics();
-                    RequestPlayPosition("status");
-                    SendSocketMessage(Constants.NowPlayingTrack, Constants.Message, GetTrackInfo());
+//                    PlayerModule.RequestNowPlayingTrackCover();
+//                    PlayerModule.RequestTrackRating(String.Empty, String.Empty);
+//                    PlayerModule.RequestLoveStatus("status");
+//                    PlayerModule.RequestNowPlayingTrackLyrics();
+//                    PlayerModule.RequestPlayPosition("status");
+                    //SendSocketMessage(Constants.NowPlayingTrack, Constants.Message, MusicBeePlugin.PlayerModule.GetTrackInfo());
                     break;
                 case NotificationType.VolumeLevelChanged:
                     SendSocketMessage(Constants.PlayerVolume, Constants.Message,((int) Math.Round(_api.Player_GetVolume()*100,1)));
@@ -392,384 +396,6 @@ namespace MusicBeePlugin
                     SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, false);
                     break;
             }
-        }
-
-        private NowPlayingTrack GetTrackInfo()
-        {
-            var nowPlayingTrack = new NowPlayingTrack
-            {
-                Artist = _api.NowPlaying_GetFileTag(MetaDataType.Artist),
-                Album = _api.NowPlaying_GetFileTag(MetaDataType.Album),
-                Year = _api.NowPlaying_GetFileTag(MetaDataType.Year)
-            };
-            nowPlayingTrack.SetTitle(_api.NowPlaying_GetFileTag(MetaDataType.TrackTitle),
-                                     _api.NowPlaying_GetFileUrl());
-            return nowPlayingTrack;
-        }
-
-        /// <summary>
-        /// When called plays the next index.
-        /// </summary>
-        /// <returns></returns>
-        public void RequestNextTrack(string clientId)
-        {
-            SendSocketMessage(Constants.PlayerNext, Constants.Reply, _api.Player_PlayNextTrack());
-        }
-
-        /// <summary>
-        /// When called stops the playback.
-        /// </summary>
-        /// <returns></returns>
-        public void RequestStopPlayback(string clientId)
-        {
-            SendSocketMessage(Constants.PlayerStop, Constants.Reply, _api.Player_Stop());
-        }
-
-        /// <summary>
-        /// When called changes the play/pause state or starts playing a index if the status is stopped.
-        /// </summary>
-        /// <returns></returns>
-        public void RequestPlayPauseTrack(string clientId)
-        {
-            SendSocketMessage(Constants.PlayerPlayPause, Constants.Reply, _api.Player_PlayPause());
-        }
-
-        /// <summary>
-        /// When called plays the previous index.
-        /// </summary>
-        /// <returns></returns>
-        public void RequestPreviousTrack(string clientId)
-        {
-            SendSocketMessage(Constants.PlayerPrevious, Constants.Reply, _api.Player_PlayPreviousTrack());
-        }
-
-        /// <summary>
-        /// When called if the volume string is an integer in the range [0,100] it 
-        /// changes the volume to the specific value and returns the new value.
-        /// In any other case it just returns the current value for the volume.
-        /// </summary>
-        /// <param name="volume"> </param>
-        public void RequestVolumeChange(int volume)
-        {
-            if (volume >= 0)
-            {
-                _api.Player_SetVolume((float) volume/100);
-            }
-
-            SendSocketMessage(Constants.PlayerVolume, Constants.Reply, ((int)Math.Round(_api.Player_GetVolume() * 100, 1)));
-
-            if (_api.Player_GetMute())
-            {
-                _api.Player_SetMute(false);
-            }
-        }
-
-        /// <summary>
-        /// Changes the player shuffle state. If the StateAction is Toggle then the current state is switched with it's opposite,
-        /// if it is State the current state is dispatched with an Event.
-        /// </summary>
-        /// <param name="action"></param>
-        public void RequestShuffleState(StateAction action)
-        {
-            if (action == StateAction.Toggle)
-            {
-                _api.Player_SetShuffle(!_api.Player_GetShuffle());
-            }
-            
-            SendSocketMessage(Constants.PlayerShuffle, Constants.Reply, _api.Player_GetShuffle());
-        }
-
-        /// <summary>
-        /// Changes the player mute state. If the StateAction is Toggle then the current state is switched with it's opposite,
-        /// if it is State the current state is dispatched with an Event.
-        /// </summary>
-        /// <param name="action"></param>
-        public void RequestMuteState(StateAction action)
-        {
-            if (action == StateAction.Toggle)
-            {
-                _api.Player_SetMute(!_api.Player_GetMute());
-            }
-            
-            SendSocketMessage(Constants.PlayerMute, Constants.Reply, _api.Player_GetMute());
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="action"></param>
-        public void RequestScrobblerState(StateAction action)
-        {
-            if (action == StateAction.Toggle)
-            {
-                _api.Player_SetScrobbleEnabled(!_api.Player_GetScrobbleEnabled());
-            }
-            
-            SendSocketMessage(Constants.PlayerScrobble, Constants.Reply, _api.Player_GetScrobbleEnabled());
-        }
-
-        /// <summary>
-        /// If the action equals toggle then it changes the repeat state, in any other case
-        /// it just returns the current value of the repeat.
-        /// </summary>
-        /// <param name="action">toggle or state</param>
-        /// <returns>Repeat state: None, All, One</returns>
-        public void RequestRepeatState(StateAction action)
-        {
-            if (action == StateAction.Toggle)
-            {
-                switch (_api.Player_GetRepeat())
-                {
-                    case RepeatMode.None:
-                        _api.Player_SetRepeat(RepeatMode.All);
-                        break;
-                    case RepeatMode.All:
-                        _api.Player_SetRepeat(RepeatMode.None);
-                        break;
-                    case RepeatMode.One:
-                        _api.Player_SetRepeat(RepeatMode.None);
-                        break;
-                }
-            }
-            SendSocketMessage(Constants.PlayerRepeat, Constants.Reply, _api.Player_GetRepeat());
-        }
-
-        /// <summary>
-        /// If the given rating string is not null or empty and the value of the string is a float number in the [0,5]
-        /// the function will set the new rating as the current index's new index rating. In any other case it will
-        /// just return the rating for the current index.
-        /// </summary>
-        /// <param name="rating">New Track Rating</param>
-        /// <param name="clientId"> </param>
-        /// <returns>Track Rating</returns>
-        public void RequestTrackRating(string rating, string clientId)
-        {
-            try
-            {
-                var a = Convert.ToChar(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator);
-                rating = rating.Replace('.', a);
-                float fRating;
-                if (!Single.TryParse(rating, out fRating))
-                {
-                    fRating = -1;
-                }
-                if (fRating >= 0  && fRating <= 5)
-                {
-                    _api.Library_SetFileTag(_api.NowPlaying_GetFileUrl(),
-                        MetaDataType.Rating,
-                        fRating.ToString(CultureInfo.InvariantCulture));
-                    _api.Library_CommitTagsToFile(_api.NowPlaying_GetFileUrl());
-                    _api.Player_GetShowRatingTrack();
-                    _api.MB_RefreshPanels();
-                }
-                rating = _api.Library_GetFileTag(
-                    _api.NowPlaying_GetFileUrl(), MetaDataType.Rating).Replace(a, '.');
-                
-                SendSocketMessage(Constants.NowPlayingRating, Constants.Reply, rating);
-            }
-            catch (Exception e)
-            {
-                Logger.DebugException("Exception", e);
-            }
-        }
-
-        /// <summary>
-        /// Requests the Now Playing index lyrics. If the lyrics are available then they are dispatched along with
-        /// and event. If not, and the ApiRevision is equal or greater than r17 a request for the downloaded lyrics
-        /// is initiated. The lyrics are dispatched along with and event when ready.
-        /// </summary>
-        public void RequestNowPlayingTrackLyrics()
-        {
-            if (!String.IsNullOrEmpty(_api.NowPlaying_GetLyrics()))
-            {
-                SendSocketMessage(Constants.NowPlayingLyrics, Constants.Reply, _api.NowPlaying_GetLyrics());
-            }
-            else if (_api.ApiRevision >= 17)
-            {
-                var lyrics = _api.NowPlaying_GetDownloadedLyrics();
-                SendSocketMessage(Constants.NowPlayingLyrics, Constants.Reply, 
-                    !String.IsNullOrEmpty(lyrics) ?
-                    lyrics :
-                    "Retrieving Lyrics");
-            }
-            else
-            {
-                SendSocketMessage(Constants.NowPlayingLyrics, Constants.Reply, "Lyrics Not Found");
-            }
-        }
-
-        /// <summary>
-        /// Requests the Now Playing Track Cover. If the cover is available it is dispatched along with an event.
-        /// If not, and the ApiRevision is equal or greater than r17 a request for the downloaded artwork is
-        /// initiated. The cover is dispatched along with an event when ready.
-        /// </summary>
-        public void RequestNowPlayingTrackCover()
-        {
-            if (!String.IsNullOrEmpty(_api.NowPlaying_GetArtwork()))
-            {
-                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, 
-                    _api.NowPlaying_GetArtwork()));
-            }
-            else if (_api.ApiRevision >= 17)
-            {
-                var cover = _api.NowPlaying_GetDownloadedArtwork();
-                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange,
-                    !String.IsNullOrEmpty(cover) ? cover : String.Empty));
-            }
-            else
-            {
-                EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange, String.Empty));
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="request"></param>
-        public void RequestPlayPosition(string request)
-        {
-            if (!request.Contains("status"))
-            {
-                int newPosition;
-                if (Int32.TryParse(request, out newPosition))
-                {
-                    _api.Player_SetPosition(newPosition);
-                }
-            }
-            var currentPosition = _api.Player_GetPosition();
-            var totalDuration = _api.NowPlaying_GetDuration();
-
-            var position = new
-                {
-                    current = currentPosition,
-                    total = totalDuration
-                };
-            
-            SendSocketMessage(Constants.NowPlayingPosition, Constants.Reply, position);
-        }
-
-        /// <summary>
-        /// This function requests or changes the AutoDJ functionality's state.
-        /// </summary>
-        /// <param name="action">
-        /// The action can be either toggle or state.
-        /// </param>
-        public void RequestAutoDjState(StateAction action)
-        {
-            if (action == StateAction.Toggle)
-            {
-                if (!_api.Player_GetAutoDjEnabled())
-                {
-                    _api.Player_StartAutoDj();
-                }
-                else
-                {
-                    _api.Player_EndAutoDj();
-                }
-            }
-            SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, _api.Player_GetAutoDjEnabled());
-        }
-
-        /// <summary>
-        /// This function is used to change the playing index's last.fm love rating.
-        /// </summary>
-        /// <param name="action">
-        /// The action can be either love, or ban.
-        /// </param>
-        public void RequestLoveStatus(string action)
-        {
-            var hwnd = _api.MB_GetWindowHandle();
-            var mb = (Form) Control.FromHandle(hwnd);
-
-            if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
-            {
-                if (GetLfmStatus() == LastfmStatus.Love || GetLfmStatus() == LastfmStatus.Ban)
-                {
-                    mb.Invoke(new MethodInvoker(SetLfmNormalStatus));
-                }
-                else
-                {
-                    mb.Invoke(new MethodInvoker(SetLfmLoveStatus));    
-                }
-            } 
-            else if (action.Equals("love", StringComparison.OrdinalIgnoreCase))
-            {
-                mb.Invoke(new MethodInvoker(SetLfmLoveStatus));
-            }
-            else if (action.Equals("ban", StringComparison.OrdinalIgnoreCase))
-            {
-                mb.Invoke(new MethodInvoker(SetLfmLoveBan));
-            }
-            
-            SendSocketMessage(Constants.NowPlayingLfmRating, Constants.Reply, GetLfmStatus());
-        }
-
-        private void SetLfmNormalStatus()
-        {
-            _api.Library_SetFileTag(
-                    _api.NowPlaying_GetFileUrl(), MetaDataType.RatingLove, "lfm");
-        }
-
-        private void SetLfmLoveStatus()
-        {
-            _api.Library_SetFileTag(
-                    _api.NowPlaying_GetFileUrl(), MetaDataType.RatingLove, "Llfm");
-        }
-
-        private void SetLfmLoveBan()
-        {
-            var fileUrl = _api.NowPlaying_GetFileUrl();
-            _api.Library_SetFileTag(fileUrl, MetaDataType.RatingLove, "Blfm");
-        }
-
-        private LastfmStatus GetLfmStatus()
-        {
-            LastfmStatus lastfmStatus;
-            var apiReply = _api.NowPlaying_GetFileTag(MetaDataType.RatingLove);
-            if (apiReply.Equals("L") || apiReply.Equals("lfm") || apiReply.Equals("Llfm"))
-            {
-                lastfmStatus = LastfmStatus.Love;
-            }
-            else if (apiReply.Equals("B") || apiReply.Equals("Blfm"))
-            {
-                lastfmStatus = LastfmStatus.Ban;
-            }
-            else
-            {
-                lastfmStatus = LastfmStatus.Normal;
-            }
-            return lastfmStatus;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="clientId"></param>
-        public void RequestPlayerStatus(string clientId)
-        {
-            var status = new
-            {
-                playerrepeat = _api.Player_GetRepeat().ToString(),
-                playermute = _api.Player_GetMute(),
-                playershuffle = _api.Player_GetShuffle(),
-                scrobbler = _api.Player_GetScrobbleEnabled(),
-                playerstate = _api.Player_GetPlayState().ToString(),
-                playervolume =
-                    ((int) Math.Round(_api.Player_GetVolume()*100, 1)).ToString(
-                        CultureInfo.InvariantCulture)
-            };
-
-
-            SendSocketMessage(Constants.PlayerStatus, Constants.Reply, status, clientId);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="clientId"></param>
-        public void RequestTrackInfo(string clientId)
-        {
-            SendSocketMessage(Constants.NowPlayingTrack, Constants.Reply, GetTrackInfo(), clientId);
         }
 
         private static string XmlFilter(IEnumerable<string> tags, string query, bool isStrict)
