@@ -86,6 +86,12 @@
     <Reference Include="ServiceStack.Interfaces">
       <HintPath>packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.OrmLite">
+      <HintPath>packages\ServiceStack.OrmLite.Sqlite32.3.9.71\lib\net40\ServiceStack.OrmLite.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.OrmLite.SqliteNET">
+      <HintPath>packages\ServiceStack.OrmLite.Sqlite32.3.9.71\lib\net40\ServiceStack.OrmLite.SqliteNET.dll</HintPath>
+    </Reference>
     <Reference Include="ServiceStack.ServiceInterface">
       <HintPath>packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
     </Reference>
@@ -96,10 +102,10 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
-      <HintPath>packages\System.Data.SQLite.x86.1.0.90.0\lib\net40\System.Data.SQLite.dll</HintPath>
+      <HintPath>packages\System.Data.SQLite.x86.1.0.88.0\lib\net40\System.Data.SQLite.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.SQLite.Linq">
-      <HintPath>packages\System.Data.SQLite.x86.1.0.90.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+      <HintPath>packages\System.Data.SQLite.x86.1.0.88.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
@@ -148,11 +154,6 @@
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
-    <Compile Include="AndroidRemote\Entities\Album.cs" />
-    <Compile Include="AndroidRemote\Entities\AlbumEntry.cs" />
-    <Compile Include="AndroidRemote\Entities\AlbumTrack.cs" />
-    <Compile Include="AndroidRemote\Entities\Artist.cs" />
-    <Compile Include="AndroidRemote\Entities\Genre.cs" />
     <Compile Include="AndroidRemote\Entities\ImageData.cs" />
     <Compile Include="AndroidRemote\Entities\LibraryData.cs" />
     <Compile Include="AndroidRemote\Entities\MetaData.cs" />
@@ -215,12 +216,18 @@
     <Compile Include="Rest\ServiceInterface\PlayerService.cs" />
     <Compile Include="Rest\ServiceInterface\PlaylistService.cs" />
     <Compile Include="Rest\ServiceInterface\TrackService.cs" />
+    <Compile Include="Rest\ServiceModel\Library.cs" />
     <Compile Include="Rest\ServiceModel\NowPlaying.cs" />
     <Compile Include="Rest\ServiceModel\Player.cs" />
+    <Compile Include="Rest\ServiceModel\Playlist.cs" />
     <Compile Include="Rest\ServiceModel\Track.cs" />
+    <Compile Include="Rest\ServiceModel\Type\LibraryAlbum.cs" />
+    <Compile Include="Rest\ServiceModel\Type\LibraryArtist.cs" />
+    <Compile Include="Rest\ServiceModel\Type\LibraryGenre.cs" />
+    <Compile Include="Rest\ServiceModel\Type\LibraryTrack.cs" />
     <Compile Include="Rest\ServiceModel\Type\NowPlaying.cs" />
     <Compile Include="Rest\ServiceModel\Type\Track.cs" />
-    <Compile Include="SyncModule.cs" />
+    <Compile Include="LibraryModule.cs" />
     <Compile Include="Tools\NetworkTools.cs" />
     <Compile Include="TrackModule.cs" />
   </ItemGroup>
@@ -273,7 +280,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_DetectChanges="False" BuildVersion_UseUniversalClock="True" BuildVersion_StartDate="2010/1/1" BuildVersion_UseGlobalSettings="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_StartDate="2010/1/1" BuildVersion_UseUniversalClock="True" BuildVersion_DetectChanges="False" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

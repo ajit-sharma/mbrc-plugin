@@ -1,13 +1,14 @@
-﻿using System.Security.Policy;
+﻿using System.Data;
+using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.OrmLite;
 
 namespace MusicBeePlugin.AndroidRemote.Data
 {
+    using Entities;
     using NLog;
     using System;
     using System.Collections.Generic;
     using System.Data.SQLite;
-    using System.IO;
-    using Entities;
 
     /// <summary>
     /// Class CacheHelper.
@@ -16,43 +17,9 @@ namespace MusicBeePlugin.AndroidRemote.Data
     class CacheHelper
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private const string CreateTable = "CREATE TABLE \"data\" (" +
-                                            "\"_id\" integer primary key," +
-                                            "\"hash\" TEXT," +
-                                            "\"updated\" TEXT," +
-                                            "\"filepath\" TEXT);";
-
-        private const string ArtistImageTable = "CREATE TABLE \"artist_images\" (" +
-                                                  "\"_id\" integer primary key," +
-                                                  "\"artist\" TEXT," +
-                                                  "\"updated\" TEXT," +
-                                                  "\"url\" TEXT);";
-
-        private const string PlaylistTable = "create table \"playlists\" (" +
-                                              "\"_id\" integer primary key," +
-                                              "\"name\" text," +
-                                              "\"path\" text," +
-                                              "\"updated\" text," +
-                                              "\"hash\" text)";
-
-        private const string CoverCacheTable = "create table \"covers\" (" +
-                                                 "\"_id\" integer primary key," +
-                                                 "\"coverhash\" text," +
-                                                 "\"updated\" text," +
-                                                 "\"album_id\" text)";
-
-        private const string NowPlayingTracks = "CREATE TABLE \"now_playing\" (" +
-                                                "\"_id\" integer primary key," +
-                                                "\"position\" integer," +
-                                                "\"title\" text," +
-                                                "\"artist\" text," +
-                                                "\"hash\" text)";
-
-
-
         private const string DbName = @"\\cache.db";
-        
         private readonly string _dbConnection;
+        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CacheHelper"/> class.
@@ -60,38 +27,28 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// <param name="storagePath">The storage path.</param>
         public CacheHelper(string storagePath)
         {
-            storagePath = storagePath + DbName;
-            _dbConnection = String.Format("Data Source={0}", storagePath);
+            _dbConnection = storagePath + DbName;
+            OrmLiteConfig.DialectProvider = SqliteDialect.Provider;
             try
             {
-                if (File.Exists(storagePath)) return;
-                SQLiteConnection.CreateFile(storagePath);
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                using (var mCommand = new SQLiteCommand(mConnection)) 
+                using (var db = GetDbConnection())
                 {
-                    mConnection.Open();
-                    mCommand.CommandText = CreateTable;
-                    mCommand.ExecuteNonQuery();
-
-                    mCommand.CommandText = ArtistImageTable;
-                    mCommand.ExecuteNonQuery();
-
-                    mCommand.CommandText = PlaylistTable;
-                    mCommand.ExecuteNonQuery();
-                        
-                    mCommand.CommandText = CoverCacheTable;
-                    mCommand.ExecuteNonQuery();
-
-                    mCommand.CommandText = NowPlayingTracks;
-                    mCommand.ExecuteNonQuery();
-
-                    mConnection.Close();
+                    db.CreateTableIfNotExists<LibraryArtist>();
+                    db.CreateTableIfNotExists<LibraryAlbum>();
+                    db.CreateTableIfNotExists<LibraryGenre>();
+                    db.CreateTableIfNotExists<LibraryTrack>();
                 }
+            
             }
             catch (Exception e)
             {
                 Logger.Debug(e);
             }
+        }
+
+        public IDbConnection GetDbConnection()
+        {
+            return _dbConnection.OpenDbConnection();
         }
 
         /// <summary>
@@ -103,18 +60,9 @@ namespace MusicBeePlugin.AndroidRemote.Data
             var total = 0;
             try
             {
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                using (var mCommand = new SQLiteCommand(mConnection))
+                using (var db = GetDbConnection())
                 {
-                    mConnection.Open();
-                    mCommand.CommandText = "select count(*) as count from data";
-                    var mReader = mCommand.ExecuteReader();
-                    while (mReader.Read())
-                    {
-                        total = int.Parse(mReader["count"].ToString());
-                    }
-                    mReader.Close();
-                    mConnection.Close();
+                    total = db.Select<LibraryTrack>().Count;
                 }
             }
             catch (Exception e)
@@ -124,120 +72,6 @@ namespace MusicBeePlugin.AndroidRemote.Data
             return total;  
         }
 
-        /// <summary>
-        /// Caches the now playing tracks.
-        /// </summary>
-        /// <param name="tracks">The tracks.</param>
-        public void CacheNowPlayingTracks(List<NowPlayingListTrack> tracks)
-        {
-            try
-            {
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                {
-                    mConnection.Open();
-                    using (var mCommand = new SQLiteCommand(mConnection))
-                    using (var mTransaction = mConnection.BeginTransaction())
-                    {
-                        mCommand.CommandText = "delete from now_playing";
-                        mCommand.ExecuteNonQuery();
-                        mCommand.CommandText =
-                            "insert into now_playing (position, artist, title, hash) values (@position, @artist, @title, @hash)";;
-                        var positionParam = mCommand.CreateParameter();
-                        var artistParam = mCommand.CreateParameter();
-                        var titleParam = mCommand.CreateParameter();
-                        var hashParam = mCommand.CreateParameter();
-                        positionParam.ParameterName = "@position";
-                        artistParam.ParameterName = "@artist";
-                        titleParam.ParameterName = "@title";
-                        hashParam.ParameterName = "@hash";
-                        mCommand.Parameters.Add(positionParam);
-                        mCommand.Parameters.Add(artistParam);
-                        mCommand.Parameters.Add(titleParam);
-                        mCommand.Parameters.Add(hashParam);
-
-                        foreach (var nowPlayingListTrack in tracks)
-                        {
-                            positionParam.Value = nowPlayingListTrack.position;
-                            artistParam.Value = nowPlayingListTrack.artist;
-                            titleParam.Value = nowPlayingListTrack.title;
-                            hashParam.Value = nowPlayingListTrack.hash;
-                            mCommand.ExecuteNonQuery();
-                        }
-                        mTransaction.Commit();
-                    }
-                    mConnection.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug(ex);
-            }
-        }
-
-        public long GetCurrentQueueTotalTracks()
-        {
-            var total = 0;
-            try
-            {
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                using (var mCommand = new SQLiteCommand(mConnection))
-                {
-                    mConnection.Open();
-                    mCommand.CommandText = "select count(*) as count from now_playing";
-                    var mReader = mCommand.ExecuteReader();
-                    while (mReader.Read())
-                    {
-                        total = int.Parse(mReader["count"].ToString());
-                    }
-                    mReader.Close();
-                    mConnection.Close();
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug(ex);
-            }
-            return total;
-        }
-
-        public List<NowPlayingListTrack> GetNowPlayingListTracks(int offset, int limit)
-        {
-            var data = new List<NowPlayingListTrack>();
-            try
-            {
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                using (var mCommand = new SQLiteCommand(mConnection))
-                {
-                    mConnection.Open();
-                    mCommand.CommandText = "select * from now_playing limit @limit offset @offset";
-                    var limitParam = mCommand.CreateParameter();
-                    var offsetParam = mCommand.CreateParameter();
-                    limitParam.ParameterName = "@limit";
-                    offsetParam.ParameterName = "@offset";
-                    limitParam.Value = limit;
-                    offsetParam.Value = offset;
-                    mCommand.Parameters.Add(limitParam);
-                    mCommand.Parameters.Add(offsetParam);
-                    var mReader = mCommand.ExecuteReader();
-                    while (mReader.Read())
-                    {
-                        var entry = new NowPlayingListTrack(mReader["artist"].ToString(),
-                            mReader["title"].ToString(),
-                            int.Parse(mReader["position"].ToString()),
-                            mReader["hash"].ToString());
-
-                        data.Add(entry);
-                    }
-                    mReader.Close();
-                    mConnection.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
-            return data;
-        }
 
         public void CachePlaylists(List<Playlist> playlists)
         {
@@ -429,48 +263,6 @@ namespace MusicBeePlugin.AndroidRemote.Data
         }
 
 
-        public void BuildImageCache(List<AlbumEntry> data)
-        {
-            try
-            {
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                {
-                    mConnection.Open();
-                    using (var mCommand = new SQLiteCommand(mConnection))
-                    using (var mTransaction = mConnection.BeginTransaction())
-                    {
-                        mCommand.CommandText = "delete from covers";
-                        mCommand.ExecuteNonQuery();
-
-                        var cHashParam = mCommand.CreateParameter();
-                        var albumIdParam = mCommand.CreateParameter();
-                        var updated = mCommand.CreateParameter();
-                        mCommand.CommandText = "insert into covers(coverhash, album_id, updated) values (@coverhash, @album_id, @updated);";
-                        cHashParam.ParameterName = "@coverhash";
-                        albumIdParam.ParameterName = "@album_id";
-                        updated.ParameterName = "@updated";
-                        mCommand.Parameters.Add(cHashParam);
-                        mCommand.Parameters.Add(albumIdParam);
-                        mCommand.Parameters.Add(updated);
-
-                        foreach (var entry in data)
-                        {
-                            cHashParam.Value = entry.CoverHash;
-                            albumIdParam.Value = entry.AlbumId;
-                            updated.Value = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ssZ");
-                            mCommand.ExecuteNonQuery();   
-                        }
-                        mTransaction.Commit();
-                    }
-                    mConnection.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
-        }
-
         /// <summary>
         /// Gets the cached files.
         /// </summary>
@@ -532,50 +324,6 @@ namespace MusicBeePlugin.AndroidRemote.Data
             return total;  
         }
 
-        /// <summary>
-        /// Retrieves a list of all the available AlbumEntries associated with covers.
-        /// </summary>
-        /// <param name="limit"></param>
-        /// <param name="offset"></param>
-        /// <returns>List{AlbumEntry}.</returns>
-        public List<AlbumEntry> GetCoverHashes(int limit, int offset)
-        {
-            var data = new List<AlbumEntry>();
-            try
-            {
-                using (var mConnection = new SQLiteConnection(_dbConnection))
-                using (var mCommand = new SQLiteCommand(mConnection))
-                {
-                    mConnection.Open();
-                    mCommand.CommandText = "select * from covers limit @limit offset @offset";
-                    var limitParam = mCommand.CreateParameter();
-                    var offsetParam = mCommand.CreateParameter();
-                    limitParam.ParameterName = "@limit";
-                    offsetParam.ParameterName = "@offset";
-                    limitParam.Value = limit;
-                    offsetParam.Value = offset;
-                    mCommand.Parameters.Add(limitParam);
-                    mCommand.Parameters.Add(offsetParam);
-                    var mReader = mCommand.ExecuteReader();
-                    while (mReader.Read())
-                    {
-                        var entry = new AlbumEntry(mReader["album_id"].ToString())
-                        {
-                            CoverHash = mReader["coverhash"].ToString()
-                        };
-
-                        data.Add(entry);
-                    }
-                    mReader.Close();
-                    mConnection.Close();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
-            return data;
-        }
 
         /// <summary>
         /// Caches the artist URL along with the artist name in the database.

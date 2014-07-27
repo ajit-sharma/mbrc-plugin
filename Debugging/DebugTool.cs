@@ -29,7 +29,7 @@ namespace MusicBeePlugin.Debugging
 
         private static void GetCovers()
         {
-            Plugin.Instance.SyncModule.SyncGetCovers("all", 0, 5);
+            Plugin.Instance.LibraryModule.SyncGetCovers("all", 0, 5);
         }
 
         private void DebugTool_Load(object sender, EventArgs e)

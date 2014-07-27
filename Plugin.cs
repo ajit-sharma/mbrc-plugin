@@ -60,7 +60,7 @@ namespace MusicBeePlugin
 #endif
         private string _mStoragePath;
 
-        public SyncModule SyncModule { get; private set; }
+        public LibraryModule LibraryModule { get; private set; }
 
         public PlaylistModule PlaylistModule { get; private set; }
         public  NowPlayingModule NowPlayingModule { get; private set; }
@@ -133,7 +133,7 @@ namespace MusicBeePlugin
             _positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             _positionUpdateTimer.Enabled = true;
             
-            SyncModule = new SyncModule(_api, _mStoragePath);
+            LibraryModule = new LibraryModule(_api, _mStoragePath);
             PlaylistModule = new PlaylistModule(_api, _mStoragePath);
             NowPlayingModule = new NowPlayingModule(_api, _mStoragePath);
             PlayerModule = new PlayerModule(_api);
@@ -144,7 +144,7 @@ namespace MusicBeePlugin
                                           DisplayDebugWindow);
 #endif
 
-            SyncModule.CheckCacheState();
+            LibraryModule.CheckCacheState();
             StartPlayerStatusMonitoring();
             _mHelper = new CacheHelper(_mStoragePath);
 
