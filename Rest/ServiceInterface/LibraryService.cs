@@ -16,5 +16,15 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return Plugin.Instance.LibraryModule.GetTrackById(request.id);
         }
+
+        public List<LibraryArtist> Get(GetLibraryArtists request)
+        {
+            return Plugin.Instance.LibraryModule.GettAllArtists();
+        }
+
+        public LibraryArtist Get(GetLibraryArtist request)
+        {
+            return Plugin.Instance.LibraryModule.GetArtistById(request.id);
+        }
     }
 }

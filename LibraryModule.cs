@@ -294,82 +294,6 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Used to get a batch of meta data from the api.
-        /// </summary>
-        /// <param name="offset">The offset number of the first result.</param>
-        /// <param name="client">The id of the client.</param>
-        /// <param name="limit">The limit.</param>
-        public void SyncGetMetaData(int offset, string client, int limit = 50)
-        {
-            var cached = _mHelper.GetCachedFiles();
-            var count = cached.Count;
-            
-            var afterOffset = (count - offset);
-            var internalLimit = limit;
-            if (afterOffset - limit < 0)
-            {
-                internalLimit = afterOffset;
-            }
-
-            var buffer = new List<MetaData>();
-            cached = cached.GetRange(offset, internalLimit);
-
-            foreach (var data in cached)
-            {
-                var file = data.Filepath;
-                var meta = new MetaData { hash = data.Hash, file = file };
-
-                if (Plugin.MusicBeeVersion.v2_2 == _api.MusicBeeVersion)
-                {
-                    meta.artist = _api.Library_GetFileTag(file, Plugin.MetaDataType.Artist);
-                    meta.album_artist = _api.Library_GetFileTag(file, Plugin.MetaDataType.AlbumArtist);
-                    meta.album = _api.Library_GetFileTag(file, Plugin.MetaDataType.Album);
-                    meta.title = _api.Library_GetFileTag(file, Plugin.MetaDataType.TrackTitle);
-                    meta.genre = _api.Library_GetFileTag(file, Plugin.MetaDataType.Genre);
-                    meta.year = _api.Library_GetFileTag(file, Plugin.MetaDataType.Year);
-                    meta.track_no = _api.Library_GetFileTag(file, Plugin.MetaDataType.TrackNo);
-                }
-                else
-                {
-                    Plugin.MetaDataType[] types =
-                    {
-                        Plugin.MetaDataType.Artist,
-                        Plugin.MetaDataType.AlbumArtist,
-                        Plugin.MetaDataType.Album,
-                        Plugin.MetaDataType.TrackTitle,
-                        Plugin.MetaDataType.Genre,
-                        Plugin.MetaDataType.Year,
-                        Plugin.MetaDataType.TrackNo
-                    };
-
-                    var i = 0;
-                    string[] tags = { };
-                    _api.Library_GetFileTags(file, types, ref tags);
-                    meta.artist = tags[i++];
-                    meta.album_artist = tags[i++];
-                    meta.album = tags[i++];
-                    meta.title = tags[i++];
-                    meta.genre = tags[i++];
-                    meta.year = tags[i++];
-                    meta.track_no = tags[i];
-                }
-
-                buffer.Add(meta);
-            }
-
-            var pack = new
-            {
-                type = "meta",
-                total = count,
-                limit,
-                offset,
-                data = buffer
-            };
-
-            SendSocketMessage(Constants.Library, Constants.Reply, pack, client);
-        }
-
-        /// <summary>
         /// This method checks the state of the cache and is responsible for either
         /// building the cache when empty of updating on start.
         /// </summary>
@@ -403,6 +327,22 @@ namespace MusicBeePlugin
             using (var db = _mHelper.GetDbConnection())
             {
                 return db.Select<LibraryTrack>();
+            }
+        }
+
+        public List<LibraryArtist> GettAllArtists()
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                return db.Select<LibraryArtist>();    
+            }
+        }
+
+        public LibraryArtist GetArtistById(int id)
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                return db.GetByIdOrDefault<LibraryArtist>(id);
             }
         }
     }

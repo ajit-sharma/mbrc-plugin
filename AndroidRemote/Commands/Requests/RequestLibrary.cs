@@ -36,7 +36,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         {
                             limit = 50;
                         }
-                        Plugin.Instance.LibraryModule.SyncGetCovers(eEvent.ClientId, offset, limit);
+                        
                         break;
                     case "meta":
                         offset = obj.Get<int>("offset");
@@ -45,7 +45,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Requests
                         {
                             limit = 50;;
                         }
-                        Plugin.Instance.LibraryModule.SyncGetMetaData(offset, eEvent.ClientId, limit);
+                        
                         break;
                 }
             }
