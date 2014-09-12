@@ -1,21 +1,19 @@
 ﻿using System.Runtime.Serialization;
 
-namespace MusicBeePlugin.AndroidRemote.Entities
+namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     class Playlist
     {
         public string name { get; set; }
-        public string hash { get; set; }
         public int tracks { get; set; }
         public bool editable { get; private set; }
 
         [IgnoreDataMember]
         public string path { get; set; }
 
-        public Playlist(string name, int tracks, string hash, string path)
+        public Playlist(string name, int tracks, string path)
         {
             this.name = name;
-            this.hash = hash;
             this.tracks = tracks;
             this.path = path;
 

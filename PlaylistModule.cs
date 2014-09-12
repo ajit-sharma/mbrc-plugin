@@ -1,3 +1,6 @@
+using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.OrmLite;
+
 namespace MusicBeePlugin
 {
     using AndroidRemote.Data;
@@ -21,6 +24,27 @@ namespace MusicBeePlugin
             _mHelper = new CacheHelper(mStoragePath);
         }
 
+        public void StoreAvailablePlaylists()
+        {
+            _api.Playlist_QueryPlaylists();
+            var playlists = new List<Playlist>();
+            while (true)
+            {
+                string[] files = { };
+                var path = _api.Playlist_QueryGetNextPlaylist();
+                if (String.IsNullOrEmpty(path)) break;
+                var name = _api.Playlist_GetName(path);
+                _api.Playlist_QueryFilesEx(path, ref files);
+                var playlist = new Playlist(name, files.Count(), path);
+                playlists.Add(playlist);
+            }
+            using (var db = _mHelper.GetDbConnection())
+            {
+                db.SaveAll(playlists);
+            }
+
+        }
+
         /// <summary>
         /// The function checks the MusicBee api and gets all the available playlist urls.
         /// </summary>
@@ -39,9 +63,8 @@ namespace MusicBeePlugin
                 if (String.IsNullOrEmpty(path)) break;
                 var name = _api.Playlist_GetName(path);
                 _api.Playlist_QueryFilesEx(path, ref files);
-                var playlist = new Playlist(name, files.Count(), Utilities.Sha1Hash(path), path);
+                var playlist = new Playlist(name, files.Count(), path);
                 playlists.Add(playlist);
-                _mHelper.CachePlaylists(playlists);
             }
 
             var count = playlists.Count;
@@ -74,14 +97,12 @@ namespace MusicBeePlugin
         /// <param name="clientId">The id of the client</param>
         /// <param name="limit"></param>
         /// <param name="offset"></param>
-        public void GetTracksForPlaylist(string hash, string clientId, int limit = 50, int offset = 0)
+        public void GetTracksForPlaylist(string plPath, string clientId, int limit = 50, int offset = 0)
         {
 
             string[] pathList = {};
-            var ch = new CacheHelper(_mStoragePath);
-            var playlist = ch.GetPlaylistByHash(hash);
-
-            if (!_api.Playlist_QueryFilesEx(playlist.path, ref pathList))
+            
+            if (!_api.Playlist_QueryFilesEx(plPath, ref pathList))
             {
                 return;
             }
@@ -120,10 +141,9 @@ namespace MusicBeePlugin
         /// Given the hash representing of a playlist it plays the specified playlist.
         /// </summary>
         /// <param name="hash">The playlist hash</param>
-        public void RequestPlaylistPlayNow(string hash)
+        public void RequestPlaylistPlayNow(string path)
         {
-            var url = _mHelper.GetPlaylistByHash(hash);
-            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(url.path));
+            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(path));
         }
 
         /// <summary>
@@ -182,19 +202,17 @@ namespace MusicBeePlugin
         /// <param name="hash">The hash representing the playlist.</param>
         /// <param name="selection">The selection type.</param>
         /// <param name="data">The data.</param>
-        public void RequestPlaylistAddTracks(string client, string hash, MetaTag selection, string data)
+        public void RequestPlaylistAddTracks(string client, string path, MetaTag selection, string data)
         {
             var files = new string[] {};
-            var playlist = _mHelper.GetPlaylistByHash(hash);
             if (selection != MetaTag.track)
             {
                 files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
-            var success = _api.Playlist_AppendFiles(playlist.path, files);
+            var success = _api.Playlist_AppendFiles(path, files);
             var message = new
             {
                 type = "add",
-                hash,
                 selection,
                 data,
                 success

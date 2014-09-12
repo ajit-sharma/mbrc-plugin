@@ -48,10 +48,6 @@ namespace MusicBeePlugin
 
             _api.Library_GetSyncDelta(cachedFiles, lastSync, Plugin.LibraryCategory.Music,
                 ref newFiles, ref updatedFiles, ref deletedFiles);
-
-            _mHelper.AddNewFilesToCache(newFiles);
-            _mHelper.DeleteFilesFromCache(deletedFiles);
-            _mHelper.MarkFilesUpdated(updatedFiles);
         }
 
 
@@ -313,20 +309,30 @@ namespace MusicBeePlugin
             }
             else
             {
-                var lastUpdate = _mHelper.GetLastMetaDataUpdate();
-                var files = _mHelper.GetCachedFiles()
-                    .Select(r => r.Filepath)
-                    .ToArray();
-
-                SyncCheckForChanges(files, lastUpdate);
+                
+                // SyncCheckForChanges(files, lastUpdate);
             }
         }
 
-        public List<LibraryTrack> GetAllTracks()
+        public List<LibraryTrack> GetAllTracks(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
-                return db.Select<LibraryTrack>();
+                var list = db.Select<LibraryTrack>();
+                if (offset == 0 && limit == 0) return list;
+
+                var range = offset + limit;
+                var size = list.Count;
+                if (range <= size)
+                {
+                    list = list.GetRange(offset, limit);
+                }
+                else if (offset < size)
+                {
+                    limit = size - offset;
+                    list = list.GetRange(offset, limit);
+                }
+                return list;
             }
         }
 

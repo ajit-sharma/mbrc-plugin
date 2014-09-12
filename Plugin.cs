@@ -1,4 +1,6 @@
 using MusicBeePlugin.Rest;
+using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.OrmLite;
 
 namespace MusicBeePlugin
 {
@@ -265,7 +267,7 @@ namespace MusicBeePlugin
             _mWindow.Show();
             if (_mHelper != null)
             {
-                _mWindow.UpdateCacheStatus(_mHelper.GetCachedCoversCount(), _mHelper.GetCachedTracksCount());
+                _mWindow.UpdateCacheStatus(6, 5);
             }
             else
             {
@@ -453,8 +455,7 @@ namespace MusicBeePlugin
             }
             else
             {
-                var track = _mHelper.GetEntryByHash(query);
-                tracks = new[] {track.Filepath};
+                tracks = new[] {query};
             }
                 
             return tracks;

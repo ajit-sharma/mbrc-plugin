@@ -9,7 +9,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
     {
         public List<LibraryTrack> Get(GetLibraryTracks request)
         {
-            return Plugin.Instance.LibraryModule.GetAllTracks();
+            return Plugin.Instance.LibraryModule.GetAllTracks(request.limit, request.offset);
         }
 
         public LibraryTrack Get(GetLibraryTrack request)
