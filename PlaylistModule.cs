@@ -127,7 +127,6 @@ namespace MusicBeePlugin
             var message = new
             {
                 type = "gettracks",
-                playlist_hash = hash,
                 limit,
                 offset,
                 total = count,

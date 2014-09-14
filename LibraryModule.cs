@@ -1,7 +1,5 @@
-using System.Diagnostics;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.OrmLite;
-using ServiceStack.Text;
 
 namespace MusicBeePlugin
 {
@@ -11,8 +9,6 @@ namespace MusicBeePlugin
     using System.Globalization;
     using System.Collections.Generic;
     using AndroidRemote.Data;
-    using AndroidRemote.Entities;
-    using AndroidRemote.Networking;
     using AndroidRemote.Utilities;
     /// <summary>
     /// Class SyncModule.
@@ -88,9 +84,9 @@ namespace MusicBeePlugin
             using (var db = _mHelper.GetDbConnection())
             using (var trans = db.OpenTransaction())
             {
-                db.SaveAll(GetAllArtists());
-                db.SaveAll(GetAllGenres());
-                db.SaveAll(GetAllAlbums());
+                db.SaveAll(GetArtistData());
+                db.SaveAll(GetGenreData());
+                db.SaveAll(GetAlbumData());
                 var artists = db.Select<LibraryArtist>();
                 var genres = db.Select<LibraryGenre>();
                 var albums = db.Select<LibraryAlbum>();
@@ -155,7 +151,7 @@ namespace MusicBeePlugin
         
         }
 
-        private IEnumerable<LibraryArtist> GetAllArtists()
+        private IEnumerable<LibraryArtist> GetArtistData()
         {
             var list = new List<LibraryArtist>();
             if (_api.Library_QueryLookupTable("artist", "count", null))
@@ -169,7 +165,7 @@ namespace MusicBeePlugin
             return list;
         }
 
-        private IEnumerable<LibraryGenre> GetAllGenres()
+        private IEnumerable<LibraryGenre> GetGenreData()
         {
             var list = new List<LibraryGenre>();
             if (_api.Library_QueryLookupTable("genre", "count", null))
@@ -183,7 +179,8 @@ namespace MusicBeePlugin
             return list;
         }
 
-        private IEnumerable<LibraryAlbum> GetAllAlbums()
+
+        private IEnumerable<LibraryAlbum> GetAlbumData()
         {
             var list = new List<LibraryAlbum>();
             if (_api.Library_QueryLookupTable("album", "count", null))
@@ -276,7 +273,7 @@ namespace MusicBeePlugin
                 _api.Library_GetArtistPictureUrls(artist, true, ref urls);
                 if (urls.Length <= 0) continue;
                 var hash = Utilities.CacheArtistImage(urls[0], artist);
-                _mHelper.CacheArtistUrl(artist, hash);
+                //_mHelper.CacheArtistUrl(artist, hash);
             }   
             
         }
@@ -314,33 +311,51 @@ namespace MusicBeePlugin
             }
         }
 
-        public List<LibraryTrack> GetAllTracks(int limit, int offset)
+        public PaginatedResult GetAllTracks(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
-                var list = db.Select<LibraryTrack>();
-                if (offset == 0 && limit == 0) return list;
-
-                var range = offset + limit;
-                var size = list.Count;
-                if (range <= size)
-                {
-                    list = list.GetRange(offset, limit);
-                }
-                else if (offset < size)
-                {
-                    limit = size - offset;
-                    list = list.GetRange(offset, limit);
-                }
-                return list;
+                var data = db.Select<LibraryTrack>();
+                var result = GetPaginatedData(limit, offset, data);
+                return result;
             }
         }
 
-        public List<LibraryArtist> GettAllArtists()
+        private static PaginatedResult GetPaginatedData<T>(int limit, int offset, List<T> data)
+        {
+            var result = new PaginatedResult
+            {
+                data = data,
+                offset = offset,
+                limit = limit,
+                total = data.Count
+            };
+
+            if (offset == 0 && limit == 0) return result;
+
+            var range = offset + limit;
+            var size = data.Count;
+            if (range <= size)
+            {
+                data = data.GetRange(offset, limit);
+                result.data = data;
+            }
+            else if (offset < size)
+            {
+                limit = size - offset;
+                data = data.GetRange(offset, limit);
+                result.data = data;
+                result.limit = limit;
+            }
+            return result;
+        }
+
+        public PaginatedResult GetAllArtists(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
-                return db.Select<LibraryArtist>();    
+                var data = db.Select<LibraryArtist>();
+                return GetPaginatedData(limit, offset, data);
             }
         }
 
@@ -349,6 +364,24 @@ namespace MusicBeePlugin
             using (var db = _mHelper.GetDbConnection())
             {
                 return db.GetByIdOrDefault<LibraryArtist>(id);
+            }
+        }
+
+        public PaginatedResult GetAllGenres(int limit, int offset)
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                var data = db.Select<LibraryGenre>();
+                return GetPaginatedData(limit, offset, data);
+            }
+        }
+
+        public PaginatedResult GetAllAlbums(int limit, int offset)
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                var data = db.Select<LibraryAlbum>();
+                return GetPaginatedData(limit, offset, data);
             }
         }
     }

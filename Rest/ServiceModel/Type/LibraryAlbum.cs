@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
@@ -26,6 +27,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         public string album_id { get; set; }
 
         [Ignore]
+        [IgnoreDataMember]
         public List<LibraryTrack> TrackList { get; set; }
 
     }

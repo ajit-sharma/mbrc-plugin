@@ -1,13 +1,12 @@
 ﻿using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceInterface;
-using System.Collections.Generic;
 
 namespace MusicBeePlugin.Rest.ServiceInterface
 {
     class LibraryService : Service
     {
-        public List<LibraryTrack> Get(GetLibraryTracks request)
+        public PaginatedResult Get(GetLibraryTracks request)
         {
             return Plugin.Instance.LibraryModule.GetAllTracks(request.limit, request.offset);
         }
@@ -17,14 +16,24 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return Plugin.Instance.LibraryModule.GetTrackById(request.id);
         }
 
-        public List<LibraryArtist> Get(GetLibraryArtists request)
+        public PaginatedResult Get(GetLibraryArtists request)
         {
-            return Plugin.Instance.LibraryModule.GettAllArtists();
+            return Plugin.Instance.LibraryModule.GetAllArtists(request.limit, request.offset);
         }
 
         public LibraryArtist Get(GetLibraryArtist request)
         {
             return Plugin.Instance.LibraryModule.GetArtistById(request.id);
+        }
+
+        public PaginatedResult Get(GetLibraryGenres request)
+        {
+            return Plugin.Instance.LibraryModule.GetAllGenres(request.limit, request.offset);
+        }
+
+        public PaginatedResult Get(GetLibraryAlbums request)
+        {
+            return Plugin.Instance.LibraryModule.GetAllAlbums(request.limit, request.offset);
         }
     }
 }

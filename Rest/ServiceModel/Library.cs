@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using MusicBeePlugin.Rest.ServiceModel.Type;
+﻿using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route("/library/tracks","GET")]
-    public class GetLibraryTracks : IReturn<List<LibraryTrack>>
+    public class GetLibraryTracks : IReturn<PaginatedResult>
     {
         public int limit { get; set; }
         public int offset { get; set; }
@@ -18,7 +17,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/library/artists", "GET")]
-    public class GetLibraryArtists : IReturn<List<LibraryArtist>>
+    public class GetLibraryArtists : IReturn<PaginatedResult>
     {
         public int limit { get; set; }
         public int offset { get; set; }
@@ -31,7 +30,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/library/albums", "GET")]
-    public class GetLibraryAlbums : IReturn<List<LibraryAlbum>>
+    public class GetLibraryAlbums : IReturn<PaginatedResult>
     {
         public int limit { get; set; }
         public int offset { get; set; }
@@ -44,7 +43,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/library/genres", "GET")]
-    public class GetLibraryGenres : IReturn<List<LibraryGenre>>
+    public class GetLibraryGenres : IReturn<PaginatedResult>
     {
         public int limit { get; set; }
         public int offset { get; set; }
