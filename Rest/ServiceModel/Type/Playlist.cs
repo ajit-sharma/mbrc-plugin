@@ -2,36 +2,42 @@
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
-    class Playlist
+    [DataContract]
+    internal class Playlist
     {
-        public string name { get; set; }
-        public int tracks { get; set; }
-        public bool editable { get; private set; }
-
-        [IgnoreDataMember]
-        public string path { get; set; }
-
         public Playlist(string name, int tracks, string path)
         {
-            this.name = name;
-            this.tracks = tracks;
-            this.path = path;
+            Name = name;
+            Tracks = tracks;
+            Path = path;
 
             if (name.Contains("Recently Added") ||
                 name.Contains("Recently Played") ||
                 name.Contains("Top 25 Most Played") ||
                 name.Contains("Top Rated"))
             {
-                editable = false;
+                ReadOnly = true;
             }
             else
             {
-                editable = true;
+                ReadOnly = false;
             }
         }
 
         public Playlist()
         {
         }
+
+        [DataMember(Name = "name")]
+        public string Name { get; set; }
+
+        [DataMember(Name = "tracks")]
+        public int Tracks { get; set; }
+
+        [DataMember(Name = "readOnly")]
+        public bool ReadOnly { get; private set; }
+
+        [DataMember(Name = "path")]
+        public string Path { get; set; }
     }
 }

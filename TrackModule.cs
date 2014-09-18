@@ -20,10 +20,10 @@ namespace MusicBeePlugin
         {
             var track = new Rest.ServiceModel.Type.Track
             {
-                artist = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Artist),
-                album = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Album),
-                year = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Year),
-                title = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle)
+                Artist = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Artist),
+                Album = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Album),
+                Year = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Year),
+                Title = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle)
             };
             //, _api.NowPlaying_GetFileUrl()
             return track;

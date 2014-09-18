@@ -1,24 +1,29 @@
-﻿using ServiceStack.DataAnnotations;
+﻿using System.Runtime.Serialization;
+using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
+    [DataContract]
     public class LibraryArtist
     {
         public LibraryArtist(string name)
         {
-            this.name = name;
+            Name = name;
         }
 
         public LibraryArtist()
         {
-            
         }
 
         [AutoIncrement]
-        public int id { get; set; }
-        [Index(Unique = true)]
-        public string name { get; set; }
-        public string image_url { get; set; }
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
 
+        [DataMember(Name = "name")]
+        [Index(Unique = true)]
+        public string Name { get; set; }
+
+        [DataMember(Name = "imageUrl")]
+        public string ImageUrl { get; set; }
     }
 }

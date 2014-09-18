@@ -1,29 +1,48 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
-    public class LibraryTrack:IComparable<LibraryTrack>
+    [DataContract]
+    public class LibraryTrack : IComparable<LibraryTrack>
     {
         [AutoIncrement]
-        public int id { get; set; }
-        public string title { get; set; }
+        [DataMember(Name = "id")]
+        public int Id { get; set; }
 
-        public int index { get; set; }
-        [References(typeof(LibraryGenre))]
-        public int genre_id { get; set; }
-        [References(typeof(LibraryArtist))]
-        public int artist_id { get; set; }
-        [References(typeof(LibraryArtist))]
-        public int album_artist_id { get; set; }
-        [References(typeof(LibraryAlbum))]
-        public int album_id { get; set; }
-        public string year { get; set; }
-        public string path { get; set; }
+        [DataMember(Name = "title")]
+        public string Title { get; set; }
+
+        [DataMember(Name = "index")]
+        public int Index { get; set; }
+
+        [DataMember(Name = "genreId")]
+        [References(typeof (LibraryGenre))]
+        public int GenreId { get; set; }
+
+        [DataMember(Name = "artistId")]
+        [References(typeof (LibraryArtist))]
+        public int ArtistId { get; set; }
+
+        [DataMember(Name = "albumArtistId")]
+        [References(typeof (LibraryArtist))]
+        public int AlbumArtistId { get; set; }
+
+        [DataMember(Name = "albumId")]
+        [References(typeof (LibraryAlbum))]
+        public int AlbumId { get; set; }
+
+        [DataMember(Name = "year")]
+        public string Year { get; set; }
+
+        [DataMember(Name = "path")]
+        public string Path { get; set; }
+
         public int CompareTo(LibraryTrack other)
         {
-            var oIndex = other.index;
-            return oIndex == index ? 0 : oIndex > index ? -1 : 1;
+            var oIndex = other.Index;
+            return oIndex == Index ? 0 : oIndex > Index ? -1 : 1;
         }
     }
 }

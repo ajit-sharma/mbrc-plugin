@@ -1,13 +1,19 @@
 ﻿using System.Collections;
+using System.Runtime.Serialization;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
+    [DataContract]
     public class PaginatedResult
     {
-        public int total { get; set; }
-        public int limit { get; set; }
-        public int offset { get; set; }
+        [DataMember(Name = "total")]
+        public int Total { get; set; }
+        [DataMember(Name = "limit")]
+        public int Limit { get; set; }
+        [DataMember(Name = "offset")]
+        public int Offset { get; set; }
 
-        public IList data { get; set; }
+        [DataMember(Name = "data")]
+        public IList Data { get; set; }
     }
 }

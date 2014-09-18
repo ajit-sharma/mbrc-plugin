@@ -55,11 +55,11 @@ namespace MusicBeePlugin
 
                 var nowPlaying = new NowPlaying
                 {
-                    artist = artist,
-                    id = position,
-                    path = playListTrack,
-                    position = position,
-                    title = title
+                    Artist = artist,
+                    Id = position,
+                    Path = playListTrack,
+                    Index = position,
+                    Title = title
                 };
 
                 trackList.Add(nowPlaying);

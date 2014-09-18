@@ -122,26 +122,26 @@ namespace MusicBeePlugin
                     int iTrack;
                     int.TryParse(trackNo, out iTrack);
 
-                    oGenre = genres.SingleOrDefault(q => q.name == genre);
-                    oArtist = artists.SingleOrDefault(q => q.name == artist);
-                    oAlbumArtist = artists.SingleOrDefault(q => q.name == albumArtist);
-                    oAlbum = albums.SingleOrDefault(q => q.name == album);
+                    oGenre = genres.SingleOrDefault(q => q.Name == genre);
+                    oArtist = artists.SingleOrDefault(q => q.Name == artist);
+                    oAlbumArtist = artists.SingleOrDefault(q => q.Name == albumArtist);
+                    oAlbum = albums.SingleOrDefault(q => q.Name == album);
 
                     if (oAlbum != null && oAlbumArtist != null)
                     {
-                        oAlbum.artist_id = oAlbumArtist.id;
+                        oAlbum.ArtistId = oAlbumArtist.Id;
                     }
 
                     var track = new LibraryTrack
                     {
-                        title = title,
-                        year = year,
-                        index = iTrack,
-                        genre_id = oGenre != null ? oGenre.id : -1,
-                        album_artist_id = oAlbumArtist != null ? oAlbumArtist.id : -1,
-                        artist_id = oArtist !=null ? oArtist.id : -1,
-                        album_id = oAlbum != null ? oAlbum.id : -1,
-                        path = file
+                        Title = title,
+                        Year = year,
+                        Index = iTrack,
+                        GenreId = oGenre != null ? oGenre.Id : -1,
+                        AlbumArtistId = oAlbumArtist != null ? oAlbumArtist.Id : -1,
+                        ArtistId = oArtist !=null ? oArtist.Id : -1,
+                        AlbumId = oAlbum != null ? oAlbum.Id : -1,
+                        Path = file
                     };
                     db.Save(track);
                 }
@@ -209,20 +209,20 @@ namespace MusicBeePlugin
 
                 foreach (var lTrack in allTrack)
                 {
-                    var path = lTrack.path;
+                    var path = lTrack.Path;
                     var id = _api.Library_GetFileTag(path, Plugin.MetaDataType.AlbumId);
                     LibraryAlbum ab;
                     if (!map.TryGetValue(id, out ab))
                     {
-                        ab = albums.SingleOrDefault(q => q.id == lTrack.album_id) ?? new LibraryAlbum();
-                        ab.album_id = id;
+                        ab = albums.SingleOrDefault(q => q.Id == lTrack.AlbumId) ?? new LibraryAlbum();
+                        ab.AlbumId = id;
                         map.Add(id, ab);
                     }
                     var trackId = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackNo);
                     var track = new LibraryTrack
                     {
-                        path = path,
-                        index = !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0
+                        Path = path,
+                        Index = !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0
                     };
                     ab.TrackList.Add(track);
 
@@ -233,14 +233,14 @@ namespace MusicBeePlugin
                 foreach (var albumEntry in list)
                 {
                     albumEntry.TrackList.Sort();
-                    var path = albumEntry.TrackList[0].path;
+                    var path = albumEntry.TrackList[0].Path;
                     var cover = _api.Library_GetArtworkUrl(path, -1);
                     if (string.IsNullOrEmpty(cover))
                     {
                         continue;
                     }
 
-                    albumEntry.cover_hash = Utilities.StoreCoverToCache(cover);
+                    albumEntry.CoverHash = Utilities.StoreCoverToCache(cover);
                 }
 
                 db.Update(list);
@@ -269,7 +269,7 @@ namespace MusicBeePlugin
             foreach (var entry in artistList)
             {
                 string[] urls = {};
-                var artist = entry.name;
+                var artist = entry.Name;
                 _api.Library_GetArtistPictureUrls(artist, true, ref urls);
                 if (urls.Length <= 0) continue;
                 var hash = Utilities.CacheArtistImage(urls[0], artist);
@@ -325,10 +325,10 @@ namespace MusicBeePlugin
         {
             var result = new PaginatedResult
             {
-                data = data,
-                offset = offset,
-                limit = limit,
-                total = data.Count
+                Data = data,
+                Offset = offset,
+                Limit = limit,
+                Total = data.Count
             };
 
             if (offset == 0 && limit == 0) return result;
@@ -338,14 +338,14 @@ namespace MusicBeePlugin
             if (range <= size)
             {
                 data = data.GetRange(offset, limit);
-                result.data = data;
+                result.Data = data;
             }
             else if (offset < size)
             {
                 limit = size - offset;
                 data = data.GetRange(offset, limit);
-                result.data = data;
-                result.limit = limit;
+                result.Data = data;
+                result.Limit = limit;
             }
             return result;
         }

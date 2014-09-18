@@ -1,15 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Runtime.Serialization;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
+    [DataContract]
     public class Track
     {
-        public string artist { get; set; }
-        public string title { get; set; }
-        public string album { get; set; }
-        public string year { get; set; }
+        [DataMember(Name = "artist")]
+        public string Artist { get; set; }
+
+        [DataMember(Name = "title")]
+        public string Title { get; set; }
+
+        [DataMember(Name = "album")]
+        public string Album { get; set; }
+
+        [DataMember(Name = "year")]
+        public string Year { get; set; }
     }
 }
