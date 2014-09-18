@@ -1,6 +1,4 @@
-﻿using System;
-
-using MusicBeePlugin.Rest.ServiceModel.Type;
+﻿using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel

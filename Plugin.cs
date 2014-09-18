@@ -1,6 +1,5 @@
 using MusicBeePlugin.Rest;
-using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.OrmLite;
+using Ninject;
 
 namespace MusicBeePlugin
 {
@@ -18,14 +17,12 @@ namespace MusicBeePlugin
     using AndroidRemote.Networking;
     using ServiceStack.Text;
     using System;
-    using System.Globalization;
     using System.IO;
     using System.Reflection;
     using System.Timers;
     using AndroidRemote.Controller;
     using AndroidRemote.Entities;
     using AndroidRemote.Settings;
-    using AndroidRemote.Utilities;
     using AndroidRemote.Enumerations;
     using Timer = System.Timers.Timer;
 
@@ -42,19 +39,15 @@ namespace MusicBeePlugin
         /// <summary>
         /// The _about.
         /// </summary>
-        private readonly PluginInfo _about = new Plugin.PluginInfo();
+        private readonly PluginInfo _about = new PluginInfo();
 
         private Timer _positionUpdateTimer;
 
         /// <summary>
         /// Returns the plugin instance (Singleton);
         /// </summary>
-        public static Plugin Instance
-        {
-            get { return Plugin._selfInstance; }
-        }
+        public static Plugin Instance { get; private set; }
 
-        private static Plugin _selfInstance;
         private InfoWindow _mWindow;
 
 #if DEBUG
@@ -69,8 +62,6 @@ namespace MusicBeePlugin
 
         public PlayerModule PlayerModule { get; private set; }
 
-        public TrackModule TrackModule { get; private set; }
-
         private Timer _timer;
         private bool _scrobble;
         private RepeatMode _repeat;
@@ -84,13 +75,13 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="apiInterfacePtr"></param>
         /// <returns></returns>
-        public Plugin.PluginInfo Initialise(IntPtr apiInterfacePtr)
+        public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
-            _selfInstance = this;
+            Instance = this;
             JsConfig.ExcludeTypeInfo = true;
             Configuration.Register(Controller.Instance);
 
-            _api = new Plugin.MusicBeeApiInterface();
+            _api = new MusicBeeApiInterface();
             _api.Initialise(apiInterfacePtr);
 
             UserSettings.Instance.SetStoragePath(_api.Setting_GetPersistentStoragePath());
@@ -134,12 +125,14 @@ namespace MusicBeePlugin
             _positionUpdateTimer = new Timer(20000);
             _positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             _positionUpdateTimer.Enabled = true;
+
+            InjectionModule.Api = _api;
+            InjectionModule.StoragePath = _mStoragePath;
             
             LibraryModule = new LibraryModule(_api, _mStoragePath);
             PlaylistModule = new PlaylistModule(_api, _mStoragePath);
             NowPlayingModule = new NowPlayingModule(_api, _mStoragePath);
             PlayerModule = new PlayerModule(_api);
-            TrackModule = new TrackModule(_api);
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -152,7 +145,7 @@ namespace MusicBeePlugin
 
             var appHost = new AppHost();
             appHost.Init();
-            appHost.Start("http://*:2012/");
+            appHost.Start("http://+:8188/");
 
             return _about;
         }

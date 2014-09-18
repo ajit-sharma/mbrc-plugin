@@ -1,15 +1,24 @@
 ﻿using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using Ninject;
 using ServiceStack.ServiceInterface;
 
 namespace MusicBeePlugin.Rest.ServiceInterface
 {
     class TrackService : Service
     {
+        private readonly TrackModule _module;
+
+        public TrackService()
+        {
+            var kernel = new StandardKernel(new InjectionModule());
+            _module = kernel.Get<TrackModule>();
+        }
+
         public Track Get(GetTrack request)
         {
-            return Plugin.Instance.TrackModule.GetTrackInfo();
+            return _module.GetTrackInfo();
         }
 
         public TrackCoverResponse Get(GetTrackCover request)
@@ -32,7 +41,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new TrackRatingResponse()
             {
-                rating = Plugin.Instance.TrackModule.GetRating()
+                rating = _module.GetRating()
             };
         }
 
@@ -40,18 +49,18 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new TrackRatingResponse()
             {
-                rating = Plugin.Instance.TrackModule.SetRating(request.rating)
+                rating = _module.SetRating(request.rating)
             };
         }
 
         public TrackPositionResponse Get(GetTrackPosition request)
         {
-            return Plugin.Instance.TrackModule.GetPosition();
+            return _module.GetPosition();
         }
 
         public TrackPositionResponse Put(SetTrackPosition request)
         {
-            return Plugin.Instance.TrackModule.SetPosition(request.position);
+            return _module.SetPosition(request.position);
         }
     }
 }

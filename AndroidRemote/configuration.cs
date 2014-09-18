@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MusicBeePlugin.AndroidRemote
+﻿namespace MusicBeePlugin.AndroidRemote
 {
     using Commands;
     using Commands.InstaReplies;
@@ -42,7 +40,6 @@ namespace MusicBeePlugin.AndroidRemote
             controller.AddCommand(Constants.PlayerRepeat, typeof(RequestRepeat));
             controller.AddCommand(Constants.PlayerMute, typeof(RequestMute));
             controller.AddCommand(Constants.NowPlayingPosition, typeof(RequestPlaybackPosition));
-            controller.AddCommand(Constants.NowPlayingLfmRating, typeof(RequestLfmLoveRating));
             controller.AddCommand(Constants.NowPlayingCover, typeof(RequestCover));
             controller.AddCommand(Constants.NowPlayingLyrics, typeof(RequestLyrics));
             controller.AddCommand(Constants.NowPlayingRating, typeof(RequestRating));;

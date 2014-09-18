@@ -73,6 +73,9 @@
     </AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Ninject">
+      <HintPath>packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
+    </Reference>
     <Reference Include="NLog, Version=2.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>packages\NLog.2.1.0\lib\net40\NLog.dll</HintPath>
@@ -123,7 +126,6 @@
     <Compile Include="AndroidRemote\Commands\ReplayAvailable.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestAutoDj.cs" />
     <Compile Include="AndroidRemote\Commands\InstaReplies\RequestCover.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestLfmLoveRating.cs" />
     <Compile Include="AndroidRemote\Commands\InstaReplies\RequestLyrics.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestLibrary.cs" />
     <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlaying.cs" />
@@ -158,6 +160,7 @@
     <Compile Include="AndroidRemote\Entities\LibraryData.cs" />
     <Compile Include="AndroidRemote\Entities\MetaData.cs" />
     <Compile Include="AndroidRemote\Entities\NowPlayingListTrack.cs" />
+    <Compile Include="InjectionModule.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResult.cs" />
     <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
@@ -281,7 +284,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_StartDate="2010/1/1" BuildVersion_UseUniversalClock="True" BuildVersion_DetectChanges="False" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
+      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_DetectChanges="False" BuildVersion_UseUniversalClock="True" BuildVersion_StartDate="2010/1/1" BuildVersion_UseGlobalSettings="False" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

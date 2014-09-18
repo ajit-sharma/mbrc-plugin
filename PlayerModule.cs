@@ -1,9 +1,5 @@
 using System;
 using System.Globalization;
-using System.Windows.Forms;
-using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Enumerations;
-using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using NLog;
 
