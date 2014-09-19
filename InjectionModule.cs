@@ -1,4 +1,5 @@
 ﻿using MusicBeePlugin.AndroidRemote.Model;
+using MusicBeePlugin.AndroidRemote.Networking;
 using Ninject.Modules;
 
 namespace MusicBeePlugin

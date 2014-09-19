@@ -7,7 +7,7 @@ using MusicBeePlugin.Rest.ServiceModel.Type;
 
 namespace MusicBeePlugin
 {
-    public class NowPlayingModule : Messenger
+    public class NowPlayingModule
     {
         private Plugin.MusicBeeApiInterface _api;
         private CacheHelper _mHelper;

@@ -11,15 +11,10 @@ namespace MusicBeePlugin.AndroidRemote.Entities
     {
         private const String Empty = @"[Empty]";
         private string _file;
-        private string _hash;
         private string _artist;
-        private string _album_artist;
         private string _album;
         private string _title;
         private string _genre;
-        private string _year;
-        private string _disc;
-        private string _track_no;
 
         [IgnoreDataMember]
         public string file
@@ -52,23 +47,11 @@ namespace MusicBeePlugin.AndroidRemote.Entities
             set { _genre = String.IsNullOrEmpty(value) ? Empty : value; }
         }
 
-        public string year
-        {
-            get { return _year; }
-            set { _year = value; }
-        }
+        public string year { get; set; }
 
-        public string track_no
-        {
-            get { return _track_no; }
-            set { _track_no = value; }
-        }
+        public string track_no { get; set; }
 
-        public string hash
-        {
-            get { return _hash; }
-            set { _hash = value; }
-        }
+        public string hash { get; set; }
 
         public string artist
         {
@@ -76,17 +59,9 @@ namespace MusicBeePlugin.AndroidRemote.Entities
             set { _artist = String.IsNullOrEmpty(value) ? Empty : value; }
         }
 
-        public string album_artist
-        {
-            get { return _album_artist; }
-            set { _album_artist = value; }
-        }
+        public string album_artist { get; set; }
 
-        public string disc
-        {
-            get { return _disc; }
-            set { _disc = value; }
-        }
+        public string disc { get; set; }
 
         public int CompareTo(MetaData other)
         {

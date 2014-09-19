@@ -1,26 +1,24 @@
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.OrmLite;
+using Track = MusicBeePlugin.AndroidRemote.Entities.Track;
 
 namespace MusicBeePlugin
 {
     using AndroidRemote.Data;
-    using AndroidRemote.Entities;
     using AndroidRemote.Enumerations;
     using AndroidRemote.Networking;
     using AndroidRemote.Utilities;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    public class PlaylistModule : Messenger
+    public class PlaylistModule
     {
         private Plugin.MusicBeeApiInterface _api;
-        private readonly String _mStoragePath;
         private readonly CacheHelper _mHelper;
 
         public PlaylistModule(Plugin.MusicBeeApiInterface api, string mStoragePath)
         {
             _api = api;
-            _mStoragePath = mStoragePath;
             _mHelper = new CacheHelper(mStoragePath);
         }
 
@@ -85,15 +83,14 @@ namespace MusicBeePlugin
                 total = count,
                 playlists
             };
-
-            SendSocketMessage(Constants.Playlists, Constants.Reply, message, client);
+            
         }
 
         /// <summary>
         /// Given the url of a playlist and the id of a client the method sends a message to the specified client
         /// including the tracks in the specified playlist.
         /// </summary>
-        /// <param name="hash">sha1 hash identifying the playlist</param>
+        /// <param name="plPath"></param>
         /// <param name="clientId">The id of the client</param>
         /// <param name="limit"></param>
         /// <param name="offset"></param>
@@ -132,17 +129,15 @@ namespace MusicBeePlugin
                 total = count,
                 files = trackList
             };
-
-            SendSocketMessage(Constants.Playlists, Constants.Reply, message, clientId);
         }
 
         /// <summary>
         /// Given the hash representing of a playlist it plays the specified playlist.
         /// </summary>
-        /// <param name="hash">The playlist hash</param>
+        /// <param name="path">The playlist path</param>
         public void RequestPlaylistPlayNow(string path)
         {
-            SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(path));
+            //SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(path));
         }
 
         /// <summary>
@@ -154,7 +149,7 @@ namespace MusicBeePlugin
         public void RequestPlaylistTrackRemove(string url,int index)
         {
             var success = _api.Playlist_RemoveAt(url, index);
-            SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
+            //SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
         }
 
         public void RequestPlaylistCreate(string client, string name, MetaTag selection, string data)
@@ -165,7 +160,7 @@ namespace MusicBeePlugin
                 files = Plugin.Instance.GetUrlsForTag(selection, data);
             }
             var url = _api.Playlist_CreatePlaylist(String.Empty, name, files);
-            SendSocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
+            //SendSocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
         }
 
         public void RequestPlaylistMove(string clientId, string src, int from, int to)
@@ -191,14 +186,14 @@ namespace MusicBeePlugin
                 to
             };
 
-            SendSocketMessage(Constants.Playlists, Constants.Reply, message, clientId);
+            
         }
 
         /// <summary>
         /// Handles the request to add to tracks to an existing playlist
         /// </summary>
         /// <param name="client">The client id.</param>
-        /// <param name="hash">The hash representing the playlist.</param>
+        /// <param name="path">The path of the playlist.</param>
         /// <param name="selection">The selection type.</param>
         /// <param name="data">The data.</param>
         public void RequestPlaylistAddTracks(string client, string path, MetaTag selection, string data)
@@ -216,7 +211,6 @@ namespace MusicBeePlugin
                 data,
                 success
             };
-            SendSocketMessage(Constants.Playlists, Constants.Reply, message);
         }
     }
 }

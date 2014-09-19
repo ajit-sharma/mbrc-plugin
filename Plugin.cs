@@ -1,5 +1,4 @@
 using MusicBeePlugin.Rest;
-using Ninject;
 
 namespace MusicBeePlugin
 {
@@ -29,7 +28,7 @@ namespace MusicBeePlugin
     /// <summary>
     /// The MusicBee Plugin class. Used to communicate with the MusicBee API.
     /// </summary>
-    public partial class Plugin : Messenger
+    public partial class Plugin
     {
         /// <summary>
         /// The mb api interface.
@@ -200,17 +199,17 @@ namespace MusicBeePlugin
             if (_api.Player_GetShuffle() != _shuffle)
             {
                 _shuffle = _api.Player_GetShuffle();
-                SendSocketMessage(Constants.PlayerShuffle, Constants.Message, _shuffle);
+                //SendSocketMessage(Constants.PlayerShuffle, Constants.Message, _shuffle);
             }
             if (_api.Player_GetScrobbleEnabled() != _scrobble)
             {
                 _scrobble = _api.Player_GetScrobbleEnabled();
-                SendSocketMessage(Constants.PlayerScrobble, Constants.Message, _scrobble);
+                //SendSocketMessage(Constants.PlayerScrobble, Constants.Message, _scrobble);
             }
 
             if (_api.Player_GetRepeat() == _repeat) return;
             _repeat = _api.Player_GetRepeat();
-            SendSocketMessage(Constants.PlayerRepeat, Constants.Message, _repeat);
+            //SendSocketMessage(Constants.PlayerRepeat, Constants.Message, _repeat);
         }
 
         private void PositionUpdateTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
@@ -346,13 +345,13 @@ namespace MusicBeePlugin
                     //SendSocketMessage(Constants.NowPlayingTrack, Constants.Message, MusicBeePlugin.PlayerModule.GetTrackInfo());
                     break;
                 case NotificationType.VolumeLevelChanged:
-                    SendSocketMessage(Constants.PlayerVolume, Constants.Message,((int) Math.Round(_api.Player_GetVolume()*100,1)));
+                    //SendSocketMessage(Constants.PlayerVolume, Constants.Message,((int) Math.Round(_api.Player_GetVolume()*100,1)));
                     break;
                 case NotificationType.VolumeMuteChanged:
-                    SendSocketMessage(Constants.PlayerMute, Constants.Message, _api.Player_GetMute());
+                    //SendSocketMessage(Constants.PlayerMute, Constants.Message, _api.Player_GetMute());
                     break;
                 case NotificationType.PlayStateChanged:
-                    SendSocketMessage(Constants.PlayerState, Constants.Message,_api.Player_GetPlayState());
+                    //SendSocketMessage(Constants.PlayerState, Constants.Message,_api.Player_GetPlayState());
                     break;
                 case NotificationType.NowPlayingLyricsReady:
                     if (_api.ApiRevision >= 17)
@@ -370,25 +369,25 @@ namespace MusicBeePlugin
                     }
                     break;
                 case NotificationType.NowPlayingListChanged:
-                    SendSocketMessage(Constants.NowPlayingListChanged, Constants.Message, true);
+                    //SendSocketMessage(Constants.NowPlayingListChanged, Constants.Message, true);
                     break;
                 case NotificationType.PlayerRepeatChanged :
                     var repeat = _api.Player_GetRepeat();
-                    SendSocketMessage(Constants.PlayerRepeat, Constants.Message, repeat);
+                    //SendSocketMessage(Constants.PlayerRepeat, Constants.Message, repeat);
                     break;
                 case NotificationType.PlayerShuffleChanged:
                     var shuffle = _api.Player_GetShuffle();
-                    SendSocketMessage(Constants.PlayerShuffle, Constants.Message, shuffle);
+                    //SendSocketMessage(Constants.PlayerShuffle, Constants.Message, shuffle);
                     break;
                 case NotificationType.PlayerScrobbleChanged:
                     var scrobble = _api.Player_GetScrobbleEnabled();
-                    SendSocketMessage(Constants.PlayerScrobble, Constants.Message, scrobble);
+                    //SendSocketMessage(Constants.PlayerScrobble, Constants.Message, scrobble);
                     break;
                 case NotificationType.AutoDjStarted:
-                    SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, true);
+                    //SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, true);
                     break;
                 case NotificationType.AutoDjStopped:
-                    SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, false);
+                    //SendSocketMessage(Constants.PlayerAutoDj, Constants.Reply, false);
                     break;
             }
         }

@@ -24,6 +24,6 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         // Buffer to store the data sent by the client
         public byte[] DataBuffer = new byte[BufferSize];
         
-        public StringBuilder mBuilder = new StringBuilder();
+        public StringBuilder MBuilder = new StringBuilder();
     }
 }

@@ -118,54 +118,24 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AndroidRemote\Commands\InstaReplies\Ping.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\RestartSocketCommand.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\ShowFirstRunDialogCommand.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\SocketStatusChanged.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\StartServiceBroadcast.cs" />
-    <Compile Include="AndroidRemote\Commands\ReplayAvailable.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestAutoDj.cs" />
-    <Compile Include="AndroidRemote\Commands\InstaReplies\RequestCover.cs" />
-    <Compile Include="AndroidRemote\Commands\InstaReplies\RequestLyrics.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestLibrary.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNowPlaying.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestMute.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaybackPosition.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlaylists.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPluginVersion.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestRating.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestRepeat.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestScrobble.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestShuffle.cs" />
-    <Compile Include="AndroidRemote\Commands\State\PCoverChanged.cs" />
-    <Compile Include="AndroidRemote\Commands\State\PLyricsChanged.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestVolume.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestStop.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlayPause.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPreviousTrack.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\ForceClientDisconnect.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestProtocol.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\ClientDisconnected.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\ClientConnected.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\StopSocketServer.cs" />
     <Compile Include="AndroidRemote\Commands\Internal\StartSocketServer.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlayer.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestPlayerStatus.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\InitializeModelStateCommand.cs" />
-    <Compile Include="AndroidRemote\Commands\Requests\RequestNextTrack.cs" />
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
-    <Compile Include="AndroidRemote\Entities\ImageData.cs" />
-    <Compile Include="AndroidRemote\Entities\LibraryData.cs" />
     <Compile Include="AndroidRemote\Entities\MetaData.cs" />
-    <Compile Include="AndroidRemote\Entities\NowPlayingListTrack.cs" />
+    <Compile Include="AndroidRemote\Entities\Track.cs" />
     <Compile Include="InjectionModule.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResult.cs" />
     <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
-    <Compile Include="AndroidRemote\Entities\Track.cs" />
-    <Compile Include="AndroidRemote\Entities\NowPlayingTrack.cs" />
     <Compile Include="AndroidRemote\Enumerations\MetaTag.cs" />
     <Compile Include="AndroidRemote\Enumerations\LastfmStatus.cs" />
     <Compile Include="AndroidRemote\Enumerations\PlayerState.cs" />
@@ -197,7 +167,6 @@
     <Compile Include="InfoWindow.Designer.cs">
       <DependentUpon>InfoWindow.cs</DependentUpon>
     </Compile>
-    <Compile Include="Messenger.cs" />
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="PlaylistModule.cs" />
     <Compile Include="Plugin.cs" />

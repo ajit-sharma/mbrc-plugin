@@ -14,7 +14,7 @@ namespace MusicBeePlugin
     /// Class SyncModule.
     /// Hosts the functionality responsible for the library sync operations.
     /// </summary>
-    public class LibraryModule : Messenger
+    public class LibraryModule
     {
         
         private readonly CacheHelper _mHelper;
@@ -90,10 +90,6 @@ namespace MusicBeePlugin
                 var artists = db.Select<LibraryArtist>();
                 var genres = db.Select<LibraryGenre>();
                 var albums = db.Select<LibraryAlbum>();
-                LibraryGenre oGenre;
-                LibraryArtist oArtist;
-                LibraryArtist oAlbumArtist;
-                LibraryAlbum oAlbum;
                 foreach (var file in files)
                 {
                     Plugin.MetaDataType[] types =
@@ -122,10 +118,10 @@ namespace MusicBeePlugin
                     int iTrack;
                     int.TryParse(trackNo, out iTrack);
 
-                    oGenre = genres.SingleOrDefault(q => q.Name == genre);
-                    oArtist = artists.SingleOrDefault(q => q.Name == artist);
-                    oAlbumArtist = artists.SingleOrDefault(q => q.Name == albumArtist);
-                    oAlbum = albums.SingleOrDefault(q => q.Name == album);
+                    var oGenre = genres.SingleOrDefault(q => q.Name == genre);
+                    var oArtist = artists.SingleOrDefault(q => q.Name == artist);
+                    var oAlbumArtist = artists.SingleOrDefault(q => q.Name == albumArtist);
+                    var oAlbum = albums.SingleOrDefault(q => q.Name == album);
 
                     if (oAlbum != null && oAlbumArtist != null)
                     {
