@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
@@ -15,5 +16,34 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 
         [DataMember(Name = "data")]
         public IList Data { get; set; }
+
+        public static PaginatedResult GetPaginatedData<T>(int limit, int offset, List<T> data)
+        {
+            var result = new PaginatedResult
+            {
+                Data = data,
+                Offset = offset,
+                Limit = limit,
+                Total = data.Count
+            };
+
+            if (offset == 0 && limit == 0) return result;
+
+            var range = offset + limit;
+            var size = data.Count;
+            if (range <= size)
+            {
+                data = data.GetRange(offset, limit);
+                result.Data = data;
+            }
+            else if (offset < size)
+            {
+                limit = size - offset;
+                data = data.GetRange(offset, limit);
+                result.Data = data;
+                result.Limit = limit;
+            }
+            return result;
+        }
     }
 }

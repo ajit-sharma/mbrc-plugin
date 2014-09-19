@@ -101,7 +101,7 @@ namespace MusicBeePlugin
                     result = _api.NowPlayingList_PlayNow(trackToPlay);
             }
 
-            SendSocketMessage(Constants.NowPlayingListPlay, Constants.Reply, result);
+           // SendSocketMessage(Constants.NowPlayingListPlay, Constants.Reply, result);
         }
 
         /// <summary>

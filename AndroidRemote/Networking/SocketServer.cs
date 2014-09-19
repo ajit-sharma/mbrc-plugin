@@ -317,9 +317,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     return;
                 }
 
-                socketState.mBuilder.Append(chars);
+                socketState.MBuilder.Append(chars);
 
-                var message = socketState.mBuilder.ToString().Replace("\0", "");
+                var message = socketState.MBuilder.ToString().Replace("\0", "");
                 if (!message.Contains(Environment.NewLine))
                 {
                     WaitForData(socketState);
@@ -336,12 +336,12 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 {
                     var last = messages.Last();
                     messages.Remove(last);
-                    socketState.mBuilder.Clear();
-                    socketState.mBuilder.Append(last);
+                    socketState.MBuilder.Clear();
+                    socketState.MBuilder.Append(last);
                 }
                 else
                 {
-                    socketState.mBuilder.Clear();
+                    socketState.MBuilder.Clear();
                 }
 
                 if (messages.Count > 0)

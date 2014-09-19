@@ -1,4 +1,5 @@
-﻿using MusicBeePlugin.Rest.ServiceModel.Type;
+﻿using MusicBeePlugin.AndroidRemote.Utilities;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel

@@ -312,46 +312,18 @@ namespace MusicBeePlugin
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryTrack>();
-                var result = GetPaginatedData(limit, offset, data);
+                var result = PaginatedResult.GetPaginatedData(limit, offset, data);
                 return result;
             }
         }
 
-        private static PaginatedResult GetPaginatedData<T>(int limit, int offset, List<T> data)
-        {
-            var result = new PaginatedResult
-            {
-                Data = data,
-                Offset = offset,
-                Limit = limit,
-                Total = data.Count
-            };
-
-            if (offset == 0 && limit == 0) return result;
-
-            var range = offset + limit;
-            var size = data.Count;
-            if (range <= size)
-            {
-                data = data.GetRange(offset, limit);
-                result.Data = data;
-            }
-            else if (offset < size)
-            {
-                limit = size - offset;
-                data = data.GetRange(offset, limit);
-                result.Data = data;
-                result.Limit = limit;
-            }
-            return result;
-        }
 
         public PaginatedResult GetAllArtists(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryArtist>();
-                return GetPaginatedData(limit, offset, data);
+                return PaginatedResult.GetPaginatedData(limit, offset, data);
             }
         }
 
@@ -368,7 +340,7 @@ namespace MusicBeePlugin
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryGenre>();
-                return GetPaginatedData(limit, offset, data);
+                return PaginatedResult.GetPaginatedData(limit, offset, data);
             }
         }
 
@@ -377,7 +349,7 @@ namespace MusicBeePlugin
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryAlbum>();
-                return GetPaginatedData(limit, offset, data);
+                return PaginatedResult.GetPaginatedData(limit, offset, data);
             }
         }
     }

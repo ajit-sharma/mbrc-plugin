@@ -44,19 +44,18 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// The function checks the MusicBee api and gets all the available playlist urls.
+        ///     The function checks the MusicBee api and gets all the available playlist urls.
         /// </summary>
-        /// <param name="client"></param>
         /// <param name="limit"></param>
         /// <param name="offset"></param>
-        public void GetAvailablePlaylists(string client, int limit = 50, int offset = 0)
+        public PaginatedResult GetAvailablePlaylists(int limit = 50, int offset = 0)
         {
             _api.Playlist_QueryPlaylists();
             var playlists = new List<Playlist>();
-            
+
             while (true)
             {
-                string[] files = { };
+                string[] files = {};
                 var path = _api.Playlist_QueryGetNextPlaylist();
                 if (String.IsNullOrEmpty(path)) break;
                 var name = _api.Playlist_GetName(path);
@@ -65,25 +64,16 @@ namespace MusicBeePlugin
                 playlists.Add(playlist);
             }
 
-            var count = playlists.Count;
-            var afterOffset = (count - offset);
-            var internalLimit = limit;
-            if (afterOffset - limit < 0)
-            {
-                internalLimit = afterOffset;
-            }
+            var total = playlists.Count;
 
-            playlists = playlists.GetRange(offset, internalLimit);
-
-            var message = new
+            var result = new PaginatedResult
             {
-                type = "get",
-                limit,
-                offset,
-                total = count,
-                playlists
+                Limit = limit,
+                Offset = offset,
+                Data = playlists,
+                Total = total
             };
-            
+            return result;
         }
 
         /// <summary>
