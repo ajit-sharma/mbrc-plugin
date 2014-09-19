@@ -139,6 +139,7 @@ namespace MusicBeePlugin
 #endif
 
             LibraryModule.CheckCacheState();
+            PlaylistModule.StoreAvailablePlaylists();
             StartPlayerStatusMonitoring();
             _mHelper = new CacheHelper(_mStoragePath);
 

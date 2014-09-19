@@ -307,23 +307,23 @@ namespace MusicBeePlugin
             }
         }
 
-        public PaginatedResult GetAllTracks(int limit, int offset)
+        public PaginatedResponse GetAllTracks(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryTrack>();
-                var result = PaginatedResult.GetPaginatedData(limit, offset, data);
+                var result = PaginatedResponse.GetPaginatedData(limit, offset, data);
                 return result;
             }
         }
 
 
-        public PaginatedResult GetAllArtists(int limit, int offset)
+        public PaginatedResponse GetAllArtists(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryArtist>();
-                return PaginatedResult.GetPaginatedData(limit, offset, data);
+                return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
         }
 
@@ -335,21 +335,21 @@ namespace MusicBeePlugin
             }
         }
 
-        public PaginatedResult GetAllGenres(int limit, int offset)
+        public PaginatedResponse GetAllGenres(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryGenre>();
-                return PaginatedResult.GetPaginatedData(limit, offset, data);
+                return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
         }
 
-        public PaginatedResult GetAllAlbums(int limit, int offset)
+        public PaginatedResponse GetAllAlbums(int limit, int offset)
         {
             using (var db = _mHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryAlbum>();
-                return PaginatedResult.GetPaginatedData(limit, offset, data);
+                return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
         }
     }

@@ -1,20 +1,26 @@
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MusicBeePlugin.AndroidRemote.Data;
+using MusicBeePlugin.AndroidRemote.Enumerations;
+using MusicBeePlugin.AndroidRemote.Utilities;
+using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
 using Track = MusicBeePlugin.AndroidRemote.Entities.Track;
+
+#endregion
 
 namespace MusicBeePlugin
 {
-    using AndroidRemote.Data;
-    using AndroidRemote.Enumerations;
-    using AndroidRemote.Networking;
-    using AndroidRemote.Utilities;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
     public class PlaylistModule
     {
-        private Plugin.MusicBeeApiInterface _api;
         private readonly CacheHelper _mHelper;
+        private Plugin.MusicBeeApiInterface _api;
 
         public PlaylistModule(Plugin.MusicBeeApiInterface api, string mStoragePath)
         {
@@ -24,23 +30,56 @@ namespace MusicBeePlugin
 
         public void StoreAvailablePlaylists()
         {
+            var playlists = GetPlaylistsFromApi();
+            string[] files = {};
+            foreach (var playlist in playlists)
+            {
+                var path = playlist.Path;
+                playlist.Name = _api.Playlist_GetName(path);
+                _api.Playlist_QueryFilesEx(path, ref files);
+                playlist.Tracks = files.Count();
+            }
+
+            using (var db = _mHelper.GetDbConnection())
+            {
+                db.SaveAll(GetNewPlaylists(playlists));
+            }
+        }
+
+        private IEnumerable<Playlist> GetNewPlaylists(IEnumerable<Playlist> list)
+        {
+            var cachedLists = GetCachedPlaylists();
+            var newPlaylists = list.Where(playlist =>
+                !cachedLists.Exists(x =>
+                    x.Path == playlist.Path))
+                .ToList();
+            return newPlaylists;
+        }
+
+        private List<Playlist> GetPlaylistsFromApi()
+        {
             _api.Playlist_QueryPlaylists();
             var playlists = new List<Playlist>();
             while (true)
             {
-                string[] files = { };
                 var path = _api.Playlist_QueryGetNextPlaylist();
+
                 if (String.IsNullOrEmpty(path)) break;
-                var name = _api.Playlist_GetName(path);
-                _api.Playlist_QueryFilesEx(path, ref files);
-                var playlist = new Playlist(name, files.Count(), path);
+                var playlist = new Playlist
+                {
+                    Path = path
+                };
                 playlists.Add(playlist);
             }
+            return playlists;
+        }
+
+        private List<Playlist> GetCachedPlaylists()
+        {
             using (var db = _mHelper.GetDbConnection())
             {
-                db.SaveAll(playlists);
+                return db.Select<Playlist>();
             }
-
         }
 
         /// <summary>
@@ -48,25 +87,11 @@ namespace MusicBeePlugin
         /// </summary>
         /// <param name="limit"></param>
         /// <param name="offset"></param>
-        public PaginatedResult GetAvailablePlaylists(int limit = 50, int offset = 0)
+        public PaginatedResponse GetAvailablePlaylists(int limit = 50, int offset = 0)
         {
-            _api.Playlist_QueryPlaylists();
-            var playlists = new List<Playlist>();
-
-            while (true)
-            {
-                string[] files = {};
-                var path = _api.Playlist_QueryGetNextPlaylist();
-                if (String.IsNullOrEmpty(path)) break;
-                var name = _api.Playlist_GetName(path);
-                _api.Playlist_QueryFilesEx(path, ref files);
-                var playlist = new Playlist(name, files.Count(), path);
-                playlists.Add(playlist);
-            }
-
+            var playlists = GetCachedPlaylists();
             var total = playlists.Count;
-
-            var result = new PaginatedResult
+            var result = new PaginatedResponse
             {
                 Limit = limit,
                 Offset = offset,
@@ -76,9 +101,39 @@ namespace MusicBeePlugin
             return result;
         }
 
+        public PaginatedResponse GetPlaylistTracks(int id, int limit = 50, int offset = 0)
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                string[] trackList = {};
+                Playlist playlist;
+                try
+                {
+                    playlist = db.GetById<Playlist>(id);
+                }
+                catch
+                {
+                    throw HttpError.NotFound("Playlist with id {0} does not exist".Fmt(id));
+                }
+                if (_api.Playlist_QueryFilesEx(playlist.Path, ref trackList))
+                {
+                    foreach (var track in trackList)
+                    {
+                    }
+                }
+            }
+
+            return new PaginatedResponse
+            {
+                Limit = limit,
+                Offset = offset,
+                Total = 0
+            };
+        }
+
         /// <summary>
-        /// Given the url of a playlist and the id of a client the method sends a message to the specified client
-        /// including the tracks in the specified playlist.
+        ///     Given the url of a playlist and the id of a client the method sends a message to the specified client
+        ///     including the tracks in the specified playlist.
         /// </summary>
         /// <param name="plPath"></param>
         /// <param name="clientId">The id of the client</param>
@@ -86,9 +141,8 @@ namespace MusicBeePlugin
         /// <param name="offset"></param>
         public void GetTracksForPlaylist(string plPath, string clientId, int limit = 50, int offset = 0)
         {
-
             string[] pathList = {};
-            
+
             if (!_api.Playlist_QueryFilesEx(plPath, ref pathList))
             {
                 return;
@@ -122,40 +176,50 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Given the hash representing of a playlist it plays the specified playlist.
+        ///     Given the hash representing of a playlist it plays the specified playlist.
         /// </summary>
         /// <param name="path">The playlist path</param>
-        public void RequestPlaylistPlayNow(string path)
+        public SuccessResponse PlaylistPlayNow(string path)
         {
-            //SendSocketMessage(Constants.PlaylistPlayNow, Constants.Reply, _api.Playlist_PlayNow(path));
+            return new SuccessResponse
+            {
+                success = _api.Playlist_PlayNow(path)
+            };
         }
 
         /// <summary>
-        /// Given the url of the playlist and the index of a index it removes the specified index,
-        /// from the playlist.
+        ///     Given the url of the playlist and the index of a index it removes the specified index,
+        ///     from the playlist.
         /// </summary>
         /// <param name="url">The url of th playlist</param>
         /// <param name="index">The index of the index to remove</param>
-        public void RequestPlaylistTrackRemove(string url,int index)
+        public void RequestPlaylistTrackRemove(string url, int index)
         {
             var success = _api.Playlist_RemoveAt(url, index);
             //SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
         }
 
-        public void RequestPlaylistCreate(string client, string name, MetaTag selection, string data)
+        public SuccessResponse RequestPlaylist(string name, string[] list)
         {
-            var files = new string[] {};
-            if (selection != MetaTag.track)
+            var playlist = new Playlist
             {
-                files = Plugin.Instance.GetUrlsForTag(selection, data);
+                Name = name,
+                Path = _api.Playlist_CreatePlaylist(String.Empty, name, list),
+                Tracks = list.Count()
+            };
+            using (var db = _mHelper.GetDbConnection())
+            {
+                db.Save(playlist);
+                return new SuccessResponse
+                {
+                    success = db.GetLastInsertId() > 0
+                };
             }
-            var url = _api.Playlist_CreatePlaylist(String.Empty, name, files);
-            //SendSocketMessage(Constants.PlaylistCreate, Constants.Reply, url);
         }
 
         public void RequestPlaylistMove(string clientId, string src, int from, int to)
         {
-            int[] aFrom = { @from };
+            int[] aFrom = {@from};
             int dIn;
             if (@from > to)
             {
@@ -175,32 +239,16 @@ namespace MusicBeePlugin
                 @from,
                 to
             };
-
-            
         }
 
-        /// <summary>
-        /// Handles the request to add to tracks to an existing playlist
-        /// </summary>
-        /// <param name="client">The client id.</param>
-        /// <param name="path">The path of the playlist.</param>
-        /// <param name="selection">The selection type.</param>
-        /// <param name="data">The data.</param>
-        public void RequestPlaylistAddTracks(string client, string path, MetaTag selection, string data)
+        
+        public bool PlaylistAddTracks(int id, string[] list)
         {
-            var files = new string[] {};
-            if (selection != MetaTag.track)
+            using (var db = _mHelper.GetDbConnection())
             {
-                files = Plugin.Instance.GetUrlsForTag(selection, data);
+                var playlist = db.GetById<Playlist>(id);
+                return _api.Playlist_AppendFiles(playlist.Path, list);
             }
-            var success = _api.Playlist_AppendFiles(path, files);
-            var message = new
-            {
-                type = "add",
-                selection,
-                data,
-                success
-            };
         }
     }
 }

@@ -5,7 +5,7 @@ using ServiceStack.ServiceHost;
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route("/library/tracks","GET")]
-    public class GetLibraryTracks : IReturn<PaginatedResult>
+    public class GetLibraryTracks : IReturn<PaginatedResponse>
     {
         public int limit { get; set; }
         public int offset { get; set; }
@@ -18,7 +18,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/library/artists", "GET")]
-    public class GetLibraryArtists : IReturn<PaginatedResult>
+    public class GetLibraryArtists : IReturn<PaginatedResponse>
     {
         public int limit { get; set; }
         public int offset { get; set; }
@@ -31,7 +31,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/library/albums", "GET")]
-    public class GetLibraryAlbums : IReturn<PaginatedResult>
+    public class GetLibraryAlbums : IReturn<PaginatedResponse>
     {
         public int limit { get; set; }
         public int offset { get; set; }
@@ -44,7 +44,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/library/genres", "GET")]
-    public class GetLibraryGenres : IReturn<PaginatedResult>
+    public class GetLibraryGenres : IReturn<PaginatedResponse>
     {
         public int limit { get; set; }
         public int offset { get; set; }

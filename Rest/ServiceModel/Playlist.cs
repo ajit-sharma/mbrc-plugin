@@ -2,13 +2,14 @@
 
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
+using ServiceStack.ServiceInterface.ServiceModel;
 
 #endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route("/playlists", "GET")]
-    public class AllPlaylists : IReturn<PaginatedResult>
+    public class AllPlaylists : IReturn<PaginatedResponse>
     {
         public int offset { get; set; }
         public int limit { get; set; }
@@ -22,7 +23,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/playlists/play", "PUT")]
-    public class PlaylistPlay
+    public class PlaylistPlay : IReturn<SuccessResponse>
     {
         public string path { get; set; }
     }
@@ -40,20 +41,28 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/playlists/{id}/tracks", "GET")]
-    public class GetPlaylistTracks
+    public class GetPlaylistTracks : IReturn<PaginatedResponse>
     {
         public int id { get; set; }
     }
 
-    [Route("/playlist/{id}/tracks", "PUT")]
-    public class AddPlaylistTracks
+    [Route("/playlists/{id}/tracks", "PUT")]
+    public class AddPlaylistTracks : IReturn<SuccessResponse>
     {
         public string[] list { get; set; }
+        public int id { get; set; }
     }
 
-    [Route("/playlist/{id}/tracks", "DELETE")]
+    [Route("/playlists/{id}/tracks", "DELETE")]
     public class DeletePlaylistTracks
     {
         public int index { get; set; }
+        public int id { get; set; }
+    }
+
+    public class SuccessResponse
+    {
+        public ResponseStatus ResponseStatus { get; set; }
+        public bool success { get; set; }
     }
 }

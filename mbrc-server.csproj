@@ -133,7 +133,7 @@
     <Compile Include="AndroidRemote\Entities\MetaData.cs" />
     <Compile Include="AndroidRemote\Entities\Track.cs" />
     <Compile Include="InjectionModule.cs" />
-    <Compile Include="Rest\ServiceModel\Type\PaginatedResult.cs" />
+    <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
     <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
     <Compile Include="AndroidRemote\Enumerations\MetaTag.cs" />

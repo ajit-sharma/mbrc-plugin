@@ -1,11 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using ServiceStack.ServiceInterface.ServiceModel;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
-    public class PaginatedResult
+    public class PaginatedResponse
     {
         [DataMember(Name = "total")]
         public int Total { get; set; }
@@ -17,9 +18,12 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         [DataMember(Name = "data")]
         public IList Data { get; set; }
 
-        public static PaginatedResult GetPaginatedData<T>(int limit, int offset, List<T> data)
+        [DataMember(Name = "ResponseStatus")]
+        public ResponseStatus ResponseStatus { get; set; }
+
+        public static PaginatedResponse GetPaginatedData<T>(int limit, int offset, List<T> data)
         {
-            var result = new PaginatedResult
+            var result = new PaginatedResponse
             {
                 Data = data,
                 Offset = offset,
