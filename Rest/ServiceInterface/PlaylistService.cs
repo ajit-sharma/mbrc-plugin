@@ -62,5 +62,14 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                 success = module.DeleteTrackFromPlaylist(request.id, request.index)
             };
         }
+
+        public SuccessResponse Patch(MovePlaylistTrack request)
+        {
+            return new SuccessResponse
+            {
+                success = module.MovePlaylistTrack(request.id, request.from, request.to)
+            };
+        }
+
     }
 }

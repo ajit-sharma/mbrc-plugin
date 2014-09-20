@@ -53,6 +53,14 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public int id { get; set; }
     }
 
+    [Route("/playlists/{id}/tracks/move", "PATCH")]
+    public class MovePlaylistTrack : IReturn<SuccessResponse>
+    {
+        public int id { get; set; }
+        public int to { get; set; }
+        public int from { get; set; }
+    }
+
     [Route("/playlists/{id}/tracks", "DELETE")]
     public class DeletePlaylistTracks : IReturn<SuccessResponse>
     {
