@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -22,10 +21,10 @@ namespace MusicBeePlugin
         private readonly CacheHelper _mHelper;
         private Plugin.MusicBeeApiInterface _api;
 
-        public PlaylistModule(Plugin.MusicBeeApiInterface api, string mStoragePath)
+        public PlaylistModule(Plugin.MusicBeeApiInterface api, string storagePath)
         {
             _api = api;
-            _mHelper = new CacheHelper(mStoragePath);
+            _mHelper = new CacheHelper(storagePath);
         }
 
         public void StoreAvailablePlaylists()
@@ -187,19 +186,16 @@ namespace MusicBeePlugin
             };
         }
 
-        /// <summary>
-        ///     Given the url of the playlist and the index of a index it removes the specified index,
-        ///     from the playlist.
-        /// </summary>
-        /// <param name="url">The url of th playlist</param>
-        /// <param name="index">The index of the index to remove</param>
-        public void RequestPlaylistTrackRemove(string url, int index)
+        public bool DeleteTrackFromPlaylist(int id, int index)
         {
-            var success = _api.Playlist_RemoveAt(url, index);
-            //SendSocketMessage(Constants.PlaylistRemove, Constants.Reply, success);
+            using (var db = _mHelper.GetDbConnection())
+            {
+                var playlist = db.GetById<Playlist>(id);
+                return _api.Playlist_RemoveAt(playlist.Path, index)
+            }
         }
 
-        public SuccessResponse RequestPlaylist(string name, string[] list)
+        public SuccessResponse CreateNewPlaylist(string name, string[] list)
         {
             var playlist = new Playlist
             {
@@ -248,6 +244,16 @@ namespace MusicBeePlugin
             {
                 var playlist = db.GetById<Playlist>(id);
                 return _api.Playlist_AppendFiles(playlist.Path, list);
+            }
+        }
+
+        public bool PlaylistDelete(int id)
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                var playlist = db.GetById<Playlist>(id);
+                db.DeleteById<Playlist>(id);
+                return _api.Playlist_DeletePlaylist(playlist.Path);
             }
         }
     }

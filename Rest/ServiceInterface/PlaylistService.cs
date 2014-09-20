@@ -2,6 +2,7 @@
 
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using Ninject;
 using ServiceStack.ServiceInterface;
 
 #endregion
@@ -10,31 +11,55 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 {
     internal class PlaylistService : Service
     {
+        private PlaylistModule module;
+
+        public PlaylistService()
+        {
+            var kernel = new StandardKernel(new InjectionModule());
+            module = kernel.Get<PlaylistModule>();
+        }
+
         public PaginatedResponse Get(AllPlaylists request)
         {
-            return Plugin.Instance.PlaylistModule.GetAvailablePlaylists(request.limit, request.offset);
+            return module.GetAvailablePlaylists(request.limit, request.offset);
         }
 
         public PaginatedResponse Get(GetPlaylistTracks request)
         {
-            return Plugin.Instance.PlaylistModule.GetPlaylistTracks(request.id);
+            return module.GetPlaylistTracks(request.id);
         }
 
         public SuccessResponse Put(CreatePlaylist request)
         {
-            return Plugin.Instance.PlaylistModule.RequestPlaylist(request.name, request.list);
+            return module.CreateNewPlaylist(request.name, request.list);
         }
 
         public SuccessResponse Put(PlaylistPlay request)
         {
-            return Plugin.Instance.PlaylistModule.PlaylistPlayNow(request.path);
+            return module.PlaylistPlayNow(request.path);
         }
 
         public SuccessResponse Put(AddPlaylistTracks request)
         {
             return new SuccessResponse
             {
-                success = Plugin.Instance.PlaylistModule.PlaylistAddTracks(request.id, request.list)
+                success = module.PlaylistAddTracks(request.id, request.list)
+            };
+        }
+
+        public SuccessResponse Delete(DeletePlaylist request)
+        {
+            return new SuccessResponse
+            {
+                success = module.PlaylistDelete(request.id)
+            };
+        }
+
+        public SuccessResponse Delete(DeletePlaylistTracks request)
+        {
+            return new SuccessResponse
+            {
+                success = module.DeleteTrackFromPlaylist(request.id, request.index)
             };
         }
     }

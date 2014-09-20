@@ -16,7 +16,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/playlists", "PUT")]
-    public class CreatePlaylist
+    public class CreatePlaylist : IReturn<SuccessResponse>
     {
         public string name { get; set; }
         public string[] list { get; set; }
@@ -35,7 +35,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/playlists/{id}", "DELETE")]
-    public class DeletePlaylist
+    public class DeletePlaylist : IReturn<SuccessResponse>
     {
         public int id { get; set; }
     }
@@ -54,7 +54,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/playlists/{id}/tracks", "DELETE")]
-    public class DeletePlaylistTracks
+    public class DeletePlaylistTracks : IReturn<SuccessResponse>
     {
         public int index { get; set; }
         public int id { get; set; }
