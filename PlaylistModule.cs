@@ -6,7 +6,9 @@ using System.Linq;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
 
 #endregion
 
@@ -95,11 +97,7 @@ namespace MusicBeePlugin
         public PaginatedResponse GetPlaylistTracks(int id, int limit = 50, int offset = 0)
         {
             string[] pathList = {};
-            Playlist playlist;
-            using (var db = _mHelper.GetDbConnection())
-            {
-                playlist = db.GetById<Playlist>(id);
-            }
+            var playlist = GetPlaylistById(id);
 
             if (!_api.Playlist_QueryFilesEx(playlist.Path, ref pathList))
             {
@@ -133,11 +131,8 @@ namespace MusicBeePlugin
 
         public bool DeleteTrackFromPlaylist(int id, int index)
         {
-            using (var db = _mHelper.GetDbConnection())
-            {
-                var playlist = db.GetById<Playlist>(id);
-                return _api.Playlist_RemoveAt(playlist.Path, index);
-            }
+            var playlist = GetPlaylistById(id);
+            return _api.Playlist_RemoveAt(playlist.Path, index);
         }
 
         public SuccessResponse CreateNewPlaylist(string name, string[] list)
@@ -160,12 +155,7 @@ namespace MusicBeePlugin
 
         public bool MovePlaylistTrack(int id, int from, int to)
         {
-            string path;
-            using (var db = _mHelper.GetDbConnection())
-            {
-                var playlist = db.GetById<Playlist>(id);
-                path = playlist.Path;
-            }
+            var playlist = GetPlaylistById(id);
             int[] aFrom = {@from};
             int dIn;
             if (@from > to)
@@ -177,26 +167,38 @@ namespace MusicBeePlugin
                 dIn = to;
             }
 
-            return _api.Playlist_MoveFiles(path, aFrom, dIn);
+            return _api.Playlist_MoveFiles(playlist.Path, aFrom, dIn);
         }
 
 
         public bool PlaylistAddTracks(int id, string[] list)
         {
-            using (var db = _mHelper.GetDbConnection())
-            {
-                var playlist = db.GetById<Playlist>(id);
-                return _api.Playlist_AppendFiles(playlist.Path, list);
-            }
+            var playlist = GetPlaylistById(id);
+            return _api.Playlist_AppendFiles(playlist.Path, list);
         }
 
         public bool PlaylistDelete(int id)
         {
+            var playlist = GetPlaylistById(id);
             using (var db = _mHelper.GetDbConnection())
             {
-                var playlist = db.GetById<Playlist>(id);
                 db.DeleteById<Playlist>(id);
                 return _api.Playlist_DeletePlaylist(playlist.Path);
+            }
+        }
+
+        private Playlist GetPlaylistById(int id)
+        {
+            using (var db = _mHelper.GetDbConnection())
+            {
+                try
+                {
+                    return db.GetById<Playlist>(id);
+                }
+                catch
+                {
+                    throw HttpError.NotFound("Playlist resource with id {0} does not exist".Fmt(id));
+                }
             }
         }
     }
