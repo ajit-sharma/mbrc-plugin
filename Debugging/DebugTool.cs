@@ -1,6 +1,11 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Threading;
 using System.Windows.Forms;
+using Ninject;
+
+#endregion
 
 namespace MusicBeePlugin.Debugging
 {
@@ -13,7 +18,6 @@ namespace MusicBeePlugin.Debugging
 
         private void OnTestButtonClick(object sender, EventArgs e)
         {
-
         }
 
         private void getCoverButton_Click(object sender, EventArgs e)
@@ -28,12 +32,15 @@ namespace MusicBeePlugin.Debugging
 
         private static void GetCovers()
         {
-            Plugin.Instance.LibraryModule.SyncGetCovers("all", 0, 5);
+            using (var kernel = new StandardKernel(new InjectionModule()))
+            {
+                var module = kernel.Get<LibraryModule>();
+                module.SyncGetCovers("all", 0, 5);
+            }
         }
 
         private void DebugTool_Load(object sender, EventArgs e)
         {
-
         }
     }
 }

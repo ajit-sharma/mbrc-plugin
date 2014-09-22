@@ -1,27 +1,32 @@
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using MusicBeePlugin.AndroidRemote.Data;
+using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
+
+#endregion
 
 namespace MusicBeePlugin
 {
-    using System.Linq;
-    using System.Threading;
-    using System;
-    using System.Globalization;
-    using System.Collections.Generic;
-    using AndroidRemote.Data;
-    using AndroidRemote.Utilities;
     /// <summary>
-    /// Class SyncModule.
-    /// Hosts the functionality responsible for the library sync operations.
+    ///     Class SyncModule.
+    ///     Hosts the functionality responsible for the library sync operations.
     /// </summary>
     public class LibraryModule
     {
-        
         private readonly CacheHelper _mHelper;
         private Plugin.MusicBeeApiInterface _api;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LibraryModule"/> class.
+        ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>
         /// <param name="api">The MusicBeeApiInterface instance</param>
         /// <param name="storagePath">The storage path used by MusicBee in the application data</param>
@@ -32,15 +37,15 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Checks for changes in the library and updates the cache.
+        ///     Checks for changes in the library and updates the cache.
         /// </summary>
         /// <param name="cachedFiles">The cached files.</param>
         /// <param name="lastSync">The last synchronization date.</param>
-        public void SyncCheckForChanges(string[] cachedFiles ,DateTime lastSync)
+        public void SyncCheckForChanges(string[] cachedFiles, DateTime lastSync)
         {
             string[] newFiles = {};
             string[] deletedFiles = {};
-            string[] updatedFiles ={};
+            string[] updatedFiles = {};
 
             _api.Library_GetSyncDelta(cachedFiles, lastSync, Plugin.LibraryCategory.Music,
                 ref newFiles, ref updatedFiles, ref deletedFiles);
@@ -48,8 +53,8 @@ namespace MusicBeePlugin
 
 
         /// <summary>
-        /// Sends a JSON message to the client containing the base64 encoded covers
-        /// for the specified range.
+        ///     Sends a JSON message to the client containing the base64 encoded covers
+        ///     for the specified range.
         /// </summary>
         /// <param name="clientId">The identifier of the client that will receive the message.</param>
         /// <param name="offset">The offset represents the index of the first cover.</param>
@@ -74,8 +79,8 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Builds the cache. Creates an association of SHA1 hashes and file paths on the local 
-        /// filesystem and then updates the internal SQLite database.
+        ///     Builds the cache. Creates an association of SHA1 hashes and file paths on the local
+        ///     filesystem and then updates the internal SQLite database.
         /// </summary>
         public void BuildCache()
         {
@@ -104,7 +109,7 @@ namespace MusicBeePlugin
                     };
 
                     var i = 0;
-                    string[] tags = { };
+                    string[] tags = {};
                     _api.Library_GetFileTags(file, types, ref tags);
 
                     var artist = tags[i++];
@@ -114,7 +119,7 @@ namespace MusicBeePlugin
                     var title = tags[i++];
                     var year = tags[i++];
                     var trackNo = tags[i];
-                                        
+
                     int iTrack;
                     int.TryParse(trackNo, out iTrack);
 
@@ -135,7 +140,7 @@ namespace MusicBeePlugin
                         Index = iTrack,
                         GenreId = oGenre != null ? oGenre.Id : -1,
                         AlbumArtistId = oAlbumArtist != null ? oAlbumArtist.Id : -1,
-                        ArtistId = oArtist !=null ? oArtist.Id : -1,
+                        ArtistId = oArtist != null ? oArtist.Id : -1,
                         AlbumId = oAlbum != null ? oAlbum.Id : -1,
                         Path = file
                     };
@@ -144,7 +149,6 @@ namespace MusicBeePlugin
                 db.UpdateAll(albums);
                 trans.Commit();
             }
-        
         }
 
         private IEnumerable<LibraryArtist> GetArtistData()
@@ -183,17 +187,17 @@ namespace MusicBeePlugin
             {
                 list.AddRange(
                     _api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
-                        .Select(artist => new LibraryAlbum(artist.Split(new[] { '\0' })[0])));
+                        .Split(new[] {"\0\0"}, StringSplitOptions.None)
+                        .Select(artist => new LibraryAlbum(artist.Split(new[] {'\0'})[0])));
             }
             _api.Library_QueryLookupTable(null, null, null);
             return list;
-        } 
+        }
 
         /// <summary>
-        /// Builds the cover cache per album.
-        /// This method is faster because it calls the GetArtworkUrl method for the first track of each album,
-        /// however it might miss a number of covers;
+        ///     Builds the cover cache per album.
+        ///     This method is faster because it calls the GetArtworkUrl method for the first track of each album,
+        ///     however it might miss a number of covers;
         /// </summary>
         private void BuildCoverCachePerAlbum()
         {
@@ -221,7 +225,6 @@ namespace MusicBeePlugin
                         Index = !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0
                     };
                     ab.TrackList.Add(track);
-
                 }
 
                 var list = new List<LibraryAlbum>(map.Values);
@@ -241,13 +244,12 @@ namespace MusicBeePlugin
 
                 db.Update(list);
             }
-
         }
 
         /// <summary>
-        /// Builds the artist cover cache. 
-        /// Method is really slow, due to multiple threads being called.
-        /// Should be better called on a low priority thread.
+        ///     Builds the artist cover cache.
+        ///     Method is really slow, due to multiple threads being called.
+        ///     Should be better called on a low priority thread.
         /// </summary>
         public void BuildArtistCoverCache()
         {
@@ -270,8 +272,7 @@ namespace MusicBeePlugin
                 if (urls.Length <= 0) continue;
                 var hash = Utilities.CacheArtistImage(urls[0], artist);
                 //_mHelper.CacheArtistUrl(artist, hash);
-            }   
-            
+            }
         }
 
         public LibraryTrack GetTrackById(int id)
@@ -283,8 +284,8 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// This method checks the state of the cache and is responsible for either
-        /// building the cache when empty of updating on start.
+        ///     This method checks the state of the cache and is responsible for either
+        ///     building the cache when empty of updating on start.
         /// </summary>
         public void CheckCacheState()
         {
@@ -292,18 +293,13 @@ namespace MusicBeePlugin
 
             if (cached == 0)
             {
-                Plugin.Instance.LibraryModule.BuildCache();
+                BuildCache();
                 var workerThread = new Thread(BuildCoverCachePerAlbum)
                 {
                     IsBackground = true,
                     Priority = ThreadPriority.Normal
                 };
                 workerThread.Start();
-            }
-            else
-            {
-                
-                // SyncCheckForChanges(files, lastUpdate);
             }
         }
 
@@ -331,7 +327,14 @@ namespace MusicBeePlugin
         {
             using (var db = _mHelper.GetDbConnection())
             {
-                return db.GetByIdOrDefault<LibraryArtist>(id);
+                try
+                {
+                    return db.GetById<LibraryArtist>(id);
+                }
+                catch
+                {
+                    throw HttpError.NotFound("Artist resource with id {0} does not exist".Fmt(id));
+                }
             }
         }
 

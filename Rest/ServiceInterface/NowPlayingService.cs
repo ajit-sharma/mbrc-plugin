@@ -1,40 +1,55 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using Ninject;
 using ServiceStack.ServiceInterface;
+
+#endregion
 
 namespace MusicBeePlugin.Rest.ServiceInterface
 {
-    class NowPlayingService : Service
+    internal class NowPlayingService : Service
     {
+        private readonly NowPlayingModule _module;
+
+        public NowPlayingService()
+        {
+            using (var kernel = new StandardKernel(new InjectionModule()))
+            {
+                _module = kernel.Get<NowPlayingModule>();
+            }
+        }
+
         public List<NowPlaying> Get(AllNowPlaying request)
         {
-            return Plugin.Instance.NowPlayingModule.GetCurrentQueue("all",request.offset,request.limit);
+            return _module.GetCurrentQueue("all", request.offset, request.limit);
         }
 
         public object Patch(NowPlayingPlay request)
         {
-            return new NowPlayingSuccessResponse()
+            return new NowPlayingSuccessResponse
             {
                 success =
                     !string.IsNullOrEmpty(request.path) &&
-                    Plugin.Instance.NowPlayingModule.NowplayingPlayNow(request.path)
+                    _module.NowplayingPlayNow(request.path)
             };
         }
 
         public object Delete(NowPlayingRemove request)
         {
-            return new NowPlayingSuccessResponse()
+            return new NowPlayingSuccessResponse
             {
-                success = Plugin.Instance.NowPlayingModule.CurrentQueueRemoveTrack(request.id)
+                success = _module.CurrentQueueRemoveTrack(request.id)
             };
         }
 
         public NowPlayingSuccessResponse Patch(NowPlayingMove request)
         {
-            return new NowPlayingSuccessResponse()
+            return new NowPlayingSuccessResponse
             {
-                success = Plugin.Instance.NowPlayingModule.CurrentQueueMoveTrack(request.id, request.moveto)
+                success = _module.CurrentQueueMoveTrack(request.id, request.moveto)
             };
         }
     }

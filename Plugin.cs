@@ -1,49 +1,52 @@
+#region
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Timers;
+using System.Windows.Forms;
+using System.Xml.Linq;
+using MusicBeePlugin.AndroidRemote;
+using MusicBeePlugin.AndroidRemote.Controller;
+using MusicBeePlugin.AndroidRemote.Data;
+using MusicBeePlugin.AndroidRemote.Entities;
+using MusicBeePlugin.AndroidRemote.Enumerations;
+using MusicBeePlugin.AndroidRemote.Events;
+using MusicBeePlugin.AndroidRemote.Settings;
+using MusicBeePlugin.Debugging;
 using MusicBeePlugin.Rest;
+using Ninject;
+using NLog;
+using NLog.Config;
+using NLog.Targets;
+using ServiceStack.Text;
+using Timer = System.Timers.Timer;
+
+#endregion
 
 namespace MusicBeePlugin
 {
-    using AndroidRemote.Data;
-    using NLog;
-    using NLog.Config;
-    using NLog.Targets;
-    using System.Linq;
-    using Debugging;
-    using System.Windows.Forms;
-    using System.Collections.Generic;
-    using System.Xml.Linq;
-    using AndroidRemote;
-    using AndroidRemote.Events;
-    using AndroidRemote.Networking;
-    using ServiceStack.Text;
-    using System;
-    using System.IO;
-    using System.Reflection;
-    using System.Timers;
-    using AndroidRemote.Controller;
-    using AndroidRemote.Entities;
-    using AndroidRemote.Settings;
-    using AndroidRemote.Enumerations;
-    using Timer = System.Timers.Timer;
-
     /// <summary>
-    /// The MusicBee Plugin class. Used to communicate with the MusicBee API.
+    ///     The MusicBee Plugin class. Used to communicate with the MusicBee API.
     /// </summary>
     public partial class Plugin
     {
         /// <summary>
-        /// The mb api interface.
+        ///     The mb api interface.
         /// </summary>
         private MusicBeeApiInterface _api;
 
         /// <summary>
-        /// The _about.
+        ///     The _about.
         /// </summary>
         private readonly PluginInfo _about = new PluginInfo();
 
         private Timer _positionUpdateTimer;
 
         /// <summary>
-        /// Returns the plugin instance (Singleton);
+        ///     Returns the plugin instance (Singleton);
         /// </summary>
         public static Plugin Instance { get; private set; }
 
@@ -54,13 +57,6 @@ namespace MusicBeePlugin
 #endif
         private string _mStoragePath;
 
-        public LibraryModule LibraryModule { get; private set; }
-
-        public PlaylistModule PlaylistModule { get; private set; }
-        public  NowPlayingModule NowPlayingModule { get; private set; }
-
-        public PlayerModule PlayerModule { get; private set; }
-
         private Timer _timer;
         private bool _scrobble;
         private RepeatMode _repeat;
@@ -70,7 +66,7 @@ namespace MusicBeePlugin
 
 
         /// <summary>
-        /// This function initialized the Plugin.
+        ///     This function initialized the Plugin.
         /// </summary>
         /// <param name="apiInterfacePtr"></param>
         /// <returns></returns>
@@ -114,7 +110,7 @@ namespace MusicBeePlugin
             InitializeLoggingConfiguration();
 
             _api.MB_AddMenuItem("mnuTools/MusicBee Remote", "Information Panel of the MusicBee Remote",
-                                          MenuItemClicked);
+                MenuItemClicked);
 
             EventBus.FireEvent(new MessageEvent(EventType.ActionSocketStart));
             EventBus.FireEvent(new MessageEvent(EventType.InitializeModel));
@@ -127,19 +123,20 @@ namespace MusicBeePlugin
 
             InjectionModule.Api = _api;
             InjectionModule.StoragePath = _mStoragePath;
-            
-            LibraryModule = new LibraryModule(_api, _mStoragePath);
-            PlaylistModule = new PlaylistModule(_api, _mStoragePath);
-            NowPlayingModule = new NowPlayingModule(_api, _mStoragePath);
-            PlayerModule = new PlayerModule(_api);
+
+            using (var kernel = new StandardKernel(new InjectionModule()))
+            {
+                var libraryModule = kernel.Get<LibraryModule>();
+                var playlistModule = kernel.Get<PlaylistModule>();
+                libraryModule.CheckCacheState();
+                playlistModule.StoreAvailablePlaylists();
+            }
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
-                                          DisplayDebugWindow);
+                DisplayDebugWindow);
 #endif
 
-            LibraryModule.CheckCacheState();
-            PlaylistModule.StoreAvailablePlaylists();
             StartPlayerStatusMonitoring();
             _mHelper = new CacheHelper(_mStoragePath);
 
@@ -151,7 +148,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Initializes the logging configuration.
+        ///     Initializes the logging configuration.
         /// </summary>
         private void InitializeLoggingConfiguration()
         {
@@ -175,23 +172,23 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Starts the player status monitoring.
+        ///     Starts the player status monitoring.
         /// </summary>
         private void StartPlayerStatusMonitoring()
         {
             _scrobble = _api.Player_GetScrobbleEnabled();
             _repeat = _api.Player_GetRepeat();
             _shuffle = _api.Player_GetShuffle();
-            _timer = new Timer { Interval = 1000 };
+            _timer = new Timer {Interval = 1000};
             _timer.Elapsed += HandleTimerElapsed;
             _timer.Enabled = true;
         }
 
         /// <summary>
-        /// This function runs periodically every 1000 ms as the timer ticks and
-        /// checks for changes on the player status. If a change is detected on
-        /// one of the monitored variables the function will fire an event with
-        /// the new status.
+        ///     This function runs periodically every 1000 ms as the timer ticks and
+        ///     checks for changes on the player status. If a change is detected on
+        ///     one of the monitored variables the function will fire an event with
+        ///     the new status.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="args">The event arguments.</param>
@@ -222,13 +219,13 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Menu Item click handler. It handles the Tools -> MusicBee Remote entry click and opens the respective info panel.
+        ///     Menu Item click handler. It handles the Tools -> MusicBee Remote entry click and opens the respective info panel.
         /// </summary>
         /// <param name="sender">
-        /// The sender.
+        ///     The sender.
         /// </param>
         /// <param name="args">
-        /// The args.
+        ///     The args.
         /// </param>
         private void MenuItemClicked(object sender, EventArgs args)
         {
@@ -246,7 +243,7 @@ namespace MusicBeePlugin
         public void OpenInfoWindow()
         {
             var hwnd = _api.MB_GetWindowHandle();
-            var mb = (Form)Control.FromHandle(hwnd);
+            var mb = (Form) Control.FromHandle(hwnd);
             mb.Invoke(new MethodInvoker(DisplayInfoWindow));
         }
 
@@ -254,9 +251,9 @@ namespace MusicBeePlugin
         {
             if (_mWindow == null || !_mWindow.Visible)
             {
-                _mWindow = new InfoWindow();    
+                _mWindow = new InfoWindow();
             }
-            
+
             _mWindow.Show();
             if (_mHelper != null)
             {
@@ -266,27 +263,27 @@ namespace MusicBeePlugin
             {
                 _mWindow.UpdateCacheStatus(0, 0);
             }
-        } 
+        }
 
 #if DEBUG
         public void DisplayDebugWindow(object sender, EventArgs eventArgs)
         {
             if (_dTool == null || !_dTool.Visible)
             {
-                _dTool = new DebugTool();    
+                _dTool = new DebugTool();
             }
             _dTool.Show();
         }
 #endif
 
         /// <summary>
-        /// Creates the MusicBee plugin Configuration panel.
+        ///     Creates the MusicBee plugin Configuration panel.
         /// </summary>
         /// <param name="panelHandle">
-        /// The panel handle.
+        ///     The panel handle.
         /// </param>
         /// <returns>
-        /// The <see cref="bool"/>.
+        ///     The <see cref="bool" />.
         /// </returns>
         public bool Configure(IntPtr panelHandle)
         {
@@ -295,10 +292,10 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// The close.
+        ///     The close.
         /// </summary>
         /// <param name="reason">
-        /// The reason.
+        ///     The reason.
         /// </param>
         public void Close(PluginCloseReason reason)
         {
@@ -307,7 +304,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Cleans up any persisted files during the plugin uninstall.
+        ///     Cleans up any persisted files during the plugin uninstall.
         /// </summary>
         public void Uninstall()
         {
@@ -319,8 +316,8 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
-        /// Used to save the temporary Plugin SettingsModel if the have changed.
+        ///     Called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
+        ///     Used to save the temporary Plugin SettingsModel if the have changed.
         /// </summary>
         public void SaveSettings()
         {
@@ -328,7 +325,8 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Receives event Notifications from MusicBee. It is only required if the about.ReceiveNotificationFlags = PlayerEvents.
+        ///     Receives event Notifications from MusicBee. It is only required if the about.ReceiveNotificationFlags =
+        ///     PlayerEvents.
         /// </summary>
         /// <param name="sourceFileUrl"></param>
         /// <param name="type"></param>
@@ -359,20 +357,21 @@ namespace MusicBeePlugin
                     {
                         EventBus.FireEvent(new MessageEvent(EventType.NowPlayingLyricsChange,
                             !String.IsNullOrEmpty(_api.NowPlaying_GetDownloadedLyrics())
-                                ? _api.NowPlaying_GetDownloadedLyrics() : "Lyrics Not Found" ));
+                                ? _api.NowPlaying_GetDownloadedLyrics()
+                                : "Lyrics Not Found"));
                     }
                     break;
                 case NotificationType.NowPlayingArtworkReady:
                     if (_api.ApiRevision >= 17)
                     {
                         EventBus.FireEvent(new MessageEvent(EventType.NowPlayingCoverChange,
-                                                            _api.NowPlaying_GetDownloadedArtwork()));
+                            _api.NowPlaying_GetDownloadedArtwork()));
                     }
                     break;
                 case NotificationType.NowPlayingListChanged:
                     //SendSocketMessage(Constants.NowPlayingListChanged, Constants.Message, true);
                     break;
-                case NotificationType.PlayerRepeatChanged :
+                case NotificationType.PlayerRepeatChanged:
                     var repeat = _api.Player_GetRepeat();
                     //SendSocketMessage(Constants.PlayerRepeat, Constants.Message, repeat);
                     break;
@@ -408,7 +407,7 @@ namespace MusicBeePlugin
 
             return filter.ToString();
         }
-        
+
         public string[] GetUrlsForTag(MetaTag tag, string query)
         {
             var filter = String.Empty;
@@ -450,7 +449,7 @@ namespace MusicBeePlugin
             {
                 tracks = new[] {query};
             }
-                
+
             return tracks;
         }
     }
