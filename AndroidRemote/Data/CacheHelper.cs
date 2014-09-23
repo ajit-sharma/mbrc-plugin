@@ -30,6 +30,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
             {
                 using (var db = GetDbConnection())
                 {
+                    db.CreateTableIfNotExists<LibraryCover>();
                     db.CreateTableIfNotExists<LibraryArtist>();
                     db.CreateTableIfNotExists<LibraryAlbum>();
                     db.CreateTableIfNotExists<LibraryGenre>();

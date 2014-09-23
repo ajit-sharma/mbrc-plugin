@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.IO;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using Ninject;
@@ -49,6 +50,22 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         public PaginatedResponse Get(GetLibraryAlbums request)
         {
             return _module.GetAllAlbums(request.limit, request.offset);
+        }
+
+        public PaginatedResponse Get(GetLibraryCovers request)
+        {
+            return _module.GetAllCovers(request.offset, request.limit);
+        }
+
+        public LibraryCover Get(GetLibraryCover request)
+        {
+            return _module.GetLibraryCover(request.id, true);
+        }
+
+        [AddHeader(ContentType = "image/jpeg")]
+        public Stream Get(GetLibraryCoverData request)
+        {
+            return _module.GetCoverData(request.id);
         }
     }
 }

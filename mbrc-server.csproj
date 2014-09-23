@@ -44,7 +44,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\MusicBee\Plugins\</OutputPath>
+    <OutputPath>C:\Program Files\MusicBee\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -132,6 +132,7 @@
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Entities\MetaData.cs" />
     <Compile Include="InjectionModule.cs" />
+    <Compile Include="Rest\ServiceModel\Type\LibraryCover.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
     <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />
     <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />

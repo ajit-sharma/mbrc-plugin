@@ -1,25 +1,23 @@
-﻿using System.Collections.Generic;
+﻿#region
+
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
+
+#endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
     public class LibraryAlbum
     {
-        public LibraryAlbum(string name)
-        {
-            Name = name;
-            TrackList = new List<LibraryTrack>();
-        }
-
         public LibraryAlbum()
         {
             TrackList = new List<LibraryTrack>();
         }
 
-        [DataMember(Name = "id")]
         [AutoIncrement]
+        [DataMember(Name = "id")]
         public int Id { get; set; }
 
         [DataMember(Name = "name")]
@@ -29,12 +27,14 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         [DataMember(Name = "artistId")]
         public int ArtistId { get; set; }
 
-        [DataMember(Name = "coverHash")]
-        public string CoverHash { get; set; }
+        [DataMember(Name = "coverId")]
+        public int CoverId { get; set; }
 
         [DataMember(Name = "albumId")]
         public string AlbumId { get; set; }
 
+        [Ignore]
+        [IgnoreDataMember]
         public List<LibraryTrack> TrackList { get; set; }
     }
 }

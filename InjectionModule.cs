@@ -1,4 +1,5 @@
-﻿using MusicBeePlugin.AndroidRemote.Model;
+﻿using MusicBeePlugin.AndroidRemote.Data;
+using MusicBeePlugin.AndroidRemote.Model;
 using Ninject.Modules;
 
 namespace MusicBeePlugin
@@ -11,10 +12,12 @@ namespace MusicBeePlugin
         public override void Load()
         {
             Bind<Plugin.MusicBeeApiInterface>().ToMethod(context => Api).InSingletonScope();
+            Bind<CacheHelper>()
+                .ToSelf()
+                .WithConstructorArgument("storagePath", StoragePath);
             Bind<LibraryModule>()
                 .ToSelf()
-                .InSingletonScope()
-                .WithConstructorArgument("storagePath", StoragePath);
+                .InSingletonScope();
             Bind<NowPlayingModule>()
                 .ToSelf()
                 .InSingletonScope()

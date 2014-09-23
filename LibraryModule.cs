@@ -3,11 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using Ninject;
 using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
 using ServiceStack.Text;
@@ -22,18 +24,19 @@ namespace MusicBeePlugin
     /// </summary>
     public class LibraryModule
     {
+        private readonly Plugin.MusicBeeApiInterface _api;
         private readonly CacheHelper _mHelper;
-        private Plugin.MusicBeeApiInterface _api;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>
-        /// <param name="api">The MusicBeeApiInterface instance</param>
-        /// <param name="storagePath">The storage path used by MusicBee in the application data</param>
-        public LibraryModule(Plugin.MusicBeeApiInterface api, String storagePath)
+        public LibraryModule()
         {
-            _api = api;
-            _mHelper = new CacheHelper(storagePath);
+            using (var kernel = new StandardKernel(new InjectionModule()))
+            {
+                _api = kernel.Get<Plugin.MusicBeeApiInterface>();
+                _mHelper = kernel.Get<CacheHelper>();
+            }
         }
 
         /// <summary>
@@ -52,30 +55,38 @@ namespace MusicBeePlugin
         }
 
 
-        /// <summary>
-        ///     Sends a JSON message to the client containing the base64 encoded covers
-        ///     for the specified range.
-        /// </summary>
-        /// <param name="clientId">The identifier of the client that will receive the message.</param>
-        /// <param name="offset">The offset represents the index of the first cover.</param>
-        /// <param name="limit">The limit represents the number of the covers contained in the message.</param>
-        public void SyncGetCovers(string clientId, int offset, int limit)
+        public PaginatedResponse GetAllCovers(int offset, int limit)
         {
-//            var cached = _mHelper.GetCoverHashes(limit, offset);
-//            var buffer = (from entry in cached
-//                let data = Utilities.GetCachedCoverBase64(entry.CoverHash)
-//                select new ImageData(entry.CoverHash, data) {album_id = entry.AlbumId}).ToList();
-//
-//            var pack = new
-//            {
-//                type = "cover",
-//                limit,
-//                offset,
-//                total = _mHelper.GetCachedCoversCount(),
-//                data = buffer
-//            };
-//
-//            SendSocketMessage(Constants.Library, Constants.Reply, pack, clientId);
+            using (var db = _mHelper.GetDbConnection())
+            {
+                var covers = db.Select<LibraryCover>();
+                var paginated = PaginatedResponse.GetPaginatedData(limit, offset, covers);
+                foreach (var cover in (List<LibraryCover>) paginated.Data)
+                {
+                    cover.Base64 = Utilities.GetCachedCoverBase64(cover.Hash);
+                }
+                return paginated;
+            }
+        }
+
+        public LibraryCover GetLibraryCover(int id, bool includeImage = false)
+        {
+            try
+            {
+                using (var db = _mHelper.GetDbConnection())
+                {
+                    var cover = db.GetById<LibraryCover>(id);
+                    if (includeImage)
+                    {
+                        cover.Base64 = Utilities.GetCachedCoverBase64(cover.Hash);
+                    }
+                    return cover;
+                }
+            }
+            catch (Exception)
+            {
+                throw HttpError.NotFound("Cover resource with id {0} does not exist".Fmt(id));
+            }
         }
 
         /// <summary>
@@ -188,7 +199,10 @@ namespace MusicBeePlugin
                 list.AddRange(
                     _api.Library_QueryGetLookupTableValue(null)
                         .Split(new[] {"\0\0"}, StringSplitOptions.None)
-                        .Select(artist => new LibraryAlbum(artist.Split(new[] {'\0'})[0])));
+                        .Select(artist => new LibraryAlbum
+                        {
+                            Name = artist.Split(new[] {'\0'})[0]
+                        }));
             }
             _api.Library_QueryLookupTable(null, null, null);
             return list;
@@ -202,6 +216,7 @@ namespace MusicBeePlugin
         private void BuildCoverCachePerAlbum()
         {
             using (var db = _mHelper.GetDbConnection())
+            using (var trans = db.OpenTransaction())
             {
                 var allTrack = db.Select<LibraryTrack>();
                 var map = new Dictionary<string, LibraryAlbum>();
@@ -233,16 +248,18 @@ namespace MusicBeePlugin
                 {
                     albumEntry.TrackList.Sort();
                     var path = albumEntry.TrackList[0].Path;
-                    var cover = _api.Library_GetArtworkUrl(path, -1);
-                    if (string.IsNullOrEmpty(cover))
-                    {
-                        continue;
-                    }
+                    var coverUrl = _api.Library_GetArtworkUrl(path, -1);
 
-                    albumEntry.CoverHash = Utilities.StoreCoverToCache(cover);
+                    var cover = new LibraryCover
+                    {
+                        Hash = Utilities.StoreCoverToCache(coverUrl)
+                    };
+                    db.Save(cover);
+                    albumEntry.CoverId = (int) db.GetLastInsertId();
                 }
 
-                db.Update(list);
+                db.UpdateAll(list);
+                trans.Commit();
             }
         }
 
@@ -271,15 +288,22 @@ namespace MusicBeePlugin
                 _api.Library_GetArtistPictureUrls(artist, true, ref urls);
                 if (urls.Length <= 0) continue;
                 var hash = Utilities.CacheArtistImage(urls[0], artist);
-                //_mHelper.CacheArtistUrl(artist, hash);
+                entry.ImageUrl = hash;
             }
         }
 
         public LibraryTrack GetTrackById(int id)
         {
-            using (var db = _mHelper.GetDbConnection())
+            try
             {
-                return db.GetByIdOrDefault<LibraryTrack>(id);
+                using (var db = _mHelper.GetDbConnection())
+                {
+                    return db.GetByIdOrDefault<LibraryTrack>(id);
+                }
+            }
+            catch (Exception)
+            {
+                throw HttpError.NotFound("Track resource with id {0} does not exist".Fmt(id));
             }
         }
 
@@ -291,16 +315,14 @@ namespace MusicBeePlugin
         {
             var cached = _mHelper.GetCachedTracksCount();
 
-            if (cached == 0)
+            if (cached != 0) return;
+            BuildCache();
+            var workerThread = new Thread(BuildCoverCachePerAlbum)
             {
-                BuildCache();
-                var workerThread = new Thread(BuildCoverCachePerAlbum)
-                {
-                    IsBackground = true,
-                    Priority = ThreadPriority.Normal
-                };
-                workerThread.Start();
-            }
+                IsBackground = true,
+                Priority = ThreadPriority.Normal
+            };
+            workerThread.Start();
         }
 
         public PaginatedResponse GetAllTracks(int limit, int offset)
@@ -354,6 +376,12 @@ namespace MusicBeePlugin
                 var data = db.Select<LibraryAlbum>();
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
+        }
+
+        public Stream GetCoverData(int id)
+        {
+            var cover = GetLibraryCover(id);
+            return Utilities.GetCoverStreamFromCache(cover.Hash);
         }
     }
 }

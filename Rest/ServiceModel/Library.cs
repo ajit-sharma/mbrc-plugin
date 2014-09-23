@@ -1,10 +1,14 @@
-﻿using MusicBeePlugin.AndroidRemote.Utilities;
+﻿#region
+
+using System.IO;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
+#endregion
+
 namespace MusicBeePlugin.Rest.ServiceModel
 {
-    [Route("/library/tracks","GET")]
+    [Route("/library/tracks", "GET")]
     public class GetLibraryTracks : IReturn<PaginatedResponse>
     {
         public int limit { get; set; }
@@ -55,6 +59,23 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
         public int id { get; set; }
     }
-    
-        
+
+    [Route("/library/covers", "GET")]
+    public class GetLibraryCovers : IReturn<PaginatedResponse>
+    {
+        public int limit { get; set; }
+        public int offset { get; set; }
+    }
+
+    [Route("/library/covers/{id}", "GET")]
+    public class GetLibraryCover : IReturn<LibraryCover>
+    {
+        public int id { get; set; }
+    }
+
+    [Route("/library/covers/{id}/raw", "GET")]
+    public class GetLibraryCoverData : IReturn<Stream>
+    {
+        public int id { get; set; }
+    }
 }

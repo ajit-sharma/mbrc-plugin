@@ -35,7 +35,7 @@ namespace MusicBeePlugin.Debugging
             using (var kernel = new StandardKernel(new InjectionModule()))
             {
                 var module = kernel.Get<LibraryModule>();
-                module.SyncGetCovers("all", 0, 5);
+                module.GetAllCovers(0, 5);
             }
         }
 
