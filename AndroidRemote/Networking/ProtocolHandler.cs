@@ -1,19 +1,24 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Networking
-{
-    using System.Linq;
-    using NLog;
-    using System.Collections.Generic;
-    using Entities;
-    using ServiceStack.Text;
-    using Events;
-    using System;
-    using Utilities;
+﻿#region
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using MusicBeePlugin.AndroidRemote.Entities;
+using MusicBeePlugin.AndroidRemote.Events;
+using MusicBeePlugin.AndroidRemote.Utilities;
+using NLog;
+using ServiceStack.Text;
+
+#endregion
+
+namespace MusicBeePlugin.AndroidRemote.Networking
+{
     internal class ProtocolHandler
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
-        /// Processes the incoming message and answer's sending back the needed data.
+        ///     Processes the incoming message and answer's sending back the needed data.
         /// </summary>
         /// <param name="messages">The incoming message.</param>
         /// <param name="clientId"> </param>
@@ -21,11 +26,11 @@
         {
             try
             {
-                var msgList = new List<SocketMessage>();
-                
+                var msgList = new List<NotificationMessage>();
+
                 try
                 {
-                    msgList.AddRange(messages.Select(msg => new SocketMessage(JsonObject.Parse(msg))));
+                    msgList.AddRange(messages.Select(msg => new NotificationMessage(JsonObject.Parse(msg))));
                 }
                 catch (Exception ex)
                 {
@@ -35,18 +40,20 @@
 
                 foreach (var msg in msgList)
                 {
-                    if (Authenticator.Client(clientId).PacketNumber == 0 && msg.context != Constants.Player)
+                    if (Authenticator.Client(clientId).PacketNumber == 0 && msg.Message != Constants.Player)
                     {
-                        EventBus.FireEvent(new MessageEvent(EventType.ActionForceClientDisconnect, string.Empty, clientId));
+                        EventBus.FireEvent(new MessageEvent(EventType.ActionForceClientDisconnect, string.Empty,
+                            clientId));
                         return;
                     }
-                    if (Authenticator.Client(clientId).PacketNumber == 1 && msg.context != Constants.Protocol)
+                    if (Authenticator.Client(clientId).PacketNumber == 1 && msg.Message != Constants.Protocol)
                     {
-                        EventBus.FireEvent(new MessageEvent(EventType.ActionForceClientDisconnect, string.Empty, clientId));
+                        EventBus.FireEvent(new MessageEvent(EventType.ActionForceClientDisconnect, string.Empty,
+                            clientId));
                         return;
                     }
 
-                    EventBus.FireEvent(new MessageEvent(msg.context, msg.data, clientId));
+                    EventBus.FireEvent(new MessageEvent(msg.Message));
                 }
                 Authenticator.Client(clientId).IncreasePacketNumber();
             }

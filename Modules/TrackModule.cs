@@ -1,37 +1,49 @@
-﻿using System;
+﻿#region
+
+using System;
 using System.Globalization;
+using System.IO;
 using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote.Enumerations;
+using MusicBeePlugin.AndroidRemote.Model;
+using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
+using MusicBeeApiInterface = MusicBeePlugin.Plugin.MusicBeeApiInterface;
 
-namespace MusicBeePlugin
+#endregion
+
+namespace MusicBeePlugin.Modules
 {
     public class TrackModule
     {
-        private Plugin.MusicBeeApiInterface _api;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly LyricCoverModel _model;
+        private readonly MusicBeeApiInterface _api;
 
-        public TrackModule(Plugin.MusicBeeApiInterface api)
+        public TrackModule(MusicBeeApiInterface api, LyricCoverModel model)
         {
             _api = api;
+            _model = model;
         }
-        public Rest.ServiceModel.Type.Track GetTrackInfo()
+
+        public Track GetTrackInfo()
         {
-            var track = new Rest.ServiceModel.Type.Track
+            var track = new Track
             {
                 Artist = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Artist),
                 Album = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Album),
                 Year = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Year),
                 Title = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle)
             };
-            //, _api.NowPlaying_GetFileUrl()
             return track;
         }
+
         /// <summary>
-        /// If the given rating string is not null or empty and the value of the string is a float number in the [0,5]
-        /// the function will set the new rating as the current index's new index rating. In any other case it will
-        /// just return the rating for the current index.
+        ///     If the given rating string is not null or empty and the value of the string is a float number in the [0,5]
+        ///     the function will set the new rating as the current index's new index rating. In any other case it will
+        ///     just return the rating for the current index.
         /// </summary>
         /// <returns>Track Rating</returns>
         public float GetRating()
@@ -72,9 +84,9 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Requests the Now Playing Track Cover. If the cover is available it is dispatched along with an event.
-        /// If not, and the ApiRevision is equal or greater than r17 a request for the downloaded artwork is
-        /// initiated. The cover is dispatched along with an event when ready.
+        ///     Requests the Now Playing Track Cover. If the cover is available it is dispatched along with an event.
+        ///     If not, and the ApiRevision is equal or greater than r17 a request for the downloaded artwork is
+        ///     initiated. The cover is dispatched along with an event when ready.
         /// </summary>
         public void RequestNowPlayingTrackCover()
         {
@@ -84,16 +96,12 @@ namespace MusicBeePlugin
             }
             else if (_api.ApiRevision >= 17)
             {
-                var cover = _api.NowPlaying_GetDownloadedArtwork();
-            }
-            else
-            {
-                
+                _model.SetCover(_api.NowPlaying_GetDownloadedArtwork());
             }
         }
 
         /// <summary>
-        /// Sets the position of the playing track
+        ///     Sets the position of the playing track
         /// </summary>
         /// <param name="newPosition"></param>
         public TrackPositionResponse SetPosition(int newPosition)
@@ -103,7 +111,7 @@ namespace MusicBeePlugin
             var currentPosition = _api.Player_GetPosition();
             var totalDuration = _api.NowPlaying_GetDuration();
 
-            return new TrackPositionResponse()
+            return new TrackPositionResponse
             {
                 position = currentPosition,
                 duration = totalDuration
@@ -115,7 +123,7 @@ namespace MusicBeePlugin
             var currentPosition = _api.Player_GetPosition();
             var totalDuration = _api.NowPlaying_GetDuration();
 
-            return new TrackPositionResponse()
+            return new TrackPositionResponse
             {
                 position = currentPosition,
                 duration = totalDuration
@@ -123,15 +131,15 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// This function is used to change the playing index's last.fm love rating.
+        ///     This function is used to change the playing index's last.fm love rating.
         /// </summary>
         /// <param name="action">
-        /// The action can be either love, or ban.
+        ///     The action can be either love, or ban.
         /// </param>
         public void RequestLoveStatus(string action)
         {
             var hwnd = _api.MB_GetWindowHandle();
-            var mb = (Form)Control.FromHandle(hwnd);
+            var mb = (Form) Control.FromHandle(hwnd);
 
             if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
             {
@@ -191,7 +199,9 @@ namespace MusicBeePlugin
             return lastfmStatus;
         }
 
+        public Stream GetBinaryCoverData()
+        {
+            return Utilities.GetCoverStreamFromBase64(_model.Cover);
+        }
     }
-
-
 }

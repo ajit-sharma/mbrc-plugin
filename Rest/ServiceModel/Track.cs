@@ -1,4 +1,5 @@
-﻿using MusicBeePlugin.Rest.ServiceModel.Type;
+﻿using System.IO;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel
@@ -39,6 +40,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     public class GetTrackCover : IReturn<TrackCoverResponse>
     {
         public int? size { get; set; }
+    }
+
+    [Route("/track/cover/raw")]
+    public class GetTrackCoverData : IReturn<Stream>
+    {        
     }
 
     [Route("/track/lyrics", "GET")]

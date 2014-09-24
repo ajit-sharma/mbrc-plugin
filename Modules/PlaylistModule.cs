@@ -12,17 +12,17 @@ using ServiceStack.Text;
 
 #endregion
 
-namespace MusicBeePlugin
+namespace MusicBeePlugin.Modules
 {
     public class PlaylistModule
     {
-        private readonly CacheHelper _mHelper;
+        private readonly CacheHelper _cHelper;
         private Plugin.MusicBeeApiInterface _api;
 
-        public PlaylistModule(Plugin.MusicBeeApiInterface api, string storagePath)
+        public PlaylistModule(Plugin.MusicBeeApiInterface api, CacheHelper cHelper)
         {
             _api = api;
-            _mHelper = new CacheHelper(storagePath);
+            _cHelper = cHelper;
         }
 
         public void StoreAvailablePlaylists()
@@ -37,7 +37,7 @@ namespace MusicBeePlugin
                 playlist.Tracks = files.Count();
             }
 
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 db.SaveAll(GetNewPlaylists(playlists));
             }
@@ -73,7 +73,7 @@ namespace MusicBeePlugin
 
         private List<Playlist> GetCachedPlaylists()
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 return db.Select<Playlist>();
             }
@@ -143,7 +143,7 @@ namespace MusicBeePlugin
                 Path = _api.Playlist_CreatePlaylist(String.Empty, name, list),
                 Tracks = list.Count()
             };
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 db.Save(playlist);
                 return new SuccessResponse
@@ -180,7 +180,7 @@ namespace MusicBeePlugin
         public bool PlaylistDelete(int id)
         {
             var playlist = GetPlaylistById(id);
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 db.DeleteById<Playlist>(id);
                 return _api.Playlist_DeletePlaylist(playlist.Path);
@@ -189,7 +189,7 @@ namespace MusicBeePlugin
 
         private Playlist GetPlaylistById(int id)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 try
                 {

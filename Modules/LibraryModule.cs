@@ -16,7 +16,7 @@ using ServiceStack.Text;
 
 #endregion
 
-namespace MusicBeePlugin
+namespace MusicBeePlugin.Modules
 {
     /// <summary>
     ///     Class SyncModule.
@@ -25,18 +25,15 @@ namespace MusicBeePlugin
     public class LibraryModule
     {
         private readonly Plugin.MusicBeeApiInterface _api;
-        private readonly CacheHelper _mHelper;
+        private readonly CacheHelper _cHelper;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>
-        public LibraryModule()
+        public LibraryModule(Plugin.MusicBeeApiInterface api, CacheHelper cHelper)
         {
-            using (var kernel = new StandardKernel(new InjectionModule()))
-            {
-                _api = kernel.Get<Plugin.MusicBeeApiInterface>();
-                _mHelper = kernel.Get<CacheHelper>();
-            }
+            _api = api;
+            _cHelper = cHelper;
         }
 
         /// <summary>
@@ -57,7 +54,7 @@ namespace MusicBeePlugin
 
         public PaginatedResponse GetAllCovers(int offset, int limit)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 var covers = db.Select<LibraryCover>();
                 var paginated = PaginatedResponse.GetPaginatedData(limit, offset, covers);
@@ -73,7 +70,7 @@ namespace MusicBeePlugin
         {
             try
             {
-                using (var db = _mHelper.GetDbConnection())
+                using (var db = _cHelper.GetDbConnection())
                 {
                     var cover = db.GetById<LibraryCover>(id);
                     if (includeImage)
@@ -97,7 +94,7 @@ namespace MusicBeePlugin
         {
             string[] files = {};
             _api.Library_QueryFilesEx(String.Empty, ref files);
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             using (var trans = db.OpenTransaction())
             {
                 db.SaveAll(GetArtistData());
@@ -215,7 +212,7 @@ namespace MusicBeePlugin
         /// </summary>
         private void BuildCoverCachePerAlbum()
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             using (var trans = db.OpenTransaction())
             {
                 var allTrack = db.Select<LibraryTrack>();
@@ -249,11 +246,18 @@ namespace MusicBeePlugin
                     albumEntry.TrackList.Sort();
                     var path = albumEntry.TrackList[0].Path;
                     var coverUrl = _api.Library_GetArtworkUrl(path, -1);
+                    var coverHash = Utilities.StoreCoverToCache(coverUrl);
+
+                    if (String.IsNullOrEmpty(coverHash))
+                    {
+                        continue;
+                    }
 
                     var cover = new LibraryCover
                     {
-                        Hash = Utilities.StoreCoverToCache(coverUrl)
+                        Hash = coverHash
                     };
+
                     db.Save(cover);
                     albumEntry.CoverId = (int) db.GetLastInsertId();
                 }
@@ -296,7 +300,7 @@ namespace MusicBeePlugin
         {
             try
             {
-                using (var db = _mHelper.GetDbConnection())
+                using (var db = _cHelper.GetDbConnection())
                 {
                     return db.GetByIdOrDefault<LibraryTrack>(id);
                 }
@@ -313,7 +317,7 @@ namespace MusicBeePlugin
         /// </summary>
         public void CheckCacheState()
         {
-            var cached = _mHelper.GetCachedTracksCount();
+            var cached = _cHelper.GetCachedTracksCount();
 
             if (cached != 0) return;
             BuildCache();
@@ -327,7 +331,7 @@ namespace MusicBeePlugin
 
         public PaginatedResponse GetAllTracks(int limit, int offset)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryTrack>();
                 var result = PaginatedResponse.GetPaginatedData(limit, offset, data);
@@ -338,7 +342,7 @@ namespace MusicBeePlugin
 
         public PaginatedResponse GetAllArtists(int limit, int offset)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryArtist>();
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);
@@ -347,7 +351,7 @@ namespace MusicBeePlugin
 
         public LibraryArtist GetArtistById(int id)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 try
                 {
@@ -362,7 +366,7 @@ namespace MusicBeePlugin
 
         public PaginatedResponse GetAllGenres(int limit, int offset)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryGenre>();
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);
@@ -371,7 +375,7 @@ namespace MusicBeePlugin
 
         public PaginatedResponse GetAllAlbums(int limit, int offset)
         {
-            using (var db = _mHelper.GetDbConnection())
+            using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryAlbum>();
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);

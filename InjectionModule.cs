@@ -1,10 +1,15 @@
-﻿using MusicBeePlugin.AndroidRemote.Data;
+﻿#region
+
+using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Model;
+using MusicBeePlugin.Modules;
 using Ninject.Modules;
+
+#endregion
 
 namespace MusicBeePlugin
 {
-    class InjectionModule : NinjectModule
+    internal class InjectionModule : NinjectModule
     {
         public static Plugin.MusicBeeApiInterface Api;
         public static string StoragePath;
@@ -20,15 +25,13 @@ namespace MusicBeePlugin
                 .InSingletonScope();
             Bind<NowPlayingModule>()
                 .ToSelf()
-                .InSingletonScope()
-                .WithConstructorArgument("storagePath", StoragePath);
+                .InSingletonScope();
             Bind<PlayerModule>()
                 .ToSelf()
                 .InSingletonScope();
             Bind<PlaylistModule>()
                 .ToSelf()
-                .InSingletonScope()
-                .WithConstructorArgument("storagePath", StoragePath);
+                .InSingletonScope();
             Bind<TrackModule>()
                 .ToSelf()
                 .InSingletonScope();

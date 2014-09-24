@@ -1,9 +1,9 @@
 ﻿#region
 
 using System.IO;
+using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using Ninject;
 using ServiceStack.ServiceInterface;
 
 #endregion
@@ -14,12 +14,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
     {
         private readonly LibraryModule _module;
 
-        public LibraryService()
+        public LibraryService(LibraryModule module)
         {
-            using (var kernel = new StandardKernel(new InjectionModule()))
-            {
-                _module = kernel.Get<LibraryModule>();
-            }
+            _module = module;
         }
 
         public PaginatedResponse Get(GetLibraryTracks request)

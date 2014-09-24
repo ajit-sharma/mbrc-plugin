@@ -130,12 +130,17 @@
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
-    <Compile Include="AndroidRemote\Entities\MetaData.cs" />
     <Compile Include="InjectionModule.cs" />
+    <Compile Include="Modules\LibraryModule.cs" />
+    <Compile Include="Modules\NowPlayingModule.cs" />
+    <Compile Include="Modules\PlayerModule.cs" />
+    <Compile Include="Modules\PlaylistModule.cs" />
+    <Compile Include="Modules\TrackModule.cs" />
+    <Compile Include="NinjectIocAdapter.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryCover.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
     <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />
-    <Compile Include="AndroidRemote\Entities\SocketMessage.cs" />
+    <Compile Include="AndroidRemote\Entities\NotificationMessage.cs" />
     <Compile Include="AndroidRemote\Enumerations\MetaTag.cs" />
     <Compile Include="AndroidRemote\Enumerations\LastfmStatus.cs" />
     <Compile Include="AndroidRemote\Enumerations\PlayerState.cs" />
@@ -150,9 +155,7 @@
     <Compile Include="AndroidRemote\Networking\ServiceDiscovery.cs" />
     <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
     <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
-    <Compile Include="PlayerModule.cs" />
     <Compile Include="Rest\AppHost.cs" />
-    <Compile Include="NowPlayingModule.cs" />
     <Compile Include="Debugging\DebugTool.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -167,7 +170,6 @@
       <DependentUpon>InfoWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="MusicBeeInterface.cs" />
-    <Compile Include="PlaylistModule.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="AndroidRemote\Networking\SocketClient.cs" />
     <Compile Include="AndroidRemote\Networking\SocketState.cs" />
@@ -200,9 +202,7 @@
     <Compile Include="Rest\ServiceModel\Type\NowPlaying.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlaylistTrack.cs" />
     <Compile Include="Rest\ServiceModel\Type\Track.cs" />
-    <Compile Include="LibraryModule.cs" />
     <Compile Include="Tools\NetworkTools.cs" />
-    <Compile Include="TrackModule.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

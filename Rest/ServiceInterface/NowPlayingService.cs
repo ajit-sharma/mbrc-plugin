@@ -1,9 +1,9 @@
 ﻿#region
 
 using System.Collections.Generic;
+using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using Ninject;
 using ServiceStack.ServiceInterface;
 
 #endregion
@@ -14,12 +14,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
     {
         private readonly NowPlayingModule _module;
 
-        public NowPlayingService()
+        public NowPlayingService(NowPlayingModule module)
         {
-            using (var kernel = new StandardKernel(new InjectionModule()))
-            {
-                _module = kernel.Get<NowPlayingModule>();
-            }
+            _module = module;
         }
 
         public List<NowPlaying> Get(AllNowPlaying request)

@@ -11,7 +11,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
     /// Class CacheHelper.
     /// Is used to handle the library data and cover cache
     /// </summary>
-    class CacheHelper
+    public class CacheHelper
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private const string DbName = @"\\cache.db";

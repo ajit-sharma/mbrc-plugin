@@ -206,10 +206,8 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 if (!isAllowed)
                 {
                     workerSocket.Send(Encoding.UTF8.GetBytes(
-                            new SocketMessage(Constants.NotAllowed,
-                                Constants.Reply,
-                                String.Empty)
-                                .toJsonString()));
+                            new NotificationMessage(Constants.NotAllowed)
+                                .ToJsonString()));
                     workerSocket.Close();
                     Logger.Debug("Force Disconnected not valid range");
                     _mainSocket.BeginAccept(OnClientConnect, null);

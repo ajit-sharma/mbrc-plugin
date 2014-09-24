@@ -174,7 +174,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         /// <returns>System.String. The SHA1 hash representing the image</returns>
         public static string StoreCoverToCache(string url, int width = 400, int height = 400)
         {
-            var hash = new string('0', 40);
+            var hash = string.Empty;
             if (String.IsNullOrEmpty(url))
             {
                 return hash;
@@ -314,6 +314,20 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             catch (Exception ex)
             {
                 Logger.Debug(ex);
+            }
+            return ms;
+        }
+
+        public static Stream GetCoverStreamFromBase64(string base64)
+        {
+            var ms = new MemoryStream();
+            try
+            {
+                ms = new MemoryStream(Convert.FromBase64String(base64));
+            }
+            catch (Exception ex)
+            {
+                Logger.Debug(ex);   
             }
             return ms;
         }

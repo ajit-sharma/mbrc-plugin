@@ -1,19 +1,25 @@
-﻿using MusicBeePlugin.AndroidRemote.Model;
+﻿#region
+
+using System.IO;
+using MusicBeePlugin.AndroidRemote.Model;
+using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using Ninject;
 using ServiceStack.ServiceInterface;
+
+#endregion
 
 namespace MusicBeePlugin.Rest.ServiceInterface
 {
-    class TrackService : Service
+    internal class TrackService : Service
     {
+        private readonly LyricCoverModel _model;
         private readonly TrackModule _module;
 
-        public TrackService()
+        public TrackService(TrackModule module, LyricCoverModel model)
         {
-            var kernel = new StandardKernel(new InjectionModule());
-            _module = kernel.Get<TrackModule>();
+            _module = module;
+            _model = model;
         }
 
         public Track Get(GetTrack request)
@@ -23,23 +29,23 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public TrackCoverResponse Get(GetTrackCover request)
         {
-            return new TrackCoverResponse()
+            return new TrackCoverResponse
             {
-                cover = LyricCoverModel.Instance.Cover
+                cover = _model.Cover
             };
         }
 
         public TrackLyricsResponse Get(GetTrackLyrics request)
         {
-            return new TrackLyricsResponse()
+            return new TrackLyricsResponse
             {
-                lyrics = LyricCoverModel.Instance.Lyrics
+                lyrics = _model.Lyrics
             };
         }
 
         public TrackRatingResponse Get(GetTrackRating request)
         {
-            return new TrackRatingResponse()
+            return new TrackRatingResponse
             {
                 rating = _module.GetRating()
             };
@@ -47,7 +53,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public TrackRatingResponse Put(SetTrackRating request)
         {
-            return new TrackRatingResponse()
+            return new TrackRatingResponse
             {
                 rating = _module.SetRating(request.rating)
             };
@@ -61,6 +67,12 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         public TrackPositionResponse Put(SetTrackPosition request)
         {
             return _module.SetPosition(request.position);
+        }
+
+        [AddHeader(ContentType = "image/jpeg")]
+        public Stream Get(GetTrackCoverData request)
+        {
+            return _module.GetBinaryCoverData();
         }
     }
 }

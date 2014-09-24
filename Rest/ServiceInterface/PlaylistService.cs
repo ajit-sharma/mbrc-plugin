@@ -1,8 +1,8 @@
 ﻿#region
 
+using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using Ninject;
 using ServiceStack.ServiceInterface;
 
 #endregion
@@ -11,39 +11,38 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 {
     internal class PlaylistService : Service
     {
-        private PlaylistModule module;
+        private readonly PlaylistModule _module;
 
-        public PlaylistService()
+        public PlaylistService(PlaylistModule module)
         {
-            var kernel = new StandardKernel(new InjectionModule());
-            module = kernel.Get<PlaylistModule>();
+            _module = module;
         }
 
         public PaginatedResponse Get(AllPlaylists request)
         {
-            return module.GetAvailablePlaylists(request.limit, request.offset);
+            return _module.GetAvailablePlaylists(request.limit, request.offset);
         }
 
         public PaginatedResponse Get(GetPlaylistTracks request)
         {
-            return module.GetPlaylistTracks(request.id);
+            return _module.GetPlaylistTracks(request.id);
         }
 
         public SuccessResponse Put(CreatePlaylist request)
         {
-            return module.CreateNewPlaylist(request.name, request.list);
+            return _module.CreateNewPlaylist(request.name, request.list);
         }
 
         public SuccessResponse Put(PlaylistPlay request)
         {
-            return module.PlaylistPlayNow(request.path);
+            return _module.PlaylistPlayNow(request.path);
         }
 
         public SuccessResponse Put(AddPlaylistTracks request)
         {
             return new SuccessResponse
             {
-                success = module.PlaylistAddTracks(request.id, request.list)
+                success = _module.PlaylistAddTracks(request.id, request.list)
             };
         }
 
@@ -51,7 +50,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = module.PlaylistDelete(request.id)
+                success = _module.PlaylistDelete(request.id)
             };
         }
 
@@ -59,7 +58,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = module.DeleteTrackFromPlaylist(request.id, request.index)
+                success = _module.DeleteTrackFromPlaylist(request.id, request.index)
             };
         }
 
@@ -67,9 +66,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = module.MovePlaylistTrack(request.id, request.from, request.to)
+                success = _module.MovePlaylistTrack(request.id, request.from, request.to)
             };
         }
-
     }
 }

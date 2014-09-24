@@ -1,24 +1,25 @@
+#region
+
 using System;
 using System.Globalization;
 using MusicBeePlugin.AndroidRemote.Utilities;
-using NLog;
+using Ninject;
 
-namespace MusicBeePlugin
+#endregion
+
+namespace MusicBeePlugin.Modules
 {
     public class PlayerModule
     {
-        private Plugin.MusicBeeApiInterface _api;
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly Plugin.MusicBeeApiInterface _api;
 
         public PlayerModule(Plugin.MusicBeeApiInterface api)
         {
             _api = api;
         }
 
-
-
         /// <summary>
-        /// When called plays the next index.
+        ///     When called plays the next index.
         /// </summary>
         /// <returns></returns>
         public bool RequestNextTrack(string clientId)
@@ -27,7 +28,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// When called stops the playback.
+        ///     When called stops the playback.
         /// </summary>
         /// <returns></returns>
         public bool RequestStopPlayback(string clientId)
@@ -37,7 +38,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// When called changes the play/pause state or starts playing a index if the status is stopped.
+        ///     When called changes the play/pause state or starts playing a index if the status is stopped.
         /// </summary>
         /// <returns></returns>
         public bool RequestPlayPauseTrack(string clientId)
@@ -46,18 +47,18 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// When called plays the previous index.
+        ///     When called plays the previous index.
         /// </summary>
         /// <returns></returns>
         public bool RequestPreviousTrack(string clientId)
         {
-            return  _api.Player_PlayPreviousTrack();
+            return _api.Player_PlayPreviousTrack();
         }
 
         /// <summary>
-        /// When called if the volume string is an integer in the range [0,100] it 
-        /// changes the volume to the specific value and returns the new value.
-        /// In any other case it just returns the current value for the volume.
+        ///     When called if the volume string is an integer in the range [0,100] it
+        ///     changes the volume to the specific value and returns the new value.
+        ///     In any other case it just returns the current value for the volume.
         /// </summary>
         /// <param name="volume"> </param>
         public void RequestVolumeChange(int volume)
@@ -76,8 +77,9 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Changes the player shuffle state. If the StateAction is Toggle then the current state is switched with it's opposite,
-        /// if it is State the current state is dispatched with an Event.
+        ///     Changes the player shuffle state. If the StateAction is Toggle then the current state is switched with it's
+        ///     opposite,
+        ///     if it is State the current state is dispatched with an Event.
         /// </summary>
         /// <param name="action"></param>
         public void RequestShuffleState(StateAction action)
@@ -91,8 +93,8 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Changes the player mute state. If the StateAction is Toggle then the current state is switched with it's opposite,
-        /// if it is State the current state is dispatched with an Event.
+        ///     Changes the player mute state. If the StateAction is Toggle then the current state is switched with it's opposite,
+        ///     if it is State the current state is dispatched with an Event.
         /// </summary>
         /// <param name="action"></param>
         public void RequestMuteState(StateAction action)
@@ -106,7 +108,6 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="action"></param>
         public void RequestScrobblerState(StateAction action)
@@ -120,8 +121,8 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// If the action equals toggle then it changes the repeat state, in any other case
-        /// it just returns the current value of the repeat.
+        ///     If the action equals toggle then it changes the repeat state, in any other case
+        ///     it just returns the current value of the repeat.
         /// </summary>
         /// <param name="action">toggle or state</param>
         /// <returns>Repeat state: None, All, One</returns>
@@ -147,9 +148,9 @@ namespace MusicBeePlugin
 
 
         /// <summary>
-        /// Requests the Now Playing index lyrics. If the lyrics are available then they are dispatched along with
-        /// and event. If not, and the ApiRevision is equal or greater than r17 a request for the downloaded lyrics
-        /// is initiated. The lyrics are dispatched along with and event when ready.
+        ///     Requests the Now Playing index lyrics. If the lyrics are available then they are dispatched along with
+        ///     and event. If not, and the ApiRevision is equal or greater than r17 a request for the downloaded lyrics
+        ///     is initiated. The lyrics are dispatched along with and event when ready.
         /// </summary>
         public void RequestNowPlayingTrackLyrics()
         {
@@ -165,21 +166,14 @@ namespace MusicBeePlugin
 //                        lyrics :
 //                        "Retrieving Lyrics");
             }
-            else
-            {
-                //SendSocketMessage(Constants.NowPlayingLyrics, Constants.Reply, "Lyrics Not Found");
-            }
         }
 
 
-
-
-
         /// <summary>
-        /// This function requests or changes the AutoDJ functionality's state.
+        ///     This function requests or changes the AutoDJ functionality's state.
         /// </summary>
         /// <param name="action">
-        /// The action can be either toggle or state.
+        ///     The action can be either toggle or state.
         /// </param>
         public void RequestAutoDjState(StateAction action)
         {
@@ -198,9 +192,7 @@ namespace MusicBeePlugin
         }
 
 
-
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="clientId"></param>
         public void RequestPlayerStatus(string clientId)
@@ -216,9 +208,6 @@ namespace MusicBeePlugin
                     ((int) Math.Round(_api.Player_GetVolume()*100, 1)).ToString(
                         CultureInfo.InvariantCulture)
             };
-
-
-            
         }
     }
 }

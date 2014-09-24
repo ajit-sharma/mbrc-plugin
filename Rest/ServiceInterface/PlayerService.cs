@@ -1,6 +1,6 @@
 ﻿namespace MusicBeePlugin.Rest.ServiceInterface
 {
-    class PlayerService
+    internal class PlayerService
     {
     }
 }

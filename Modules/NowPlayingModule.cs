@@ -1,21 +1,21 @@
+#region
+
 using System;
 using System.Collections.Generic;
-using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Enumerations;
-using MusicBeePlugin.AndroidRemote.Networking;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using Ninject;
 
-namespace MusicBeePlugin
+#endregion
+
+namespace MusicBeePlugin.Modules
 {
     public class NowPlayingModule
     {
         private Plugin.MusicBeeApiInterface _api;
-        private CacheHelper _mHelper;
 
-        public NowPlayingModule(Plugin.MusicBeeApiInterface api, string storagePath)
+        public NowPlayingModule(Plugin.MusicBeeApiInterface api)
         {
             _api = api;
-            _mHelper = new CacheHelper(storagePath);
         }
 
         public bool NowplayingPlayNow(string path)
@@ -79,7 +79,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Searches in the Now playing list for the index specified and plays it.
+        ///     Searches in the Now playing list for the index specified and plays it.
         /// </summary>
         /// <param name="index">The index to play</param>
         /// <returns></returns>
@@ -101,11 +101,10 @@ namespace MusicBeePlugin
                     result = _api.NowPlayingList_PlayNow(trackToPlay);
             }
 
-           // SendSocketMessage(Constants.NowPlayingListPlay, Constants.Reply, result);
+            // SendSocketMessage(Constants.NowPlayingListPlay, Constants.Reply, result);
         }
 
         /// <summary>
-        /// 
         /// </summary>
         /// <param name="index"></param>
         public bool CurrentQueueRemoveTrack(int index)
@@ -118,7 +117,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Moves a index of the now playing list to a new position.
+        ///     Moves a index of the now playing list to a new position.
         /// </summary>
         /// <param name="from">The initial position</param>
         /// <param name="to">The final position</param>
@@ -136,28 +135,6 @@ namespace MusicBeePlugin
             }
 
             return _api.NowPlayingList_MoveFiles(aFrom, dIn);
-        }
-
-        public void NowPlayingQueueTracks(MetaTag tag, string query, QueueType type)
-        {
-            var tracks = Plugin.Instance.GetUrlsForTag(tag, query);
-
-            switch (type)
-            {
-                case QueueType.last:
-                    _api.NowPlayingList_QueueFilesLast(tracks);
-                    break;
-                case QueueType.next:
-                    _api.NowPlayingList_QueueFilesNext(tracks);
-                    break;
-                case QueueType.now:
-                    _api.NowPlayingList_Clear();
-                    _api.NowPlayingList_QueueFilesNext(tracks);
-                    _api.NowPlayingList_PlayNow(tracks[0]);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("type");
-            }
         }
     }
 }

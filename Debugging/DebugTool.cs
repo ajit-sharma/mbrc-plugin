@@ -3,6 +3,7 @@
 using System;
 using System.Threading;
 using System.Windows.Forms;
+using MusicBeePlugin.Modules;
 using Ninject;
 
 #endregion

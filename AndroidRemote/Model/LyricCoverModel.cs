@@ -1,52 +1,28 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Model
+﻿#region
+
+using System;
+using System.Diagnostics;
+using System.Security;
+using System.Text.RegularExpressions;
+using MusicBeePlugin.AndroidRemote.Entities;
+using MusicBeePlugin.AndroidRemote.Events;
+using NLog;
+using ServiceStack.Common.Utils;
+
+#endregion
+
+namespace MusicBeePlugin.AndroidRemote.Model
 {
-    using System;
-    using System.Security;
-    using System.Text.RegularExpressions;
-    using Events;
-    using Entities;
-    using Networking;
-    using NLog;
-
-
-    internal class LyricCoverModel
+    public class LyricCoverModel
     {
+        public LyricCoverModel()
+        {
+            Debug.Write(this.GetId());
+        }
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        /** Singleton **/
-        private static readonly LyricCoverModel Model = new LyricCoverModel();
 
-        private string _xHash;
         private string _lyrics;
-
-        public static LyricCoverModel Instance
-        {
-            get { return Model; }
-        }
-
-        private LyricCoverModel()
-        {
-            
-        }
-
-        public void SetCover(string base64)
-        {
-            var hash = Utilities.Utilities.Sha1Hash(base64);
-            
-            if (_xHash != null && _xHash.Equals(hash))
-            {
-                return;
-            }
-
-            Cover = String.IsNullOrEmpty(base64)
-                ? String.Empty
-                : Utilities.Utilities.ImageResize(base64);
-            _xHash = hash;
-            
-            EventBus.FireEvent(
-                    new MessageEvent(EventType.ReplyAvailable,
-                        new SocketMessage(Constants.NowPlayingCover, Constants.Message, Cover).toJsonString()));
-            
-        }
+        private string _xHash;
 
         public string Cover { get; private set; }
 
@@ -78,10 +54,29 @@
                     if (!String.IsNullOrEmpty(_lyrics))
                         EventBus.FireEvent(
                             new MessageEvent(EventType.ReplyAvailable,
-                                new SocketMessage(Constants.NowPlayingLyrics, Constants.Message, _lyrics).toJsonString()));
+                                new NotificationMessage(NotificationMessage.LyricsChanged).ToJsonString()));
                 }
             }
             get { return _lyrics; }
+        }
+
+        public void SetCover(string base64)
+        {
+            var hash = Utilities.Utilities.Sha1Hash(base64);
+
+            if (_xHash != null && _xHash.Equals(hash))
+            {
+                return;
+            }
+
+            Cover = String.IsNullOrEmpty(base64)
+                ? String.Empty
+                : Utilities.Utilities.ImageResize(base64);
+            _xHash = hash;
+
+            EventBus.FireEvent(
+                new MessageEvent(EventType.ReplyAvailable,
+                    new NotificationMessage(NotificationMessage.CoverChanged).ToJsonString()));
         }
     }
 }
