@@ -74,5 +74,11 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return _module.GetBinaryCoverData();
         }
+
+        [AddHeader(ContentType = "text/plain")]
+        public string Get(GetTrackLyricsText request)
+        {
+            return _model.Lyrics;
+        }
     }
 }

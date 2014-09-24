@@ -50,6 +50,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route("/track/lyrics", "GET")]
     public class GetTrackLyrics : IReturn<TrackLyricsResponse>
     {
+    }
+
+    [Route("/track/lyrics/raw", "GET")]
+    public class GetTrackLyricsText : IReturn<string>
+    {
         
     }
 

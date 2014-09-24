@@ -5,7 +5,6 @@ using System.IO;
 using System.Reflection;
 using System.Timers;
 using System.Windows.Forms;
-using Funq;
 using MusicBeePlugin.AndroidRemote;
 using MusicBeePlugin.AndroidRemote.Controller;
 using MusicBeePlugin.AndroidRemote.Entities;
@@ -115,6 +114,8 @@ namespace MusicBeePlugin
             libraryModule.CheckCacheState();
             playlistModule.StoreAvailablePlaylists();
 
+            UpdateCachedCover();
+            UpdateCachedLyrics();
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -331,8 +332,9 @@ namespace MusicBeePlugin
             switch (type)
             {
                 case NotificationType.TrackChanged:
-                    SendNotificationMessage(NotificationMessage.TrackChanged);
                     UpdateCachedCover();
+                    UpdateCachedLyrics();
+                    SendNotificationMessage(NotificationMessage.TrackChanged);
                     break;
                 case NotificationType.VolumeLevelChanged:
                     SendNotificationMessage(NotificationMessage.VolumeChanged);
@@ -346,12 +348,7 @@ namespace MusicBeePlugin
                 case NotificationType.NowPlayingLyricsReady:
                     if (_api.ApiRevision >= 17)
                     {
-                        var lyrics = !String.IsNullOrEmpty(_api.NowPlaying_GetDownloadedLyrics())
-                            ? _api.NowPlaying_GetDownloadedLyrics()
-                            : "Lyrics Not Found";
-
-                        var model = _kernel.Get<LyricCoverModel>();
-                        model.Lyrics = lyrics;
+                        UpdateCachedLyrics();
                     }
                     break;
                 case NotificationType.NowPlayingArtworkReady:
@@ -379,6 +376,19 @@ namespace MusicBeePlugin
                     SendNotificationMessage(NotificationMessage.AutoDjStopped);
                     break;
             }
+        }
+
+        private void UpdateCachedLyrics()
+        {
+            var lyrics = _api.NowPlaying_GetLyrics() 
+                ?? _api.NowPlaying_GetDownloadedLyrics();
+            if (String.IsNullOrEmpty(lyrics))
+            {
+                lyrics = "Lyrics Not Found";
+            }
+
+            var model = _kernel.Get<LyricCoverModel>();
+            model.Lyrics = lyrics;
         }
 
         private void UpdateCachedCover()

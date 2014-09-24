@@ -10,9 +10,5 @@
 
         #endregion Protocol 2. Basic functionality
 
-        public const string NowPlayingCover = "nowplayingcover";
-        public const string NowPlayingLyrics = "nowplayinglyrics";
-        public const string NowPlayingListPlay = "nowplayinglistplay";
-
     }
 }
