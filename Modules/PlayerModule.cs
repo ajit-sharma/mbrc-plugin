@@ -3,7 +3,6 @@
 using System;
 using System.Globalization;
 using MusicBeePlugin.AndroidRemote.Utilities;
-using Ninject;
 
 #endregion
 
@@ -18,20 +17,12 @@ namespace MusicBeePlugin.Modules
             _api = api;
         }
 
-        /// <summary>
-        ///     When called plays the next index.
-        /// </summary>
-        /// <returns></returns>
-        public bool RequestNextTrack(string clientId)
+        public bool PlayNextTrack()
         {
             return _api.Player_PlayNextTrack();
         }
 
-        /// <summary>
-        ///     When called stops the playback.
-        /// </summary>
-        /// <returns></returns>
-        public bool RequestStopPlayback(string clientId)
+        public bool StopPlayback(string clientId)
         {
             _api.Player_Stop();
             return true;
@@ -76,20 +67,15 @@ namespace MusicBeePlugin.Modules
             }
         }
 
-        /// <summary>
-        ///     Changes the player shuffle state. If the StateAction is Toggle then the current state is switched with it's
-        ///     opposite,
-        ///     if it is State the current state is dispatched with an Event.
-        /// </summary>
-        /// <param name="action"></param>
-        public void RequestShuffleState(StateAction action)
-        {
-            if (action == StateAction.Toggle)
-            {
-                _api.Player_SetShuffle(!_api.Player_GetShuffle());
-            }
 
-            _api.Player_GetShuffle();
+        public bool GetShuffleState()
+        {
+            return _api.Player_GetShuffle();
+        }
+
+        public bool SetShuffleState(bool enabled)
+        {
+            return _api.Player_SetShuffle(enabled);
         }
 
         /// <summary>
