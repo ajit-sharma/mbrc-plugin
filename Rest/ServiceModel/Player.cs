@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.Runtime.Serialization;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
 #endregion
@@ -19,82 +20,92 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/player/scrobble", "GET")]
-    public class GetScrobbleStatus
+    public class GetScrobbleStatus : IReturn<StatusResponse>
     {
     }
 
     [Route("/player/scrobble", "PUT")]
-    public class SetScrobbleStatus
+    public class SetScrobbleStatus : IReturn<SuccessResponse>
     {
         public bool enabled { get; set; }
     }
 
     [Route("/player/repeat", "GET")]
-    public class GetRepeateMode
+    public class GetRepeatMode : IReturn<ValueResponse>
     {
     }
 
     [Route("/player/repeat", "PUT")]
-    public class SetRepeateMode
+    public class SetRepeatMode : IReturn<SuccessResponse>
     {
         public string mode { get; set; }
     }
 
     [Route("/player/mute", "GET")]
-    public class GetMuteStatus
+    public class GetMuteStatus : IReturn<StatusResponse>
     {
     }
 
     [Route("/player/mute", "PUT")]
-    public class SetMuteStatus
+    public class SetMuteStatus : IReturn<SuccessResponse>
     {
         public bool enabled { get; set; }
     }
 
     [Route("/player/volume", "GET")]
-    public class GetVolume
+    public class GetVolume : IReturn<VolumeResponse>
     {
     }
 
     [Route("/player/volume", "PUT")]
-    public class SetVolume
+    public class SetVolume : IReturn<SuccessResponse>
     {
         public int value { get; set; }
     }
 
     [Route("/player/autodj", "GET")]
-    public class GetAutoDjStatus
+    public class GetAutoDjStatus : IReturn<StatusResponse>
     {
     }
 
     [Route("/player/autodj", "PUT")]
-    public class SetAutoDjStatus
+    public class SetAutoDjStatus : IReturn<SuccessResponse>
     {
         public bool enabled { get; set; }
     }
 
     [Route("/player/previous", "GET")]
-    public class PlayPrevious
+    public class PlayPrevious : IReturn<SuccessResponse>
     {
     }
 
     [Route("/player/next", "GET")]
-    public class PlayNext
+    public class PlayNext : IReturn<SuccessResponse>
     {
     }
 
     [Route("/player/play", "GET")]
-    public class PlaybackStart
+    public class PlaybackStart : IReturn<SuccessResponse>
     {
     }
 
     [Route("/player/stop", "GET")]
-    public class PlaybackStop
+    public class PlaybackStop : IReturn<SuccessResponse>
     {
     }
 
     [Route("/player/pause", "GET")]
-    public class PlaybackPause
+    public class PlaybackPause : IReturn<SuccessResponse>
+    {
+    }
+
+    [Route("/player/status", "GET")]
+    public class GetPlayerStatus : IReturn<PlayerStatus>
+    {
+    }
+
+    [Route("/player/playstate", "GET")]
+    public class GetPlayState : IReturn<ValueResponse>
     {
     }
 
@@ -103,5 +114,19 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
         [DataMember(Name = "enabled")]
         public bool Enabled { get; set; }
+    }
+
+    [DataContract]
+    public class VolumeResponse
+    {
+        [DataMember(Name = "value")]
+        public int Value { get; set; }
+    }
+
+    [DataContract]
+    public class ValueResponse
+    {
+        [DataMember(Name = "value")]
+        public string Value { get; set; }
     }
 }
