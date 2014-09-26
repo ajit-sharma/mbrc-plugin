@@ -1,34 +1,30 @@
 ﻿namespace MusicBeePlugin.AndroidRemote.Networking
 {
+    using ServiceStack.Text;
+    using Settings;
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
-    using Settings;
     using Tools;
-    using ServiceStack.Text;
     internal class ServiceDiscovery
     {
+        private readonly SettingsController _controller;
         private const int MPort = 45345;
         private const string MulticastIp = "239.1.5.10";
         private static readonly IPAddress MulticastAddress = IPAddress.Parse(MulticastIp);
-        private static readonly ServiceDiscovery Disc = new ServiceDiscovery();
         private UdpClient _mListener;
 
-        private ServiceDiscovery()
+        public ServiceDiscovery(SettingsController controller)
         {
-        }
-
-        public static ServiceDiscovery Instance
-        {
-            get { return Disc; }
+            _controller = controller;
         }
 
         public void Start()
         {
-            _mListener = new UdpClient(MPort, AddressFamily.InterNetwork) {EnableBroadcast = true};
+            _mListener = new UdpClient(MPort, AddressFamily.InterNetwork) { EnableBroadcast = true };
             _mListener.JoinMulticastGroup(MulticastAddress);
             _mListener.BeginReceive(OnDataReceived, null);
         }
@@ -46,12 +42,12 @@
                 var clientAddress = IPAddress.Parse(incoming.Get("address"));
                 var interfaceAddress = String.Empty;
                 foreach (var ifAddress in from address in addresses
-                    let ifAddress = IPAddress.Parse(address)
-                    let subnetMask = NetworkTools.GetSubnetMask(address)
-                    let firstNetwork = NetworkTools.GetNetworkAddress(ifAddress, subnetMask)
-                    let secondNetwork = NetworkTools.GetNetworkAddress(clientAddress, subnetMask)
-                    where firstNetwork.Equals(secondNetwork)
-                    select ifAddress)
+                                          let ifAddress = IPAddress.Parse(address)
+                                          let subnetMask = NetworkTools.GetSubnetMask(address)
+                                          let firstNetwork = NetworkTools.GetNetworkAddress(ifAddress, subnetMask)
+                                          let secondNetwork = NetworkTools.GetNetworkAddress(clientAddress, subnetMask)
+                                          where firstNetwork.Equals(secondNetwork)
+                                          select ifAddress)
                 {
                     interfaceAddress = ifAddress.ToString();
                     break;
@@ -62,7 +58,8 @@
                     {"Message", "notify"},
                     {"address", interfaceAddress},
                     {"name", Environment.GetEnvironmentVariable("COMPUTERNAME")},
-                    {"port", UserSettings.Instance.ListeningPort}
+                    {"port", _controller.Settings.Port},
+                    {"http", _controller.Settings.HttpPort}
                 };
                 var response = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(notify));
                 _mListener.Send(response, response.Length, mEndPoint);

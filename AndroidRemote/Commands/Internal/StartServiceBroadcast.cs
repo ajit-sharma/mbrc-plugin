@@ -5,13 +5,20 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 {
     class StartServiceBroadcast: ICommand 
     {
+        private readonly ServiceDiscovery _service;
+
+        public StartServiceBroadcast(ServiceDiscovery service)
+        {
+            _service = service;
+        }
+
         public void Dispose()
         {
         }
 
         public void Execute(IEvent eEvent)
         {
-            ServiceDiscovery.Instance.Start();
+            _service.Start();
         }
     }
 }

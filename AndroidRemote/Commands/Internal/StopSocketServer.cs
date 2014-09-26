@@ -5,14 +5,22 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 {
     class StopSocketServer:ICommand
     {
+        private SocketServer _server;
+
+        public StopSocketServer(SocketServer server)
+        {
+            _server = server;
+        }
+
         public void Dispose()
         {
             
         }
 
+
         public void Execute(IEvent eEvent)
         {
-            SocketServer.Instance.Stop();
+            _server.Stop();
         }
     }
 }

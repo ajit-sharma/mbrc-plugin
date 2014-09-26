@@ -1,18 +1,18 @@
 #region
 
+using MusicBeePlugin.AndroidRemote.Data;
+using MusicBeePlugin.AndroidRemote.Utilities;
+using MusicBeePlugin.Rest.ServiceModel.Type;
+using NLog;
+using ServiceStack.Common.Web;
+using ServiceStack.OrmLite;
+using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Utilities;
-using MusicBeePlugin.Rest.ServiceModel.Type;
-using Ninject;
-using ServiceStack.Common.Web;
-using ServiceStack.OrmLite;
-using ServiceStack.Text;
 
 #endregion
 
@@ -24,6 +24,7 @@ namespace MusicBeePlugin.Modules
     /// </summary>
     public class LibraryModule
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly Plugin.MusicBeeApiInterface _api;
         private readonly CacheHelper _cHelper;
 
@@ -43,9 +44,9 @@ namespace MusicBeePlugin.Modules
         /// <param name="lastSync">The last synchronization date.</param>
         public void SyncCheckForChanges(string[] cachedFiles, DateTime lastSync)
         {
-            string[] newFiles = {};
-            string[] deletedFiles = {};
-            string[] updatedFiles = {};
+            string[] newFiles = { };
+            string[] deletedFiles = { };
+            string[] updatedFiles = { };
 
             _api.Library_GetSyncDelta(cachedFiles, lastSync, Plugin.LibraryCategory.Music,
                 ref newFiles, ref updatedFiles, ref deletedFiles);
@@ -58,7 +59,7 @@ namespace MusicBeePlugin.Modules
             {
                 var covers = db.Select<LibraryCover>();
                 var paginated = PaginatedResponse.GetPaginatedData(limit, offset, covers);
-                foreach (var cover in (List<LibraryCover>) paginated.Data)
+                foreach (var cover in (List<LibraryCover>)paginated.Data)
                 {
                     cover.Base64 = Utilities.GetCachedCoverBase64(cover.Hash);
                 }
@@ -92,7 +93,7 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         public void BuildCache()
         {
-            string[] files = {};
+            string[] files = { };
             _api.Library_QueryFilesEx(String.Empty, ref files);
             using (var db = _cHelper.GetDbConnection())
             using (var trans = db.OpenTransaction())
@@ -117,7 +118,7 @@ namespace MusicBeePlugin.Modules
                     };
 
                     var i = 0;
-                    string[] tags = {};
+                    string[] tags = { };
                     _api.Library_GetFileTags(file, types, ref tags);
 
                     var artist = tags[i++];
@@ -166,8 +167,8 @@ namespace MusicBeePlugin.Modules
             {
                 list.AddRange(
                     _api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] {"\0\0"}, StringSplitOptions.None)
-                        .Select(artist => new LibraryArtist(artist.Split(new[] {'\0'})[0])));
+                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
+                        .Select(artist => new LibraryArtist(artist.Split(new[] { '\0' })[0])));
             }
             _api.Library_QueryLookupTable(null, null, null);
             return list;
@@ -180,8 +181,8 @@ namespace MusicBeePlugin.Modules
             {
                 list.AddRange(
                     _api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] {"\0\0"}, StringSplitOptions.None)
-                        .Select(artist => new LibraryGenre(artist.Split(new[] {'\0'})[0])));
+                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
+                        .Select(artist => new LibraryGenre(artist.Split(new[] { '\0' })[0])));
             }
             _api.Library_QueryLookupTable(null, null, null);
             return list;
@@ -195,10 +196,10 @@ namespace MusicBeePlugin.Modules
             {
                 list.AddRange(
                     _api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] {"\0\0"}, StringSplitOptions.None)
+                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
                         .Select(artist => new LibraryAlbum
                         {
-                            Name = artist.Split(new[] {'\0'})[0]
+                            Name = artist.Split(new[] { '\0' })[0]
                         }));
             }
             _api.Library_QueryLookupTable(null, null, null);
@@ -259,7 +260,7 @@ namespace MusicBeePlugin.Modules
                     };
 
                     db.Save(cover);
-                    albumEntry.CoverId = (int) db.GetLastInsertId();
+                    albumEntry.CoverId = (int)db.GetLastInsertId();
                 }
 
                 db.UpdateAll(list);
@@ -279,15 +280,15 @@ namespace MusicBeePlugin.Modules
             {
                 artistList.AddRange(
                     _api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] {"\0\0"}, StringSplitOptions.None)
-                        .Select(entry => entry.Split(new[] {'\0'}))
+                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
+                        .Select(entry => entry.Split(new[] { '\0' }))
                         .Select(artistInfo => new LibraryArtist(artistInfo[0])));
             }
 
             _api.Library_QueryLookupTable(null, null, null);
             foreach (var entry in artistList)
             {
-                string[] urls = {};
+                string[] urls = { };
                 var artist = entry.Name;
                 _api.Library_GetArtistPictureUrls(artist, true, ref urls);
                 if (urls.Length <= 0) continue;
@@ -317,7 +318,7 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         public void CheckCacheState()
         {
-            var cached = _cHelper.GetCachedTracksCount();
+            var cached = GetCachedEntitiesCount<LibraryTrack>();
 
             if (cached != 0) return;
             BuildCache();
@@ -387,5 +388,23 @@ namespace MusicBeePlugin.Modules
             var cover = GetLibraryCover(id);
             return Utilities.GetCoverStreamFromCache(cover.Hash);
         }
+
+        public int GetCachedEntitiesCount<T>()
+        {
+            var total = 0;
+            try
+            {
+                using (var db = _cHelper.GetDbConnection())
+                {
+                    total = db.Select<T>().Count;
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Debug(e);
+            }
+            return total;
+        }
+
     }
 }

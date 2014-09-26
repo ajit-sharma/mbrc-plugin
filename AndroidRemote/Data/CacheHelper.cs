@@ -1,6 +1,6 @@
-﻿using System.Data;
-using MusicBeePlugin.Rest.ServiceModel.Type;
+﻿using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.OrmLite;
+using System.Data;
 
 namespace MusicBeePlugin.AndroidRemote.Data
 {
@@ -16,7 +16,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private const string DbName = @"\\cache.db";
         private readonly string _dbConnection;
-        
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CacheHelper"/> class.
@@ -35,9 +35,9 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     db.CreateTableIfNotExists<LibraryAlbum>();
                     db.CreateTableIfNotExists<LibraryGenre>();
                     db.CreateTableIfNotExists<LibraryTrack>();
-                    db.CreateTableIfNotExists<Playlist>();    
+                    db.CreateTableIfNotExists<Playlist>();
                 }
-            
+
             }
             catch (Exception e)
             {
@@ -48,27 +48,6 @@ namespace MusicBeePlugin.AndroidRemote.Data
         public IDbConnection GetDbConnection()
         {
             return _dbConnection.OpenDbConnection();
-        }
-
-        /// <summary>
-        /// Gets the cached entries number.
-        /// </summary>
-        /// <returns>System.Int32.</returns>
-        public int GetCachedTracksCount()
-        {
-            var total = 0;
-            try
-            {
-                using (var db = GetDbConnection())
-                {
-                    total = db.Select<LibraryTrack>().Count;
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
-            return total;  
         }
     }
 }

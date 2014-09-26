@@ -1,21 +1,18 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Controller
+﻿using System.Data;
+using Ninject;
+
+namespace MusicBeePlugin.AndroidRemote.Controller
 {
     using NLog;
     using System;
     using System.Collections.Generic;
     using Interfaces;
- 
-    internal class Controller
+
+    public class Controller
     {
+        private readonly IKernel _kernel;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly Dictionary<string, Type> _commandMap; 
-
-        private static readonly Controller ClassInstance = new Controller();
-
-        public static Controller Instance
-        {
-            get { return ClassInstance; }
-        }
 
         public void AddCommand(string eventType,Type command)
         {
@@ -33,7 +30,7 @@
         {
             if (!_commandMap.ContainsKey(e.Type)) return;
             var commandType = _commandMap[e.Type];
-            using (var command = (ICommand)Activator.CreateInstance(commandType))
+            using (var command = (ICommand)_kernel.Get(commandType))
             {
                 try
                 {
@@ -47,8 +44,9 @@
             }
         }
 
-        private Controller()
+        public Controller(IKernel kernel)
         {
+            _kernel = kernel;
             _commandMap = new Dictionary<string, Type>();
         }
     }

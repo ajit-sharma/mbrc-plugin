@@ -1,10 +1,5 @@
 #region
 
-using System;
-using System.IO;
-using System.Reflection;
-using System.Timers;
-using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote;
 using MusicBeePlugin.AndroidRemote.Controller;
 using MusicBeePlugin.AndroidRemote.Entities;
@@ -15,11 +10,17 @@ using MusicBeePlugin.AndroidRemote.Settings;
 using MusicBeePlugin.Debugging;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using Ninject;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
 using ServiceStack.Text;
+using System;
+using System.IO;
+using System.Reflection;
+using System.Timers;
+using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 
 #endregion
@@ -61,6 +62,7 @@ namespace MusicBeePlugin
         private bool _shuffle;
 
         private StandardKernel _kernel;
+        private SettingsController _settings;
 
 
         /// <summary>
@@ -72,13 +74,21 @@ namespace MusicBeePlugin
         {
             Instance = this;
             JsConfig.ExcludeTypeInfo = true;
-            Configuration.Register(Controller.Instance);
 
             _api = new MusicBeeApiInterface();
             _api.Initialise(apiInterfacePtr);
 
-            UserSettings.Instance.SetStoragePath(_api.Setting_GetPersistentStoragePath());
-            UserSettings.Instance.LoadSettings();
+            _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
+
+            InitializeLoggingConfiguration();
+
+            InjectionModule.Api = _api;
+            InjectionModule.StoragePath = _mStoragePath;
+
+            _kernel = new StandardKernel(new InjectionModule());
+
+            _settings = _kernel.Get<SettingsController>();
+            _settings.LoadSettings();
 
             InitializeAbout();
 
@@ -87,12 +97,23 @@ namespace MusicBeePlugin
                 return _about;
             }
 
-            _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
+            var controller = _kernel.Get<Controller>();
+            Configuration.Register(controller);
+            EventBus.Controller = controller;
 
-            InitializeLoggingConfiguration();
+            var libraryModule = _kernel.Get<LibraryModule>();
+            var playlistModule = _kernel.Get<PlaylistModule>();
+
+
+            libraryModule.CheckCacheState();
+            playlistModule.StoreAvailablePlaylists();
+
+            UpdateCachedCover();
+            UpdateCachedLyrics();
 
             _api.MB_AddMenuItem("mnuTools/MusicBee Remote", "Information Panel of the MusicBee Remote",
                 MenuItemClicked);
+
 
             EventBus.FireEvent(new MessageEvent(EventType.ActionSocketStart));
             EventBus.FireEvent(new MessageEvent(EventType.InitializeModel));
@@ -103,19 +124,6 @@ namespace MusicBeePlugin
             _positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
             _positionUpdateTimer.Enabled = true;
 
-            InjectionModule.Api = _api;
-            InjectionModule.StoragePath = _mStoragePath;
-
-
-            _kernel = new StandardKernel(new InjectionModule());
-            
-            var libraryModule = _kernel.Get<LibraryModule>();
-            var playlistModule = _kernel.Get<PlaylistModule>();
-            libraryModule.CheckCacheState();
-            playlistModule.StoreAvailablePlaylists();
-
-            UpdateCachedCover();
-            UpdateCachedLyrics();
 
 #if DEBUG
             _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
@@ -126,9 +134,9 @@ namespace MusicBeePlugin
 
             var appHost = new AppHost();
             appHost.Container.Adapter = new NinjectIocAdapter(_kernel);
-            
+
             appHost.Init();
-            appHost.Start("http://+:8188/");
+            appHost.Start(String.Format("http://+:{0}/", _settings.Settings.HttpPort));
 
             return _about;
         }
@@ -142,7 +150,7 @@ namespace MusicBeePlugin
             _about.TargetApplication = "MusicBee Remote";
 
             var v = Assembly.GetExecutingAssembly().GetName().Version;
-            UserSettings.Instance.CurrentVersion = v.ToString();
+            _settings.Settings.CurrentVersion = v.ToString();
 
             // current only applies to artwork, lyrics or instant messenger name that appears in the provider drop down selector or target Instant Messenger
             _about.Type = PluginType.General;
@@ -186,7 +194,7 @@ namespace MusicBeePlugin
             _scrobble = _api.Player_GetScrobbleEnabled();
             _repeat = _api.Player_GetRepeat();
             _shuffle = _api.Player_GetShuffle();
-            _timer = new Timer {Interval = 1000};
+            _timer = new Timer { Interval = 1000 };
             _timer.Elapsed += HandleTimerElapsed;
             _timer.Enabled = true;
         }
@@ -247,7 +255,7 @@ namespace MusicBeePlugin
         public void OpenInfoWindow()
         {
             var hwnd = _api.MB_GetWindowHandle();
-            var mb = (Form) Control.FromHandle(hwnd);
+            var mb = (Form)Control.FromHandle(hwnd);
             mb.Invoke(new MethodInvoker(DisplayInfoWindow));
         }
 
@@ -255,7 +263,11 @@ namespace MusicBeePlugin
         {
             if (_mWindow == null || !_mWindow.Visible)
             {
-                _mWindow = new InfoWindow();
+                _mWindow = _kernel.Get<InfoWindow>();
+                var libraryModule = _kernel.Get<LibraryModule>();
+                var cachedTracks = libraryModule.GetCachedEntitiesCount<LibraryTrack>();
+                var cachedCovers = libraryModule.GetCachedEntitiesCount<LibraryCover>();
+                _mWindow.UpdateCacheStatus(cachedCovers, cachedTracks);
             }
 
             _mWindow.Show();
@@ -380,8 +392,8 @@ namespace MusicBeePlugin
 
         private void UpdateCachedLyrics()
         {
-            var lyrics = _api.NowPlaying_GetLyrics() 
-                ?? _api.NowPlaying_GetDownloadedLyrics();
+            var lyrics = _api.NowPlaying_GetLyrics()
+                         ?? _api.NowPlaying_GetDownloadedLyrics();
             if (String.IsNullOrEmpty(lyrics))
             {
                 lyrics = "Lyrics Not Found";
@@ -400,9 +412,10 @@ namespace MusicBeePlugin
             model.SetCover(cover);
         }
 
-        private static void SendNotificationMessage(string message)
+        private void SendNotificationMessage(string message)
         {
-            SocketServer.Instance.Send(new NotificationMessage
+            var server = _kernel.Get<SocketServer>();
+            server.Send(new NotificationMessage
             {
                 Message = message
             }.ToJsonString());

@@ -5,9 +5,16 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 {
     class RestartSocketCommand:ICommand
     {
+        private readonly SocketServer _server;
+
+        public RestartSocketCommand(SocketServer server)
+        {
+            _server = server;
+        }
+
         public void Execute(IEvent eEvent)
         {
-            SocketServer.Instance.RestartSocket();
+            _server.RestartSocket();
         }
 
         public void Dispose()

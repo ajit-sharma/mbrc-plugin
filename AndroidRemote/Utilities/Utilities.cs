@@ -68,7 +68,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             var base64 = String.Empty;
             try
             {
-                var directory = UserSettings.Instance.StoragePath + @"cache\cover\";
+                var directory = StoragePath + @"cache\cover\";
                 var filepath = directory + coverHash;
                 using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
@@ -108,7 +108,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             var hash = new string('0', 40);
             try
             {
-                var directory = UserSettings.Instance.StoragePath + @"cache\artist\";
+                var directory = StoragePath + @"cache\artist\";
 
                 if (!Directory.Exists(directory))
                 {
@@ -181,7 +181,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             }
             try
             {
-                var directory = UserSettings.Instance.StoragePath + @"cache\cover\";
+                var directory = StoragePath + @"cache\cover\";
 
                 if (!Directory.Exists(directory))
                 {
@@ -299,7 +299,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             var ms = new MemoryStream();
             try
             {
-                var directory = UserSettings.Instance.StoragePath + @"cache\cover\";
+                var directory = StoragePath + @"cache\cover\";
                 var filepath = directory + hash;
                 using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
@@ -317,6 +317,9 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             }
             return ms;
         }
+
+        public static string StoragePath { get; set; }
+        
 
         public static Stream GetCoverStreamFromBase64(string base64)
         {

@@ -18,6 +18,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
     /// </summary>
     public sealed class SocketServer : IDisposable
     {
+        private readonly SettingsController _controller;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly ProtocolHandler _handler;
 
@@ -28,8 +29,6 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// </summary>
         private Socket _mainSocket;
 
-        private static readonly SocketServer Server = new SocketServer();
-
         /// <summary>
         ///     The worker callback.
         /// </summary>
@@ -37,20 +36,11 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 
         private bool _isRunning;
 
-
-        /// <summary>
-        /// Gets the instance of the Socket Server singleton
-        /// </summary>
-        /// <value>The instance.</value>
-        public static SocketServer Instance
-        {
-            get { return Server; }
-        }
-
         /// <summary>
         /// </summary>
-        private SocketServer()
+        public SocketServer(SettingsController controller)
         {
+            _controller = controller;
             _handler = new ProtocolHandler();
             IsRunning = false;
             _availableWorkerSockets = new ConcurrentDictionary<string, Socket>();
@@ -129,7 +119,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 Logger.Info("Starting Socket Server");
                 _mainSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 // Create the listening socket.    
-                var ipLocal = new IPEndPoint(IPAddress.Any, Convert.ToInt32(UserSettings.Instance.ListeningPort));
+                var ipLocal = new IPEndPoint(IPAddress.Any, Convert.ToInt32(_controller.Settings.Port));
                 // Bind to local IP address.
                 _mainSocket.Bind(ipLocal);
                 // Start Listening.
@@ -169,10 +159,11 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 var ipString = ipAddress.ToString();
 
                 var isAllowed = false;
-                switch (UserSettings.Instance.FilterSelection)
+                var userSettings = _controller.Settings;
+                switch (userSettings.Allowed)
                 {
-                    case FilteringSelection.Specific:
-                        foreach (var source in UserSettings.Instance.IpAddressList)
+                    case AllowedAddresses.Specific:
+                        foreach (var source in userSettings.AllowedAddresses)
                         {
                             if (string.Compare(ipString, source, StringComparison.Ordinal) == 0)
                             {
@@ -180,10 +171,10 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                             }
                         }
                         break;
-                    case FilteringSelection.Range:
+                    case AllowedAddresses.Range:
                         var connectingAddress = ipString.Split(".".ToCharArray(),
                             StringSplitOptions.RemoveEmptyEntries);
-                        var baseIp = UserSettings.Instance.BaseIp.Split(".".ToCharArray(),
+                        var baseIp = userSettings.BaseIp.Split(".".ToCharArray(),
                             StringSplitOptions.RemoveEmptyEntries);
                         if (connectingAddress[0] == baseIp[0] && connectingAddress[1] == baseIp[1] &&
                             connectingAddress[2] == baseIp[2])
@@ -193,7 +184,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                             int.TryParse(connectingAddress[3], out connectingAddressLowOctet);
                             int.TryParse(baseIp[3], out baseIpAddressLowOctet);
                             if (connectingAddressLowOctet >= baseIpAddressLowOctet &&
-                                baseIpAddressLowOctet <= UserSettings.Instance.LastOctetMax)
+                                baseIpAddressLowOctet <= userSettings.LastOctetMax)
                             {
                                 isAllowed = true;
                             }

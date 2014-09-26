@@ -5,6 +5,13 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 {
     class StartSocketServer:ICommand
     {
+        private readonly SocketServer _server;
+
+        public StartSocketServer (SocketServer server)
+        {
+            _server = server;
+        }
+
         public void Dispose()
         {
             
@@ -12,7 +19,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 
         public void Execute(IEvent eEvent)
         {
-            SocketServer.Instance.Start();
+            _server.Start();
         }
     }
 }

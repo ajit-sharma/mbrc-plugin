@@ -1,12 +1,15 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Events
+﻿
+namespace MusicBeePlugin.AndroidRemote.Events
 {
     using Interfaces;
 
     class EventBus
     {
+        public static Controller.Controller Controller;
+
         public static void FireEvent(IEvent e)
         {
-            Controller.Controller.Instance.CommandExecute(e);
+            Controller.CommandExecute(e);
         }
     }
 }

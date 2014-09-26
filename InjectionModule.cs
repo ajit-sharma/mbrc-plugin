@@ -2,6 +2,7 @@
 
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Model;
+using MusicBeePlugin.AndroidRemote.Settings;
 using MusicBeePlugin.Modules;
 using Ninject.Modules;
 
@@ -38,6 +39,10 @@ namespace MusicBeePlugin
             Bind<LyricCoverModel>()
                 .ToSelf()
                 .InSingletonScope();
+            Bind<SettingsController>()
+                .ToSelf()
+                .InSingletonScope()
+                .WithConstructorArgument("storagePath", StoragePath);
         }
     }
 }

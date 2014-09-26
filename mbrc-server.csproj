@@ -130,6 +130,7 @@
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
+    <Compile Include="AndroidRemote\Settings\SettingsController.cs" />
     <Compile Include="InjectionModule.cs" />
     <Compile Include="Modules\LibraryModule.cs" />
     <Compile Include="Modules\NowPlayingModule.cs" />
@@ -163,7 +164,7 @@
     <Compile Include="Debugging\DebugTool.Designer.cs">
       <DependentUpon>DebugTool.cs</DependentUpon>
     </Compile>
-    <Compile Include="FilteringSelection.cs" />
+    <Compile Include="AllowedAddresses.cs" />
     <Compile Include="InfoWindow.cs">
       <SubType>Form</SubType>
     </Compile>

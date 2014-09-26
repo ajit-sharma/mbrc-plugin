@@ -11,7 +11,7 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
 
         public void Execute(IEvent eEvent)
         {
-            if (UserSettings.Instance.IsFirstRun())
+            if (false)
             {
                 Plugin.Instance.OpenInfoWindow();
             }
