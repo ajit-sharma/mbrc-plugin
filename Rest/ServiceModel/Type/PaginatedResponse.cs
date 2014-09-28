@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ServiceStack.ServiceInterface.ServiceModel;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
@@ -17,9 +16,6 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 
         [DataMember(Name = "data")]
         public IList Data { get; set; }
-
-        [DataMember(Name = "ResponseStatus")]
-        public ResponseStatus ResponseStatus { get; set; }
 
         public static PaginatedResponse GetPaginatedData<T>(int limit, int offset, List<T> data)
         {

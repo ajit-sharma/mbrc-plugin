@@ -1,9 +1,9 @@
 #region
 
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
 using System.Collections.Generic;
-using MusicBeePlugin.Rest.ServiceModel.Type;
-using Ninject;
+
 
 #endregion
 
@@ -24,7 +24,7 @@ namespace MusicBeePlugin.Modules
         }
 
 
-        public List<NowPlaying> GetCurrentQueue(string clientId, int offset = 0, int limit = 50)
+        public PaginatedResponse GetCurrentQueue(int offset = 0, int limit = 50)
         {
             _api.NowPlayingList_QueryFiles(null);
 
@@ -66,16 +66,7 @@ namespace MusicBeePlugin.Modules
                 position++;
             }
 
-//            var message = new
-//            {
-//                type = "list",
-//                total = trackList.Count,
-//                limit,
-//                offset,
-//                data = trackList.GetRange(offset, limit)
-//            };
-            //SendSocketMessage(Constants.Nowplaying, Constants.Reply, message, clientId);
-            return trackList;
+            return PaginatedResponse.GetPaginatedData(limit, offset, trackList);
         }
 
         /// <summary>
@@ -121,9 +112,9 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         /// <param name="from">The initial position</param>
         /// <param name="to">The final position</param>
-        public bool CurrentQueueMoveTrack(int @from, int to)
+        public bool CurrentQueueMoveTrack(int from, int to)
         {
-            int[] aFrom = {@from};
+            int[] aFrom = { @from };
             int dIn;
             if (@from > to)
             {

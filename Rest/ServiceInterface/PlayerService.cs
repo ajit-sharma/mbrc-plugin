@@ -30,7 +30,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.SetShuffleState(request.enabled)
+                Success = _module.SetShuffleState(request.enabled)
             };
         }
 
@@ -38,7 +38,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.PausePlayback()
+                Success = _module.PausePlayback()
             };
         }
 
@@ -46,7 +46,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.StartPlayback()
+                Success = _module.StartPlayback()
             };
         }
 
@@ -54,7 +54,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.StopPlayback()
+                Success = _module.StopPlayback()
             };
         }
 
@@ -62,7 +62,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.PlayPreviousTrack()
+                Success = _module.PlayPreviousTrack()
             };
         }
 
@@ -70,7 +70,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.PlayNextTrack()
+                Success = _module.PlayNextTrack()
             };
         }
 
@@ -91,7 +91,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.SetAutoDjState(request.enabled)
+                Success = _module.SetAutoDjState(request.enabled)
             };
         }
 
@@ -107,7 +107,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.SetVolume(request.value)
+                Success = _module.SetVolume(request.value)
             };
         }
 
@@ -123,7 +123,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.SetScrobbleState(request.enabled)
+                Success = _module.SetScrobbleState(request.enabled)
             };
         }
 
@@ -139,7 +139,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.SetMuteState(request.enabled)
+                Success = _module.SetMuteState(request.enabled)
             };
         }
 
@@ -155,7 +155,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.SetRepeatState(request.mode)
+                Success = _module.SetRepeatState(request.mode)
             };
         }
 

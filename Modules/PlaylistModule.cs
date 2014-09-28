@@ -125,7 +125,7 @@ namespace MusicBeePlugin.Modules
         {
             return new SuccessResponse
             {
-                success = _api.Playlist_PlayNow(path)
+                Success = _api.Playlist_PlayNow(path)
             };
         }
 
@@ -148,7 +148,7 @@ namespace MusicBeePlugin.Modules
                 db.Save(playlist);
                 return new SuccessResponse
                 {
-                    success = db.GetLastInsertId() > 0
+                    Success = db.GetLastInsertId() > 0
                 };
             }
         }

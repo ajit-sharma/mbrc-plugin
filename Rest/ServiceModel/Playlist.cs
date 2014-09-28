@@ -2,7 +2,8 @@
 
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
-using ServiceStack.ServiceInterface.ServiceModel;
+using System.Runtime.Serialization;
+
 
 #endregion
 
@@ -53,7 +54,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public int id { get; set; }
     }
 
-    [Route("/playlists/{id}/tracks/move", "PATCH")]
+    [Route("/playlists/{id}/tracks/move", "PUT")]
     public class MovePlaylistTrack : IReturn<SuccessResponse>
     {
         public int id { get; set; }
@@ -68,9 +69,10 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public int id { get; set; }
     }
 
+    [DataContract]
     public class SuccessResponse
     {
-        public ResponseStatus ResponseStatus { get; set; }
-        public bool success { get; set; }
+        [DataMember(Name = "success")]
+        public bool Success { get; set; }
     }
 }

@@ -42,7 +42,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.PlaylistAddTracks(request.id, request.list)
+                Success = _module.PlaylistAddTracks(request.id, request.list)
             };
         }
 
@@ -50,7 +50,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.PlaylistDelete(request.id)
+                Success = _module.PlaylistDelete(request.id)
             };
         }
 
@@ -58,15 +58,15 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                success = _module.DeleteTrackFromPlaylist(request.id, request.index)
+                Success = _module.DeleteTrackFromPlaylist(request.id, request.index)
             };
         }
 
-        public SuccessResponse Patch(MovePlaylistTrack request)
+        public SuccessResponse Put(MovePlaylistTrack request)
         {
             return new SuccessResponse
             {
-                success = _module.MovePlaylistTrack(request.id, request.from, request.to)
+                Success = _module.MovePlaylistTrack(request.id, request.from, request.to)
             };
         }
     }

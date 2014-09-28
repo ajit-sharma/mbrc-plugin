@@ -1,10 +1,10 @@
 ﻿#region
 
-using System.Collections.Generic;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceInterface;
+
 
 #endregion
 
@@ -19,34 +19,34 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _module = module;
         }
 
-        public List<NowPlaying> Get(AllNowPlaying request)
+        public PaginatedResponse Get(AllNowPlaying request)
         {
-            return _module.GetCurrentQueue("all", request.offset, request.limit);
+            return _module.GetCurrentQueue(request.offset, request.limit);
         }
 
-        public object Patch(NowPlayingPlay request)
+        public SuccessResponse Put(NowPlayingPlay request)
         {
-            return new NowPlayingSuccessResponse
+            return new SuccessResponse
             {
-                success =
+                Success =
                     !string.IsNullOrEmpty(request.path) &&
                     _module.NowplayingPlayNow(request.path)
             };
         }
 
-        public object Delete(NowPlayingRemove request)
+        public SuccessResponse Delete(NowPlayingRemove request)
         {
-            return new NowPlayingSuccessResponse
+            return new SuccessResponse
             {
-                success = _module.CurrentQueueRemoveTrack(request.id)
+                Success = _module.CurrentQueueRemoveTrack(request.id)
             };
         }
 
-        public NowPlayingSuccessResponse Patch(NowPlayingMove request)
+        public SuccessResponse Put(NowPlayingMove request)
         {
-            return new NowPlayingSuccessResponse
+            return new SuccessResponse
             {
-                success = _module.CurrentQueueMoveTrack(request.id, request.moveto)
+                Success = _module.CurrentQueueMoveTrack(request.from, request.to)
             };
         }
     }
