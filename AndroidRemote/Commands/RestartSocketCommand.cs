@@ -1,9 +1,13 @@
-﻿using MusicBeePlugin.AndroidRemote.Interfaces;
+﻿#region
+
+using MusicBeePlugin.AndroidRemote.Interfaces;
 using MusicBeePlugin.AndroidRemote.Networking;
 
-namespace MusicBeePlugin.AndroidRemote.Commands.Internal
+#endregion
+
+namespace MusicBeePlugin.AndroidRemote.Commands
 {
-    class RestartSocketCommand:ICommand
+    internal class RestartSocketCommand : ICommand
     {
         private readonly SocketServer _server;
 
@@ -15,10 +19,6 @@ namespace MusicBeePlugin.AndroidRemote.Commands.Internal
         public void Execute(IEvent eEvent)
         {
             _server.RestartSocket();
-        }
-
-        public void Dispose()
-        {
         }
     }
 }

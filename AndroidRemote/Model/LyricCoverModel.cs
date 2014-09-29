@@ -1,13 +1,11 @@
 ﻿#region
 
-using System;
-using System.Diagnostics;
-using System.Security;
-using System.Text.RegularExpressions;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
 using NLog;
-using ServiceStack.Common.Utils;
+using System;
+using System.Security;
+using System.Text.RegularExpressions;
 
 #endregion
 
@@ -15,14 +13,10 @@ namespace MusicBeePlugin.AndroidRemote.Model
 {
     public class LyricCoverModel
     {
-        public LyricCoverModel()
-        {
-            Debug.Write(this.GetId());
-        }
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         private string _lyrics;
-        private string _xHash;
+        private string _previousCoverHash;
 
         public string Cover { get; private set; }
 
@@ -42,7 +36,8 @@ namespace MusicBeePlugin.AndroidRemote.Model
                     lStr = lStr.Replace("\0", " ");
                     const string pattern = "\\[\\d:\\d{2}.\\d{3}\\] ";
                     var regEx = new Regex(pattern);
-                    _lyrics = SecurityElement.Escape(regEx.Replace(lStr, String.Empty));
+                    var intermediate = regEx.Replace(lStr, String.Empty);
+                    _lyrics = SecurityElement.Escape(intermediate);
                 }
                 catch (Exception ex)
                 {
@@ -52,9 +47,11 @@ namespace MusicBeePlugin.AndroidRemote.Model
                 finally
                 {
                     if (!String.IsNullOrEmpty(_lyrics))
-                        EventBus.FireEvent(
-                            new MessageEvent(EventType.ReplyAvailable,
-                                new NotificationMessage(NotificationMessage.LyricsChanged).ToJsonString()));
+                    {
+                        var notification = new NotificationMessage(NotificationMessage.LyricsChanged);
+                        var @event = new MessageEvent(MessageEvent.Notify, notification.ToJsonString());
+                        EventBus.FireEvent(@event);
+                    }
                 }
             }
             get { return _lyrics; }
@@ -64,7 +61,7 @@ namespace MusicBeePlugin.AndroidRemote.Model
         {
             var hash = Utilities.Utilities.Sha1Hash(base64);
 
-            if (_xHash != null && _xHash.Equals(hash))
+            if (_previousCoverHash != null && _previousCoverHash.Equals(hash))
             {
                 return;
             }
@@ -72,11 +69,11 @@ namespace MusicBeePlugin.AndroidRemote.Model
             Cover = String.IsNullOrEmpty(base64)
                 ? String.Empty
                 : Utilities.Utilities.ImageResize(base64);
-            _xHash = hash;
+            _previousCoverHash = hash;
 
-            EventBus.FireEvent(
-                new MessageEvent(EventType.ReplyAvailable,
-                    new NotificationMessage(NotificationMessage.CoverChanged).ToJsonString()));
+            var notification = new NotificationMessage(NotificationMessage.CoverChanged);
+            var @event = new MessageEvent(MessageEvent.Notify, notification.ToJsonString());
+            EventBus.FireEvent(@event);
         }
     }
 }

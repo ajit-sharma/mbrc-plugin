@@ -98,6 +98,7 @@ namespace MusicBeePlugin
             }
 
             var controller = _kernel.Get<Controller>();
+            controller.InjectKernel(_kernel);
             Configuration.Register(controller);
             EventBus.Controller = controller;
 
@@ -115,10 +116,10 @@ namespace MusicBeePlugin
                 MenuItemClicked);
 
 
-            EventBus.FireEvent(new MessageEvent(EventType.ActionSocketStart));
-            EventBus.FireEvent(new MessageEvent(EventType.InitializeModel));
-            EventBus.FireEvent(new MessageEvent(EventType.StartServiceBroadcast));
-            EventBus.FireEvent(new MessageEvent(EventType.ShowFirstRunDialog));
+            EventBus.FireEvent(new MessageEvent(MessageEvent.ActionSocketStart));
+            EventBus.FireEvent(new MessageEvent(MessageEvent.InitializeModel));
+            EventBus.FireEvent(new MessageEvent(MessageEvent.StartServiceBroadcast));
+            EventBus.FireEvent(new MessageEvent(MessageEvent.ShowFirstRunDialog));
 
             _positionUpdateTimer = new Timer(20000);
             _positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
@@ -168,20 +169,29 @@ namespace MusicBeePlugin
         private void InitializeLoggingConfiguration()
         {
             var config = new LoggingConfiguration();
+
             var consoleTarget = new ColoredConsoleTarget();
             var fileTarget = new FileTarget();
+            var debugger = new DebuggerTarget();
+
             config.AddTarget("console", consoleTarget);
             config.AddTarget("file", fileTarget);
+            config.AddTarget("debugger", debugger);
 
-            consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message}";
+            consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message} ${exception}";
             fileTarget.FileName = string.Format("{0}\\error.log", _mStoragePath);
-            fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}";
+            fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}||${exception}";
 
-            var rule1 = new LoggingRule("*", LogLevel.Info, consoleTarget);
+            debugger.Layout = fileTarget.Layout;
+
+            var rule1 = new LoggingRule("*", LogLevel.Debug, consoleTarget);
             config.LoggingRules.Add(rule1);
 
             var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
             config.LoggingRules.Add(rule2);
+
+            var rule3 = new LoggingRule("*", LogLevel.Debug, debugger);
+            config.LoggingRules.Add(rule3);
 
             LogManager.Configuration = config;
         }
@@ -308,7 +318,7 @@ namespace MusicBeePlugin
         public void Close(PluginCloseReason reason)
         {
             /** When the plugin closes for whatever reason the SocketServer must stop **/
-            EventBus.FireEvent(new MessageEvent(EventType.ActionSocketStop));
+            EventBus.FireEvent(new MessageEvent(MessageEvent.ActionSocketStop));
         }
 
         /// <summary>
@@ -415,10 +425,12 @@ namespace MusicBeePlugin
         private void SendNotificationMessage(string message)
         {
             var server = _kernel.Get<SocketServer>();
-            server.Send(new NotificationMessage
+            var notification = new NotificationMessage
             {
                 Message = message
-            }.ToJsonString());
+            };
+
+            server.Send(notification.ToJsonString());
         }
     }
 }

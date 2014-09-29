@@ -54,7 +54,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             private set
             {
                 _isRunning = value;
-                EventBus.FireEvent(new MessageEvent(EventType.SocketStatusChange, _isRunning));
+                EventBus.FireEvent(new MessageEvent(MessageEvent.SocketStatusChange, _isRunning));
             }
         }
 
@@ -173,7 +173,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 
                 if (!_availableWorkerSockets.TryAdd(clientId, workerSocket)) return;
                 // Inform the the Protocol Handler that a new Client has been connected, prepare for handshake.
-                EventBus.FireEvent(new MessageEvent(EventType.ActionClientConnected, string.Empty, clientId));
+                EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientConnected, string.Empty, clientId));
 
                 // Let the worker Socket do the further processing 
                 // for the just connected client.
@@ -238,7 +238,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 }
                 else
                 {
-                    EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, state.ClientId));
+                    EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, state.ClientId));
                 }
             }
         }
@@ -309,7 +309,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
             catch (ObjectDisposedException)
             {
-                EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, clientId));
+                EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, clientId));
                 Logger.Debug("OnDataReceived, socket has been closed");
             }
             catch (SocketException se)
@@ -319,7 +319,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     Socket deadSocket;
                     if (_availableWorkerSockets.ContainsKey(clientId))
                         _availableWorkerSockets.TryRemove(clientId, out deadSocket);
-                    EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, clientId));
+                    EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, clientId));
                 }
                 else
                 {
@@ -389,9 +389,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     if (!isConnected)
                     {
                         RemoveDeadSocket(key);
-                        EventBus.FireEvent(new MessageEvent(EventType.ActionClientDisconnected, string.Empty, key));
+                        EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, key));
                     }
-                    if (isConnected && Authenticator.IsClientAuthenticated(key))
+                    else
                     {
                         worker.Send(data);
                     }

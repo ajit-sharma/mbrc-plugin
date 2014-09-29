@@ -118,15 +118,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AndroidRemote\Commands\Internal\RestartSocketCommand.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\ShowFirstRunDialogCommand.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\SocketStatusChanged.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\StartServiceBroadcast.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\ForceClientDisconnect.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\ClientDisconnected.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\ClientConnected.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\StopSocketServer.cs" />
-    <Compile Include="AndroidRemote\Commands\Internal\StartSocketServer.cs" />
+    <Compile Include="AndroidRemote\Commands\ClientConnected.cs" />
+    <Compile Include="AndroidRemote\Commands\ClientDisconnected.cs" />
+    <Compile Include="AndroidRemote\Commands\ForceClientDisconnect.cs" />
+    <Compile Include="AndroidRemote\Commands\NotifyClient.cs" />
+    <Compile Include="AndroidRemote\Commands\RestartSocketCommand.cs" />
+    <Compile Include="AndroidRemote\Commands\ShowFirstRunDialogCommand.cs" />
+    <Compile Include="AndroidRemote\Commands\SocketStatusChanged.cs" />
+    <Compile Include="AndroidRemote\Commands\StartServiceBroadcast.cs" />
+    <Compile Include="AndroidRemote\Commands\StartSocketServer.cs" />
+    <Compile Include="AndroidRemote\Commands\StopSocketServer.cs" />
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
@@ -149,7 +150,6 @@
     <Compile Include="AndroidRemote\Enumerations\QueueType.cs" />
     <Compile Include="AndroidRemote\Enumerations\Repeat.cs" />
     <Compile Include="AndroidRemote\Events\EventBus.cs" />
-    <Compile Include="AndroidRemote\Events\EventType.cs" />
     <Compile Include="AndroidRemote\Events\MessageEvent.cs" />
     <Compile Include="AndroidRemote\Interfaces\ICommand.cs" />
     <Compile Include="AndroidRemote\Interfaces\IEvent.cs" />
@@ -255,7 +255,7 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties BuildVersion_BuildVersioningStyle="None.None.None.Increment" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_ConfigurationName="Any" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_UpdateFileVersion="True" BuildVersion_DetectChanges="False" BuildVersion_UseUniversalClock="True" BuildVersion_StartDate="2010/1/1" BuildVersion_UseGlobalSettings="False" />
+      <UserProperties BuildVersion_UseGlobalSettings="False" BuildVersion_StartDate="2010/1/1" BuildVersion_UseUniversalClock="True" BuildVersion_DetectChanges="False" BuildVersion_UpdateFileVersion="True" BuildVersion_UpdateAssemblyVersion="True" BuildVersion_ConfigurationName="Any" BuildVersion_AssemblyInfoFilename="Properties\AssemblyInfo.cs" BuildVersion_BuildVersioningStyle="None.None.None.Increment" />
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

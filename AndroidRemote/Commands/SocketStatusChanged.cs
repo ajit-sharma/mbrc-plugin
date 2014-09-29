@@ -1,14 +1,14 @@
-﻿using System;
+﻿#region
+
 using MusicBeePlugin.AndroidRemote.Interfaces;
+using System;
 
-namespace MusicBeePlugin.AndroidRemote.Commands.Internal
+#endregion
+
+namespace MusicBeePlugin.AndroidRemote.Commands
 {
-    class SocketStatusChanged:ICommand
+    internal class SocketStatusChanged : ICommand
     {
-        public void Dispose()
-        {
-        }
-
         public void Execute(IEvent eEvent)
         {
             Plugin.Instance.UpdateWindowStatus((Boolean)eEvent.Data);

@@ -2,6 +2,7 @@
 
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Model;
+using MusicBeePlugin.AndroidRemote.Networking;
 using MusicBeePlugin.AndroidRemote.Settings;
 using MusicBeePlugin.Modules;
 using Ninject.Modules;
@@ -43,6 +44,9 @@ namespace MusicBeePlugin
                 .ToSelf()
                 .InSingletonScope()
                 .WithConstructorArgument("storagePath", StoragePath);
+            Bind<SocketServer>()
+                .ToSelf()
+                .InSingletonScope();
         }
     }
 }

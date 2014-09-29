@@ -11,22 +11,6 @@
             new ConcurrentDictionary<string, SocketClient>();
 
         /// <summary>
-        /// Returns if a clients has passed the authentication stage and thus can receive data.
-        /// </summary>
-        /// <param name="clientId">Represents the clientId of client</param>
-        /// <returns>true or false depending on the authentication state of the client</returns>
-        public static bool IsClientAuthenticated(string clientId)
-        {
-            var authenticated = false;
-            SocketClient client;
-            if (ConnectedClients.TryGetValue(clientId, out client))
-            {
-                authenticated = client.Authenticated;
-            }
-            return authenticated;
-        }
-
-        /// <summary>
         ///  Removes a client from the Client List when the client disconnects from the server.
         /// </summary>
         /// <param name="clientId"> </param>
