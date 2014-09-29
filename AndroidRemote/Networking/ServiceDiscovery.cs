@@ -36,7 +36,7 @@
             var mRequest = Encoding.UTF8.GetString(request);
             var incoming = JsonObject.Parse(mRequest);
 
-            if (incoming.Get("Message").Contains("discovery"))
+            if (incoming.Get("context").Contains("discovery"))
             {
                 var addresses = NetworkTools.GetPrivateAddressList();
                 var clientAddress = IPAddress.Parse(incoming.Get("address"));
@@ -55,7 +55,7 @@
 
                 var notify = new Dictionary<string, object>
                 {
-                    {"Message", "notify"},
+                    {"context", "notify"},
                     {"address", interfaceAddress},
                     {"name", Environment.GetEnvironmentVariable("COMPUTERNAME")},
                     {"port", _controller.Settings.Port},

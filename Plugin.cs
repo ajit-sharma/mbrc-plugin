@@ -132,7 +132,7 @@ namespace MusicBeePlugin
 
             StartPlayerStatusMonitoring();
 
-            var appHost = new AppHost();
+            var appHost = _kernel.Get<AppHost>();
             appHost.Container.Adapter = new NinjectIocAdapter(_kernel);
 
             appHost.Init();

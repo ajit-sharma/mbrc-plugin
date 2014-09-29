@@ -1,6 +1,9 @@
 namespace MusicBeePlugin.AndroidRemote.Networking
 {
+    using Entities;
+    using Events;
     using NLog;
+    using Settings;
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
@@ -8,9 +11,6 @@ namespace MusicBeePlugin.AndroidRemote.Networking
     using System.Net;
     using System.Net.Sockets;
     using System.Text;
-    using Entities;
-    using Events;
-    using Settings;
     using Utilities;
 
     /// <summary>
@@ -155,46 +155,10 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 var workerSocket = _mainSocket.EndAccept(ar);
 
                 // Validate If client should connect.
-                var ipAddress = ((IPEndPoint) workerSocket.RemoteEndPoint).Address;
+                var ipAddress = ((IPEndPoint)workerSocket.RemoteEndPoint).Address;
                 var ipString = ipAddress.ToString();
 
-                var isAllowed = false;
-                var userSettings = _controller.Settings;
-                switch (userSettings.Allowed)
-                {
-                    case AllowedAddresses.Specific:
-                        foreach (var source in userSettings.AllowedAddresses)
-                        {
-                            if (string.Compare(ipString, source, StringComparison.Ordinal) == 0)
-                            {
-                                isAllowed = true;
-                            }
-                        }
-                        break;
-                    case AllowedAddresses.Range:
-                        var connectingAddress = ipString.Split(".".ToCharArray(),
-                            StringSplitOptions.RemoveEmptyEntries);
-                        var baseIp = userSettings.BaseIp.Split(".".ToCharArray(),
-                            StringSplitOptions.RemoveEmptyEntries);
-                        if (connectingAddress[0] == baseIp[0] && connectingAddress[1] == baseIp[1] &&
-                            connectingAddress[2] == baseIp[2])
-                        {
-                            int connectingAddressLowOctet;
-                            int baseIpAddressLowOctet;
-                            int.TryParse(connectingAddress[3], out connectingAddressLowOctet);
-                            int.TryParse(baseIp[3], out baseIpAddressLowOctet);
-                            if (connectingAddressLowOctet >= baseIpAddressLowOctet &&
-                                baseIpAddressLowOctet <= userSettings.LastOctetMax)
-                            {
-                                isAllowed = true;
-                            }
-                        }
-                        break;
-                    default:
-                        isAllowed = true;
-                        break;
-                }
-                if (!isAllowed)
+                if (!_controller.CheckIfAddressIsAllowed(ipString))
                 {
                     workerSocket.Send(Encoding.UTF8.GetBytes(
                             new NotificationMessage(Constants.NotAllowed)
@@ -248,6 +212,8 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
         }
 
+
+
         // Start waiting for data from the client
         private void WaitForData(SocketState state)
         {
@@ -284,7 +250,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             var clientId = String.Empty;
             try
             {
-                var socketState = (SocketState) ar.AsyncState;
+                var socketState = (SocketState)ar.AsyncState;
                 // Complete the BeginReceive() asynchronous call by EndReceive() method
                 // which will return the number of characters written to the stream
                 // by the client.
@@ -319,7 +285,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 var afterLast = message.Substring(lastIndex + 2);
 
                 var messages =
-                    new List<string>(message.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries));
+                    new List<string>(message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
                 if (afterLast.Length > 0)
                 {
