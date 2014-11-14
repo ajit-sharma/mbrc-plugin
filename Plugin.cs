@@ -138,6 +138,7 @@ namespace MusicBeePlugin
 
             appHost.Init();
             appHost.Start(String.Format("http://+:{0}/", _settings.Settings.HttpPort));
+            Tools.NetworkTools.CreateFirewallRuleForPort((int)_settings.Settings.HttpPort);
 
             return _about;
         }
