@@ -14,10 +14,13 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/player/shuffle", "PUT")]
-    public class SetShuffleState : IReturn<SuccessResponse>
+    public class SetShuffleState : IReturn<SuccessStatusResponse>
     {
         public bool enabled { get; set; }
     }
+
+    [Route("/player/shuffle/toggle", "PUT")]
+    public class ToggleShuffleState : IReturn<SuccessStatusResponse> { }
 
     [Route("/player/scrobble", "GET")]
     public class GetScrobbleStatus : IReturn<StatusResponse>
@@ -25,10 +28,13 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/player/scrobble", "PUT")]
-    public class SetScrobbleStatus : IReturn<SuccessResponse>
+    public class SetScrobbleStatus : IReturn<SuccessStatusResponse>
     {
         public bool enabled { get; set; }
     }
+
+    [Route("/player/scrobble/toggle", "PUT")]
+    public class ToggleScrobbleStatus : IReturn<SuccessStatusResponse> { }
 
     [Route("/player/repeat", "GET")]
     public class GetRepeatMode : IReturn<ValueResponse>
@@ -47,10 +53,13 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/player/mute", "PUT")]
-    public class SetMuteStatus : IReturn<SuccessResponse>
+    public class SetMuteStatus : IReturn<SuccessStatusResponse>
     {
         public bool enabled { get; set; }
     }
+
+    [Route("/player/mute/toggle", "PUT")]
+    public class ToggleMuteStatus : IReturn<SuccessStatusResponse> { }
 
     [Route("/player/volume", "GET")]
     public class GetVolume : IReturn<VolumeResponse>
@@ -69,7 +78,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/player/autodj", "PUT")]
-    public class SetAutoDjStatus : IReturn<SuccessResponse>
+    public class SetAutoDjStatus : IReturn<SuccessStatusResponse>
     {
         public bool enabled { get; set; }
     }
@@ -109,6 +118,14 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
+
+    [DataContract]
+    public class SuccessStatusResponse : SuccessResponse
+    {
+        [DataMember(Name = "enabled")]
+        public bool Enabled { get; set; }
+    }
+
     [DataContract]
     public class StatusResponse
     {
@@ -117,10 +134,24 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [DataContract]
+    public class SuccessVolumeResponse : SuccessResponse
+    {
+        [DataMember(Name = "value")]
+        public int Value { get; set; }
+    }
+
+    [DataContract]
     public class VolumeResponse
     {
         [DataMember(Name = "value")]
         public int Value { get; set; }
+    }
+
+    [DataContract]
+    public class SuccessValueResponse : SuccessResponse
+    {
+        [DataMember(Name = "value")]
+        public string Value { get; set; }
     }
 
     [DataContract]
