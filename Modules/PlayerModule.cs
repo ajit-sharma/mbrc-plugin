@@ -2,6 +2,7 @@
 
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
+using MusicBeePlugin.Rest.ServiceModel;
 using RepeatMode = MusicBeePlugin.Plugin.RepeatMode;
 
 #endregion
@@ -149,6 +150,11 @@ namespace MusicBeePlugin.Modules
                 PlayerState = _api.Player_GetPlayState().ToString().ToLower(),
                 Volume = ((int)Math.Round(_api.Player_GetVolume() * 100, 1))
             };
+        }
+
+        public bool PlayPause()
+        {
+            return _api.Player_PlayPause();
         }
     }
 }

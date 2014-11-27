@@ -89,6 +89,14 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetPlayerStatus();
         }
 
+        public SuccessResponse Put(PlaybackPlayPause request)
+        {
+            return new SuccessResponse
+            {
+                Success = _module.PlayPause()
+            };
+        }
+
         public StatusResponse Get(GetAutoDjStatus request)
         {
             return new StatusResponse

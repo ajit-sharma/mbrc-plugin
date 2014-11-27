@@ -108,6 +108,9 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
+    [Route("/player/playpause", "PUT")]
+    public class PlaybackPlayPause : IReturn<SuccessResponse> { }
+
     [Route("/player/status", "GET")]
     public class GetPlayerStatus : IReturn<PlayerStatus>
     {
