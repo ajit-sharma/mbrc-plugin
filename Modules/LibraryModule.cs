@@ -334,7 +334,7 @@ namespace MusicBeePlugin.Modules
         {
             using (var db = _cHelper.GetDbConnection())
             {
-                var data = db.Select<LibraryTrack>();
+                var data = db.Select<LibraryTrack>(q => q.OrderBy(x => x.Id));
                 var result = PaginatedResponse.GetPaginatedData(limit, offset, data);
                 return result;
             }
@@ -345,7 +345,7 @@ namespace MusicBeePlugin.Modules
         {
             using (var db = _cHelper.GetDbConnection())
             {
-                var data = db.Select<LibraryArtist>();
+                var data = db.Select<LibraryArtist>(q => q.OrderBy(x => x.Id));
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
         }
@@ -369,7 +369,7 @@ namespace MusicBeePlugin.Modules
         {
             using (var db = _cHelper.GetDbConnection())
             {
-                var data = db.Select<LibraryGenre>();
+                var data = db.Select<LibraryGenre>(q => q.OrderBy(x => x.Id));
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
         }
@@ -378,7 +378,7 @@ namespace MusicBeePlugin.Modules
         {
             using (var db = _cHelper.GetDbConnection())
             {
-                var data = db.Select<LibraryAlbum>();
+                var data = db.Select<LibraryAlbum>(q => q.OrderBy(x => x.Id));
                 return PaginatedResponse.GetPaginatedData(limit, offset, data);
             }
         }

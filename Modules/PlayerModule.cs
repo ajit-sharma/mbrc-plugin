@@ -3,6 +3,7 @@
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
 using MusicBeePlugin.Rest.ServiceModel;
+using ServiceStack.WebHost.Endpoints.Support.Templates;
 using RepeatMode = MusicBeePlugin.Plugin.RepeatMode;
 
 #endregion
@@ -155,6 +156,26 @@ namespace MusicBeePlugin.Modules
         public bool PlayPause()
         {
             return _api.Player_PlayPause();
+        }
+
+        public RepeatMode ChangeRepeatMode()
+        {
+            var repeat = _api.Player_GetRepeat();
+            RepeatMode newMode;
+            switch (repeat)
+            {
+                case RepeatMode.None:
+                    newMode = RepeatMode.All;
+                    break;
+                case RepeatMode.All:
+                    newMode = RepeatMode.One;
+                    break;
+                default:
+                    newMode = RepeatMode.None;
+                    break;
+            }
+            _api.Player_SetRepeat(newMode);
+            return _api.Player_GetRepeat();
         }
     }
 }

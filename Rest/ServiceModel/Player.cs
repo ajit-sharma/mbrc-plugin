@@ -121,6 +121,9 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
+    [Route("/player/changerepeat", "PUT")]
+    public class ChangeRepeat : IReturn<ValueResponse> { }
+
 
     [DataContract]
     public class SuccessStatusResponse : SuccessResponse

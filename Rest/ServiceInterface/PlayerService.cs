@@ -208,5 +208,13 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                 Value = _module.GetPlayState()
             };
         }
+
+        public ValueResponse Put(ChangeRepeat request)
+        {
+            return new ValueResponse
+            {
+                Value = _module.ChangeRepeatMode().ToString().ToUpper()
+            };
+        }
     }
 }
