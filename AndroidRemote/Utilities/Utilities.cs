@@ -21,6 +21,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private static readonly SHA1Managed Sha1 = new SHA1Managed();
         private static byte[] _hash = new byte[20];
+        private const string CacheCover = @"\cache\cover\";
 
         /// <summary>
         ///     Gets a string value and calculates the sha1 hash of the string.
@@ -68,7 +69,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             var base64 = String.Empty;
             try
             {
-                var directory = StoragePath + @"cache\cover\";
+                var directory = StoragePath + CacheCover;
                 var filepath = directory + coverHash;
                 using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {
@@ -181,7 +182,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             }
             try
             {
-                var directory = StoragePath + @"cache\cover\";
+                var directory = StoragePath + CacheCover;
 
                 if (!Directory.Exists(directory))
                 {
@@ -299,7 +300,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             var ms = new MemoryStream();
             try
             {
-                var directory = StoragePath + @"cache\cover\";
+                var directory = StoragePath + CacheCover;
                 var filepath = directory + hash;
                 using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
                 {

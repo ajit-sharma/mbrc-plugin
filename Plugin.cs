@@ -19,8 +19,10 @@ using ServiceStack.Text;
 using System;
 using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using MusicBeePlugin.AndroidRemote.Utilities;
 using Timer = System.Timers.Timer;
 
 #endregion
@@ -85,6 +87,8 @@ namespace MusicBeePlugin
             InjectionModule.Api = _api;
             InjectionModule.StoragePath = _mStoragePath;
 
+            Utilities.StoragePath = _mStoragePath;
+
             _kernel = new StandardKernel(new InjectionModule());
 
             _settings = _kernel.Get<SettingsController>();
@@ -105,9 +109,15 @@ namespace MusicBeePlugin
             var libraryModule = _kernel.Get<LibraryModule>();
             var playlistModule = _kernel.Get<PlaylistModule>();
 
-
-            libraryModule.CheckCacheState();
-            playlistModule.StoreAvailablePlaylists();
+            if (libraryModule.IsCacheEmpty())
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    libraryModule.BuildCache();
+                    playlistModule.StoreAvailablePlaylists();
+                    libraryModule.BuildCoverCachePerAlbum();
+                });
+            }
 
             UpdateCachedCover();
             UpdateCachedLyrics();
@@ -138,7 +148,8 @@ namespace MusicBeePlugin
 
             appHost.Init();
             appHost.Start(String.Format("http://+:{0}/", _settings.Settings.HttpPort));
-            Tools.NetworkTools.CreateFirewallRuleForPort((int)_settings.Settings.HttpPort);
+            //Tools.NetworkTools.CreateFirewallRuleForPort((int)_settings.Settings.HttpPort);
+
 
             return _about;
         }

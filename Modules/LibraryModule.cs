@@ -211,7 +211,7 @@ namespace MusicBeePlugin.Modules
         ///     This method is faster because it calls the GetArtworkUrl method for the first track of each album,
         ///     however it might miss a number of covers;
         /// </summary>
-        private void BuildCoverCachePerAlbum()
+        public void BuildCoverCachePerAlbum()
         {
             using (var db = _cHelper.GetDbConnection())
             using (var trans = db.OpenTransaction())
@@ -316,19 +316,12 @@ namespace MusicBeePlugin.Modules
         ///     This method checks the state of the cache and is responsible for either
         ///     building the cache when empty of updating on start.
         /// </summary>
-        public void CheckCacheState()
+        public bool IsCacheEmpty()
         {
             var cached = GetCachedEntitiesCount<LibraryTrack>();
-
-            if (cached != 0) return;
-            BuildCache();
-            var workerThread = new Thread(BuildCoverCachePerAlbum)
-            {
-                IsBackground = true,
-                Priority = ThreadPriority.Normal
-            };
-            workerThread.Start();
+            return cached == 0;
         }
+
 
         public PaginatedResponse GetAllTracks(int limit, int offset)
         {
