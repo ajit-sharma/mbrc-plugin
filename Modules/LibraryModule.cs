@@ -59,10 +59,6 @@ namespace MusicBeePlugin.Modules
             {
                 var covers = db.Select<LibraryCover>();
                 var paginated = PaginatedResponse.GetPaginatedData(limit, offset, covers);
-                foreach (var cover in (List<LibraryCover>)paginated.Data)
-                {
-                    cover.Base64 = Utilities.GetCachedCoverBase64(cover.Hash);
-                }
                 return paginated;
             }
         }
@@ -74,10 +70,6 @@ namespace MusicBeePlugin.Modules
                 using (var db = _cHelper.GetDbConnection())
                 {
                     var cover = db.GetById<LibraryCover>(id);
-                    if (includeImage)
-                    {
-                        cover.Base64 = Utilities.GetCachedCoverBase64(cover.Hash);
-                    }
                     return cover;
                 }
             }

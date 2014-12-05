@@ -12,9 +12,5 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 
         [DataMember (Name = "hash")]
         public string Hash { get; set; }
-
-        [Ignore]
-        [DataMember(Name = "base64")]
-        public string Base64 { get; set; }
     }
 }
