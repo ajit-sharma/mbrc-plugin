@@ -58,7 +58,7 @@ namespace MusicBeePlugin.Modules
                     Artist = artist,
                     Id = position,
                     Path = playListTrack,
-                    Index = position,
+                    Position = position,
                     Title = title
                 };
 

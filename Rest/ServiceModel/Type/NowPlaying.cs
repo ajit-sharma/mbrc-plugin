@@ -14,8 +14,8 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
-        [DataMember(Name = "index")]
-        public int Index { get; set; }
+        [DataMember(Name = "position")]
+        public int Position { get; set; }
 
         [DataMember(Name = "path")]
         public string Path { get; set; }
