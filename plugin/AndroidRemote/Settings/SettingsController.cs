@@ -1,6 +1,7 @@
 ﻿using ServiceStack.Text;
 using System;
 using System.IO;
+using System.Diagnostics;
 
 namespace MusicBeePlugin.AndroidRemote.Settings
 {
@@ -8,10 +9,12 @@ namespace MusicBeePlugin.AndroidRemote.Settings
     {
         public UserSettings Settings { get; private set; }
         private readonly string _filename;
+        private readonly string _fUtil;
 
         public SettingsController(string storagePath)
         {
             _filename = string.Format("{0}\\settings.json", storagePath);
+            _fUtil = AppDomain.CurrentDomain.BaseDirectory + "\\Plugins\\firewall-utility.exe";
             Settings = new UserSettings();
         }
 
@@ -20,6 +23,18 @@ namespace MusicBeePlugin.AndroidRemote.Settings
             var settings = JsonSerializer.SerializeToString(Settings);
             if (_filename == null) return;
             File.WriteAllText(_filename, settings);
+
+            if (Settings.UpdateFirewallEnabled)
+            {
+                UpdateFirewallRules();
+            }
+        }
+
+        public void UpdateFirewallRules() {
+            ProcessStartInfo startInfo = new ProcessStartInfo(_fUtil);
+            startInfo.Verb = "runas";
+            startInfo.Arguments = string.Format("-h {0} -s {1}", Settings.HttpPort, Settings.Port);
+            System.Diagnostics.Process.Start(startInfo);
         }
 
         public void LoadSettings()

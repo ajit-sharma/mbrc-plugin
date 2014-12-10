@@ -63,6 +63,7 @@ namespace MusicBeePlugin
             UpdateFilteringSelection(_controller.Settings.Allowed);
             //UpdateSocketStatus(SocketServer.Instance.IsRunning);
             allowedAddressesComboBox.DataSource = _ipAddressBinding;
+            updateFirewallRules.Checked = _controller.Settings.UpdateFirewallEnabled;
         }
 
         private void SelectionFilteringComboBoxSelectedIndexChanged(object sender, EventArgs e)
@@ -127,6 +128,7 @@ namespace MusicBeePlugin
         private void HandleSaveButtonClick(object sender, EventArgs e)
         {
             _controller.Settings.Port = (uint)portNumericUpDown.Value;
+            _controller.Settings.UpdateFirewallEnabled = updateFirewallRules.Checked;
             switch (selectionFilteringComboBox.SelectedIndex)
             {
                 case 0:

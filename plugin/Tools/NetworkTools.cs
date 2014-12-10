@@ -70,41 +70,5 @@ namespace MusicBeePlugin.Tools
             }
             return new IPAddress(broadcastBytes);
         }
-
-        public static void CreateFirewallRuleForPort(int portNumber)
-        {
-            try
-            {
-                const string ruleName = "MusicBee REST Server";
-                var fwManagerType = Type.GetTypeFromProgID("HNetCfg.FwMgr", false);
-                var mgr = (INetFwMgr) Activator.CreateInstance(fwManagerType);
-                var firewallEnabled = mgr.LocalPolicy.CurrentProfile.FirewallEnabled;
-
-                if (!firewallEnabled) return;
-
-                var policyType = Type.GetTypeFromProgID("HNetCfg.FwPolicy2");
-                var firewallPolicy = (INetFwPolicy2) Activator.CreateInstance(policyType);
-                var portSt = portNumber.ToString(CultureInfo.InvariantCulture);
-                var ruleType = Type.GetTypeFromProgID("HNetCfg.FwRule");
-                var firewallRule = (INetFwRule) Activator.CreateInstance(ruleType);
-                firewallRule.Action = NET_FW_ACTION_.NET_FW_ACTION_ALLOW;
-                firewallRule.Name = ruleName;
-                firewallRule.Direction = NET_FW_RULE_DIRECTION_.NET_FW_RULE_DIR_IN;
-                firewallRule.Enabled = true;
-                firewallRule.Protocol = (int) NET_FW_IP_PROTOCOL_.NET_FW_IP_PROTOCOL_TCP;
-                firewallRule.LocalPorts = portSt;
-                firewallRule.RemotePorts = portSt;
-                firewallRule.InterfaceTypes = "All";
-
-                firewallPolicy.Rules.Add(firewallRule);
-            }
-            catch (Exception e)
-            {
-                Logger.DebugException("Firewall Rule Creation", e);
-            }
-            
-        }
-
-
     }
 }

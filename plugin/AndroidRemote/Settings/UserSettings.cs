@@ -19,6 +19,7 @@ namespace MusicBeePlugin.AndroidRemote.Settings
             Allowed = MusicBeePlugin.AllowedAddresses.All;
             BaseIp = String.Empty;
             LastOctetMax = 254;
+            UpdateFirewallEnabled = true;
         }
 
         [DataMember(Name = "httpPort")]
@@ -38,6 +39,9 @@ namespace MusicBeePlugin.AndroidRemote.Settings
 
         [DataMember(Name = "lastOctet")]
         public uint LastOctetMax { get; set; }
+
+        [DataMember(Name = "updateFirewall")]
+        public bool UpdateFirewallEnabled { get; set; }
 
         public string CurrentVersion { get; set; }
     }

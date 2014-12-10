@@ -58,6 +58,7 @@ namespace MusicBeePlugin
             this.cachedCoversValue = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.httpPortInput = new System.Windows.Forms.NumericUpDown();
+            this.updateFirewallRules = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.rangeNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.portNumericUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.httpPortInput)).BeginInit();
@@ -87,7 +88,7 @@ namespace MusicBeePlugin
             this.internalIPList.FormattingEnabled = true;
             this.internalIPList.Location = new System.Drawing.Point(325, 136);
             this.internalIPList.Name = "internalIPList";
-            this.internalIPList.Size = new System.Drawing.Size(119, 184);
+            this.internalIPList.Size = new System.Drawing.Size(119, 158);
             this.internalIPList.TabIndex = 5;
             // 
             // label2
@@ -378,11 +379,24 @@ namespace MusicBeePlugin
             0,
             0});
             // 
+            // updateFirewallRules
+            // 
+            this.updateFirewallRules.AutoSize = true;
+            this.updateFirewallRules.Checked = true;
+            this.updateFirewallRules.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.updateFirewallRules.Location = new System.Drawing.Point(315, 332);
+            this.updateFirewallRules.Name = "updateFirewallRules";
+            this.updateFirewallRules.Size = new System.Drawing.Size(129, 17);
+            this.updateFirewallRules.TabIndex = 44;
+            this.updateFirewallRules.Text = "Update Firewall Rules";
+            this.updateFirewallRules.UseVisualStyleBackColor = true;
+            // 
             // InfoWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(457, 356);
+            this.Controls.Add(this.updateFirewallRules);
             this.Controls.Add(this.httpPortInput);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.cachedCoversValue);
@@ -462,5 +476,6 @@ namespace MusicBeePlugin
         private System.Windows.Forms.Label cachedCoversValue;
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.NumericUpDown httpPortInput;
+        private System.Windows.Forms.CheckBox updateFirewallRules;
     }
 }
