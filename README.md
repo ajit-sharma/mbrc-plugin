@@ -3,23 +3,39 @@ MusicBee Remote (Plugin)
 
 About
 -------
-This is a plugin for [MusicBee](http://getmusicbee.com/) that is required for [MusicBee Remote](https://github.com/kelsos/mbrc) android application to function. The plugin acts as a socket server (TCP) that listens for incoming connections. The plugin implements a JSON based protocol functionality that is translated to calls to the MusicBee API.
+This is a plugin for [MusicBee](http://getmusicbee.com/) that is required for [MusicBee Remote](https://github.com/kelsos/mbrc) android application to function. The lasted version of the plugin uses TCP Sockets to pass notifications to the client (Android Application). The data are available through an HTTP RESTlike API in JSON format.
+
+The current implementation of the protocol is the third. The first implemenation was Socket based and the message format was XML, this was used during the 0.2 versions of the application (remote/plugin). The second implementation was also Socket based and the data format was JSON, the second implemenation was used during the 0.9 versions. The third implementation uses the socket to only pass small notifications of changes on the player. The data are available through an HTTP RESTlike API that returns returns JSON formatted messages, and it will be avaiblable with the release of version 1.x.
+
+Currently there is no documenation of the API Available but it is planned as soon as the version 1.x features are finalized.
 
 Building
 -------
-To build the plugin you have to open it with Visual Studio 2012. After opening the project you will probably have to restore the required packages with NuGet.
-
-Protocol
--------
-All the protocol messages have the following format ``{"context":"command","type":"type","data":"data"}`` you can find all the available commands at the [Constants.cs](https://github.com/kelsos/mbrc-plugin/blob/development/AndroidRemote/Networking/Constants.cs) file. The type can be has one of the following values **req** for request, **rep** for reply and **msg** for message, but they are currently ignored. The data contains the data part of the Protocol. In requests it contains data send to the server for example during the volume change it contains the integer of the new volume e.g. `` {"context":"playervolume","type":"req","data":10}``. In the replies it may contain more complex data like Arrays of tracks etc.
+To build the plugin you have to open it with Visual Studio 2013. After opening the project you will probably have to restore the required packages with NuGet.
 
 Credits
 -------
-The plugin uses ServiceStack.Text to parse the JSON messages.
 
-*   [ServiceStack.Text](https://github.com/ServiceStack/ServiceStack.Text)
+*   [ServiceStack v3](https://github.com/ServiceStackV3/ServiceStackV3)
+
+    ServiceStack.Text is used for JSON parsing
     
-    [GNU Affero General Public License v3](http://www.gnu.org/licenses/agpl-3.0.html)
+    ServiceStack.OrmLite.Sqlite is used for the internal cache.
+    
+    [BSD LICENCE](https://github.com/ServiceStack/ServiceStack/blob/v3/LICENSE)
+    
+*   [SQLite](https://www.sqlite.org/)
+
+    [Public Domain](https://www.sqlite.org/copyright.html)
+    
+*   [NLOG](https://github.com/NLog/NLog)
+    
+    [BSD LICENCE](https://github.com/NLog/NLog/blob/master/LICENSE.txt)
+
+*   [Ninject](https://github.com/ninject/ninject)
+
+    [Apache v2](https://github.com/ninject/Ninject/blob/master/LICENSE.txt)
+
 
 License
 ------
