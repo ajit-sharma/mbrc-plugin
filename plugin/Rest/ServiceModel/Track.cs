@@ -52,6 +52,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
+    [Api("Returns the lyrics of the playing track as plain text.")]
     [Route("/track/lyrics/raw", "GET")]
     public class GetTrackLyricsText : IReturn<string>
     {

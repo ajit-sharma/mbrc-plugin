@@ -68,7 +68,7 @@ namespace MusicBeePlugin.AndroidRemote.Model
 
             Cover = String.IsNullOrEmpty(base64)
                 ? String.Empty
-                : Utilities.Utilities.ImageResize(base64);
+                : Utilities.Utilities.GetResizedBase64(base64);
             _previousCoverHash = hash;
 
             var notification = new NotificationMessage(NotificationMessage.CoverChanged);

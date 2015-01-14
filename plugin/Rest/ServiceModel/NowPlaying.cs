@@ -1,5 +1,6 @@
 ﻿#region
 
+using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
@@ -31,5 +32,13 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
         public int from { get; set; }
         public int to { get; set; }
+    }
+
+    [Route("/nowplaying/queue", "PUT")]
+    public class NowPlayingQueue : IReturn<SuccessResponse>
+    {
+        public MetaTag type { get; set; }
+        public QueueType action { get; set; }
+        public long id { get; set; }
     }
 }

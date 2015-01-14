@@ -107,7 +107,7 @@ namespace MusicBeePlugin.Modules
             var index = 0;
             var playlistTracks = pathList.Select(path => new PlaylistTrack
             {
-                Index = index++,
+                Position = index++,
                 Artist = _api.Library_GetFileTag(path, Plugin.MetaDataType.Artist),
                 Title = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle),
                 Path = path,

@@ -131,9 +131,6 @@ namespace MusicBeePlugin
             EventBus.FireEvent(new MessageEvent(MessageEvent.StartServiceBroadcast));
             EventBus.FireEvent(new MessageEvent(MessageEvent.ShowFirstRunDialog));
 
-            _positionUpdateTimer = new Timer(20000);
-            _positionUpdateTimer.Elapsed += PositionUpdateTimerOnElapsed;
-            _positionUpdateTimer.Enabled = true;
 
 
 #if DEBUG
@@ -234,22 +231,17 @@ namespace MusicBeePlugin
             if (_api.Player_GetShuffle() != _shuffle)
             {
                 SendNotificationMessage(NotificationMessage.ShuffleStatusChanged);
+                _shuffle = _api.Player_GetShuffle();
             }
             if (_api.Player_GetScrobbleEnabled() != _scrobble)
             {
                 SendNotificationMessage(NotificationMessage.ScrobbleStatusChanged);
+                _scrobble = _api.Player_GetScrobbleEnabled();
             }
 
             if (_api.Player_GetRepeat() == _repeat) return;
             SendNotificationMessage(NotificationMessage.RepeatStatusChanged);
-        }
-
-        private void PositionUpdateTimerOnElapsed(object sender, ElapsedEventArgs elapsedEventArgs)
-        {
-            if (_api.Player_GetPlayState() == PlayState.Playing)
-            {
-                //PlayerModule.RequestPlayPosition("status");
-            }
+            _repeat = _api.Player_GetRepeat();
         }
 
         /// <summary>
@@ -408,6 +400,9 @@ namespace MusicBeePlugin
                     break;
                 case NotificationType.AutoDjStopped:
                     SendNotificationMessage(NotificationMessage.AutoDjStopped);
+                    break;
+                case NotificationType.RatingChanged:
+                    SendNotificationMessage(NotificationMessage.RatingChanged);
                     break;
             }
         }

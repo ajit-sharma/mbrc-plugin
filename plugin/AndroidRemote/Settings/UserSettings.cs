@@ -22,7 +22,7 @@ namespace MusicBeePlugin.AndroidRemote.Settings
             UpdateFirewallEnabled = true;
         }
 
-        [DataMember(Name = "httpPort")]
+        [DataMember(Name = "http")]
         public uint HttpPort { get; set; }
 
         [DataMember(Name = "port")]

@@ -35,7 +35,8 @@ namespace MusicBeePlugin.Modules
                 Artist = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Artist),
                 Album = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Album),
                 Year = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Year),
-                Title = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle)
+                Title = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.TrackTitle),
+                Path = _api.NowPlaying_GetFileUrl()
             };
             return track;
         }

@@ -16,5 +16,8 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 
         [DataMember(Name = "year")]
         public string Year { get; set; }
+
+        [DataMember(Name = "path")]
+        public string Path { get; set; }
     }
 }

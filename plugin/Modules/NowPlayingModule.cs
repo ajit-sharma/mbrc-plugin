@@ -3,7 +3,7 @@
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
 using System.Collections.Generic;
-
+using MusicBeePlugin.AndroidRemote.Enumerations;
 
 #endregion
 
@@ -126,6 +126,37 @@ namespace MusicBeePlugin.Modules
             }
 
             return _api.NowPlayingList_MoveFiles(aFrom, dIn);
+        }
+
+        /// <summary>
+        /// Takes a tracklist and queues it for play depending on the selection 
+        /// <paramref name="type"/>
+        /// </summary>
+        /// <param name="type"><see cref="QueueType"/></param>
+        /// <param name="tracklist">An array with the full paths of the files to add to the Queue</param>
+        /// <returns></returns>
+        public bool EnqueueTracks(QueueType type, string[] tracklist)
+        {
+            var success = false;
+            switch (type)
+            {
+                case QueueType.now:
+                    _api.NowPlayingList_Clear();
+                    success = _api.NowPlayingList_QueueFilesNext(tracklist);
+                    if (tracklist != null && tracklist.Length > 0)
+                    {
+                        NowplayingPlayNow(tracklist[0]);    
+                    }
+                    break;
+                case QueueType.last:
+                    success = _api.NowPlayingList_QueueFilesLast(tracklist);
+                    break;
+                case QueueType.next:
+                    success = _api.NowPlayingList_QueueFilesNext(tracklist);
+                    break;
+            }
+
+            return success;
         }
     }
 }

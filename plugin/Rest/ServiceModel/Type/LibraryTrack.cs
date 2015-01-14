@@ -14,8 +14,8 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
-        [DataMember(Name = "index")]
-        public int Index { get; set; }
+        [DataMember(Name = "position")]
+        public int Position { get; set; }
 
         [DataMember(Name = "genreId")]
         [References(typeof (LibraryGenre))]
@@ -41,8 +41,8 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 
         public int CompareTo(LibraryTrack other)
         {
-            var oIndex = other.Index;
-            return oIndex == Index ? 0 : oIndex > Index ? -1 : 1;
+            var oIndex = other.Position;
+            return oIndex == Position ? 0 : oIndex > Position ? -1 : 1;
         }
     }
 }

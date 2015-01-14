@@ -9,6 +9,8 @@ using ServiceStack.OrmLite;
 using ServiceStack.Text;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -138,7 +140,7 @@ namespace MusicBeePlugin.Modules
                     {
                         Title = title,
                         Year = year,
-                        Index = iTrack,
+                        Position = iTrack,
                         GenreId = oGenre != null ? oGenre.Id : -1,
                         AlbumArtistId = oAlbumArtist != null ? oAlbumArtist.Id : -1,
                         ArtistId = oArtist != null ? oArtist.Id : -1,
@@ -227,7 +229,7 @@ namespace MusicBeePlugin.Modules
                     var track = new LibraryTrack
                     {
                         Path = path,
-                        Index = !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0
+                        Position = !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0
                     };
                     ab.TrackList.Add(track);
                 }
@@ -238,8 +240,21 @@ namespace MusicBeePlugin.Modules
                 {
                     albumEntry.TrackList.Sort();
                     var path = albumEntry.TrackList[0].Path;
-                    var coverUrl = _api.Library_GetArtworkUrl(path, -1);
-                    var coverHash = Utilities.StoreCoverToCache(coverUrl);
+                    String coverUrl = null;
+
+                    var locations = Plugin.PictureLocations.None;
+                    byte[] imageData = {};
+
+                    _api.Library_GetArtworkEx(path, 0, false, ref locations, ref coverUrl, ref imageData);
+
+                    if (String.IsNullOrEmpty(coverUrl))
+                    {
+                        _api.Library_GetArtworkEx(path, 0, true, ref locations, ref coverUrl, ref imageData);
+                    }
+
+                    var coverHash =  !String.IsNullOrEmpty(coverUrl) 
+                        ? Utilities.StoreCoverToCache(coverUrl) 
+                        : Utilities.StoreCoverToCache(imageData);
 
                     if (String.IsNullOrEmpty(coverHash))
                     {
@@ -391,5 +406,118 @@ namespace MusicBeePlugin.Modules
             return total;
         }
 
+        /// <summary>
+        /// Given a long id of a an artist in the database
+        /// it will return a String array of the paths of the Artist's 
+        /// album tracks ordered by album name and track position
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string[] GetArtistTracksById(long id)
+        {
+            var trackList = new List<String>();
+            try
+            {
+                using (var db = _cHelper.GetDbConnection())
+                {
+                    var albumList = db.Select<LibraryAlbum>(q => q.ArtistId == id)
+                        .OrderBy(x => x.Name).ToList();
+                    foreach (var albumTrackList in albumList
+                        .Select(album => GetTrackListByAlbumId(db, album.Id)))
+                    {
+                        trackList.AddRange(albumTrackList.Select(t => t.Path).ToList());
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Debug(e);
+            }
+          
+            return trackList.ToArray();
+        }
+
+        /// <summary>
+        /// Given a database connection and an album id it will return a list of Tracks
+        /// ordered by position.
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        private static List<LibraryTrack> GetTrackListByAlbumId(IDbConnection db, long id)
+        {
+            return db.Select<LibraryTrack>(q => q.AlbumId == id)
+                .OrderBy(x => x.Position)
+                .ToList();
+        }
+
+        /// <summary>
+        /// Given an id in the database it will retrieve the path of the track.
+        /// It returns an array instead of a single String to be in consistency
+        /// with the other group of methods. <see cref="GetAlbumTracksById"/> etc.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string[] GetTrackPathById(long id)
+        {
+            var list = new List<String>();
+            try
+            {
+                using (var db = _cHelper.GetDbConnection())
+                {
+                    list = db.Select<LibraryTrack>(q => q.Id == id).Select(t => t.Path).ToList();
+                }
+            }        
+            catch (Exception e)
+            {
+                Logger.Debug(e);
+            }
+
+            return list.ToArray();
+        }
+
+        /// <summary>
+        /// Given an album track it will return the paths of the tracks
+        /// included in the album.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public string[] GetAlbumTracksById(long id)
+        {
+            var trackList = new List<String>();
+
+            try
+            {
+                using (var db = _cHelper.GetDbConnection())
+                {
+                   trackList.AddRange(GetTrackListByAlbumId(db, id).Select(t => t.Path));
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.Debug(e);
+            }
+            return trackList.ToArray();
+        }
+
+        public string[] GetGenreTracksById(long id)
+        {
+            var tracklist = new List<String>();
+
+            try
+            {
+                using (var db = _cHelper.GetDbConnection())
+                {
+                    // Check with JOIN
+                }
+
+            }
+            catch (Exception e)
+            {
+                Logger.Debug(e);
+            }
+
+            return tracklist.ToArray();
+        }
     }
 }

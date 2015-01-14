@@ -23,6 +23,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         public const string ShuffleStatusChanged = "shuffle-status-changed";
         public const string CoverChanged = "cover-changed";
         public const string LyricsChanged = "lyrics-changed";
+        public const string RatingChanged = "rating-changed";
 
         public NotificationMessage(string message)
         {
