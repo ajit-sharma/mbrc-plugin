@@ -9,7 +9,7 @@ using ServiceStack.ServiceHost;
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route("/nowplaying/", "GET")]
-    public class AllNowPlaying : IReturn<PaginatedResponse>
+    public class AllNowPlaying : IReturn<PaginatedNowPlayingResponse>
     {
         public int offset { get; set; }
         public int limit { get; set; }

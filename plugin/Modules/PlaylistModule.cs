@@ -79,29 +79,25 @@ namespace MusicBeePlugin.Modules
             }
         }
 
-        public PaginatedResponse GetAvailablePlaylists(int limit = 50, int offset = 0)
+        public PaginatedResponse<Playlist> GetAvailablePlaylists(int limit = 50, int offset = 0)
         {
             var playlists = GetCachedPlaylists();
             var total = playlists.Count;
-            var result = new PaginatedResponse
-            {
-                Limit = limit,
-                Offset = offset,
-                Data = playlists,
-                Total = total
-            };
+            var result = new PaginatedPlaylistResponse();
+            result.CreatePage(limit, offset, playlists);
             return result;
         }
 
 
-        public PaginatedResponse GetPlaylistTracks(int id, int limit = 50, int offset = 0)
+        public PaginatedResponse<PlaylistTrack> GetPlaylistTracks(int id, int limit = 50, int offset = 0)
         {
             string[] pathList = {};
             var playlist = GetPlaylistById(id);
+            var paginated = new PaginatedPlaylistTrackResponse();
 
             if (!_api.Playlist_QueryFilesEx(playlist.Path, ref pathList))
             {
-                return new PaginatedResponse();
+                return paginated;
             }
 
             var index = 0;
@@ -114,7 +110,8 @@ namespace MusicBeePlugin.Modules
                 PlaylistId = id
             }).ToList();
 
-            return PaginatedResponse.GetPaginatedData(limit, offset, playlistTracks);
+            paginated.CreatePage(limit, offset, playlistTracks);
+            return paginated;
         }
 
         /// <summary>

@@ -8,7 +8,7 @@ using ServiceStack.DataAnnotations;
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
-    internal class PlaylistTrack
+    public class PlaylistTrack
     {
         [AutoIncrement]
         [DataMember(Name = "id")]

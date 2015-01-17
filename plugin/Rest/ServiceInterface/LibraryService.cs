@@ -4,6 +4,7 @@ using System.IO;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Common.Web;
 using ServiceStack.ServiceInterface;
 
 #endregion
@@ -19,7 +20,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _module = module;
         }
 
-        public PaginatedResponse Get(GetLibraryTracks request)
+        public PaginatedResponse<LibraryTrack> Get(GetLibraryTracks request)
         {
             return _module.GetAllTracks(request.limit, request.offset);
         }
@@ -29,7 +30,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetTrackById(request.id);
         }
 
-        public PaginatedResponse Get(GetLibraryArtists request)
+        public PaginatedResponse<LibraryArtist> Get(GetLibraryArtists request)
         {
             return _module.GetAllArtists(request.limit, request.offset);
         }
@@ -39,17 +40,17 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetArtistById(request.id);
         }
 
-        public PaginatedResponse Get(GetLibraryGenres request)
+        public PaginatedResponse<LibraryGenre> Get(GetLibraryGenres request)
         {
             return _module.GetAllGenres(request.limit, request.offset);
         }
 
-        public PaginatedResponse Get(GetLibraryAlbums request)
+        public PaginatedResponse<LibraryAlbum> Get(GetLibraryAlbums request)
         {
             return _module.GetAllAlbums(request.limit, request.offset);
         }
 
-        public PaginatedResponse Get(GetLibraryCovers request)
+        public PaginatedResponse<LibraryCover> Get(GetLibraryCovers request)
         {
             return _module.GetAllCovers(request.offset, request.limit);
         }
@@ -60,9 +61,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         }
 
         [AddHeader(ContentType = "image/jpeg")]
-        public Stream Get(GetLibraryCoverData request)
+        public object Get(GetLibraryCoverData request)
         {
-            return _module.GetCoverData(request.id);
+            return new HttpResult(_module.GetCoverData(request.id), "image/jpeg");
         }
     }
 }

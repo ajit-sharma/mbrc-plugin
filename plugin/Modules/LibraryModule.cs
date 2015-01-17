@@ -55,12 +55,13 @@ namespace MusicBeePlugin.Modules
         }
 
 
-        public PaginatedResponse GetAllCovers(int offset, int limit)
+        public PaginatedResponse<LibraryCover> GetAllCovers(int offset, int limit)
         {
             using (var db = _cHelper.GetDbConnection())
             {
                 var covers = db.Select<LibraryCover>();
-                var paginated = PaginatedResponse.GetPaginatedData(limit, offset, covers);
+                var paginated = new PaginatedCoverResponse();
+                paginated.CreatePage(limit, offset, covers);
                 return paginated;
             }
         }
@@ -329,24 +330,34 @@ namespace MusicBeePlugin.Modules
             return cached == 0;
         }
 
-
-        public PaginatedResponse GetAllTracks(int limit, int offset)
+        /// <summary>
+        /// Retrieves A number of tracks from the database and returns a
+        /// Paginated response.
+        /// </summary>
+        /// <param name="limit">The number of results in the response. If the
+        /// limit equals 0 then all the data are returned.</param>
+        /// <param name="offset">The index of the first result.</param>
+        /// <returns></returns>
+        public PaginatedResponse<LibraryTrack> GetAllTracks(int limit, int offset)
         {
             using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryTrack>(q => q.OrderBy(x => x.Id));
-                var result = PaginatedResponse.GetPaginatedData(limit, offset, data);
-                return result;
+                var paginatedResult = new PaginatedTrackResponse();
+                paginatedResult.CreatePage(limit, offset, data);
+                return paginatedResult;
             }
         }
 
 
-        public PaginatedResponse GetAllArtists(int limit, int offset)
+        public PaginatedResponse<LibraryArtist> GetAllArtists(int limit, int offset)
         {
             using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryArtist>(q => q.OrderBy(x => x.Id));
-                return PaginatedResponse.GetPaginatedData(limit, offset, data);
+                var paginated = new PaginatedArtistResponse();
+                paginated.CreatePage(limit, offset, data);
+                return paginated;
             }
         }
 
@@ -365,21 +376,25 @@ namespace MusicBeePlugin.Modules
             }
         }
 
-        public PaginatedResponse GetAllGenres(int limit, int offset)
+        public PaginatedResponse<LibraryGenre> GetAllGenres(int limit, int offset)
         {
             using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryGenre>(q => q.OrderBy(x => x.Id));
-                return PaginatedResponse.GetPaginatedData(limit, offset, data);
+                var paginated = new PaginatedGenreResponse();
+                paginated.CreatePage(limit, offset, data);
+                return paginated;
             }
         }
 
-        public PaginatedResponse GetAllAlbums(int limit, int offset)
+        public PaginatedResponse<LibraryAlbum> GetAllAlbums(int limit, int offset)
         {
             using (var db = _cHelper.GetDbConnection())
             {
                 var data = db.Select<LibraryAlbum>(q => q.OrderBy(x => x.Id));
-                return PaginatedResponse.GetPaginatedData(limit, offset, data);
+                var paginated = new PaginatedAlbumResponse();
+                paginated.CreatePage(limit, offset, data);
+                return paginated;
             }
         }
 

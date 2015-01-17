@@ -24,7 +24,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _libModule = libModule;
         }
 
-        public PaginatedResponse Get(AllNowPlaying request)
+        public PaginatedResponse<NowPlaying> Get(AllNowPlaying request)
         {
             return _module.GetCurrentQueue(request.offset, request.limit);
         }

@@ -9,7 +9,7 @@ using ServiceStack.DataAnnotations;
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
-    internal class Playlist : IComparable<Playlist>
+    public class Playlist : IComparable<Playlist>
     {
         private string _name;
 

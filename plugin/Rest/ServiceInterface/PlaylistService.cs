@@ -18,12 +18,12 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _module = module;
         }
 
-        public PaginatedResponse Get(AllPlaylists request)
+        public PaginatedResponse<Playlist> Get(AllPlaylists request)
         {
             return _module.GetAvailablePlaylists(request.limit, request.offset);
         }
 
-        public PaginatedResponse Get(GetPlaylistTracks request)
+        public PaginatedResponse<PlaylistTrack> Get(GetPlaylistTracks request)
         {
             return _module.GetPlaylistTracks(request.id);
         }

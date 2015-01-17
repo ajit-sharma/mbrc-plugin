@@ -10,7 +10,7 @@ using System.Runtime.Serialization;
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route("/playlists", "GET")]
-    public class AllPlaylists : IReturn<PaginatedResponse>
+    public class AllPlaylists : IReturn<PaginatedPlaylistResponse>
     {
         public int offset { get; set; }
         public int limit { get; set; }
@@ -42,7 +42,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/playlists/{id}/tracks", "GET")]
-    public class GetPlaylistTracks : IReturn<PaginatedResponse>
+    public class GetPlaylistTracks : IReturn<PaginatedPlaylistTrackResponse>
     {
         public int id { get; set; }
     }

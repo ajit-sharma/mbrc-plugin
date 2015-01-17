@@ -24,7 +24,7 @@ namespace MusicBeePlugin.Modules
         }
 
 
-        public PaginatedResponse GetCurrentQueue(int offset = 0, int limit = 50)
+        public PaginatedResponse<NowPlaying> GetCurrentQueue(int offset = 0, int limit = 50)
         {
             _api.NowPlayingList_QueryFiles(null);
 
@@ -66,7 +66,9 @@ namespace MusicBeePlugin.Modules
                 position++;
             }
 
-            return PaginatedResponse.GetPaginatedData(limit, offset, trackList);
+            var paginated = new PaginatedNowPlayingResponse();
+            paginated.CreatePage(limit, offset, trackList);
+            return paginated;
         }
 
         /// <summary>
