@@ -9,6 +9,7 @@ using ServiceStack.DataAnnotations;
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
+    [Alias("LibraryAlbum")]
     public class LibraryAlbum
     {
         public LibraryAlbum()

@@ -127,11 +127,9 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         {
             try
             {
-                using (var albumCover = Image.FromStream(stream, true))
-                {
-                    var size = CalculateNewSize(width, height, albumCover);
-                    StoreImage(filepath, size.Width, size.Height, albumCover);
-                }
+                var albumCover = Image.FromStream(stream, false, true);                
+                var size = CalculateNewSize(width, height, albumCover);
+                StoreImage(filepath, size.Width, size.Height, albumCover);
             }
             catch (Exception e)
             {

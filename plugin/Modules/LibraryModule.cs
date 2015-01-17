@@ -500,6 +500,14 @@ namespace MusicBeePlugin.Modules
             return trackList.ToArray();
         }
 
+        /// <summary>
+        /// Given a genre <paramref name="id"/> in the database it will return a
+        /// <see cref="String"/>array of the paths in the file system
+        /// representing the tracks, ordered by artist, album  and position in
+        /// the album.
+        /// </summary>
+        /// <param name="id">The id of the genre</param>
+        /// <returns></returns>
         public string[] GetGenreTracksById(long id)
         {
             var tracklist = new List<String>();
@@ -508,7 +516,19 @@ namespace MusicBeePlugin.Modules
             {
                 using (var db = _cHelper.GetDbConnection())
                 {
-                    // Check with JOIN
+                    var join = new JoinSqlBuilder<LibraryTrackEx, LibraryTrack>();
+                    join = join.Join<LibraryTrack, LibraryGenre>(track => track.GenreId,
+                        genre => genre.Id,
+                        tr => new { tr.Id, tr.Title, tr.Path, tr.Year, tr.Position}, x => new { Genre = x.Name })
+                        .LeftJoin<LibraryTrack, LibraryArtist>(t => t.ArtistId, a => a.Id, null, x => new { Artist = x.Name })
+                        .LeftJoin<LibraryTrack, LibraryArtist>(t => t.AlbumArtistId, a => a.Id, null, x => new { AlbumArtist = x.Name })
+                        .LeftJoin<LibraryTrack, LibraryAlbum>(t => t.AlbumId, a => a.Id, null, x => new { Album = x.Name })
+                        .OrderBy<LibraryArtist>(artist => artist.Name)
+                        .OrderBy<LibraryAlbum>(album => album.Name)
+                        .OrderBy<LibraryTrack>(track => track.Position);
+                    var sql = join.ToSql();
+                    var result = db.Query<LibraryTrackEx>(sql);
+                    tracklist.AddRange(result.Select(track => track.Path));
                 }
 
             }
