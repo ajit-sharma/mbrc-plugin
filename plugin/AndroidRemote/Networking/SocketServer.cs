@@ -1,49 +1,39 @@
+#region
+
+using System;
+using System.Collections.Generic;
+using System.Net.Sockets;
+using Fleck;
+using MusicBeePlugin.AndroidRemote.Entities;
+using MusicBeePlugin.AndroidRemote.Events;
+using MusicBeePlugin.AndroidRemote.Settings;
+using NLog;
+using ServiceStack.Text;
+using LogLevel = Fleck.LogLevel;
+
+#endregion
+
 namespace MusicBeePlugin.AndroidRemote.Networking
 {
-    using Entities;
-    using Events;
-    using NLog;
-    using Settings;
-    using System;
-    using System.Collections.Concurrent;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Net;
-    using System.Net.Sockets;
-    using System.Text;
-    using Utilities;
-
     /// <summary>
-    ///     The socket server.
+    ///     Wrapper class for the websocket functionality
     /// </summary>
     public sealed class SocketServer : IDisposable
     {
-        private readonly SettingsController _controller;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly ProtocolHandler _handler;
-
-        private readonly ConcurrentDictionary<string, Socket> _availableWorkerSockets;
-
-        /// <summary>
-        ///     The main socket. This is the Socket that listens for new client connections.
-        /// </summary>
-        private Socket _mainSocket;
-
-        /// <summary>
-        ///     The worker callback.
-        /// </summary>
-        private AsyncCallback _workerCallback;
-
+        private readonly List<IWebSocketConnection> _allSockets;
+        private readonly SettingsController _controller;
         private bool _isRunning;
+        private WebSocketServer server;
 
         /// <summary>
         /// </summary>
         public SocketServer(SettingsController controller)
         {
             _controller = controller;
-            _handler = new ProtocolHandler();
             IsRunning = false;
-            _availableWorkerSockets = new ConcurrentDictionary<string, Socket>();
+            _allSockets = new List<IWebSocketConnection>();
+            SetupLogger();
         }
 
         /// <summary>
@@ -58,23 +48,19 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             }
         }
 
+        /// <summary>
+        ///     Disposes anything Related to the socket server at the end of life of the Object.
+        /// </summary>
+        public void Dispose()
+        {
+            server.Dispose();
+        }
 
         /// <summary>
         /// </summary>
         /// <param name="clientId"> </param>
         public void KickClient(string clientId)
         {
-            try
-            {
-                Socket workerSocket;
-                if (!_availableWorkerSockets.TryRemove(clientId, out workerSocket)) return;
-                workerSocket.Close();
-                workerSocket.Dispose();
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug(ex);
-            }
         }
 
         /// <summary>
@@ -84,28 +70,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         public void Stop()
         {
             Logger.Info("Stopping Socket Server");
-            try
-            {
-                if (_mainSocket != null)
-                {
-                    _mainSocket.Close();
-                }
-
-                foreach (var wSocket in _availableWorkerSockets.Values.Where(wSocket => wSocket != null))
-                {
-                    wSocket.Close();
-                    wSocket.Dispose();
-                }
-                _mainSocket = null;
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug(ex);
-            }
-            finally
-            {
-                IsRunning = false;
-            }
+            if (server == null) return;
+            server.Dispose();
+            server = null;
         }
 
         /// <summary>
@@ -117,15 +84,33 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             try
             {
                 Logger.Info("Starting Socket Server");
-                _mainSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                // Create the listening socket.    
-                var ipLocal = new IPEndPoint(IPAddress.Any, Convert.ToInt32(_controller.Settings.Port));
-                // Bind to local IP address.
-                _mainSocket.Bind(ipLocal);
-                // Start Listening.
-                _mainSocket.Listen(4);
-                // Create the call back for any client connections.
-                _mainSocket.BeginAccept(OnClientConnect, null);
+                if (server == null)
+                {
+                    server = new WebSocketServer(String.Format("ws://0.0.0.0:{0}", _controller.Settings.Port));
+                    server.Start(socket =>
+                    {
+                        socket.OnOpen = () =>
+                        {
+                            Logger.Debug(string.Format("New client connected: {0}",
+                                socket.ConnectionInfo.ClientIpAddress));
+                            _allSockets.Add(socket);
+                        };
+
+                        socket.OnClose = () =>
+                        {
+                            Logger.Debug(string.Format("Client has been disconnected: {0}",
+                                socket.ConnectionInfo.ClientIpAddress));
+                        };
+
+                        socket.OnMessage = message =>
+                        {
+                            Logger.Debug(string.Format("New message received: {0}", message));
+                            var notification = new NotificationMessage(JsonObject.Parse(message));
+                            EventBus.FireEvent(new MessageEvent(notification.Message));
+                        };
+                    });
+                }
+
                 IsRunning = true;
             }
             catch (SocketException se)
@@ -144,271 +129,44 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             Start();
         }
 
-        // this is the call back function,
-        private void OnClientConnect(IAsyncResult ar)
-        {
-            try
-            {
-                // Here we complete/end the BeginAccept asynchronous call
-                // by calling EndAccept() - Which returns the reference
-                // to a new Socket object.
-                var workerSocket = _mainSocket.EndAccept(ar);
-
-                // Validate If client should connect.
-                var ipAddress = ((IPEndPoint)workerSocket.RemoteEndPoint).Address;
-                var ipString = ipAddress.ToString();
-
-                if (!_controller.CheckIfAddressIsAllowed(ipString))
-                {
-                    workerSocket.Send(Encoding.UTF8.GetBytes(
-                            new NotificationMessage(Constants.NotAllowed)
-                                .ToJsonString()));
-                    workerSocket.Close();
-                    Logger.Debug("Force Disconnected not valid range");
-                    _mainSocket.BeginAccept(OnClientConnect, null);
-                    return;
-                }
-
-                var clientId = IdGenerator.GetUniqueKey();
-
-                if (!_availableWorkerSockets.TryAdd(clientId, workerSocket)) return;
-                // Inform the the Protocol Handler that a new Client has been connected, prepare for handshake.
-                EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientConnected, string.Empty, clientId));
-
-                // Let the worker Socket do the further processing 
-                // for the just connected client.
-                var socketState = new SocketState
-                {
-                    ClientSocket = workerSocket,
-                    ClientId = clientId
-                };
-
-                WaitForData(socketState);
-            }
-            catch (ObjectDisposedException)
-            {
-                Logger.Debug("OnClientConnection: Socket has been closed");
-            }
-            catch (SocketException se)
-            {
-                Logger.Debug(se);
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug("OnClientConnect", ex);
-            }
-            finally
-            {
-                try
-                {
-                    // Since the main Socket is now free, it can go back and
-                    // wait for the other clients who are attempting to connect
-                    _mainSocket.BeginAccept(OnClientConnect, null);
-                }
-                catch (Exception e)
-                {
-                    Logger.Debug("OnClientConnect", e);
-                }
-            }
-        }
-
-
-
-        // Start waiting for data from the client
-        private void WaitForData(SocketState state)
-        {
-            try
-            {
-                if (_workerCallback == null)
-                {
-                    // Specify the call back function which is to be
-                    // invoked when there is any write activity by the
-                    // connected client.
-                    _workerCallback = OnDataReceived;
-                }
-
-                state.ClientSocket.BeginReceive(state.DataBuffer, 0, SocketState.BufferSize,
-                    SocketFlags.None, _workerCallback, state);
-            }
-            catch (SocketException se)
-            {
-                if (se.ErrorCode != 10053)
-                {
-                    Logger.Debug(se);
-                }
-                else
-                {
-                    EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, state.ClientId));
-                }
-            }
-        }
-
-        // This is the call back function which will be invoked when the socket
-        // detects any client writing of data on the stream
-        private void OnDataReceived(IAsyncResult ar)
-        {
-            var clientId = String.Empty;
-            try
-            {
-                var socketState = (SocketState)ar.AsyncState;
-                // Complete the BeginReceive() asynchronous call by EndReceive() method
-                // which will return the number of characters written to the stream
-                // by the client.
-
-                clientId = socketState.ClientId;
-
-                var iRx = socketState.ClientSocket.EndReceive(ar);
-
-                var chars = new char[iRx];
-
-                var decoder = Encoding.UTF8.GetDecoder();
-
-                decoder.GetChars(socketState.DataBuffer, 0, iRx, chars, 0);
-                var length = chars.Length;
-
-                if (length == 0)
-                {
-                    WaitForData(socketState);
-                    return;
-                }
-
-                socketState.MBuilder.Append(chars);
-
-                var message = socketState.MBuilder.ToString().Replace("\0", "");
-                if (!message.Contains(Environment.NewLine))
-                {
-                    WaitForData(socketState);
-                    return;
-                }
-
-                var lastIndex = message.LastIndexOf(Environment.NewLine, StringComparison.Ordinal);
-                var afterLast = message.Substring(lastIndex + 2);
-
-                var messages =
-                    new List<string>(message.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
-
-                if (afterLast.Length > 0)
-                {
-                    var last = messages.Last();
-                    messages.Remove(last);
-                    socketState.MBuilder.Clear();
-                    socketState.MBuilder.Append(last);
-                }
-                else
-                {
-                    socketState.MBuilder.Clear();
-                }
-
-                if (messages.Count > 0)
-                {
-                    _handler.ProcessIncomingMessage(messages, clientId);
-                }
-
-                // Continue the waiting for data on the Socket.
-                WaitForData(socketState);
-            }
-            catch (ObjectDisposedException)
-            {
-                EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, clientId));
-                Logger.Debug("OnDataReceived, socket has been closed");
-            }
-            catch (SocketException se)
-            {
-                if (se.ErrorCode == 10054) // Error code for Connection reset by peer
-                {
-                    Socket deadSocket;
-                    if (_availableWorkerSockets.ContainsKey(clientId))
-                        _availableWorkerSockets.TryRemove(clientId, out deadSocket);
-                    EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, clientId));
-                }
-                else
-                {
-                    Logger.Debug(se);
-                }
-            }
-        }
-
         /// <summary>
-        /// Send the message specified to a single client matched by the
-        /// client's identity.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        /// <param name="clientId">The client identifier.</param>
-        public void Send(string message, string clientId)
-        {
-            if (clientId.Equals("all"))
-            {
-                Send(message);
-                return;
-            }
-            try
-            {
-                var data = Encoding.UTF8.GetBytes(message + "\r\n");
-                Socket wSocket;
-                if (_availableWorkerSockets.TryGetValue(clientId, out wSocket))
-                {
-                    wSocket.Send(data);
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug("Send", ex);
-            }
-        }
-
-        /// <summary>
-        /// Removes an inactive socket from the client list.
-        /// </summary>
-        /// <param name="clientId">The client identifier.</param>
-        private void RemoveDeadSocket(string clientId)
-        {
-            Socket worker;
-            _availableWorkerSockets.TryRemove(clientId, out worker);
-            if (worker != null)
-            {
-                worker.Dispose();
-            }
-        }
-
-
-        /// <summary>
-        /// Sends the specified message to all the available clients
+        ///     Sends the specified message to all the available clients
         /// </summary>
         /// <param name="message">The message.</param>
         public void Send(string message)
         {
-            try
+            foreach (var connection in _allSockets)
             {
-                var data = Encoding.UTF8.GetBytes(message);
-
-                foreach (var key in _availableWorkerSockets.Keys)
-                {
-                    Socket worker;
-                    if (!_availableWorkerSockets.TryGetValue(key, out worker)) continue;
-                    var isConnected = (worker != null && worker.Connected);
-                    if (!isConnected)
-                    {
-                        RemoveDeadSocket(key);
-                        EventBus.FireEvent(new MessageEvent(MessageEvent.ActionClientDisconnected, string.Empty, key));
-                    }
-                    else
-                    {
-                        worker.Send(data);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug("Send (Broadcast)", ex);
+                connection.Send(message);
             }
         }
 
         /// <summary>
-        ///     Disposes anything Related to the socket server at the end of life of the Object.
+        /// Used to setup fleck in order to use NLOG for the logging functionality.
         /// </summary>
-        public void Dispose()
+        private static void SetupLogger()
         {
-            _mainSocket.Dispose();
+            FleckLog.LogAction = (level, message, ex) =>
+            {
+                switch (level)
+                {
+                    case LogLevel.Debug:
+                        Logger.Debug(message, ex);
+                        break;
+                    case LogLevel.Error:
+                        Logger.Error(message, ex);
+                        break;
+                    case LogLevel.Info:
+                        Logger.Info(message, ex);
+                        break;
+                    case LogLevel.Warn:
+                        Logger.Warn(message, ex);
+                        break;
+                    default:
+                        Logger.Info(message, ex);
+                        break;
+                }
+            };
         }
     }
 }
