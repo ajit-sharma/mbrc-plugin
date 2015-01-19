@@ -8,58 +8,115 @@ using ServiceStack.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
-    [Route("/player/shuffle", "GET")]
+    /// <summary>
+    ///     Strings representing the HTTP methods (verbs)
+    /// </summary>
+    public class Verbs
+    {
+        /// <summary>
+        ///     A GET Request.
+        /// </summary>
+        public const string Get = "GET";
+
+        /// <summary>
+        ///     A PUT Request.
+        /// </summary>
+        public const string Put = "PUT";
+    }
+
+    /// <summary>
+    ///     The Routes of the API
+    /// </summary>
+    public class Routes
+    {
+        public const string PlayerShuffle = "/player/shuffle";
+        public const string PlayerScrobble = "/player/scrobble";
+        public const string PlayerRepeat = "/player/repeat";
+        public const string PlayerMute = "/player/mute";
+    }
+
+    /// <summary>
+    ///     Short Summary of the API functionality
+    /// </summary>
+    public class Summary
+    {
+        public const string ShuffleGet = "Gets the current state of shuffle.";
+        public const string ShufflePut = @"Sets the shuffle status.";
+    }
+
+    /// <summary>
+    ///     Holds descriptions of various parameters
+    /// </summary>
+    public class Description
+    {
+        public const string ShuffleEnabled = @"If the value is true or false it will enable/disable shuffle." +
+                                             "\n If left empty it will toggle shuffle on/off depending on the previous state.";
+
+        public const string ScrobbleEnabled =
+            @"If the value is true or false it will enable/disable last.fm scrobbling." +
+            "\n If left empty it will toggle scrobbling on/off depending on the previous state.";
+
+        public const string RepeatMode =
+            @"It can be all/none or empty. If left empty it will change between the available states." 
+            + @" [Note: As far as I know repeat one is not supported by the MusicBee API.";
+    }
+
+    [Route(Routes.PlayerShuffle, Verbs.Get, Summary = Summary.ShuffleGet)]
     public class GetShuffleState : IReturn<StatusResponse>
     {
     }
 
-    [Route("/player/shuffle", "PUT")]
+    [Route(Routes.PlayerShuffle, Verbs.Put, Summary = Summary.ShufflePut)]
     public class SetShuffleState : IReturn<SuccessStatusResponse>
     {
-        public bool enabled { get; set; }
+        [ApiMember(Name = "enabled", ParameterType = "query", DataType = "boolean",
+            Description = Description.ShuffleEnabled, IsRequired = false)]
+        public bool? enabled { get; set; }
     }
 
-    [Route("/player/shuffle/toggle", "PUT")]
-    public class ToggleShuffleState : IReturn<SuccessStatusResponse> { }
-
-    [Route("/player/scrobble", "GET")]
+    [Route(Routes.PlayerScrobble, "GET", Summary = "Gets the status of last.fm scrobbling")]
     public class GetScrobbleStatus : IReturn<StatusResponse>
     {
     }
 
-    [Route("/player/scrobble", "PUT")]
+    [Route(Routes.PlayerScrobble, "PUT", Summary = "Sets the status of last.fm scrobbling.")]
     public class SetScrobbleStatus : IReturn<SuccessStatusResponse>
     {
-        public bool enabled { get; set; }
+        [ApiMember(Name = "enabled", ParameterType = "query", DataType = "boolean",
+            Description = Description.ScrobbleEnabled, IsRequired = false)]
+        public bool? enabled { get; set; }
     }
 
-    [Route("/player/scrobble/toggle", "PUT")]
-    public class ToggleScrobbleStatus : IReturn<SuccessStatusResponse> { }
 
-    [Route("/player/repeat", "GET")]
+    [Route(Routes.PlayerRepeat, "GET")]
     public class GetRepeatMode : IReturn<ValueResponse>
     {
     }
 
-    [Route("/player/repeat", "PUT")]
+    [Route(Routes.PlayerRepeat, "PUT")]
     public class SetRepeatMode : IReturn<SuccessResponse>
     {
+        [ApiMember(Name = "mode", ParameterType = "query", DataType = "string",
+            Description = Description.RepeatMode, IsRequired = false)]
+        [ApiAllowableValues("mode", "all", "none")]
         public string mode { get; set; }
     }
 
-    [Route("/player/mute", "GET")]
+    [Route(Routes.PlayerMute, "GET")]
     public class GetMuteStatus : IReturn<StatusResponse>
     {
     }
 
-    [Route("/player/mute", "PUT")]
+    [Route(Routes.PlayerMute, "PUT")]
     public class SetMuteStatus : IReturn<SuccessStatusResponse>
     {
         public bool enabled { get; set; }
     }
 
     [Route("/player/mute/toggle", "PUT")]
-    public class ToggleMuteStatus : IReturn<SuccessStatusResponse> { }
+    public class ToggleMuteStatus : IReturn<SuccessStatusResponse>
+    {
+    }
 
     [Route("/player/volume", "GET")]
     public class GetVolume : IReturn<VolumeResponse>
@@ -109,7 +166,9 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route("/player/playpause", "PUT")]
-    public class PlaybackPlayPause : IReturn<SuccessResponse> { }
+    public class PlaybackPlayPause : IReturn<SuccessResponse>
+    {
+    }
 
     [Route("/player/status", "GET")]
     public class GetPlayerStatus : IReturn<PlayerStatus>
@@ -121,10 +180,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
-    [Route("/player/changerepeat", "PUT")]
-    public class ChangeRepeat : IReturn<ValueResponse> { }
-
-
     [DataContract]
     public class SuccessStatusResponse : SuccessResponse
     {
@@ -132,6 +187,9 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public bool Enabled { get; set; }
     }
 
+    /// <summary>
+    /// A response that returns the status of a functionality (enabled/disabled)
+    /// </summary>
     [DataContract]
     public class StatusResponse
     {

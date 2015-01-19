@@ -28,18 +28,13 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetShuffleState request)
         {
-            return new SuccessStatusResponse
-            {
-                Success = _module.SetShuffleState(request.enabled),
-                Enabled = _module.GetShuffleState()
-            };
-        }
+            var success = request.enabled != null 
+                ? _module.SetShuffleState((bool) request.enabled) :
+                _module.SetShuffleState(!_module.GetShuffleState());
 
-        public SuccessStatusResponse Put(ToggleShuffleState request)
-        {
             return new SuccessStatusResponse
             {
-                Success = _module.SetShuffleState(!_module.GetShuffleState()),
+                Success = success,
                 Enabled = _module.GetShuffleState()
             };
         }
@@ -141,19 +136,13 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessStatusResponse Put(SetScrobbleStatus request)
         {
-            return new SuccessStatusResponse
-            {
-                Success = _module.SetScrobbleState(request.enabled),
-                Enabled = _module.GetScrobbleState()
-                
-            };
-        }
+            var success = request.enabled != null
+                ? _module.SetScrobbleState((bool) request.enabled)
+                : _module.SetScrobbleState(!_module.GetScrobbleState());
 
-        public SuccessStatusResponse Put(ToggleScrobbleStatus request)
-        {
             return new SuccessStatusResponse
             {
-                Success = _module.SetScrobbleState(!_module.GetScrobbleState()),
+                Success = success,
                 Enabled = _module.GetScrobbleState()
             };
         }
@@ -194,9 +183,13 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetRepeatMode request)
         {
+            var success = request.mode != null
+                ? _module.SetRepeatState(request.mode)
+                : _module.ChangeRepeatMode();
+
             return new SuccessValueResponse
             {
-                Success = _module.SetRepeatState(request.mode),
+                Success = success,
                 Value = _module.GetRepeatState()
             };
         }
@@ -206,14 +199,6 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return new ValueResponse
             {
                 Value = _module.GetPlayState()
-            };
-        }
-
-        public ValueResponse Put(ChangeRepeat request)
-        {
-            return new ValueResponse
-            {
-                Value = _module.ChangeRepeatMode().ToString().ToUpper()
             };
         }
     }

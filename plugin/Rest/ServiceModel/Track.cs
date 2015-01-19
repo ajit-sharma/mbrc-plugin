@@ -42,8 +42,8 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public int? size { get; set; }
     }
 
-    [Route("/track/cover/raw")]
-    public class GetTrackCoverData : IReturn<Stream>
+    [Route("/track/cover/raw", "GET", Summary = "Retrieves the playing track's cover image (jpeg).")]
+    public class GetTrackCoverData
     {        
     }
 

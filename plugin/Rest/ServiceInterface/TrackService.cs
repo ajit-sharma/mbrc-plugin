@@ -5,6 +5,7 @@ using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Common.Web;
 using ServiceStack.ServiceInterface;
 
 #endregion
@@ -70,9 +71,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         }
 
         [AddHeader(ContentType = "image/jpeg")]
-        public Stream Get(GetTrackCoverData request)
+        public object Get(GetTrackCoverData request)
         {
-            return _module.GetBinaryCoverData();
+            return new HttpResult(_module.GetBinaryCoverData(), "image/jpeg");
         }
 
         [AddHeader(ContentType = "text/plain")]

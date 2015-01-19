@@ -158,7 +158,7 @@ namespace MusicBeePlugin.Modules
             return _api.Player_PlayPause();
         }
 
-        public RepeatMode ChangeRepeatMode()
+        public bool ChangeRepeatMode()
         {
             var repeat = _api.Player_GetRepeat();
             RepeatMode newMode;
@@ -174,8 +174,8 @@ namespace MusicBeePlugin.Modules
                     newMode = RepeatMode.None;
                     break;
             }
-            _api.Player_SetRepeat(newMode);
-            return _api.Player_GetRepeat();
+            
+            return _api.Player_SetRepeat(newMode);
         }
     }
 }
