@@ -157,18 +157,13 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetMuteStatus request)
         {
-            return new SuccessStatusResponse
-            {
-                Success = _module.SetMuteState(request.enabled),
-                Enabled = _module.GetMuteState()
-            };
-        }
 
-        public SuccessStatusResponse Put(ToggleMuteStatus request)
-        {
+            var success = request.enabled != null
+                ? _module.SetMuteState((bool) request.enabled)
+                : _module.SetMuteState(!_module.GetMuteState());
             return new SuccessStatusResponse
             {
-                Success = _module.SetMuteState(!_module.GetMuteState()),
+                Success = success,
                 Enabled = _module.GetMuteState()
             };
         }
