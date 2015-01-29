@@ -114,8 +114,8 @@ namespace MusicBeePlugin.Modules
 
             return new TrackPositionResponse
             {
-                position = currentPosition,
-                duration = totalDuration
+                Position = currentPosition,
+                Duration = totalDuration
             };
         }
 
@@ -126,8 +126,8 @@ namespace MusicBeePlugin.Modules
 
             return new TrackPositionResponse
             {
-                position = currentPosition,
-                duration = totalDuration
+                Position = currentPosition,
+                Duration = totalDuration
             };
         }
 

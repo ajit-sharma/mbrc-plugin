@@ -30,6 +30,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
             Offset = offset;
             Limit = limit;
             Total = data.Count;
+	        Data = data;
 
             if (offset == 0 && limit == 0) return;
 
@@ -50,51 +51,59 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         }
     }
 
-    public class PaginatedArtistResponse : PaginatedResponse<LibraryArtist>
+	[DataContract]
+	public class PaginatedArtistResponse : PaginatedResponse<LibraryArtist>
     {
         [DataMember(Name = "data")]
         public override List<LibraryArtist> Data { get; set; }
     }
 
-    public class PaginatedTrackResponse : PaginatedResponse<LibraryTrack>
+	[DataContract]
+	public class PaginatedTrackResponse : PaginatedResponse<LibraryTrack>
     {
         [DataMember(Name = "data")]
         public override List<LibraryTrack> Data { get; set; }
     }
 
-    public class PaginatedGenreResponse : PaginatedResponse<LibraryGenre>
+	[DataContract]
+	public class PaginatedGenreResponse : PaginatedResponse<LibraryGenre>
     {
         [DataMember(Name = "data")]
         public override List<LibraryGenre> Data { get; set; }
     }
 
-    public class PaginatedAlbumResponse : PaginatedResponse<LibraryAlbum>
+	[DataContract]
+	public class PaginatedAlbumResponse : PaginatedResponse<LibraryAlbum>
     {
         [DataMember(Name = "data")]
         public override List<LibraryAlbum> Data { get; set; }
     }
-    public class PaginatedCoverResponse : PaginatedResponse<LibraryCover>
+
+	[DataContract]
+	public class PaginatedCoverResponse : PaginatedResponse<LibraryCover>
     {
         [DataMember(Name = "data")]
         public override List<LibraryCover> Data { get; set; }
     }
 
-    public class PaginatedNowPlayingResponse : PaginatedResponse<NowPlaying>
+	[DataContract]
+	public class PaginatedNowPlayingResponse : PaginatedResponse<NowPlaying>
     {
         [DataMember(Name = "data")]
         public override List<NowPlaying> Data { get; set; }
     }
 
-    public class PaginatedPlaylistResponse : PaginatedResponse<Playlist>
+	[DataContract]
+	public class PaginatedPlaylistResponse : PaginatedResponse<Playlist>
     {
         [DataMember(Name = "data")]
         public override List<Playlist> Data { get; set; }
     }
 
-    public class PaginatedPlaylistTrackResponse : PaginatedResponse<PlaylistTrack>
+	[DataContract]
+	public class PaginatedPlaylistTrackResponse : PaginatedResponse<PlaylistTrack>
     {
         [DataMember(Name = "data")]
         public override List<PlaylistTrack> Data { get; set; }
     }
-
 }

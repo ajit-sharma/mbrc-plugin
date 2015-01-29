@@ -20,29 +20,29 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public PaginatedResponse<Playlist> Get(AllPlaylists request)
         {
-            return _module.GetAvailablePlaylists(request.limit, request.offset);
+            return _module.GetAvailablePlaylists(request.Limit, request.Offset);
         }
 
         public PaginatedResponse<PlaylistTrack> Get(GetPlaylistTracks request)
         {
-            return _module.GetPlaylistTracks(request.id);
+            return _module.GetPlaylistTracks(request.Id);
         }
 
         public SuccessResponse Put(CreatePlaylist request)
         {
-            return _module.CreateNewPlaylist(request.name, request.list);
+            return _module.CreateNewPlaylist(request.Name, request.List);
         }
 
         public SuccessResponse Put(PlaylistPlay request)
         {
-            return _module.PlaylistPlayNow(request.path);
+            return _module.PlaylistPlayNow(request.Path);
         }
 
         public SuccessResponse Put(AddPlaylistTracks request)
         {
             return new SuccessResponse
             {
-                Success = _module.PlaylistAddTracks(request.id, request.list)
+                Success = _module.PlaylistAddTracks(request.Id, request.List)
             };
         }
 
@@ -50,7 +50,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                Success = _module.PlaylistDelete(request.id)
+                Success = _module.PlaylistDelete(request.Id)
             };
         }
 
@@ -58,7 +58,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                Success = _module.DeleteTrackFromPlaylist(request.id, request.index)
+                Success = _module.DeleteTrackFromPlaylist(request.Id, request.Position)
             };
         }
 
@@ -66,7 +66,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                Success = _module.MovePlaylistTrack(request.id, request.from, request.to)
+                Success = _module.MovePlaylistTrack(request.Id, request.From, request.To)
             };
         }
     }

@@ -28,8 +28,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetShuffleState request)
         {
-            var success = request.enabled != null 
-                ? _module.SetShuffleState((bool) request.enabled) :
+            var success = request.Enabled != null 
+                ? _module.SetShuffleState((bool) request.Enabled) :
                 _module.SetShuffleState(!_module.GetShuffleState());
 
             return new SuccessStatusResponse
@@ -104,7 +104,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessStatusResponse
             {
-                Success = _module.SetAutoDjState(request.enabled),
+                Success = _module.SetAutoDjState(request.Enabled),
                 Enabled = _module.GetAutoDjState()
             };
         }
@@ -121,7 +121,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessVolumeResponse()
             {
-                Success = _module.SetVolume(request.value),
+                Success = _module.SetVolume(request.Value),
                 Value = _module.GetVolume()
             };
         }
@@ -136,8 +136,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessStatusResponse Put(SetScrobbleStatus request)
         {
-            var success = request.enabled != null
-                ? _module.SetScrobbleState((bool) request.enabled)
+            var success = request.Enabled != null
+                ? _module.SetScrobbleState((bool) request.Enabled)
                 : _module.SetScrobbleState(!_module.GetScrobbleState());
 
             return new SuccessStatusResponse
@@ -158,8 +158,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         public SuccessResponse Put(SetMuteStatus request)
         {
 
-            var success = request.enabled != null
-                ? _module.SetMuteState((bool) request.enabled)
+            var success = request.Enabled != null
+                ? _module.SetMuteState((bool) request.Enabled)
                 : _module.SetMuteState(!_module.GetMuteState());
             return new SuccessStatusResponse
             {
@@ -178,8 +178,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetRepeatMode request)
         {
-            var success = request.mode != null
-                ? _module.SetRepeatState(request.mode)
+            var success = request.Mode != null
+                ? _module.SetRepeatState(request.Mode)
                 : _module.ChangeRepeatMode();
 
             return new SuccessValueResponse

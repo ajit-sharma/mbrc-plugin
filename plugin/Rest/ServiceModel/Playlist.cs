@@ -3,70 +3,96 @@
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 using System.Runtime.Serialization;
-
+using MusicBeePlugin.Rest.ServiceModel.Const;
+using ServiceStack.Api.Swagger;
 
 #endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
-    [Route("/playlists", "GET")]
+	[Api("The API responsible for handling the playlist functionality.")]
+    [Route(Routes.Playlists, Verbs.Get, Summary = Summary.PlaylistGet)]
     public class AllPlaylists : IReturn<PaginatedPlaylistResponse>
     {
-        public int offset { get; set; }
-        public int limit { get; set; }
+	    [ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset, ParameterType = "query")]
+	    public int Offset { get; set; }
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit, ParameterType = "query")]
+		public int Limit { get; set; }
     }
 
-    [Route("/playlists", "PUT")]
+	[Api]
+	[Route(Routes.Playlists, Verbs.Put, Summary = Summary.PlaylistPut)]
     public class CreatePlaylist : IReturn<SuccessResponse>
     {
-        public string name { get; set; }
-        public string[] list { get; set; }
+	    [ApiMember(Name = "name", IsRequired = true, DataType = SwaggerType.String, Description = Description.PlaylistName, ParameterType = "query")]
+	    public string Name { get; set; }
+		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList, ParameterType = "query")]
+        public string[] List { get; set; }
     }
 
-    [Route("/playlists/play", "PUT")]
+	[Api]
+	[Route(Routes.PlaylistsPlay, Verbs.Put, Summary = Summary.PlaylistPlay)]
     public class PlaylistPlay : IReturn<SuccessResponse>
     {
-        public string path { get; set; }
+	    [ApiMember(Name = "path", IsRequired = true, Description = Description.PlaylistPlay, DataType = SwaggerType.String, ParameterType = "query")]
+        public string Path { get; set; }
     }
 
-    [Route("/playlists/{id}", "GET")]
+	[Api]
+	[Route(Routes.PlaylistsId, Verbs.Get, Summary = Summary.GetsAPlaylist)]
     public class GetPlaylist
     {
-        public int id { get; set; }
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
+        public int Id { get; set; }
     }
 
-    [Route("/playlists/{id}", "DELETE")]
+	[Api]
+	[Route(Routes.PlaylistsId, Verbs.Delete, Summary = Summary.DeletesAPlaylist)]
     public class DeletePlaylist : IReturn<SuccessResponse>
     {
-        public int id { get; set; }
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
+		public int Id { get; set; }
     }
 
-    [Route("/playlists/{id}/tracks", "GET")]
+	[Api]
+	[Route(Routes.PlaylistsIdTracks, Verbs.Get, Summary = Summary.PlaylistTracks)]
     public class GetPlaylistTracks : IReturn<PaginatedPlaylistTrackResponse>
     {
-        public int id { get; set; }
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
+		public int Id { get; set; }
     }
 
-    [Route("/playlists/{id}/tracks", "PUT")]
+	[Api]
+	[Route(Routes.PlaylistsIdTracks, Verbs.Put, Summary = Summary.PlaylistTrackAdd)]
     public class AddPlaylistTracks : IReturn<SuccessResponse>
     {
-        public string[] list { get; set; }
-        public int id { get; set; }
+		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList, ParameterType = "query")]
+		public string[] List { get; set; }
+
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
+		public int Id { get; set; }
     }
 
-    [Route("/playlists/{id}/tracks/move", "PUT")]
+	[Api]
+	[Route(Routes.PlaylistsIdTracksMove, Verbs.Put, Summary = Summary.PlaylistTrackMove)]
     public class MovePlaylistTrack : IReturn<SuccessResponse>
     {
-        public int id { get; set; }
-        public int to { get; set; }
-        public int from { get; set; }
+		[ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int, Description = Description.PlaylistIdDesc)]
+		public int Id { get; set; }
+		[ApiMember(Name = "to", IsRequired = true,DataType = SwaggerType.Int, Description = Description.MoveTo, ParameterType = "query")]
+        public int To { get; set; }
+		[ApiMember(Name = "from", IsRequired = true,DataType = SwaggerType.Int, Description = Description.MoveFrom, ParameterType = "query")]
+		public int From { get; set; }
     }
 
-    [Route("/playlists/{id}/tracks", "DELETE")]
+	[Api]
+	[Route(Routes.PlaylistsIdTracks, Verbs.Delete, Summary = Summary.PlaylistTrackDelete)]
     public class DeletePlaylistTracks : IReturn<SuccessResponse>
     {
-        public int index { get; set; }
-        public int id { get; set; }
+		[ApiMember(Name = "position", IsRequired = true, DataType = SwaggerType.Int, Description = Description.PlaylistTrackPosition, ParameterType = "query")]
+        public int Position { get; set; }
+		[ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int, Description = Description.PlaylistIdDesc)]
+		public int Id { get; set; }
     }
 
     [DataContract]

@@ -154,3 +154,5 @@ MB_REMOTE.XML
 
 # Build directory
 build/
+
+*.sln.ide

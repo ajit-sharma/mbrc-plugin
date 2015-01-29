@@ -1,6 +1,5 @@
 ﻿#region
 
-using System.IO;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
@@ -28,19 +27,11 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetTrackInfo();
         }
 
-        public TrackCoverResponse Get(GetTrackCover request)
-        {
-            return new TrackCoverResponse
-            {
-                cover = _model.Cover
-            };
-        }
-
         public TrackLyricsResponse Get(GetTrackLyrics request)
         {
             return new TrackLyricsResponse
             {
-                lyrics = _model.Lyrics
+                Lyrics = _model.Lyrics
             };
         }
 
@@ -48,7 +39,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new TrackRatingResponse
             {
-                rating = _module.GetRating()
+                Rating = _module.GetRating()
             };
         }
 
@@ -56,7 +47,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new TrackRatingResponse
             {
-                rating = _module.SetRating(request.rating)
+                Rating = _module.SetRating(request.Rating ?? -1)
             };
         }
 
@@ -67,7 +58,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public TrackPositionResponse Put(SetTrackPosition request)
         {
-            return _module.SetPosition(request.position);
+            return _module.SetPosition(request.Position);
         }
 
         [AddHeader(ContentType = "image/jpeg")]

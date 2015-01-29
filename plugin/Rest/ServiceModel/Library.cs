@@ -1,5 +1,6 @@
 ﻿#region
 
+using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
@@ -10,12 +11,12 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route("/library/tracks", "GET", Summary = "Retrieves the library tracks stored in the database")]
     public class GetLibraryTracks : IReturn<PaginatedTrackResponse>
     {
-        [ApiMember(Name = "limit", ParameterType = "query", DataType = "integer", IsRequired = false,
-            Description = "The number of results contained in the response.")]
+	    [ApiMember(Name = "limit", ParameterType = "query", DataType = "integer", IsRequired = false,
+            Description = Description.Limit)]
         public int limit { get; set; }
 
         [ApiMember(Name = "offset", ParameterType = "query", DataType = "integer", IsRequired = false,
-            Description = "The position of the first entry in the response.")]
+            Description = Description.Offset)]
         public int offset { get; set; }
     }
 

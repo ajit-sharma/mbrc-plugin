@@ -1,82 +1,85 @@
-﻿using System.IO;
+﻿#region
+
+using System.Runtime.Serialization;
+using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 
+#endregion
+
 namespace MusicBeePlugin.Rest.ServiceModel
 {
-
-    [Route("/track", "GET")]
+    [Route(Routes.Track, Verbs.Get, Summary = Summary.TrackGet)]
     public class GetTrack : IReturn<Track>
     {
-
     }
 
-    [Route("/track/rating", "GET")]
+    [Route(Routes.TrackRating, Verbs.Get, Summary = Summary.RatingGet)]
     public class GetTrackRating : IReturn<TrackRatingResponse>
     {
-
     }
 
-    [Route("/track/rating", "PUT")]
+    [Route(Routes.TrackRating, Verbs.Put, Summary = Summary.RatingPut)]
     public class SetTrackRating : IReturn<TrackRatingResponse>
     {
-        public int rating { get; set; }
+        [ApiMember(Name = "rating", ParameterType = "query", DataType = "float", IsRequired = false,
+            Description = Description.Rating)]
+        [ApiAllowableValues("rating", 0, 5)]
+        public float? Rating { get; set; }
     }
 
-    
-    [Route("/track/position", "GET")]
+
+    [Route(Routes.TrackPosition, Verbs.Get, Summary = Summary.TrackPositionGet)]
     public class GetTrackPosition : IReturn<TrackPositionResponse>
     {
-        
     }
 
-    [Route("/track/position", "PUT")]
+    [Route(Routes.TrackPosition, Verbs.Put, Summary = Summary.TrackPositionSet)]
     public class SetTrackPosition : IReturn<TrackPositionResponse>
     {
-        public int position { get; set; }
+        [ApiMember(Name = "position", ParameterType = "query", DataType = "integer", IsRequired = true,
+            Description = Description.Position)]
+        public int Position { get; set; }
     }
 
-    [Route("/track/cover", "GET")]
-    public class GetTrackCover : IReturn<TrackCoverResponse>
-    {
-        public int? size { get; set; }
-    }
-
-    [Route("/track/cover/raw", "GET", Summary = "Retrieves the playing track's cover image (jpeg).")]
+    [Route(Routes.TrackCover, Verbs.Get, Summary = Summary.Cover)]
     public class GetTrackCoverData
-    {        
+    {
+        [ApiMember(Name = "size", IsRequired = false)]
+        public int? Size { get; set; }
     }
 
-    [Route("/track/lyrics", "GET")]
+    [Route(Routes.TrackLyrics, Verbs.Get, Summary = Summary.LyricsGet)]
     public class GetTrackLyrics : IReturn<TrackLyricsResponse>
     {
     }
 
-    [Route("/track/lyrics/raw", "GET", Summary = "Returns the lyrics of the playing track as plain text.")]
+    [Route(Routes.TrackLyricsRaw, Verbs.Get, Summary = Summary.LyricsRaw)]
     public class GetTrackLyricsText : IReturn<string>
     {
-        
     }
 
+    [DataContract]
     public class TrackLyricsResponse
     {
-        public string lyrics { get; set; }
+        [DataMember(Name = "lyrics")]
+        public string Lyrics { get; set; }
     }
 
+    [DataContract]
     public class TrackRatingResponse
     {
-        public float rating { get; set; }
+        [DataMember(Name = "rating")]
+        public float Rating { get; set; }
     }
 
-
+    [DataContract]
     public class TrackPositionResponse
     {
-        public int position { get; set; }
-        public int duration { get; set; }
-    }
+        [DataMember(Name = "position")]
+        public int Position { get; set; }
 
-    public class TrackCoverResponse
-    {
-        public string cover { get; set; }
+        [DataMember(Name = "duration")]
+        public int Duration { get; set; }
     }
 }
