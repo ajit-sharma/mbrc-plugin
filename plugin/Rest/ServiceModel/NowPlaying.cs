@@ -1,72 +1,72 @@
 ﻿#region
 
 using MusicBeePlugin.AndroidRemote.Enumerations;
+using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Api.Swagger;
 using ServiceStack.ServiceHost;
 
 #endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
-    [Route("/nowplaying/", "GET", Summary = "Retrieves the tracks in the now playing list.")]
+	[Api("The API responsible for the now playing list operations")]
+    [Route(Routes.Nowplaying, Verbs.Get, Summary = Summary.NowPlayingGet)]
     public class AllNowPlaying : IReturn<PaginatedNowPlayingResponse>
     {
-        [ApiMember(Name = "limit", ParameterType = "query", DataType = "integer", IsRequired = false,
-            Description = "The number of results contained in the response.")]
-        public int offset { get; set; }
+		[ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
+            Description = Description.Offset)]
+        public int Offset { get; set; }
 
-        [ApiMember(Name = "offset", ParameterType = "query", DataType = "integer", IsRequired = false,
-            Description = "The position of the first entry in the response.")]
-        public int limit { get; set; }
+        [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
+            Description = Description.Limit)]
+        public int Limit { get; set; }
     }
 
-    [Route("/nowplaying/play", "PUT", Summary = "Plays the track specified.")]
+	[Api]
+    [Route(Routes.NowplayingPlay, Verbs.Put, Summary = Summary.NowPlayingPlay)]
     public class NowPlayingPlay : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "path", ParameterType = "path", DataType = "string", IsRequired = true,
-            Description = "The full path of the track in the filesystem.")]
-        public string path { get; set; }
+		[ApiMember(Name = "path", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true,
+            Description = Description.NowPlayingPath)]
+        public string Path { get; set; }
     }
 
-    [Route("/nowplaying/{id}", "DELETE", Summary = "Removes a track from the now playing list.")]
+	[Api]
+	[Route(Routes.NowplayingId, Verbs.Delete, Summary = Summary.NowPlayingDelete)]
     public class NowPlayingRemove : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "id", ParameterType = "path", DataType = "integer", IsRequired = true,
-            Description = "The id of the track to be removed from the now playing list.")]
-        public int id { get; set; }
+		[ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true,
+            Description = Description.NowPlayingId)]
+        public int Id { get; set; }
     }
 
-    [Route("/nowplaying/move", "PUT", Summary = "Moves a track from a position in the now playing list to another.")]
+	[Api]
+	[Route(Routes.NowplayingMove, Verbs.Put, Summary = Summary.NowPlayingMove)]
     public class NowPlayingMove : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "from", ParameterType = "query", DataType = "integer", IsRequired = true,
-            Description = "The initial position of the track we want to move in the now playing list.")]
-        public int from { get; set; }
+		[ApiMember(Name = "from", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
+            Description = Description.NowPlayingFrom)]
+        public int From { get; set; }
 
-        [ApiMember(Name = "to", ParameterType = "query", DataType = "integer", IsRequired = true,
-            Description = "The new position where the element will be moved.")]
-        public int to { get; set; }
+        [ApiMember(Name = "to", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
+            Description = Description.NowPlayingTo)]
+        public int To { get; set; }
     }
 
-    [Route("/nowplaying/queue", "PUT", Summary = "Queues item for playing in the now playing queue.",
-        Notes = "The item can be either a single track by id, or the tracks belonging to a genre," +
-                " artist or album.")]
+	[Api]
+	[Route(Routes.NowplayingQueue, Verbs.Put, Summary = Summary.NowPlayingQueue, Notes = Notes.NowPlayingQueue)]
     public class NowPlayingQueue : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "type", ParameterType = "query", DataType = "string", IsRequired = true,
-            Description = "The type of meta data the id responds to. Helps identify in which table to lookup.")]
+		[ApiMember(Name = "type", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Description.MetaType)]
         [ApiAllowableValues("type", typeof (MetaTag))]
-        public MetaTag type { get; set; }
+        public MetaTag Type { get; set; }
 
-        [ApiMember(Name = "action", ParameterType = "query", DataType = "string", IsRequired = true,
-            Description = "The action should be 'now' for clearing queue and immediately " +
-                          "playing the tracks matching, 'next' for queuing after the current track" +
-                          ", or 'last' for queue last")]
+        [ApiMember(Name = "action", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Description.MoveAction)]
         [ApiAllowableValues("action", typeof (QueueType))]
-        public QueueType action { get; set; }
+        public QueueType Action { get; set; }
 
-        [ApiMember(Name = "id", ParameterType = "query", DataType = "long`", IsRequired = true,
-            Description = "The id of the entire entity for which we want to queue tracks.")]
-        public long id { get; set; }
+        [ApiMember(Name = "id", ParameterType = "query", DataType = SwaggerType.Long, IsRequired = true, Description = Description.NowPlayingQueueId)]
+        public long Id { get; set; }
     }
 }

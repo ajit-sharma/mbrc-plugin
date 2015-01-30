@@ -34,5 +34,20 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
 	    public const string PlaylistTrackPosition = @"The position of the track in the playlist.";
 	    public const string MoveFrom = @"The old position of the track in the playlist.";
 	    public const string MoveTo = @"The new position of the track in the playlist.";
+	    public const string CoverSize = @"The size of the cover";
+	    public const string AutoDjPut = @"Enables/disables autodj if set true/false. If left empty it will swap the state.";
+	    public const string PlayerAction = @"The action for the player.";
+	    public const string NowPlayingPath = "The full path of the track in the filesystem.";
+	    public const string NowPlayingId = "The id of the track to be removed from the now playing list.";
+	    public const string NowPlayingFrom = "The initial position of the track we want to move in the now playing list.";
+	    public const string NowPlayingTo = "The new position where the element will be moved.";
+	    public const string MetaType = "The type of meta data the id responds to. Helps identify in which table to lookup.";
+
+	    public const string MoveAction = "The action should be 'now' for clearing queue and immediately " +
+	                                     "playing the tracks matching, 'next' for queuing after the current track" +
+	                                     ", or 'last' for queue last";
+
+	    public const string NowPlayingQueueId = "The id of the entire entity for which we want to queue tracks.";
+	    public const string EntryId = "The id of the entry to retrieve.";
     }
 }

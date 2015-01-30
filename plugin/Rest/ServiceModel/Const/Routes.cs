@@ -13,12 +13,7 @@
         public const string PlayerVolume = "/player/volume";
         public const string PlayerAutodj = "/player/autodj";
         public const string PlayerPlaystate = @"/player/playstate";
-        public const string PlayerPrevious = "/player/previous";
-        public const string PlayerNext = "/player/next";
-        public const string PlayerPlay = "/player/play";
-        public const string PlayerStop = "/player/stop";
-        public const string PlayerPause = "/player/pause";
-        public const string PlayerPlaypause = "/player/playpause";
+        public const string PlayerAction = "/player/action";
         public const string PlayerStatus = "/player/status";
         #endregion
 
@@ -29,12 +24,31 @@
         public const string TrackCover = "/track/cover/";
         public const string TrackLyrics = "/track/lyrics";
         public const string TrackLyricsRaw = "/track/lyrics/raw";
-        #endregion
+		#endregion
 
-	    public const string Playlists = "/playlists";
+		#region Playlist API
+		public const string Playlists = "/playlists";
 	    public const string PlaylistsPlay = "/playlists/play";
 	    public const string PlaylistsId = "/playlists/{id}";
 	    public const string PlaylistsIdTracks = "/playlists/{id}/tracks";
 	    public const string PlaylistsIdTracksMove = "/playlists/{id}/tracks/move";
+		#endregion
+
+	    public const string Nowplaying = "/nowplaying/";
+	    public const string NowplayingPlay = "/nowplaying/play";
+	    public const string NowplayingId = "/nowplaying/{id}";
+	    public const string NowplayingMove = "/nowplaying/move";
+	    public const string NowplayingQueue = "/nowplaying/queue";
+	    public const string LibraryTracks = "/library/tracks";
+	    public const string LibraryTracksId = "/library/tracks/{id}";
+	    public const string LibraryArtists = "/library/artists";
+	    public const string LibraryArtistsId = "/library/artists/{id}";
+	    public const string LibraryAlbums = "/library/albums";
+	    public const string LibraryAlbumsId = "/library/albums/{id}";
+	    public const string LibraryGenres = "/library/genres";
+	    public const string LibraryGenresId = "/library/genres/{id}";
+	    public const string LibraryCovers = "/library/covers";
+	    public const string LibraryCoversId = "/library/covers/{id}";
+	    public const string LibraryCoversIdRaw = "/library/covers/{id}/raw";
     }
 }

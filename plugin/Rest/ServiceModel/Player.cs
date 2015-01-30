@@ -2,7 +2,9 @@
 
 using System.Runtime.Serialization;
 using MusicBeePlugin.Rest.ServiceModel.Const;
+using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Api.Swagger;
 using ServiceStack.ServiceHost;
 
 #endregion
@@ -17,7 +19,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerShuffle, Verbs.Put, Summary = Summary.ShufflePut)]
     public class SetShuffleState : IReturn<SuccessStatusResponse>
     {
-        [ApiMember(Name = "enabled", ParameterType = "query", DataType = "boolean",
+        [ApiMember(Name = "enabled", ParameterType = "query", DataType = SwaggerType.Boolean,
             Description = Description.ShuffleEnabled, IsRequired = false)]
         public bool? Enabled { get; set; }
     }
@@ -30,104 +32,85 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerScrobble, Verbs.Put, Summary = Summary.ScrobbleSet)]
     public class SetScrobbleStatus : IReturn<SuccessStatusResponse>
     {
-        [ApiMember(Name = "enabled", ParameterType = "query", DataType = "boolean",
+        [ApiMember(Name = "enabled", ParameterType = "query", DataType = SwaggerType.Boolean,
             Description = Description.ScrobbleEnabled, IsRequired = false)]
         public bool? Enabled { get; set; }
     }
 
 
-    [Route(Routes.PlayerRepeat, Verbs.Get)]
+    [Route(Routes.PlayerRepeat, Verbs.Get, Summary = Summary.GetRepeat)]
     public class GetRepeatMode : IReturn<ValueResponse>
     {
     }
 
-    [Route(Routes.PlayerRepeat, Verbs.Put)]
+    [Route(Routes.PlayerRepeat, Verbs.Put, Summary = Summary.RepeatPut)]
     public class SetRepeatMode : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "mode", ParameterType = "query", DataType = "string",
+	    [ApiMember(Name = "mode", ParameterType = "query", DataType = SwaggerType.String,
             Description = Description.RepeatMode, IsRequired = false)]
         [ApiAllowableValues("mode", "all", "none")]
         public string Mode { get; set; }
     }
 
-    [Route(Routes.PlayerMute, Verbs.Get)]
+    [Route(Routes.PlayerMute, Verbs.Get, Summary = Summary.MuteGet)]
     public class GetMuteStatus : IReturn<StatusResponse>
     {
     }
 
-    [Route(Routes.PlayerMute, Verbs.Put)]
+    [Route(Routes.PlayerMute, Verbs.Put, Summary = Summary.MutePut)]
     public class SetMuteStatus : IReturn<SuccessStatusResponse>
     {
-        [ApiMember(Name="enabled", ParameterType = "query", DataType = "boolean", IsRequired = false,
+	    [ApiMember(Name="enabled", ParameterType = "query", DataType = SwaggerType.Boolean, IsRequired = false,
             Description = Description.Mute)]
         public bool? Enabled { get; set; }
     }
 
 
-    [Route(Routes.PlayerVolume, Verbs.Get)]
+    [Route(Routes.PlayerVolume, Verbs.Get, Summary = Summary.VolumeGet)]
     public class GetVolume : IReturn<VolumeResponse>
     {
     }
 
-    [Route(Routes.PlayerVolume, Verbs.Put)]
+    [Route(Routes.PlayerVolume, Verbs.Put, Summary = Summary.VolumePut)]
     public class SetVolume : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "value",ParameterType = "query", DataType = "integer", IsRequired = true,
+	    [ApiMember(Name = "value",ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
             Description = Description.Volume)]
         [ApiAllowableValues("value", 0 , 100)]
         public int Value { get; set; }
     }
 
-    [Route(Routes.PlayerAutodj, Verbs.Get)]
+    [Route(Routes.PlayerAutodj, Verbs.Get, Summary = Summary.AutoDjGet)]
     public class GetAutoDjStatus : IReturn<StatusResponse>
     {
     }
 
-    [Route(Routes.PlayerAutodj, Verbs.Put)]
+    [Route(Routes.PlayerAutodj, Verbs.Put, Summary = Summary.AutoDjPut)]
     public class SetAutoDjStatus : IReturn<SuccessStatusResponse>
     {
-        public bool Enabled { get; set; }
+	    [ApiMember(Name = "enabled", ParameterType = "query", DataType = SwaggerType.Boolean, IsRequired = false,
+			Description = Description.AutoDjPut)]
+        public bool? Enabled { get; set; }
     }
 
-    [Route(Routes.PlayerPrevious, Verbs.Get)]
-    public class PlayPrevious : IReturn<SuccessResponse>
+    [Route(Routes.PlayerAction, Verbs.Put, Summary = Summary.PlayerAction)]
+    public class PlayerAction : IReturn<SuccessResponse>
     {
+	    [ApiMember(Name = "action", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true,
+			Description = Description.PlayerAction)]
+		[ApiAllowableValues("action", typeof(PlayerAction))]
+		public PlaybackAction Action { get; set; }
+		
     }
 
-    [Route(Routes.PlayerNext, Verbs.Get)]
-    public class PlayNext : IReturn<SuccessResponse>
-    {
-    }
-
-    [Route(Routes.PlayerPlay, Verbs.Get)]
-    public class PlaybackStart : IReturn<SuccessResponse>
-    {
-    }
-
-    [Route(Routes.PlayerStop, Verbs.Get)]
-    public class PlaybackStop : IReturn<SuccessResponse>
-    {
-    }
-
-    [Route(Routes.PlayerPause, Verbs.Get)]
-    public class PlaybackPause : IReturn<SuccessResponse>
-    {
-    }
-
-    [Route(Routes.PlayerPlaypause, Verbs.Put)]
-    public class PlaybackPlayPause : IReturn<SuccessResponse>
-    {
-    }
-
-    [Route(Routes.PlayerStatus, Verbs.Get)]
+    [Route(Routes.PlayerStatus, Verbs.Get, Summary = Summary.PlayerStatusGet)]
     public class GetPlayerStatus : IReturn<PlayerStatus>
     {
     }
 
-    [Route(Routes.PlayerPlaystate, Verbs.Get)]
+    [Route(Routes.PlayerPlaystate, Verbs.Get, Summary = Summary.PlaystateGet)]
     public class GetPlayState : IReturn<ValueResponse>
     {
-        
     }
 
     [DataContract]

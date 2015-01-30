@@ -26,5 +26,32 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
 	    public const string DeletesAPlaylist = @"Deletes a playlist";
 	    public const string PlaylistTracks = @"Gets the tracks of a specified playlist.";
 	    public const string GetsAPlaylist = @"Gets a playlist";
+	    public const string GetRepeat = @"Gets the active repeat mode.";
+	    public const string RepeatPut = @"Sets the player repeat mode, or toggles it.";
+	    public const string MuteGet = @"Gets the mute state of the player.";
+	    public const string MutePut = @"Sets the mute state of the player.";
+	    public const string VolumeGet = @"Gets the volume.";
+	    public const string VolumePut = @"Sets the current volume.";
+	    public const string AutoDjGet = @"Gets the autodj state of the player.";
+	    public const string PlayerAction = @"Depending on the action passed it can play, pause, play next, previous and stop playback.";
+	    public const string PlayerStatusGet = @"Gets the status of the player.";
+	    public const string PlaystateGet = @"Gets the current play state.";
+	    public const string AutoDjPut = @"Sets the autodj state";
+	    public const string NowPlayingGet = "Retrieves the tracks in the now playing list.";
+	    public const string NowPlayingPlay = "Plays the track specified.";
+	    public const string NowPlayingDelete = "Removes a track from the now playing list.";
+	    public const string NowPlayingMove = "Moves a track from a position in the now playing list to another.";
+	    public const string NowPlayingQueue = "Queues item for playing in the now playing queue.";
+	    public const string LibraryTracksGet = "Retrieves the library tracks stored in the database";
+	    public const string LibraryTrackByIdGet = "Retrieves a track matching the specified id from the library";
+	    public const string LibraryArtist = "Retrieves the artists stored in the database";
+	    public const string LibraryArtistById = "Retrieves a single artist entry that matches the specified id.";
+	    public const string LibraryAlbums = "Retrieves the albums stored in the database";
+	    public const string LibraryAlbumsId = "Retrieves a single album from the database.";
+	    public const string LibraryGenres = "Retrieves the genres stored in the database.";
+	    public const string LibraryGenresId = "Retrieves as single genre from the database.";
+	    public const string LibraryCovers = "Retrieves the cover entries stored in the database.";
+	    public const string LibraryCoversId = "Retrieves a single cover from the database.";
+	    public const string LibraryCoversIdRaw = "Retrieves a jpeg cover image from the cache.";
     }
 }

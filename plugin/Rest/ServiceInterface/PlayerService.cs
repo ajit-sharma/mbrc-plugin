@@ -2,6 +2,7 @@
 
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
+using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceInterface;
 
@@ -38,58 +39,44 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                 Enabled = _module.GetShuffleState()
             };
         }
-
-        public SuccessResponse Get(PlaybackPause request)
+		
+        public SuccessResponse Get(PlayerAction request)
         {
-            return new SuccessResponse
+	        bool success;
+	        switch (request.Action)
+	        {
+				case PlaybackAction.next:
+			        success = _module.PlayNextTrack();
+			        break;
+				case PlaybackAction.pause:
+			        success = _module.PausePlayback();
+			        break;
+				case PlaybackAction.play:
+			        success = _module.StartPlayback();
+			        break;
+				case PlaybackAction.playpause:
+			        success = _module.PlayPause();
+			        break;
+				case PlaybackAction.previous:
+			        success = _module.PlayPreviousTrack();
+			        break;
+				case PlaybackAction.stop:
+			        success = _module.StopPlayback();
+			        break;
+				default:
+			        success = false;
+			        break;
+	        }
+			
+	        return new SuccessResponse
             {
-                Success = _module.PausePlayback()
-            };
-        }
-
-        public SuccessResponse Get(PlaybackStart request)
-        {
-            return new SuccessResponse
-            {
-                Success = _module.StartPlayback()
-            };
-        }
-
-        public SuccessResponse Get(PlaybackStop request)
-        {
-            return new SuccessResponse
-            {
-                Success = _module.StopPlayback()
-            };
-        }
-
-        public SuccessResponse Get(PlayPrevious request)
-        {
-            return new SuccessResponse
-            {
-                Success = _module.PlayPreviousTrack()
-            };
-        }
-
-        public SuccessResponse Get(PlayNext request)
-        {
-            return new SuccessResponse
-            {
-                Success = _module.PlayNextTrack()
+                Success = success
             };
         }
 
         public PlayerStatus Get(GetPlayerStatus request)
         {
             return _module.GetPlayerStatus();
-        }
-
-        public SuccessResponse Put(PlaybackPlayPause request)
-        {
-            return new SuccessResponse
-            {
-                Success = _module.PlayPause()
-            };
         }
 
         public StatusResponse Get(GetAutoDjStatus request)
@@ -102,9 +89,12 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetAutoDjStatus request)
         {
+	        var success = request.Enabled != null
+		        ? _module.SetAutoDjState((bool) request.Enabled)
+		        : _module.SetAutoDjState(!_module.GetAutoDjState());
             return new SuccessStatusResponse
             {
-                Success = _module.SetAutoDjState(request.Enabled),
+                Success = success,
                 Enabled = _module.GetAutoDjState()
             };
         }
@@ -178,7 +168,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetRepeatMode request)
         {
-            var success = request.Mode != null
+            var success = !string.IsNullOrEmpty(request.Mode)
                 ? _module.SetRepeatState(request.Mode)
                 : _module.ChangeRepeatMode();
 

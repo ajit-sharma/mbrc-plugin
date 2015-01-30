@@ -26,7 +26,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public PaginatedResponse<NowPlaying> Get(AllNowPlaying request)
         {
-            return _module.GetCurrentQueue(request.offset, request.limit);
+            return _module.GetCurrentQueue(request.Offset, request.Limit);
         }
 
         public SuccessResponse Put(NowPlayingPlay request)
@@ -34,8 +34,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return new SuccessResponse
             {
                 Success =
-                    !string.IsNullOrEmpty(request.path) &&
-                    _module.NowplayingPlayNow(request.path)
+                    !string.IsNullOrEmpty(request.Path) &&
+                    _module.NowplayingPlayNow(request.Path)
             };
         }
 
@@ -43,7 +43,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                Success = _module.CurrentQueueRemoveTrack(request.id)
+                Success = _module.CurrentQueueRemoveTrack(request.Id)
             };
         }
 
@@ -51,7 +51,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                Success = _module.CurrentQueueMoveTrack(request.from, request.to)
+                Success = _module.CurrentQueueMoveTrack(request.From, request.To)
             };
         }
 
@@ -59,19 +59,19 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             String[] tracklist;
 
-            switch (request.type)
+            switch (request.Type)
             {
                 case MetaTag.artist:
-                    tracklist = _libModule.GetArtistTracksById(request.id);
+                    tracklist = _libModule.GetArtistTracksById(request.Id);
                     break;
                 case MetaTag.album:
-                    tracklist = _libModule.GetAlbumTracksById(request.id);
+                    tracklist = _libModule.GetAlbumTracksById(request.Id);
                     break;
                 case MetaTag.genre:
-                    tracklist = _libModule.GetGenreTracksById(request.id);
+                    tracklist = _libModule.GetGenreTracksById(request.Id);
                     break;
                 case MetaTag.track:
-                    tracklist = _libModule.GetTrackPathById(request.id);
+                    tracklist = _libModule.GetTrackPathById(request.Id);
                     break;
                 default:
                     tracklist = new string[] {};
@@ -80,7 +80,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
             return new SuccessResponse
             {
-                Success = _module.EnqueueTracks(request.action, tracklist)
+                Success = _module.EnqueueTracks(request.Action, tracklist)
             };
         }
     }
