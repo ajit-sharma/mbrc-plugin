@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 
@@ -9,8 +10,8 @@ using ServiceStack.DataAnnotations;
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
-    public class Playlist : IComparable<Playlist>
-    {
+    public class Playlist : IComparable<Playlist>, IEquatable<Playlist>
+	{
         private string _name;
 
         public Playlist(string name, int tracks, string path)
@@ -60,7 +61,22 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 
         public int CompareTo(Playlist other)
         {
-            return String.Compare(Path, other.Path, StringComparison.Ordinal);
+            return string.Compare(Path, other.Path, StringComparison.Ordinal);
         }
-    }
+		
+	    public override int GetHashCode()
+	    {
+		    return Path == null ? 0 : Path.GetHashCode();
+	    }
+
+	    public bool Equals(Playlist other)
+	    {
+		    if (ReferenceEquals(other, null))
+		    {
+			    return false;
+		    }
+
+		    return ReferenceEquals(this, other) || Path.Equals(other.Path);
+	    }
+	}
 }

@@ -95,6 +95,12 @@ namespace MusicBeePlugin.Rest.ServiceModel
 		public int Id { get; set; }
     }
 
+	[Api]
+	[Route(Routes.PlaylistUpdate, Verbs.Get, Summary = Summary.PlaylistUpdate)]
+	public class GetPlaylistChanges
+	{
+	}
+
     [DataContract]
     public class SuccessResponse
     {

@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using Fleck;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
-using MusicBeePlugin.AndroidRemote.Settings;
+using MusicBeePlugin.AndroidRemote.Persistance;
 using NLog;
 using ServiceStack.Text;
 using LogLevel = Fleck.LogLevel;

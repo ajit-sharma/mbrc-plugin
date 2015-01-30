@@ -53,5 +53,6 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
 	    public const string LibraryCovers = "Retrieves the cover entries stored in the database.";
 	    public const string LibraryCoversId = "Retrieves a single cover from the database.";
 	    public const string LibraryCoversIdRaw = "Retrieves a jpeg cover image from the cache.";
+	    public const string PlaylistUpdate = @"Gets the changes in the playlist.";
     }
 }

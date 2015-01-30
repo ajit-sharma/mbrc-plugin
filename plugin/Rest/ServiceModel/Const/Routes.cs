@@ -32,14 +32,19 @@
 	    public const string PlaylistsId = "/playlists/{id}";
 	    public const string PlaylistsIdTracks = "/playlists/{id}/tracks";
 	    public const string PlaylistsIdTracksMove = "/playlists/{id}/tracks/move";
+		public const string PlaylistsUpdate = "/playlists/update";
 		#endregion
 
-	    public const string Nowplaying = "/nowplaying/";
+		#region Now Playing API
+		public const string Nowplaying = "/nowplaying/";
 	    public const string NowplayingPlay = "/nowplaying/play";
 	    public const string NowplayingId = "/nowplaying/{id}";
 	    public const string NowplayingMove = "/nowplaying/move";
 	    public const string NowplayingQueue = "/nowplaying/queue";
-	    public const string LibraryTracks = "/library/tracks";
+		#endregion
+
+		#region Library API
+		public const string LibraryTracks = "/library/tracks";
 	    public const string LibraryTracksId = "/library/tracks/{id}";
 	    public const string LibraryArtists = "/library/artists";
 	    public const string LibraryArtistsId = "/library/artists/{id}";
@@ -50,5 +55,7 @@
 	    public const string LibraryCovers = "/library/covers";
 	    public const string LibraryCoversId = "/library/covers/{id}";
 	    public const string LibraryCoversIdRaw = "/library/covers/{id}/raw";
-    }
+		#endregion
+
+	}
 }

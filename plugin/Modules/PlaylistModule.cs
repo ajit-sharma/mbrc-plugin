@@ -2,10 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Api.Swagger;
 using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
 using ServiceStack.Text;
@@ -43,6 +45,28 @@ namespace MusicBeePlugin.Modules
             }
         }
 
+	    public object CheckPlaylistsForChanges()
+	    {
+		    var playlists = GetPlaylistsFromApi();
+		    using (var db = _cHelper.GetDbConnection())
+		    {
+			    var cachedPlaylists = db.Select<Playlist>();
+			    var deleted = cachedPlaylists.Except(playlists).ToList();
+			    var added = playlists.Except(cachedPlaylists).ToList();
+
+			    return new 
+			    {
+				    deleted,
+					added
+			    };
+		    }
+	    }
+
+	    public void StorePlaylistTracks()
+	    {
+		    
+	    }
+
         private IEnumerable<Playlist> GetNewPlaylists(IEnumerable<Playlist> list)
         {
             var cachedLists = GetCachedPlaylists();
@@ -60,11 +84,16 @@ namespace MusicBeePlugin.Modules
             while (true)
             {
                 var path = _api.Playlist_QueryGetNextPlaylist();
+	            var name = _api.Playlist_GetName(path);
+				string[] tracks = {};				
+	            _api.Playlist_QueryFilesEx(path, ref tracks);
 
-                if (String.IsNullOrEmpty(path)) break;
+				if (string.IsNullOrEmpty(path)) break;
                 var playlist = new Playlist
                 {
-                    Path = path
+					Name = name,
+                    Path = path,
+					Tracks = tracks.Count()
                 };
                 playlists.Add(playlist);
             }
@@ -82,8 +111,7 @@ namespace MusicBeePlugin.Modules
         public PaginatedResponse<Playlist> GetAvailablePlaylists(int limit = 50, int offset = 0)
         {
             var playlists = GetCachedPlaylists();
-            var total = playlists.Count;
-            var result = new PaginatedPlaylistResponse();
+	        var result = new PaginatedPlaylistResponse();
             result.CreatePage(limit, offset, playlists);
             return result;
         }

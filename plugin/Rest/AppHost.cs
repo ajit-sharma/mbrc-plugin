@@ -1,8 +1,8 @@
 using Funq;
-using MusicBeePlugin.AndroidRemote.Settings;
 using ServiceStack.ServiceHost;
 using ServiceStack.WebHost.Endpoints;
 using System.Net;
+using MusicBeePlugin.AndroidRemote.Persistance;
 using ServiceStack.Api.Swagger;
 using ServiceStack.Common;
 

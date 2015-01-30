@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Kelsos")]
 [assembly: AssemblyProduct("MusicBee Remote Control")]
-[assembly: AssemblyCopyright("Copyright © Konstantinos Paparas (kelsos) 2013")]
+[assembly: AssemblyCopyright("Copyright © Konstantinos Paparas (kelsos) 2015")]
 [assembly: AssemblyTrademark("kelsos")]
 [assembly: AssemblyCulture("")]
 
@@ -35,5 +35,5 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
 
-[assembly: AssemblyVersion("1.0.0.1753")]
-[assembly: AssemblyFileVersion("1.0.0.1753")]
+[assembly: AssemblyVersion("1.0.0.1782")]
+[assembly: AssemblyFileVersion("1.0.0.1782")]

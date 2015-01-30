@@ -1,7 +1,8 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Networking
+﻿using MusicBeePlugin.AndroidRemote.Persistance;
+
+namespace MusicBeePlugin.AndroidRemote.Networking
 {
     using ServiceStack.Text;
-    using Settings;
     using System;
     using System.Collections.Generic;
     using System.Linq;

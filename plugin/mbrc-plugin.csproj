@@ -138,7 +138,8 @@
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
-    <Compile Include="AndroidRemote\Settings\SettingsController.cs" />
+    <Compile Include="AndroidRemote\Persistance\LastUpdated.cs" />
+    <Compile Include="AndroidRemote\Persistance\SettingsController.cs" />
     <Compile Include="InjectionModule.cs" />
     <Compile Include="Modules\LibraryModule.cs" />
     <Compile Include="Modules\NowPlayingModule.cs" />
@@ -193,7 +194,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="AndroidRemote\Settings\UserSettings.cs" />
+    <Compile Include="AndroidRemote\Persistance\UserSettings.cs" />
     <Compile Include="AndroidRemote\Networking\SocketServer.cs" />
     <Compile Include="AndroidRemote\Utilities\StateAction.cs" />
     <Compile Include="Rest\ServiceInterface\LibraryService.cs" />

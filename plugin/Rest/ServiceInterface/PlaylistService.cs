@@ -69,5 +69,10 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                 Success = _module.MovePlaylistTrack(request.Id, request.From, request.To)
             };
         }
+
+	    public object Get(GetPlaylistChanges request)
+	    {
+			return _module.CheckPlaylistsForChanges();
+	    }
     }
 }

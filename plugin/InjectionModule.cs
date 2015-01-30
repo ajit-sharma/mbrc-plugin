@@ -3,7 +3,7 @@
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.AndroidRemote.Settings;
+using MusicBeePlugin.AndroidRemote.Persistance;
 using MusicBeePlugin.Modules;
 using Ninject.Modules;
 

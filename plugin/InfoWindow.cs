@@ -1,6 +1,5 @@
 #region
 
-using MusicBeePlugin.AndroidRemote.Settings;
 using MusicBeePlugin.Tools;
 using System;
 using System.Collections.Generic;
@@ -10,6 +9,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using MusicBeePlugin.AndroidRemote.Persistance;
 
 #endregion
 

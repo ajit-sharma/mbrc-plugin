@@ -6,7 +6,6 @@ using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.AndroidRemote.Settings;
 using MusicBeePlugin.Debugging;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest;
@@ -22,6 +21,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
+using MusicBeePlugin.AndroidRemote.Persistance;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using Timer = System.Timers.Timer;
 
@@ -122,20 +122,14 @@ namespace MusicBeePlugin
             UpdateCachedCover();
             UpdateCachedLyrics();
 
-            _api.MB_AddMenuItem("mnuTools/MusicBee Remote", "Information Panel of the MusicBee Remote",
-                MenuItemClicked);
-
+            _api.MB_AddMenuItem("mnuTools/MusicBee Remote", "Information Panel of the MusicBee Remote", MenuItemClicked);
 
             EventBus.FireEvent(new MessageEvent(MessageEvent.ActionSocketStart));
-            EventBus.FireEvent(new MessageEvent(MessageEvent.InitializeModel));
             EventBus.FireEvent(new MessageEvent(MessageEvent.StartServiceBroadcast));
             EventBus.FireEvent(new MessageEvent(MessageEvent.ShowFirstRunDialog));
 
-
-
 #if DEBUG
-            _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool",
-                DisplayDebugWindow);
+            _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool", DisplayDebugWindow);
 #endif
 
             StartPlayerStatusMonitoring();
@@ -145,8 +139,6 @@ namespace MusicBeePlugin
 
             appHost.Init();
             appHost.Start(String.Format("http://+:{0}/", _settings.Settings.HttpPort));
-            //Tools.NetworkTools.CreateFirewallRuleForPort((int)_settings.Settings.HttpPort);
-
 
             return _about;
         }

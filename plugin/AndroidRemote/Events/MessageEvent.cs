@@ -15,7 +15,6 @@ namespace MusicBeePlugin.AndroidRemote.Events
         public const string ActionDataAvailable = "ActionDataAvailable";
         public const string ActionSocketStart = "ActionSocketStart";
         public const string ActionSocketStop = "ActionSocketStop";
-        public const string InitializeModel = "InitializeModel";
         public const string Notify = "Notify";
         public const string StartServiceBroadcast = "StartServiceBroadcast";
         public const string RestartSocket = "RestartSocket";

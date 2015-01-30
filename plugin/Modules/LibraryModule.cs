@@ -1,5 +1,11 @@
 #region
 
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -7,14 +13,6 @@ using NLog;
 using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
 using ServiceStack.Text;
-using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Threading;
 
 #endregion
 
