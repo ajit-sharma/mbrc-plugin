@@ -1,5 +1,6 @@
-﻿#region
+﻿#region Dependencies
 
+using System;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 
@@ -7,27 +8,29 @@ using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
-    [DataContract]
-    public class PlaylistTrack
-    {
-        [AutoIncrement]
-        [DataMember(Name = "id")]
-        public int Id { get; set; }
+	[DataContract]
+	public class PlaylistTrack : IEquatable<PlaylistTrack>
+	{
+		[AutoIncrement]
+		[DataMember(Name = "id")]
+		public long Id { get; set; }
 
-        [DataMember(Name = "position")]
-        public int Position { get; set; }
+		[DataMember(Name = "trackInfoId")]
+		[References(typeof (PlaylistTrackInfo))]
+		public long TrackInfoId { get; set; }
 
-        [DataMember(Name = "path")]
-        public string Path { get; set; }
+		[DataMember(Name = "playlistId")]
+		[References(typeof (Playlist))]
+		public long PlaylistId { get; set; }
 
-        [DataMember(Name = "playlistId")]
-        [References(typeof (Playlist))]
-        public int PlaylistId { get; set; }
+		[DataMember(Name = "position")]
+		public int Position { get; set; }
 
-        [DataMember(Name = "artist")]
-        public string Artist { get; set; }
-
-        [DataMember(Name = "title")]
-        public string Title { get; set; }
-    }
+		public bool Equals(PlaylistTrack other)
+		{
+			return TrackInfoId == other.TrackInfoId
+			       && PlaylistId == other.PlaylistId
+			       && Position == other.Position;
+		}
+	}
 }

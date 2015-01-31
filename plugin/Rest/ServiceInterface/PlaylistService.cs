@@ -23,7 +23,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetAvailablePlaylists(request.Limit, request.Offset);
         }
 
-        public PaginatedResponse<PlaylistTrack> Get(GetPlaylistTracks request)
+        public PaginatedResponse<PlaylistTrackInfo> Get(GetPlaylistTracks request)
         {
             return _module.GetPlaylistTracks(request.Id);
         }

@@ -1,7 +1,6 @@
 ﻿#region
 
 using System;
-using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
 
@@ -14,18 +13,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 	{
         private string _name;
 
-        public Playlist(string name, int tracks, string path)
-        {
-            Name = name;
-            Tracks = tracks;
-            Path = path;
-        }
-
-        public Playlist()
-        {
-        }
-
-        [AutoIncrement]
+	    [AutoIncrement]
         [DataMember(Name = "id")]
         public int Id { get; set; }
 
@@ -59,15 +47,13 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         [DataMember(Name = "path")]
         public string Path { get; set; }
 
+		[DataMember(Name = "lastChanged")]
+		public DateTime LastChanged { get; set; }
+
         public int CompareTo(Playlist other)
         {
             return string.Compare(Path, other.Path, StringComparison.Ordinal);
         }
-		
-	    public override int GetHashCode()
-	    {
-		    return Path == null ? 0 : Path.GetHashCode();
-	    }
 
 	    public bool Equals(Playlist other)
 	    {

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection.Emit;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -48,7 +49,13 @@ namespace MusicBeePlugin.Modules
 	    public object CheckPlaylistsForChanges()
 	    {
 		    var playlists = GetPlaylistsFromApi();
-		    using (var db = _cHelper.GetDbConnection())
+
+			foreach (var playlist in playlists)
+			{
+				CachePlaylistTracks(playlist.Path);
+			}
+
+			using (var db = _cHelper.GetDbConnection())
 		    {
 			    var cachedPlaylists = db.Select<Playlist>();
 			    var deleted = cachedPlaylists.Except(playlists).ToList();
@@ -60,11 +67,58 @@ namespace MusicBeePlugin.Modules
 					added
 			    };
 		    }
+
+		    
 	    }
 
-	    public void StorePlaylistTracks()
+	    public void CachePlaylistTracks(string path)
 	    {
-		    
+		    var db = _cHelper.GetDbConnection(); 
+		    var trackList = new string[] {};
+		    var singleOrDefault = db.Select<Playlist>(p => p.Path.Contains(path));
+		    var trackInfoCache = db.Select<PlaylistTrackInfo>();
+		    if (singleOrDefault != null)
+		    {
+			    var playlistId = singleOrDefault[0].Id;
+			    if (_api.Playlist_QueryFilesEx(path, ref trackList))
+			    {
+				    var transaction = db.BeginTransaction();
+				    var position = 0;
+				    foreach (var trackPath in trackList)
+				    {
+					    var trackInfo = new PlaylistTrackInfo
+					    {
+						    Path = trackPath,
+						    Artist = _api.Library_GetFileTag(trackPath, Plugin.MetaDataType.Artist),
+						    Title = _api.Library_GetFileTag(trackPath, Plugin.MetaDataType.TrackTitle),
+					    };
+
+
+					    long id = 0;
+					    if (trackInfoCache.Contains(trackInfo))
+					    {
+						    var info = trackInfoCache.Find(p => p.Path.Equals(trackInfo.Path));
+						    id = info.Id;
+					    }
+					    else
+					    {
+							db.Save(trackInfo);
+							id = db.GetLastInsertId();
+						}
+						
+					    var trackPlay = new PlaylistTrack()
+					    {
+						    PlaylistId = playlistId,
+						    TrackInfoId = id,
+						    Position = position++
+					    };
+
+					    db.Save(trackPlay);
+				    }
+
+				    transaction.Commit();
+			    }
+		    }
 	    }
 
         private IEnumerable<Playlist> GetNewPlaylists(IEnumerable<Playlist> list)
@@ -92,7 +146,7 @@ namespace MusicBeePlugin.Modules
                 var playlist = new Playlist
                 {
 					Name = name,
-                    Path = path,
+					Path = path,
 					Tracks = tracks.Count()
                 };
                 playlists.Add(playlist);
@@ -117,7 +171,7 @@ namespace MusicBeePlugin.Modules
         }
 
 
-        public PaginatedResponse<PlaylistTrack> GetPlaylistTracks(int id, int limit = 50, int offset = 0)
+        public PaginatedResponse<PlaylistTrackInfo> GetPlaylistTracks(int id, int limit = 50, int offset = 0)
         {
             string[] pathList = {};
             var playlist = GetPlaylistById(id);
@@ -129,13 +183,11 @@ namespace MusicBeePlugin.Modules
             }
 
             var index = 0;
-            var playlistTracks = pathList.Select(path => new PlaylistTrack
+            var playlistTracks = pathList.Select(path => new PlaylistTrackInfo
             {
-                Position = index++,
                 Artist = _api.Library_GetFileTag(path, Plugin.MetaDataType.Artist),
                 Title = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackTitle),
-                Path = path,
-                PlaylistId = id
+				Path = path,
             }).ToList();
 
             paginated.CreatePage(limit, offset, playlistTracks);
@@ -162,10 +214,11 @@ namespace MusicBeePlugin.Modules
 
         public SuccessResponse CreateNewPlaylist(string name, string[] list)
         {
-            var playlist = new Playlist
+	        var path = _api.Playlist_CreatePlaylist(string.Empty, name, list);
+			var playlist = new Playlist
             {
+				Path = path,
                 Name = name,
-                Path = _api.Playlist_CreatePlaylist(String.Empty, name, list),
                 Tracks = list.Count()
             };
             using (var db = _cHelper.GetDbConnection())

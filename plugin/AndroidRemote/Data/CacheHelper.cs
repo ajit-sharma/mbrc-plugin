@@ -36,6 +36,8 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     db.CreateTableIfNotExists<LibraryGenre>();
                     db.CreateTableIfNotExists<LibraryTrack>();
                     db.CreateTableIfNotExists<Playlist>();
+					db.CreateTableIfNotExists<PlaylistTrackInfo>();
+					db.CreateTableIfNotExists<PlaylistTrack>();
                 }
 
             }

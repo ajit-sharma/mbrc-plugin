@@ -96,7 +96,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
 	[Api]
-	[Route(Routes.PlaylistUpdate, Verbs.Get, Summary = Summary.PlaylistUpdate)]
+	[Route(Routes.PlaylistsUpdate, Verbs.Get, Summary = Summary.PlaylistUpdate)]
 	public class GetPlaylistChanges
 	{
 	}
