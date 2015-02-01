@@ -4,42 +4,69 @@ using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
-    [DataContract]
-    public class LibraryTrack : IComparable<LibraryTrack>
+	/// <summary>
+	/// A track stored in the library.
+	/// </summary>
+	[DataContract]
+    public class LibraryTrack : TypeBase, IComparable<LibraryTrack>
     {
-        [AutoIncrement]
-        [DataMember(Name = "id")]
-        public int Id { get; set; }
-
-        [DataMember(Name = "title")]
+		/// <summary>
+		/// The title of the track.
+		/// </summary>
+		[DataMember(Name = "title")]
         public string Title { get; set; }
 
-        [DataMember(Name = "position")]
+		/// <summary>
+		/// The position of the track in the album.
+		/// </summary>
+		[DataMember(Name = "position")]
         public int Position { get; set; }
 
-        [DataMember(Name = "genreId")]
+		/// <summary>
+		/// The id of the track's genre.
+		/// </summary>
+		[DataMember(Name = "genreId")]
         [References(typeof (LibraryGenre))]
-        public int GenreId { get; set; }
+        public long GenreId { get; set; }
 
-        [DataMember(Name = "artistId")]
+		/// <summary>
+		/// The id of the track's artist.
+		/// </summary>
+		[DataMember(Name = "artistId")]
         [References(typeof (LibraryArtist))]
-        public int ArtistId { get; set; }
+        public long ArtistId { get; set; }
 
-        [DataMember(Name = "albumArtistId")]
+		/// <summary>
+		/// The id of the album artist related with the album the track is part of.
+		/// </summary>
+		[DataMember(Name = "albumArtistId")]
         [References(typeof (LibraryArtist))]
-        public int AlbumArtistId { get; set; }
+        public long AlbumArtistId { get; set; }
 
-        [DataMember(Name = "albumId")]
+		/// <summary>
+		/// The id of the album the track is part of.
+		/// </summary>
+		[DataMember(Name = "albumId")]
         [References(typeof (LibraryAlbum))]
-        public int AlbumId { get; set; }
+        public long AlbumId { get; set; }
 
-        [DataMember(Name = "year")]
+		/// <summary>
+		/// The year the track was released.
+		/// </summary>
+		[DataMember(Name = "year")]
         public string Year { get; set; }
 
-        [DataMember(Name = "path")]
+		/// <summary>
+		/// </summary>
+		[DataMember(Name = "path")]
         public string Path { get; set; }
 
-        public int CompareTo(LibraryTrack other)
+		/// <summary>
+		/// Compares two tracks
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public int CompareTo(LibraryTrack other)
         {
             var oIndex = other.Position;
             return oIndex == Position ? 0 : oIndex > Position ? -1 : 1;

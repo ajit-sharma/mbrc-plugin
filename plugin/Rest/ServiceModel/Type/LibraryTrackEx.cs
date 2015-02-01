@@ -12,7 +12,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         /// The id of the <see cref="LibraryTrack"/> entry.
         /// </summary>
         [BelongTo(typeof(LibraryTrack))]
-        public int Id { get; set; }
+        public long Id { get; set; }
 
         /// <summary>
         /// Represents the title of the track.

@@ -1,5 +1,6 @@
 ﻿#region
 
+using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using ServiceStack.DataAnnotations;
@@ -8,33 +9,50 @@ using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
-    [DataContract]
+	/// <summary>
+	/// Represents an album entry stored in the library.
+	/// </summary>
+	[DataContract(Name = "libraryAlbum")]
     [Alias("LibraryAlbum")]
-    public class LibraryAlbum
+    public class LibraryAlbum : TypeBase
     {
-        public LibraryAlbum()
+		/// <summary>
+		/// Creates a new LibraryAlbum with an empty <see cref="TrackList"/> 
+		/// </summary>
+		public LibraryAlbum()
         {
             TrackList = new List<LibraryTrack>();
         }
 
-        [AutoIncrement]
-        [DataMember(Name = "id")]
-        public int Id { get; set; }
-
-        [DataMember(Name = "name")]
+		/// <summary>
+		/// The name (title) of the album.
+		/// </summary>
+		[DataMember(Name = "name")]
         public string Name { get; set; }
 
-        [References(typeof (LibraryArtist))]
+		/// <summary>
+		/// The id of the album artist.
+		/// </summary>
+		[References(typeof (LibraryArtist))]
         [DataMember(Name = "artistId")]
-        public int ArtistId { get; set; }
+        public long ArtistId { get; set; }
 
-        [DataMember(Name = "coverId")]
-        public int CoverId { get; set; }
+		/// <summary>
+		/// The id of the album cover.
+		/// </summary>
+		[DataMember(Name = "coverId")]
+        public long CoverId { get; set; }
 
-        [DataMember(Name = "albumId")]
+		/// <summary>
+		/// Unique album identifier retrieved from MusicBee.
+		/// </summary>
+		[DataMember(Name = "albumId")]
         public string AlbumId { get; set; }
 
-        [Ignore]
+		/// <summary>
+		/// A list with the tracks contained in the album.
+		/// </summary>
+		[Ignore]
         [IgnoreDataMember]
         public List<LibraryTrack> TrackList { get; set; }
     }

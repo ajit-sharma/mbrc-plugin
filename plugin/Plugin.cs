@@ -76,8 +76,9 @@ namespace MusicBeePlugin
         {
             Instance = this;
             JsConfig.ExcludeTypeInfo = true;
+	        JsConfig<DateTime>.SerializeFn = time => time.ToString("O");
 
-            _api = new MusicBeeApiInterface();
+			_api = new MusicBeeApiInterface();
             _api.Initialise(apiInterfacePtr);
 
             _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
