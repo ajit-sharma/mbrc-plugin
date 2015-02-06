@@ -101,9 +101,16 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
     }
 
 	[DataContract]
-	public class PaginatedPlaylistTrackResponse : PaginatedResponse<PlaylistTrackInfo>
+	public class PaginatedPlaylistTrackInfoResponse : PaginatedResponse<PlaylistTrackInfo>
     {
         [DataMember(Name = "data")]
         public override List<PlaylistTrackInfo> Data { get; set; }
     }
+
+	[DataContract]
+	public class PaginatedPlaylistTrackResponse : PaginatedResponse<PlaylistTrack>
+	{
+		[DataMember(Name = "data")]
+		public override List<PlaylistTrack> Data { get; set; }
+	}
 }

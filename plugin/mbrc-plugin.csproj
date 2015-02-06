@@ -140,6 +140,8 @@
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Persistance\LastUpdated.cs" />
     <Compile Include="AndroidRemote\Persistance\SettingsController.cs" />
+    <Compile Include="Comparers\PlaylistComparer.cs" />
+    <Compile Include="Comparers\PlaylistTrackInfoComparer.cs" />
     <Compile Include="InjectionModule.cs" />
     <Compile Include="Modules\LibraryModule.cs" />
     <Compile Include="Modules\NowPlayingModule.cs" />

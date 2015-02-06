@@ -60,7 +60,21 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
 		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
 		public int Id { get; set; }
-    }
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset, ParameterType = "query")]
+		public int Offset { get; set; }
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit, ParameterType = "query")]
+		public int Limit { get; set; }
+	}
+
+	[Api]
+	[Route(Routes.PlaylistsTrackinfo, Verbs.Get, Summary = Summary.PlaylistTrackInfo)]
+	public class GetPlaylistTrackInfo : IReturn<PaginatedPlaylistTrackInfoResponse>
+	{
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset, ParameterType = "query")]
+		public int Offset { get; set; }
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit, ParameterType = "query")]
+		public int Limit { get; set; }
+	}
 
 	[Api]
 	[Route(Routes.PlaylistsIdTracks, Verbs.Put, Summary = Summary.PlaylistTrackAdd)]

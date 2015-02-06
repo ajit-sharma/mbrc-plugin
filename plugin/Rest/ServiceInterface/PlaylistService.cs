@@ -23,10 +23,15 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetAvailablePlaylists(request.Limit, request.Offset);
         }
 
-        public PaginatedResponse<PlaylistTrackInfo> Get(GetPlaylistTracks request)
+        public PaginatedResponse<PlaylistTrack> Get(GetPlaylistTracks request)
         {
-            return _module.GetPlaylistTracks(request.Id);
+            return _module.GetPlaylistTracks(request.Id, request.Limit, request.Offset);
         }
+
+	    public PaginatedResponse<PlaylistTrackInfo> Get(GetPlaylistTrackInfo request)
+	    {
+		    return _module.GetPlaylistTracksInfo(request.Limit, request.Offset);
+	    } 
 
         public SuccessResponse Put(CreatePlaylist request)
         {
@@ -72,7 +77,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
 	    public object Get(GetPlaylistChanges request)
 	    {
-			return _module.CheckPlaylistsForChanges();
+		    return new object {};
 	    }
     }
 }

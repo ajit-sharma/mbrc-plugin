@@ -114,9 +114,12 @@ namespace MusicBeePlugin
             {
                 Task.Factory.StartNew(() =>
                 {
+	                _api.MB_SetBackgroundTaskMessage("MBR: Currently building the metadata cache.");
                     libraryModule.BuildCache();
-                    playlistModule.StoreAvailablePlaylists();
-                    libraryModule.BuildCoverCachePerAlbum();
+	                playlistModule.SyncPlaylistsWithCache();
+					_api.MB_SetBackgroundTaskMessage("MBRC: Currently processing the album covers.");
+					libraryModule.BuildCoverCachePerAlbum();
+	                _api.MB_SetBackgroundTaskMessage("MBRC: Cache Ready.");
                 });
             }
 
@@ -186,14 +189,18 @@ namespace MusicBeePlugin
 
             debugger.Layout = fileTarget.Layout;
 
-            var rule1 = new LoggingRule("*", LogLevel.Debug, consoleTarget);
-            config.LoggingRules.Add(rule1);
+            var consoleRule = new LoggingRule("*", LogLevel.Debug, consoleTarget);
+            config.LoggingRules.Add(consoleRule);
 
-            var rule2 = new LoggingRule("*", LogLevel.Debug, fileTarget);
-            config.LoggingRules.Add(rule2);
+#if DEBUG
+			var fileRule = new LoggingRule("*", LogLevel.Debug, fileTarget);
+#else
+			var fileRule = new LoggingRule("*", LogLevel.Error, fileTarget);
+#endif
+			config.LoggingRules.Add(fileRule);
 
-            var rule3 = new LoggingRule("*", LogLevel.Debug, debugger);
-            config.LoggingRules.Add(rule3);
+            var debuggerRule = new LoggingRule("*", LogLevel.Debug, debugger);
+            config.LoggingRules.Add(debuggerRule);
 
             LogManager.Configuration = config;
         }

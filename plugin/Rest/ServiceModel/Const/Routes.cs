@@ -57,5 +57,6 @@
 	    public const string LibraryCoversIdRaw = "/library/covers/{id}/raw";
 		#endregion
 
-	}
+	    public const string PlaylistsTrackinfo = "/playlists/trackinfo";
+    }
 }

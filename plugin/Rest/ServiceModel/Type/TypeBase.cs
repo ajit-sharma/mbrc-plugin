@@ -35,5 +35,14 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// </summary>
 		[DataMember(Name = "dateUpdated")]
 		public DateTime DateUpdated { get; set; } = DateTime.UtcNow;
+
+		/// <summary>
+		///     The Date the entry was deleted. As it is expected for an entry that is
+		///     active <c>this</c> field should have a <see langword="null" /> value.
+		///     The objects are initially soft deleted and periodically a function is
+		///     responsible objects that have been deleted for a number of days.
+		/// </summary>
+		[DataMember(Name = "dateDeleted")]
+		public DateTime? DateDeleted { get; set; }
 	}
 }
