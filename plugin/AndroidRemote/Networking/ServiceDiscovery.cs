@@ -59,7 +59,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                     {"context", "notify"},
                     {"address", interfaceAddress},
                     {"name", Environment.GetEnvironmentVariable("COMPUTERNAME")},
-                    {"port", _controller.Settings.Port},
+                    {"port", _controller.Settings.WebSocketPort},
                     {"http", _controller.Settings.HttpPort}
                 };
                 var response = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(notify));

@@ -1,12 +1,11 @@
 #region Dependencies
 
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 #endregion
 
-namespace MusicBeePlugin.AndroidRemote.Persistance
+namespace MusicBeePlugin.AndroidRemote.Persistence
 {
 	/// <summary>
 	/// Representation of the user settings stored by the remote.

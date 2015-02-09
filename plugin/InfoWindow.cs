@@ -58,7 +58,7 @@ namespace MusicBeePlugin
         {
             internalIPList.DataSource = NetworkTools.GetPrivateAddressList();
             versionLabel.Text = _controller.Settings.CurrentVersion;
-            portNumericUpDown.Value = _controller.Settings.Port;
+            portNumericUpDown.Value = _controller.Settings.WebSocketPort;
             httpPortInput.Value = _controller.Settings.HttpPort;
             UpdateFilteringSelection(_controller.Settings.Allowed);
             //UpdateSocketStatus(SocketServer.Instance.IsRunning);
@@ -127,7 +127,7 @@ namespace MusicBeePlugin
 
         private void HandleSaveButtonClick(object sender, EventArgs e)
         {
-            _controller.Settings.Port = (uint)portNumericUpDown.Value;
+            _controller.Settings.WebSocketPort = (uint)portNumericUpDown.Value;
             _controller.Settings.UpdateFirewallEnabled = updateFirewallRules.Checked;
             switch (selectionFilteringComboBox.SelectedIndex)
             {
