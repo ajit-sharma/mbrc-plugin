@@ -1,5 +1,6 @@
 ﻿#region
 
+using System;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceHost;
 using System.Runtime.Serialization;
@@ -113,6 +114,8 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	[Route(Routes.PlaylistsUpdate, Verbs.Get, Summary = Summary.PlaylistUpdate)]
 	public class GetPlaylistChanges
 	{
+		[ApiMember(Name = "lastSync", IsRequired = true, DataType = SwaggerType.Date, ParameterType = "query", Description = Description.TheDateOfTheLastSync)]
+		public DateTime LastSync { get; set; }
 	}
 
     [DataContract]

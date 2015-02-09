@@ -40,7 +40,7 @@ namespace MusicBeePlugin.AndroidRemote.Persistance
 			var startInfo = new ProcessStartInfo(_fUtil)
 			{
 				Verb = "runas",
-				Arguments = string.Format("-h {0} -s {1}", Settings.HttpPort, Settings.Port)
+				Arguments = string.Format("-h {0} -s {1}", Settings.HttpPort, Settings.WebSocketPort)
 			};
 			Process.Start(startInfo);
 		}
