@@ -139,7 +139,7 @@
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
-    <Compile Include="AndroidRemote\Persistence\SettingsController.cs" />
+    <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
     <Compile Include="Comparers\PlaylistComparer.cs" />
     <Compile Include="Comparers\PlaylistTrackInfoComparer.cs" />
     <Compile Include="InjectionModule.cs" />

@@ -1,4 +1,4 @@
-﻿using MusicBeePlugin.AndroidRemote.Persistance;
+﻿using MusicBeePlugin.AndroidRemote.Persistence;
 
 namespace MusicBeePlugin.AndroidRemote.Networking
 {
@@ -12,13 +12,13 @@ namespace MusicBeePlugin.AndroidRemote.Networking
     using Tools;
     internal class ServiceDiscovery
     {
-        private readonly SettingsController _controller;
+        private readonly PersistenceController _controller;
         private const int MPort = 45345;
         private const string MulticastIp = "239.1.5.10";
         private static readonly IPAddress MulticastAddress = IPAddress.Parse(MulticastIp);
         private UdpClient _mListener;
 
-        public ServiceDiscovery(SettingsController controller)
+        public ServiceDiscovery(PersistenceController controller)
         {
             _controller = controller;
         }

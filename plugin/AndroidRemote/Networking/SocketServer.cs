@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using Fleck;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
-using MusicBeePlugin.AndroidRemote.Persistance;
+using MusicBeePlugin.AndroidRemote.Persistence;
 using NLog;
 using ServiceStack.Text;
 using LogLevel = Fleck.LogLevel;
@@ -22,13 +22,13 @@ namespace MusicBeePlugin.AndroidRemote.Networking
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
         private readonly List<IWebSocketConnection> _allSockets;
-        private readonly SettingsController _controller;
+        private readonly PersistenceController _controller;
         private bool _isRunning;
         private WebSocketServer server;
 
         /// <summary>
         /// </summary>
-        public SocketServer(SettingsController controller)
+        public SocketServer(PersistenceController controller)
         {
             _controller = controller;
             IsRunning = false;

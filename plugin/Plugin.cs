@@ -21,7 +21,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
 using System.Windows.Forms;
-using MusicBeePlugin.AndroidRemote.Persistance;
+using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using Timer = System.Timers.Timer;
 
@@ -64,7 +64,7 @@ namespace MusicBeePlugin
         private bool _shuffle;
 
         private StandardKernel _kernel;
-        private SettingsController _settings;
+        private PersistenceController _persistence;
 
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace MusicBeePlugin
 
             _kernel = new StandardKernel(new InjectionModule());
 
-            _settings = _kernel.Get<SettingsController>();
-            _settings.LoadSettings();
+            _persistence = _kernel.Get<PersistenceController>();
+            _persistence.LoadSettings();
 
             InitializeAbout();
 
@@ -142,7 +142,7 @@ namespace MusicBeePlugin
             appHost.Container.Adapter = new NinjectIocAdapter(_kernel);
 
             appHost.Init();
-            appHost.Start(String.Format("http://+:{0}/", _settings.Settings.HttpPort));
+            appHost.Start(String.Format("http://+:{0}/", _persistence.Settings.HttpPort));
 
             return _about;
         }
@@ -156,7 +156,7 @@ namespace MusicBeePlugin
             _about.TargetApplication = "MusicBee Remote";
 
             var v = Assembly.GetExecutingAssembly().GetName().Version;
-            _settings.Settings.CurrentVersion = v.ToString();
+            _persistence.Settings.CurrentVersion = v.ToString();
 
             // current only applies to artwork, lyrics or instant messenger name that appears in the provider drop down selector or target Instant Messenger
             _about.Type = PluginType.General;

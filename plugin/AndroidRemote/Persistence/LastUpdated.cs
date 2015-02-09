@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 
 #endregion
 
-namespace MusicBeePlugin.AndroidRemote.Persistance
+namespace MusicBeePlugin.AndroidRemote.Persistence
 {
 	/// <summary>
 	///     Keeps the dates of the most recent changes in the database.

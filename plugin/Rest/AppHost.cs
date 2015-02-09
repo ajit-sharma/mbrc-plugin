@@ -2,7 +2,7 @@ using Funq;
 using ServiceStack.ServiceHost;
 using ServiceStack.WebHost.Endpoints;
 using System.Net;
-using MusicBeePlugin.AndroidRemote.Persistance;
+using MusicBeePlugin.AndroidRemote.Persistence;
 using ServiceStack.Api.Swagger;
 using ServiceStack.Common;
 
@@ -10,9 +10,9 @@ namespace MusicBeePlugin.Rest
 {
     public class AppHost : AppHostHttpListenerBase
     {
-        private readonly SettingsController _controller;
+        private readonly PersistenceController _controller;
 
-        public AppHost(SettingsController controller)
+        public AppHost(PersistenceController controller)
             : base("MusicBee Remote", typeof(AppHost).Assembly)
         {
             _controller = controller;

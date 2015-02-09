@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using MusicBeePlugin.AndroidRemote.Persistance;
+using MusicBeePlugin.AndroidRemote.Persistence;
 
 #endregion
 
@@ -20,11 +20,11 @@ namespace MusicBeePlugin
     /// </summary>
     public partial class InfoWindow : Form
     {
-        private readonly SettingsController _controller;
+        private readonly PersistenceController _controller;
 
         private BindingList<String> _ipAddressBinding;
 
-        public InfoWindow(SettingsController controller)
+        public InfoWindow(PersistenceController controller)
         {
             _controller = controller;
             InitializeComponent();

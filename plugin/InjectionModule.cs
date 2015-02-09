@@ -3,7 +3,7 @@
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.AndroidRemote.Persistance;
+using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.Modules;
 using Ninject.Modules;
 
@@ -40,7 +40,7 @@ namespace MusicBeePlugin
             Bind<LyricCoverModel>()
                 .ToSelf()
                 .InSingletonScope();
-            Bind<SettingsController>()
+            Bind<PersistenceController>()
                 .ToSelf()
                 .InSingletonScope()
                 .WithConstructorArgument("storagePath", StoragePath);
