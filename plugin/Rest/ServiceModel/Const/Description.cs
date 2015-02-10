@@ -50,5 +50,6 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
 	    public const string NowPlayingQueueId = "The id of the entire entity for which we want to queue tracks.";
 	    public const string EntryId = "The id of the entry to retrieve.";
 	    public const string TheDateOfTheLastSync = "The date of the last sync.";
+	    public const string UpdateChange = "Specifies the type of change requested. Updated/Deleted/Added entries.";
     }
 }

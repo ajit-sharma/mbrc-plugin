@@ -15,6 +15,11 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 	public class LibraryGenre : TypeBase
 	{
 		/// <summary>
+		/// Backing field of the <see cref="Name"/> property.
+		/// </summary>
+		private string _name;
+
+		/// <summary>
 		///     Parametrized constructor that creates a new LibraryGenre with the
 		///     supplied <paramref name="name" />.
 		/// </summary>
@@ -36,6 +41,10 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// </summary>
 		[Index(Unique = true)]
 		[DataMember(Name = "name")]
-		public string Name { get; set; }
+		public string Name
+		{
+			get { return _name; }
+			set { _name = string.IsNullOrEmpty(value) ? "[Empty]" : value; }
+		}
 	}
 }

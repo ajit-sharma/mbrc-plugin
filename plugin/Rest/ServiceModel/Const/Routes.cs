@@ -32,7 +32,11 @@
 	    public const string PlaylistsId = "/playlists/{id}";
 	    public const string PlaylistsIdTracks = "/playlists/{id}/tracks";
 	    public const string PlaylistsIdTracksMove = "/playlists/{id}/tracks/move";
-		public const string PlaylistsUpdate = "/playlists/update";
+		public const string PlaylistsChanges = "/playlists/changes";
+		public const string PlaylistsTrackInfo = "/playlists/trackinfo";
+	    public const string PlaylistTrackInfoChanges = "/playlists/trackinfo/changes";
+		public const string PlaylistTrackChanges = "/playlists/track/changes";
+
 		#endregion
 
 		#region Now Playing API
@@ -56,7 +60,5 @@
 	    public const string LibraryCoversId = "/library/covers/{id}";
 	    public const string LibraryCoversIdRaw = "/library/covers/{id}/raw";
 		#endregion
-
-	    public const string PlaylistsTrackinfo = "/playlists/trackinfo";
     }
 }

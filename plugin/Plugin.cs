@@ -77,7 +77,7 @@ namespace MusicBeePlugin
             Instance = this;
             JsConfig.ExcludeTypeInfo = true;
 	        JsConfig<DateTime>.SerializeFn = time => time.ToString("O");
-
+	        JsConfig<DateTime?>.SerializeFn = time => time?.ToString("O") ?? string.Empty; 
 			_api = new MusicBeeApiInterface();
             _api.Initialise(apiInterfacePtr);
 
@@ -162,7 +162,7 @@ namespace MusicBeePlugin
             _about.Type = PluginType.General;
             _about.VersionMajor = Convert.ToInt16(v.Major);
             _about.VersionMinor = Convert.ToInt16(v.Minor);
-            _about.Revision = Convert.ToInt16(v.Revision);
+            //_about.Revision = Convert.ToInt16(v.Revision);
             _about.MinInterfaceVersion = MinInterfaceVersion;
             _about.MinApiRevision = MinApiRevision;
             _about.ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents;

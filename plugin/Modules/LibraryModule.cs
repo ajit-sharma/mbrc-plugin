@@ -22,12 +22,10 @@ namespace MusicBeePlugin.Modules
     ///     Class SyncModule.
     ///     Hosts the functionality responsible for the library sync operations.
     /// </summary>
-    public class LibraryModule
+    public class LibraryModule : DataModuleBase
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly Plugin.MusicBeeApiInterface _api;
-        private readonly CacheHelper _cHelper;
-
+        
         /// <summary>
         ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>

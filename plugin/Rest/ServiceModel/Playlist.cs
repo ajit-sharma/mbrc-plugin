@@ -1,127 +1,213 @@
-﻿#region
+﻿#region Dependencies
 
 using System;
-using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.ServiceHost;
 using System.Runtime.Serialization;
 using MusicBeePlugin.Rest.ServiceModel.Const;
+using MusicBeePlugin.Rest.ServiceModel.Enum;
+using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.Api.Swagger;
+using ServiceStack.ServiceHost;
 
 #endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
 	[Api("The API responsible for handling the playlist functionality.")]
-    [Route(Routes.Playlists, Verbs.Get, Summary = Summary.PlaylistGet)]
-    public class AllPlaylists : IReturn<PaginatedPlaylistResponse>
-    {
-	    [ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset, ParameterType = "query")]
-	    public int Offset { get; set; }
-		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit, ParameterType = "query")]
-		public int Limit { get; set; }
-    }
-
-	[Api]
-	[Route(Routes.Playlists, Verbs.Put, Summary = Summary.PlaylistPut)]
-    public class CreatePlaylist : IReturn<SuccessResponse>
-    {
-	    [ApiMember(Name = "name", IsRequired = true, DataType = SwaggerType.String, Description = Description.PlaylistName, ParameterType = "query")]
-	    public string Name { get; set; }
-		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList, ParameterType = "query")]
-        public string[] List { get; set; }
-    }
-
-	[Api]
-	[Route(Routes.PlaylistsPlay, Verbs.Put, Summary = Summary.PlaylistPlay)]
-    public class PlaylistPlay : IReturn<SuccessResponse>
-    {
-	    [ApiMember(Name = "path", IsRequired = true, Description = Description.PlaylistPlay, DataType = SwaggerType.String, ParameterType = "query")]
-        public string Path { get; set; }
-    }
-
-	[Api]
-	[Route(Routes.PlaylistsId, Verbs.Get, Summary = Summary.GetsAPlaylist)]
-    public class GetPlaylist
-    {
-		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
-        public int Id { get; set; }
-    }
-
-	[Api]
-	[Route(Routes.PlaylistsId, Verbs.Delete, Summary = Summary.DeletesAPlaylist)]
-    public class DeletePlaylist : IReturn<SuccessResponse>
-    {
-		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
-		public int Id { get; set; }
-    }
-
-	[Api]
-	[Route(Routes.PlaylistsIdTracks, Verbs.Get, Summary = Summary.PlaylistTracks)]
-    public class GetPlaylistTracks : IReturn<PaginatedPlaylistTrackResponse>
-    {
-		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
-		public int Id { get; set; }
-		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset, ParameterType = "query")]
+	[Route(Routes.Playlists, Verbs.Get, Summary = Summary.PlaylistGet)]
+	public class AllPlaylists : IReturn<PaginatedPlaylistResponse>
+	{
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset,
+			ParameterType = "query")]
 		public int Offset { get; set; }
-		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit, ParameterType = "query")]
+
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit,
+			ParameterType = "query")]
 		public int Limit { get; set; }
 	}
 
 	[Api]
-	[Route(Routes.PlaylistsTrackinfo, Verbs.Get, Summary = Summary.PlaylistTrackInfo)]
+	[Route(Routes.Playlists, Verbs.Put, Summary = Summary.PlaylistPut)]
+	public class CreatePlaylist : IReturn<SuccessResponse>
+	{
+		[ApiMember(Name = "name", IsRequired = true, DataType = SwaggerType.String, Description = Description.PlaylistName,
+			ParameterType = "query")]
+		public string Name { get; set; }
+
+		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList,
+			ParameterType = "query")]
+		public string[] List { get; set; }
+	}
+
+	[Api]
+	[Route(Routes.PlaylistsPlay, Verbs.Put, Summary = Summary.PlaylistPlay)]
+	public class PlaylistPlay : IReturn<SuccessResponse>
+	{
+		[ApiMember(Name = "path", IsRequired = true, Description = Description.PlaylistPlay, DataType = SwaggerType.String,
+			ParameterType = "query")]
+		public string Path { get; set; }
+	}
+
+	[Api]
+	[Route(Routes.PlaylistsId, Verbs.Get, Summary = Summary.GetsAPlaylist)]
+	public class GetPlaylist
+	{
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int,
+			Description = Description.IdDesc)]
+		public int Id { get; set; }
+	}
+
+	[Api]
+	[Route(Routes.PlaylistsId, Verbs.Delete, Summary = Summary.DeletesAPlaylist)]
+	public class DeletePlaylist : IReturn<SuccessResponse>
+	{
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int,
+			Description = Description.IdDesc)]
+		public int Id { get; set; }
+	}
+
+	[Api]
+	[Route(Routes.PlaylistsIdTracks, Verbs.Get, Summary = Summary.PlaylistTracks)]
+	public class GetPlaylistTracks : IReturn<PaginatedPlaylistTrackResponse>
+	{
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int,
+			Description = Description.IdDesc)]
+		public int Id { get; set; }
+
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset,
+			ParameterType = "query")]
+		public int Offset { get; set; }
+
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit,
+			ParameterType = "query")]
+		public int Limit { get; set; }
+	}
+
+	[Api]
+	[Route(Routes.PlaylistsTrackInfo, Verbs.Get, Summary = Summary.PlaylistTrackInfo)]
 	public class GetPlaylistTrackInfo : IReturn<PaginatedPlaylistTrackInfoResponse>
 	{
-		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset, ParameterType = "query")]
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset,
+			ParameterType = "query")]
 		public int Offset { get; set; }
-		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit, ParameterType = "query")]
+
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit,
+			ParameterType = "query")]
 		public int Limit { get; set; }
 	}
 
 	[Api]
 	[Route(Routes.PlaylistsIdTracks, Verbs.Put, Summary = Summary.PlaylistTrackAdd)]
-    public class AddPlaylistTracks : IReturn<SuccessResponse>
-    {
-		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList, ParameterType = "query")]
+	public class AddPlaylistTracks : IReturn<SuccessResponse>
+	{
+		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList,
+			ParameterType = "query")]
 		public string[] List { get; set; }
 
-		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int, Description = Description.IdDesc)]
+		[ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int,
+			Description = Description.IdDesc)]
 		public int Id { get; set; }
-    }
+	}
 
 	[Api]
 	[Route(Routes.PlaylistsIdTracksMove, Verbs.Put, Summary = Summary.PlaylistTrackMove)]
-    public class MovePlaylistTrack : IReturn<SuccessResponse>
-    {
-		[ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int, Description = Description.PlaylistIdDesc)]
+	public class MovePlaylistTrack : IReturn<SuccessResponse>
+	{
+		[ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
+			Description = Description.PlaylistIdDesc)]
 		public int Id { get; set; }
-		[ApiMember(Name = "to", IsRequired = true,DataType = SwaggerType.Int, Description = Description.MoveTo, ParameterType = "query")]
-        public int To { get; set; }
-		[ApiMember(Name = "from", IsRequired = true,DataType = SwaggerType.Int, Description = Description.MoveFrom, ParameterType = "query")]
+
+		[ApiMember(Name = "to", IsRequired = true, DataType = SwaggerType.Int, Description = Description.MoveTo,
+			ParameterType = "query")]
+		public int To { get; set; }
+
+		[ApiMember(Name = "from", IsRequired = true, DataType = SwaggerType.Int, Description = Description.MoveFrom,
+			ParameterType = "query")]
 		public int From { get; set; }
-    }
+	}
 
 	[Api]
 	[Route(Routes.PlaylistsIdTracks, Verbs.Delete, Summary = Summary.PlaylistTrackDelete)]
-    public class DeletePlaylistTracks : IReturn<SuccessResponse>
-    {
-		[ApiMember(Name = "position", IsRequired = true, DataType = SwaggerType.Int, Description = Description.PlaylistTrackPosition, ParameterType = "query")]
-        public int Position { get; set; }
-		[ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int, Description = Description.PlaylistIdDesc)]
-		public int Id { get; set; }
-    }
-
-	[Api]
-	[Route(Routes.PlaylistsUpdate, Verbs.Get, Summary = Summary.PlaylistUpdate)]
-	public class GetPlaylistChanges
+	public class DeletePlaylistTracks : IReturn<SuccessResponse>
 	{
-		[ApiMember(Name = "lastSync", IsRequired = true, DataType = SwaggerType.Date, ParameterType = "query", Description = Description.TheDateOfTheLastSync)]
-		public DateTime LastSync { get; set; }
+		[ApiMember(Name = "position", IsRequired = true, DataType = SwaggerType.Int,
+			Description = Description.PlaylistTrackPosition, ParameterType = "query")]
+		public int Position { get; set; }
+
+		[ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
+			Description = Description.PlaylistIdDesc)]
+		public int Id { get; set; }
 	}
 
-    [DataContract]
-    public class SuccessResponse
-    {
-        [DataMember(Name = "success")]
-        public bool Success { get; set; }
-    }
+	[Api]
+	[Route(Routes.PlaylistsChanges, Verbs.Get, Summary = Summary.PlaylistChanges)]
+	public class GetPlaylistChanges : IReturn<PaginatedPlaylistResponse>
+	{
+		[ApiMember(Name = "syncDate", IsRequired = true, DataType = SwaggerType.Date, ParameterType = "query",
+			Description = Description.TheDateOfTheLastSync)]
+		public DateTime SyncDate { get; set; }
+
+		[ApiMember(Name = "change", IsRequired = true, DataType = SwaggerType.String, ParameterType = "query",
+			Description = Description.UpdateChange)]
+		[ApiAllowableValues("change", typeof (ChangeType))]
+		public ChangeType Change { get; set; }
+
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset,
+			ParameterType = "query")]
+		public int Offset { get; set; }
+
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit,
+			ParameterType = "query")]
+		public int Limit { get; set; }
+	}
+
+	[Api]
+	[Route("/playlists/track/changes", Verbs.Get, Summary = @"Gets the changes in the playlist tracks.")]
+	public class GetPlaylistTrackChanges : IReturn<PaginatedPlaylistTrackResponse>
+	{
+		[ApiMember(Name = "syncDate", IsRequired = true, DataType = SwaggerType.Date, ParameterType = "query",
+			Description = Description.TheDateOfTheLastSync)]
+		public DateTime SyncDate { get; set; }
+
+		[ApiMember(Name = "change", IsRequired = true, DataType = SwaggerType.String, ParameterType = "query",
+			Description = Description.UpdateChange)]
+		[ApiAllowableValues("change", typeof(ChangeType))]
+		public ChangeType Change { get; set; }
+
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset,
+			ParameterType = "query")]
+		public int Offset { get; set; }
+
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit,
+			ParameterType = "query")]
+		public int Limit { get; set; }
+	}
+
+	[Api]
+	[Route("/playlists/trackinfo/changes", Verbs.Get, Summary = @"Gets the changes in the playlist track info.")]
+	public class GetPlaylistTrackInfoChanges : IReturn<PaginatedPlaylistTrackInfoResponse>
+	{
+		[ApiMember(Name = "syncDate", IsRequired = true, DataType = SwaggerType.Date, ParameterType = "query",
+			Description = Description.TheDateOfTheLastSync)]
+		public DateTime SyncDate { get; set; }
+
+		[ApiMember(Name = "change", IsRequired = true, DataType = SwaggerType.String, ParameterType = "query",
+			Description = Description.UpdateChange)]
+		[ApiAllowableValues("change", typeof(ChangeType))]
+		public ChangeType Change { get; set; }
+
+		[ApiMember(Name = "offset", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Offset,
+			ParameterType = "query")]
+		public int Offset { get; set; }
+
+		[ApiMember(Name = "limit", IsRequired = false, DataType = SwaggerType.Int, Description = Description.Limit,
+			ParameterType = "query")]
+		public int Limit { get; set; }
+	}
+
+	[DataContract]
+	public class SuccessResponse
+	{
+		[DataMember(Name = "success")]
+		public bool Success { get; set; }
+	}
 }

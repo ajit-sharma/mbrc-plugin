@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using MusicBeePlugin.AndroidRemote.Data;
+using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.Comparers;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -24,22 +25,12 @@ namespace MusicBeePlugin.Modules
 	///     It implements all the playlist operation with the MusicBee API and the
 	///     plugin cache.
 	/// </summary>
-	public class PlaylistModule
+	public class PlaylistModule : DataModuleBase
 	{
 		/// <summary>
 		///     The logger is used to log errors.
 		/// </summary>
 		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
-		/// <summary>
-		///     <see cref="CacheHelper" />
-		/// </summary>
-		private readonly CacheHelper _cHelper;
-
-		/// <summary>
-		///     MusicBee API Interface.
-		/// </summary>
-		private Plugin.MusicBeeApiInterface _api;
 
 		/// <summary>
 		///     Creates a new <see cref="PlaylistModule" />.
@@ -66,29 +57,58 @@ namespace MusicBeePlugin.Modules
 			var playlistsToInsert = playlists.Except(cachedPlaylists, playlistComparer).ToList();
 			var playlistsToRemove = cachedPlaylists.Except(playlists, playlistComparer).ToList();
 
+			var db = _cHelper.GetDbConnection();
+			var transaction = db.OpenTransaction();
 			foreach (var playlist in playlistsToRemove)
 			{
 				playlist.DateDeleted = DateTime.UtcNow;
 				cachedPlaylists.Remove(playlist);
-
-				var db = _cHelper.GetDbConnection();
 				db.UpdateOnly(new PlaylistTrack {DateDeleted = DateTime.UtcNow},
 					o => o.Update(p => p.DateDeleted)
 						.Where(pl => pl.PlaylistId == playlist.Id));
-				db.Dispose();
+			}
+
+			foreach (var playlist in playlistsToInsert)
+			{
+				db.Save(playlist);
+				playlist.Id = db.GetLastInsertId();
+			}
+
+			// We have new inserts so update.
+			if (playlistsToInsert.Count > 0)
+			{
+				SetPlaylistUpdated(db);
 			}
 
 			cachedPlaylists.AddRange(playlistsToInsert);
 
-			using (var db = _cHelper.GetDbConnection())
+			if (playlistsToRemove.Count > 0)
 			{
 				db.SaveAll(playlistsToRemove);
+				// Entries deleted so update
+				SetPlaylistUpdated(db);
 			}
+
+			transaction.Commit();
+			transaction.Dispose();
+			db.Dispose();
 
 			foreach (var cachedPlaylist in cachedPlaylists)
 			{
 				SyncPlaylistDataWithCache(cachedPlaylist);
 			}
+		}
+
+		/// <summary>
+		/// Updates the Date of the Playlists last update. 
+		/// This date should change if any change happens to any of the playlists.
+		/// </summary>
+		/// <param name="db"></param>
+		private static void SetPlaylistUpdated(IDbConnection db)
+		{
+			var dateCache = db.GetById<LastUpdated>(1) ?? new LastUpdated();
+			dateCache.PlaylistsUpdated = DateTime.UtcNow;
+			db.Save(dateCache);
 		}
 
 		/// <summary>
@@ -492,7 +512,7 @@ namespace MusicBeePlugin.Modules
 		}
 
 		/// <summary>
-		/// Moves a track in a playlist to a new position in the playlist.
+		///     Moves a track in a playlist to a new position in the playlist.
 		/// </summary>
 		/// <param name="id">The id of the playlist.</param>
 		/// <param name="from">The original position of the track in the playlist.</param>
@@ -521,7 +541,7 @@ namespace MusicBeePlugin.Modules
 		}
 
 		/// <summary>
-		/// Adds tracks to an existing playlist.
+		///     Adds tracks to an existing playlist.
 		/// </summary>
 		/// <param name="id">The id of the playlist.</param>
 		/// <param name="list">A list of the paths of the files in the filesystem.</param>
@@ -538,7 +558,7 @@ namespace MusicBeePlugin.Modules
 		}
 
 		/// <summary>
-		/// Deletes a playlist.
+		///     Deletes a playlist.
 		/// </summary>
 		/// <param name="id">The id of the playlist to delete.</param>
 		/// <returns></returns>

@@ -26,59 +26,21 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 		private readonly string _settingsFilename;
 
 		/// <summary>
-		///		The filename of the file that stores dates related to the update of the
-		///		cache data. 
-		/// </summary>
-		private readonly string _dateCacheFileName;
-
-		/// <summary>
 		///     Creates a new PersistenceController that stores an retrieves data in the
 		///     specified <paramref name="storagePath" />.
 		/// </summary>
 		/// <param name="storagePath">The path where the files will be stored.</param>
 		public PersistenceController(string storagePath)
 		{
-			_dateCacheFileName = string.Format("{0}\\cache_dates.json", storagePath);
 			_settingsFilename = string.Format("{0}\\settings.json", storagePath);
 			_firewallUtility = AppDomain.CurrentDomain.BaseDirectory + "\\Plugins\\firewall-utility.exe";
 			Settings = new UserSettings();
-			DateCache = new LastUpdated();
 		}
 
 		/// <summary>
 		///     The settings object. Stores the plugin settings during runtime.
 		/// </summary>
 		public UserSettings Settings { get; private set; }
-
-		/// <summary>
-		///		The object stores dates related to the sync of the cache.
-		/// </summary>
-		public LastUpdated DateCache { get; private set; }
-
-		/// <summary>
-		/// Loads the DateCache from the filesystem.
-		/// </summary>
-		public void LoadDateCache()
-		{
-			if (!File.Exists(_dateCacheFileName)) return;
-			var sr = File.OpenText(_dateCacheFileName);
-			var content = sr.ReadToEnd();
-			sr.Close();
-			if (!string.IsNullOrEmpty(content))
-			{
-				DateCache = JsonSerializer.DeserializeFromString<LastUpdated>(content);
-			}
-		}
-
-		/// <summary>
-		/// Saves the DateCache to the filesystem.
-		/// </summary>
-		public void SaveDateCache()
-		{
-			var dateCache = JsonSerializer.SerializeToString(DateCache);
-			if (_dateCacheFileName == null) return;
-			File.WriteAllText(_dateCacheFileName, dateCache);
-		}
 
 		/// <summary>
 		///     Saves the plugin settings to the filesystem.
@@ -124,7 +86,7 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 				Settings = JsonSerializer.DeserializeFromString<UserSettings>(settings);
 			}
 		}
-		
+
 		/// <summary>
 		///     The method takes an IP address string and checks if it is allowed to connect
 		///     based on the application settings

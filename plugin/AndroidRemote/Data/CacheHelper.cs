@@ -1,6 +1,7 @@
 ﻿using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.OrmLite;
 using System.Data;
+using MusicBeePlugin.AndroidRemote.Persistence;
 
 namespace MusicBeePlugin.AndroidRemote.Data
 {
@@ -38,6 +39,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                     db.CreateTableIfNotExists<Playlist>();
 					db.CreateTableIfNotExists<PlaylistTrackInfo>();
 					db.CreateTableIfNotExists<PlaylistTrack>();
+					db.CreateTableIfNotExists<LastUpdated>();
                 }
 
             }
@@ -47,7 +49,11 @@ namespace MusicBeePlugin.AndroidRemote.Data
             }
         }
 
-        public IDbConnection GetDbConnection()
+	    /// <summary>
+		/// Gets a connection to the database.
+	    /// </summary>
+	    /// <returns></returns>
+	    public IDbConnection GetDbConnection()
         {
             return _dbConnection.OpenDbConnection();
         }

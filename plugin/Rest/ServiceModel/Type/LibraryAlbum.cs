@@ -17,6 +17,11 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
     public class LibraryAlbum : TypeBase
     {
 		/// <summary>
+		/// Backing field of the property <see cref="Name"/>
+		/// </summary>
+		private string _name;
+
+		/// <summary>
 		/// Creates a new LibraryAlbum with an empty <see cref="TrackList"/> 
 		/// </summary>
 		public LibraryAlbum()
@@ -28,7 +33,11 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// The name (title) of the album.
 		/// </summary>
 		[DataMember(Name = "name")]
-        public string Name { get; set; }
+		public string Name
+		{
+			get { return _name; }
+			set { _name = string.IsNullOrEmpty(value) ? "[Empty]" : value; }
+		}
 
 		/// <summary>
 		/// The id of the album artist.

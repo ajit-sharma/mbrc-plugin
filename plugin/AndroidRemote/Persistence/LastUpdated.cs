@@ -12,7 +12,7 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 	///     Used for the sync functionality.
 	/// </summary>
 	[DataContract]
-	internal class LastUpdated
+	public class LastUpdated
 	{
 		/// <summary>
 		///     The most recent update for the playlists table.
