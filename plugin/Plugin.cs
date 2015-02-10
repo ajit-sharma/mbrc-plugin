@@ -6,7 +6,6 @@ using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Networking;
-using MusicBeePlugin.Debugging;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -53,9 +52,6 @@ namespace MusicBeePlugin
 
         private InfoWindow _mWindow;
 
-#if DEBUG
-        private DebugTool _dTool;
-#endif
         private string _mStoragePath;
 
         private Timer _timer;
@@ -131,10 +127,6 @@ namespace MusicBeePlugin
             EventBus.FireEvent(new MessageEvent(MessageEvent.ActionSocketStart));
             EventBus.FireEvent(new MessageEvent(MessageEvent.StartServiceBroadcast));
             EventBus.FireEvent(new MessageEvent(MessageEvent.ShowFirstRunDialog));
-
-#if DEBUG
-            _api.MB_AddMenuItem("mnuTools/MBRC Debug Tool", "DebugTool", DisplayDebugWindow);
-#endif
 
             StartPlayerStatusMonitoring();
 
@@ -258,7 +250,10 @@ namespace MusicBeePlugin
             DisplayInfoWindow();
         }
 
-        public void UpdateWindowStatus(bool status)
+	    /// <summary>
+	    /// </summary>
+	    /// <param name="status"></param>
+	    public void UpdateWindowStatus(bool status)
         {
             if (_mWindow != null && _mWindow.Visible)
             {
@@ -266,7 +261,9 @@ namespace MusicBeePlugin
             }
         }
 
-        public void OpenInfoWindow()
+	    /// <summary>
+	    /// </summary>
+	    public void OpenInfoWindow()
         {
             var hwnd = _api.MB_GetWindowHandle();
             var mb = (Form)Control.FromHandle(hwnd);
@@ -286,17 +283,6 @@ namespace MusicBeePlugin
 
             _mWindow.Show();
         }
-
-#if DEBUG
-        public void DisplayDebugWindow(object sender, EventArgs eventArgs)
-        {
-            if (_dTool == null || !_dTool.Visible)
-            {
-                _dTool = new DebugTool();
-            }
-            _dTool.Show();
-        }
-#endif
 
         /// <summary>
         ///     Creates the MusicBee plugin Configuration panel.

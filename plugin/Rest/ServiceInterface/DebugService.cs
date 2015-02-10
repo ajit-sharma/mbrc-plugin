@@ -13,12 +13,12 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 	/// </summary>
 	internal class DebugService : Service
 	{
-		private PlaylistModule _module;
+		private LibraryModule _module;
 
 		/// <summary>
 		/// </summary>
 		/// <param name="module"></param>
-		public DebugService(PlaylistModule module)
+		public DebugService(LibraryModule module)
 		{
 			_module = module;
 		}
@@ -30,8 +30,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
 		public object Get(GetTest reqTest)
 		{
-			_module.SyncPlaylistsWithCache();
-			return "per";
+			_module.UpdateArtistTable();
+			return new object {};
 		}
 
 	}

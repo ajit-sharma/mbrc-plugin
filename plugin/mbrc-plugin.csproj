@@ -140,6 +140,8 @@
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
     <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
+    <Compile Include="Comparers\LibraryArtistComparer.cs" />
+    <Compile Include="Comparers\LibraryGenreComparer.cs" />
     <Compile Include="Comparers\PlaylistComparer.cs" />
     <Compile Include="Comparers\PlaylistTrackInfoComparer.cs" />
     <Compile Include="InjectionModule.cs" />
@@ -177,12 +179,6 @@
     <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
     <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
     <Compile Include="Rest\AppHost.cs" />
-    <Compile Include="Debugging\DebugTool.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Debugging\DebugTool.Designer.cs">
-      <DependentUpon>DebugTool.cs</DependentUpon>
-    </Compile>
     <Compile Include="AllowedAddresses.cs" />
     <Compile Include="InfoWindow.cs">
       <SubType>Form</SubType>
@@ -260,9 +256,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Debugging\DebugTool.resx">
-      <DependentUpon>DebugTool.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="InfoWindow.resx">
       <DependentUpon>InfoWindow.cs</DependentUpon>
     </EmbeddedResource>
