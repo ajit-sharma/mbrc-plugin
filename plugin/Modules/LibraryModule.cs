@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using MusicBeePlugin.AndroidRemote.Data;
@@ -29,6 +28,20 @@ namespace MusicBeePlugin.Modules
 		///     Gets the Default logger instance for the class.
 		/// </summary>
 		private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+		/// <summary>
+		///     The fields (MetaData) that MusicBee Remote caches.
+		/// </summary>
+		private readonly Plugin.MetaDataType[] _fields =
+		{
+			Plugin.MetaDataType.Artist,
+			Plugin.MetaDataType.AlbumArtist,
+			Plugin.MetaDataType.Album,
+			Plugin.MetaDataType.Genre,
+			Plugin.MetaDataType.TrackTitle,
+			Plugin.MetaDataType.Year,
+			Plugin.MetaDataType.TrackNo
+		};
 
 		/// <summary>
 		///     Initializes a new instance of the <see cref="LibraryModule" /> class.
@@ -98,70 +111,88 @@ namespace MusicBeePlugin.Modules
 		/// </summary>
 		public void BuildCache()
 		{
+			UpdateArtistTable();
+			UpdateGenreTable();
+			UpdateAlbumTable();
+			UpdateTrackTable();
+		}
+
+		/// <summary>
+		///     Checks for updates the <see cref="LibraryTrack" /> table.
+		/// </summary>
+		private void UpdateTrackTable()
+		{
 			string[] files = {};
-			_api.Library_QueryFilesEx(String.Empty, ref files);
+			_api.Library_QueryFilesEx(string.Empty, ref files);
+
 			using (var db = _cHelper.GetDbConnection())
 			using (var trans = db.OpenTransaction())
 			{
-				db.SaveAll(GetArtistDataFromApi());
-				db.SaveAll(GetGenreDataFromApi());
-				db.SaveAll(GetAlbumDataFromApi());
 				var artists = db.Select<LibraryArtist>();
 				var genres = db.Select<LibraryGenre>();
 				var albums = db.Select<LibraryAlbum>();
-				foreach (var file in files)
+
+				var cached = db.Select<LibraryTrack>(tr => tr.DateDeleted == null).ToList();
+				var deleted = db.Select<LibraryTrack>(tr => tr.DateDeleted != null).ToList();
+				var cachedPaths = cached.Select(tr => tr.Path).ToList();
+
+				var toInsert = files.Except(cachedPaths).ToList();
+				var toDelete = cachedPaths.Except(files).ToList();
+
+				foreach (var file in toDelete)
 				{
-					Plugin.MetaDataType[] types =
-					{
-						Plugin.MetaDataType.Artist,
-						Plugin.MetaDataType.AlbumArtist,
-						Plugin.MetaDataType.Album,
-						Plugin.MetaDataType.Genre,
-						Plugin.MetaDataType.TrackTitle,
-						Plugin.MetaDataType.Year,
-						Plugin.MetaDataType.TrackNo
-					};
+					db.UpdateOnly(new LibraryTrack {DateDeleted = DateTime.UtcNow},
+						o => o.Update(p => p.DateDeleted)
+							.Where(p => p.Path.Equals(file)));
+				}
 
-					var i = 0;
+				foreach (var file in toInsert)
+				{
+					var deletedTrack = deleted.Find(tr => tr.Path.Equals(file));
 					string[] tags = {};
-					_api.Library_GetFileTags(file, types, ref tags);
+					_api.Library_GetFileTags(file, _fields, ref tags);
 
-					var artist = tags[i++];
-					var albumArtist = tags[i++];
-					var album = tags[i++];
-					var genre = tags[i++];
-					var title = tags[i++];
-					var year = tags[i++];
-					var trackNo = tags[i];
+					var meta = new LibraryTrackEx(tags);
 
-					int iTrack;
-					int.TryParse(trackNo, out iTrack);
+					var genre = genres.SingleOrDefault(q => q.Name == meta.Genre);
+					var artist = artists.SingleOrDefault(q => q.Name == meta.Artist);
+					var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
+					var album = albums.SingleOrDefault(q => q.Name == meta.Album);
 
-					var oGenre = genres.SingleOrDefault(q => q.Name == genre);
-					var oArtist = artists.SingleOrDefault(q => q.Name == artist);
-					var oAlbumArtist = artists.SingleOrDefault(q => q.Name == albumArtist);
-					var oAlbum = albums.SingleOrDefault(q => q.Name == album);
-
-					if (oAlbum != null && oAlbumArtist != null)
+					if (album != null && albumArtist != null)
 					{
-						oAlbum.ArtistId = oAlbumArtist.Id;
+						album.ArtistId = albumArtist.Id;
 					}
 
 					var track = new LibraryTrack
 					{
-						Title = title,
-						Year = year,
-						Position = iTrack,
-						GenreId = oGenre?.Id ?? 0,
-						AlbumArtistId = oAlbumArtist?.Id ?? 0,
-						ArtistId = oArtist?.Id ?? 0,
-						AlbumId = oAlbum?.Id ?? 0,
+						Title = meta.Title,
+						Year = meta.Year,
+						Position = meta.Position,
+						GenreId = genre?.Id ?? 0,
+						AlbumArtistId = albumArtist?.Id ?? 0,
+						ArtistId = artist?.Id ?? 0,
+						AlbumId = album?.Id ?? 0,
 						Path = file
 					};
+
+					// Current track was detected in the list of deleted tracks.
+					// So we are going to update the existing entry.
+					if (deletedTrack != null)
+					{
+						track.Id = deletedTrack.Id;
+						track.DateUpdated = DateTime.UtcNow;
+						track.DateDeleted = null;
+					}
+
 					db.Save(track);
 				}
+
 				db.UpdateAll(albums);
 				trans.Commit();
+
+				Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
+				Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
 			}
 		}
 
@@ -223,7 +254,7 @@ namespace MusicBeePlugin.Modules
 		}
 
 		/// <summary>
-		/// Checks for changes in the <see cref="LibraryArtist"/> table.
+		///     Checks for changes in the <see cref="LibraryArtist" /> table.
 		/// </summary>
 		public void UpdateArtistTable()
 		{
@@ -270,7 +301,7 @@ namespace MusicBeePlugin.Modules
 		}
 
 		/// <summary>
-		/// Checks for changes in the <see cref="LibraryGenre"/> table.
+		///     Checks for changes in the <see cref="LibraryGenre" /> table.
 		/// </summary>
 		public void UpdateGenreTable()
 		{
@@ -312,13 +343,11 @@ namespace MusicBeePlugin.Modules
 					db.SaveAll(genresToInsert);
 					Logger.Debug("Genres: {0} entries inserted", genresToInsert.Count);
 				}
-
 			}
-			
 		}
 
 		/// <summary>
-		/// Checks for changes in the <see cref="LibraryAlbum"/> table.
+		///     Checks for changes in the <see cref="LibraryAlbum" /> table.
 		/// </summary>
 		public void UpdateAlbumTable()
 		{
@@ -360,9 +389,7 @@ namespace MusicBeePlugin.Modules
 					db.SaveAll(albumsToInsert);
 					Logger.Debug("Albums: {0} entries inserted", albumsToInsert.Count);
 				}
-
 			}
-
 		}
 
 		/// <summary>
@@ -375,53 +402,35 @@ namespace MusicBeePlugin.Modules
 			using (var db = _cHelper.GetDbConnection())
 			using (var trans = db.OpenTransaction())
 			{
-				var allTrack = db.Select<LibraryTrack>();
-				var map = new Dictionary<string, LibraryAlbum>();
 				var albums = db.Select<LibraryAlbum>();
-
-				foreach (var lTrack in allTrack)
+				foreach (var album in albums)
 				{
-					var path = lTrack.Path;
-					var id = _api.Library_GetFileTag(path, Plugin.MetaDataType.AlbumId);
-					LibraryAlbum ab;
-					if (!map.TryGetValue(id, out ab))
+					var trackList = db.Select<LibraryTrack>(tr => tr.AlbumId == album.Id)
+						.OrderBy(tr => tr.Position)
+						.ToList();
+
+					if (trackList.Count == 0)
 					{
-						ab = albums.SingleOrDefault(q => q.Id == lTrack.AlbumId) ?? new LibraryAlbum();
-						ab.AlbumId = id;
-						map.Add(id, ab);
+						continue;
 					}
-					var trackId = _api.Library_GetFileTag(path, Plugin.MetaDataType.TrackNo);
-					var track = new LibraryTrack
-					{
-						Path = path,
-						Position = !string.IsNullOrEmpty(trackId) ? int.Parse(trackId, NumberStyles.Any) : 0
-					};
-					ab.TrackList.Add(track);
-				}
-
-				var list = new List<LibraryAlbum>(map.Values);
-
-				foreach (var albumEntry in list)
-				{
-					albumEntry.TrackList.Sort();
-					var path = albumEntry.TrackList[0].Path;
-					String coverUrl = null;
+					var track = trackList[0];
+					string coverUrl = null;
 
 					var locations = Plugin.PictureLocations.None;
 					byte[] imageData = {};
 
-					_api.Library_GetArtworkEx(path, 0, false, ref locations, ref coverUrl, ref imageData);
+					_api.Library_GetArtworkEx(track.Path, 0, false, ref locations, ref coverUrl, ref imageData);
 
-					if (String.IsNullOrEmpty(coverUrl))
+					if (string.IsNullOrEmpty(coverUrl))
 					{
-						_api.Library_GetArtworkEx(path, 0, true, ref locations, ref coverUrl, ref imageData);
+						_api.Library_GetArtworkEx(track.Path, 0, true, ref locations, ref coverUrl, ref imageData);
 					}
 
-					var coverHash = !String.IsNullOrEmpty(coverUrl)
+					var coverHash = !string.IsNullOrEmpty(coverUrl)
 						? Utilities.StoreCoverToCache(coverUrl)
 						: Utilities.StoreCoverToCache(imageData);
 
-					if (String.IsNullOrEmpty(coverHash))
+					if (string.IsNullOrEmpty(coverHash))
 					{
 						continue;
 					}
@@ -432,10 +441,10 @@ namespace MusicBeePlugin.Modules
 					};
 
 					db.Save(cover);
-					albumEntry.CoverId = (int) db.GetLastInsertId();
+					album.CoverId = (int) db.GetLastInsertId();
 				}
 
-				db.UpdateAll(list);
+				db.UpdateAll(albums);
 				trans.Commit();
 			}
 		}

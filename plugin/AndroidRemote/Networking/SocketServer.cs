@@ -69,7 +69,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// <returns></returns>
         public void Stop()
         {
-            Logger.Info("Stopping Socket Server");
+            Logger.Debug("Stopping Socket Server");
             if (server == null) return;
             server.Dispose();
             server = null;
@@ -83,7 +83,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         {
             try
             {
-                Logger.Info("Starting Socket Server");
+                Logger.Debug("Starting Socket Server");
                 if (server == null)
                 {
                     server = new WebSocketServer(String.Format("ws://0.0.0.0:{0}", _controller.Settings.WebSocketPort));

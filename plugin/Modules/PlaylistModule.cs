@@ -88,10 +88,13 @@ namespace MusicBeePlugin.Modules
 				// Entries deleted so update
 				SetPlaylistUpdated(db);
 			}
-
+			
 			transaction.Commit();
 			transaction.Dispose();
 			db.Dispose();
+
+			Logger.Debug("Playlists: {0} entries inserted.", playlistsToInsert.Count);
+			Logger.Debug("Playlists: {0} entries removed.", playlistsToRemove.Count);
 
 			foreach (var cachedPlaylist in cachedPlaylists)
 			{
@@ -106,9 +109,10 @@ namespace MusicBeePlugin.Modules
 		/// <param name="db"></param>
 		private static void SetPlaylistUpdated(IDbConnection db)
 		{
-			var dateCache = db.GetById<LastUpdated>(1) ?? new LastUpdated();
-			dateCache.PlaylistsUpdated = DateTime.UtcNow;
-			db.Save(dateCache);
+			var dateCache = db.Select<LastUpdated>(lu => lu.Id == 1);
+			var cached = dateCache.Count > 0 ? dateCache[0] : new LastUpdated();
+            cached.PlaylistsUpdated = DateTime.UtcNow;
+			db.Save(cached);
 		}
 
 		/// <summary>
@@ -118,6 +122,7 @@ namespace MusicBeePlugin.Modules
 		/// <param name="playlist">The playlist for which the sync happens</param>
 		private void SyncPlaylistDataWithCache(Playlist playlist)
 		{
+			Logger.Debug("Checking changes for playlist: {0}", playlist.Path);
 			using (var db = _cHelper.GetDbConnection())
 			{
 				var tracksUpdated = 0;
@@ -180,7 +185,7 @@ namespace MusicBeePlugin.Modules
 
 				// Reactivating
 				comparer.IncludePosition = true;
-				Logger.Info("{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.", tracksToInsert.Count(),
+				Logger.Debug("{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.", tracksToInsert.Count(),
 					tracksToDelete.Count(), tracksUpdated);
 
 				foreach (var track in tracksToDelete)
@@ -204,7 +209,7 @@ namespace MusicBeePlugin.Modules
 
 				cachedPlaylistTracks.Sort();
 
-				Debug.WriteLine("The playlists should be equal now: {0}",
+				Logger.Debug("The playlists should be equal now: {0}",
 					playlistTracks.SequenceEqual(cachedPlaylistTracks, comparer));
 
 				if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)

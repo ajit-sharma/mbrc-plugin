@@ -8,6 +8,37 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
     /// </summary>
     public class LibraryTrackEx
     {
+	    /// <summary>
+	    /// Default constructor to create a <see cref="LibraryTrackEx"/>
+	    /// </summary>
+	    public LibraryTrackEx()
+	    {
+		    
+	    }
+
+	    /// <summary>
+	    /// Creates a new <see cref="LibraryTrackEx" /> taking information from the
+	    /// metadata available in the <paramref name="tags"/> array.
+	    /// </summary>
+	    /// <param name="tags">
+	    /// An array containing the metadata tags for the track
+	    /// </param>
+	    public LibraryTrackEx(string[] tags)
+	    {
+		    var i = 0;
+		    Artist = tags[i++];
+		    AlbumArtist = tags[i++];
+		    Album = tags[i++];
+			Genre = tags[i++];
+		    Title = tags[i++];
+		    Year = tags[i++];
+
+			var trackNo = tags[i];
+			int position;
+			int.TryParse(trackNo, out position);
+		    Position = position;
+
+	    }
         /// <summary>
         /// The id of the <see cref="LibraryTrack"/> entry.
         /// </summary>
