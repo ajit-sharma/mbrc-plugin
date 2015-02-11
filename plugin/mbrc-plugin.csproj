@@ -140,6 +140,7 @@
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
     <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
+    <Compile Include="Comparers\LibraryAlbumComparer.cs" />
     <Compile Include="Comparers\LibraryArtistComparer.cs" />
     <Compile Include="Comparers\LibraryGenreComparer.cs" />
     <Compile Include="Comparers\PlaylistComparer.cs" />

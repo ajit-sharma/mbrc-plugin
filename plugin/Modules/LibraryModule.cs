@@ -205,7 +205,7 @@ namespace MusicBeePlugin.Modules
 		///     Gets the Albums available in the MusicBee database.
 		/// </summary>
 		/// <returns></returns>
-		private IEnumerable<LibraryAlbum> GetAlbumDataFromApi()
+		private List<LibraryAlbum> GetAlbumDataFromApi()
 		{
 			var list = new List<LibraryAlbum>();
 			if (_api.Library_QueryLookupTable("album", "count", null))
@@ -264,7 +264,7 @@ namespace MusicBeePlugin.Modules
 				if (artistsToInsert.Count > 0)
 				{
 					db.SaveAll(artistsToInsert);
-					Logger.Debug("Artists: {0} entries inserted", artistsToInsert);
+					Logger.Debug("Artists: {0} entries inserted", artistsToInsert.Count);
 				}
 			}
 		}
@@ -310,11 +310,59 @@ namespace MusicBeePlugin.Modules
 				if (genresToInsert.Count > 0)
 				{
 					db.SaveAll(genresToInsert);
-					Logger.Debug("Genres: {0} entries inserted", genresToInsert);
+					Logger.Debug("Genres: {0} entries inserted", genresToInsert.Count);
 				}
 
 			}
 			
+		}
+
+		/// <summary>
+		/// Checks for changes in the <see cref="LibraryAlbum"/> table.
+		/// </summary>
+		public void UpdateAlbumTable()
+		{
+			using (var db = _cHelper.GetDbConnection())
+			{
+				var albums = GetAlbumDataFromApi();
+				var cachedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted == null);
+				var deletedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted != null);
+				var comparer = new LibraryAlbumComparer();
+
+				var albumsToInsert = albums.Except(cachedAlbums, comparer).ToList();
+				var albumsToRemove = cachedAlbums.Except(albums, comparer).ToList();
+
+				foreach (var album in albumsToRemove)
+				{
+					album.DateDeleted = DateTime.UtcNow;
+				}
+
+				if (albumsToRemove.Count > 0)
+				{
+					db.SaveAll(albumsToRemove);
+					Logger.Debug("Albums: {0} entries removed", albumsToRemove.Count);
+				}
+
+				foreach (var albumEntry in albumsToInsert)
+				{
+					var album =
+						deletedAlbums.Find(gen => gen.Name
+							.Equals(albumEntry.Name,
+								StringComparison.InvariantCultureIgnoreCase));
+					if (album != null)
+					{
+						albumEntry.Id = album.Id;
+					}
+				}
+
+				if (albumsToInsert.Count > 0)
+				{
+					db.SaveAll(albumsToInsert);
+					Logger.Debug("Albums: {0} entries inserted", albumsToInsert.Count);
+				}
+
+			}
+
 		}
 
 		/// <summary>

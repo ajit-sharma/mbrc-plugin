@@ -31,6 +31,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 		public object Get(GetTest reqTest)
 		{
 			_module.UpdateArtistTable();
+			_module.UpdateGenreTable();
+			_module.UpdateAlbumTable();
 			return new object {};
 		}
 
