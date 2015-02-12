@@ -86,7 +86,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 Logger.Debug("Starting Socket Server");
                 if (server == null)
                 {
-                    server = new WebSocketServer(String.Format("ws://0.0.0.0:{0}", _controller.Settings.WebSocketPort));
+                    server = new WebSocketServer(string.Format("ws://0.0.0.0:{0}", _controller.Settings.WebSocketPort));
                     server.Start(socket =>
                     {
                         socket.OnOpen = () =>

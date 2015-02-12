@@ -161,6 +161,9 @@
     <Compile Include="Rest\ServiceModel\DebugModel.cs" />
     <Compile Include="Rest\ServiceModel\Enum\ChangeType.cs" />
     <Compile Include="Rest\ServiceModel\Enum\PlayerAction.cs" />
+    <Compile Include="Rest\ServiceModel\Requests\PaginatedRequest.cs" />
+    <Compile Include="Rest\ServiceModel\Requests\IdBasedRequest.cs" />
+    <Compile Include="Rest\ServiceModel\Requests\SyncRequest.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryCover.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlayerStatus.cs" />
@@ -217,6 +220,7 @@
     <Compile Include="Rest\ServiceModel\Type\NowPlaying.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlaylistTrack.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlaylistTrackInfo.cs" />
+    <Compile Include="Rest\ServiceModel\Type\ResponseDto.cs" />
     <Compile Include="Rest\ServiceModel\Type\Track.cs" />
     <Compile Include="Rest\ServiceModel\Const\Verbs.cs" />
     <Compile Include="Rest\ServiceModel\Type\TypeBase.cs" />

@@ -5,7 +5,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
     /// </summary>
     public class Summary
     {
-        public const string RatingPut = @"Sets the track rating for the playing track";
+	    public const string RatingPut = @"Sets the track rating for the playing track";
         public const string ShuffleGet = @"Gets the current state of shuffle.";
         public const string ShufflePut = @"Sets the shuffle status.";
         public const string ScrobbleGet = @"Gets the status of last.fm scrobbling";
@@ -55,5 +55,12 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
 	    public const string LibraryCoversIdRaw = "Retrieves a jpeg cover image from the cache.";
 	    public const string PlaylistChanges = @"Gets the changes in the playlist.";
 	    public const string PlaylistTrackInfo = "Retrieves playlist track info.";
+	    public const string LibrayTracksU = @"Gets the changes on the track table.";
+		public const string LibraryArtistU = @"Gets the changes on the artist table.";
+		public const string LibraryAlbumsU = @"Gets the changes on the albums table.";
+		public const string LibraryGenresU = @"Gets the changes on the genres table.";
+		public const string LibraryCoversU = @"Gets the changes on the covers table.";
+	    public const string PlaylistTrackChanges = @"Gets the changes in the playlist tracks.";
+	    public const string PlaylistTrackInfoChanges = @"Gets the changes in the playlist track info.";
     }
 }

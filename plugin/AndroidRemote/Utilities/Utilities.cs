@@ -1,6 +1,7 @@
 ﻿#region
 
 using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -113,29 +114,32 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
             return hash;
         }
 
-        /// <summary>
-        ///     Given a Stream that is supposedly an image that function will try to
-        ///     resize the image to the supplied <paramref name="width" /> and
-        ///     <paramref name="height" /> . If the image is not square the the
-        ///     dimensions represent the largest size.
-        /// </summary>
-        /// <param name="stream">A stream containing an image.</param>
-        /// <param name="filepath">The path where the file will be saved</param>
-        /// <param name="width">The max width of the file saved</param>
-        /// <param name="height">The max height of the file saved</param>
-        private static void StoreResizedStream(Stream stream, String filepath, int width = 400, int height = 400)
-        {
-            try
-            {
-                var albumCover = Image.FromStream(stream, false, true);                
-                var size = CalculateNewSize(width, height, albumCover);
-                StoreImage(filepath, size.Width, size.Height, albumCover);
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
-        }
+	    /// <summary>
+	    ///     Given a Stream that is supposedly an image that function will try to
+	    ///     resize the image to the supplied <paramref name="width" /> and
+	    ///     <paramref name="height" /> . If the image is not square the the
+	    ///     dimensions represent the largest size.
+	    /// </summary>
+	    /// <param name="stream">A stream containing an image.</param>
+	    /// <param name="filepath">The path where the file will be saved</param>
+	    /// <param name="width">The max width of the file saved</param>
+	    /// <param name="height">The max height of the file saved</param>
+	    private static bool StoreResizedStream(Stream stream, string filepath, int width = 400, int height = 400)
+	    {
+		    var success = true;
+			try
+			{
+				var albumCover = Image.FromStream(stream, false, true);
+				var size = CalculateNewSize(width, height, albumCover);
+				StoreImage(filepath, size.Width, size.Height, albumCover);
+			}
+			catch (Exception ex)
+			{
+				Logger.Debug(ex);
+				success = false;
+			}
+		    return success;
+	    }
 
         /// <summary>
         /// </summary>
@@ -202,7 +206,7 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
         public static string StoreCoverToCache(string url, int width = 400, int height = 400)
         {
             var hash = string.Empty;
-            if (String.IsNullOrEmpty(url))
+            if (string.IsNullOrEmpty(url))
             {
                 return hash;
             }
@@ -219,7 +223,10 @@ namespace MusicBeePlugin.AndroidRemote.Utilities
                         return hash;
                     }
 
-                    StoreResizedStream(fs, filepath, width, height);
+	                if (!StoreResizedStream(fs, filepath, width, height))
+	                {
+		                hash = new string('0', 40);
+	                }
                 }
             }
             catch (Exception ex)

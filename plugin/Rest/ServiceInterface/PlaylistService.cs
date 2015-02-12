@@ -78,7 +78,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 	    public object Get(GetPlaylistChanges request)
 	    {
 		    var paginatedPlaylistResponse = new PaginatedPlaylistResponse();
-		    var data = _module.GetChangesSince<Playlist>(request.SyncDate, request.Change);
+		    var data = _module.GetChangesSince<Playlist>(request.LastSync, request.Change);
 			paginatedPlaylistResponse.CreatePage(request.Limit, request.Offset, data);
 		    return paginatedPlaylistResponse;
 	    }
@@ -86,7 +86,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 		public object Get(GetPlaylistTrackChanges request)
 		{
 			var paginatedPlaylistResponse = new PaginatedPlaylistTrackResponse();
-			var data = _module.GetChangesSince<PlaylistTrack>(request.SyncDate, request.Change);
+			var data = _module.GetChangesSince<PlaylistTrack>(request.LastSync, request.Change);
 			paginatedPlaylistResponse.CreatePage(request.Limit, request.Offset, data);
 			return paginatedPlaylistResponse;
 		}
@@ -94,7 +94,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 		public object Get(GetPlaylistTrackInfoChanges request)
 		{
 			var paginatedPlaylistResponse = new PaginatedPlaylistTrackInfoResponse();
-			var data = _module.GetChangesSince<PlaylistTrackInfo>(request.SyncDate, request.Change);
+			var data = _module.GetChangesSince<PlaylistTrackInfo>(request.LastSync, request.Change);
 			paginatedPlaylistResponse.CreatePage(request.Limit, request.Offset, data);
 			return paginatedPlaylistResponse;
 		}

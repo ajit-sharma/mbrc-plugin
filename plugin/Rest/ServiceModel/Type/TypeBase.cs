@@ -34,7 +34,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     of the <see langword="object" /> creation. Used during sync to figure out the modified entries.
 		/// </summary>
 		[DataMember(Name = "dateUpdated")]
-		public DateTime DateUpdated { get; set; } = DateTime.UtcNow;
+		public DateTime? DateUpdated { get; set; }
 
 		/// <summary>
 		///     The Date the entry was deleted. As it is expected for an entry that is

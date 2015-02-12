@@ -1,106 +1,92 @@
-﻿#region
+﻿#region Dependencies
 
 using MusicBeePlugin.Rest.ServiceModel.Const;
+using MusicBeePlugin.Rest.ServiceModel.Requests;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.Api.Swagger;
 using ServiceStack.ServiceHost;
 
 #endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {
-    [Route(Routes.LibraryTracks, Verbs.Get, Summary = Summary.LibraryTracksGet)]
-    public class GetLibraryTracks : IReturn<PaginatedTrackResponse>
-    {
-	    [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
-            Description = Description.Limit)]
-        public int Limit { get; set; }
+	[Route(Routes.LibraryTracks, Verbs.Get, Summary = Summary.LibraryTracksGet)]
+	public class GetLibraryTracks : PaginatedRequest, IReturn<PaginatedTrackResponse>
+	{
+	}
 
-        [ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
-            Description = Description.Offset)]
-        public int Offset { get; set; }
-    }
+	[Route(Routes.LibraryTracksU, Verbs.Get, Summary = Summary.LibrayTracksU)]
+	public class GetLibraryTrackChanges : SyncRequest, IReturn<PaginatedTrackResponse>
+	{
+	}
 
-    [Route(Routes.LibraryTracksId, Verbs.Get, Summary = Summary.LibraryTrackByIdGet)]
-    public class GetLibraryTrack : IReturn<LibraryTrack>
-    {
-	    [ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true,
-            Description = Description.EntryId)]
-        public int Id { get; set; }
-    }
 
-    [Route(Routes.LibraryArtists, Verbs.Get, Summary = Summary.LibraryArtist)]
-    public class GetLibraryArtists : IReturn<PaginatedArtistResponse>
-    {
-	    [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Limit)]
-        public int Limit { get; set; }
+	[Route(Routes.LibraryTracksId, Verbs.Get, Summary = Summary.LibraryTrackByIdGet)]
+	public class GetLibraryTrack : IdBasedRequest, IReturn<LibraryTrack>
+	{
+	}
 
-        [ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Offset)]
-        public int Offset { get; set; }
-    }
+	[Route(Routes.LibraryArtists, Verbs.Get, Summary = Summary.LibraryArtist)]
+	public class GetLibraryArtists : PaginatedRequest, IReturn<PaginatedArtistResponse>
+	{
+	}
 
-    [Route(Routes.LibraryArtistsId, Verbs.Get, Summary = Summary.LibraryArtistById)]
-    public class GetLibraryArtist : IReturn<LibraryArtist>
-    {
-	    [ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true, Description = Description.EntryId)]
-        public int Id { get; set; }
-    }
+	[Route(Routes.LibraryArtistsU, Verbs.Get, Summary = Summary.LibraryArtistU)]
+	public class GetLibraryArtistChanges : SyncRequest, IReturn<PaginatedArtistResponse>
+	{
+	}
 
-    [Route(Routes.LibraryAlbums, Verbs.Get, Summary = Summary.LibraryAlbums)]
-    public class GetLibraryAlbums : IReturn<PaginatedAlbumResponse>
-    {
-	    [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Limit)]
-        public int Limit { get; set; }
+	[Route(Routes.LibraryArtistsId, Verbs.Get, Summary = Summary.LibraryArtistById)]
+	public class GetLibraryArtist : IdBasedRequest, IReturn<LibraryArtist>
+	{
+	}
 
-        [ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Offset)]
-        public int Offset { get; set; }
-    }
+	[Route(Routes.LibraryAlbums, Verbs.Get, Summary = Summary.LibraryAlbums)]
+	public class GetLibraryAlbums : PaginatedRequest, IReturn<PaginatedAlbumResponse>
+	{
+	}
 
-    [Route(Routes.LibraryAlbumsId, Verbs.Get, Summary = Summary.LibraryAlbumsId)]
-    public class GetLibraryAlbum : IReturn<LibraryAlbum>
-    {
-	    [ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true, Description = Description.EntryId)]
-        public int Id { get; set; }
-    }
+	[Route(Routes.LibraryAlbumsU, Verbs.Get, Summary = Summary.LibraryAlbumsU)]
+	public class GetLibraryAlbumChanges : SyncRequest, IReturn<PaginatedAlbumResponse>
+	{
+	}
 
-    [Route(Routes.LibraryGenres, Verbs.Get, Summary = Summary.LibraryGenres)]
-    public class GetLibraryGenres : IReturn<PaginatedGenreResponse>
-    {
-	    [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Limit)]
-        public int Limit { get; set; }
+	[Route(Routes.LibraryAlbumsId, Verbs.Get, Summary = Summary.LibraryAlbumsId)]
+	public class GetLibraryAlbum : IdBasedRequest, IReturn<LibraryAlbum>
+	{
+	}
 
-        [ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Offset)]
-        public int Offset { get; set; }
-    }
+	[Route(Routes.LibraryGenres, Verbs.Get, Summary = Summary.LibraryGenres)]
+	public class GetLibraryGenres : PaginatedRequest, IReturn<PaginatedGenreResponse>
+	{
+	}
 
-    [Route(Routes.LibraryGenresId, Verbs.Get, Summary = Summary.LibraryGenresId)]
-    public class GetLibraryGenre : IReturn<LibraryGenre>
-    {
-	    [ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true, Description = Description.EntryId)]
-        public int Id { get; set; }
-    }
+	[Route(Routes.LibraryGenresU, Verbs.Get, Summary = Summary.LibraryGenresU)]
+	public class GetLibraryGenreChanges : SyncRequest, IReturn<PaginatedGenreResponse>
+	{
+	}
 
-    [Route(Routes.LibraryCovers, Verbs.Get, Summary = Summary.LibraryCovers)]
-    public class GetLibraryCovers : IReturn<PaginatedCoverResponse>
-    {
-	    [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Limit)]
-        public int Limit { get; set; }
+	[Route(Routes.LibraryGenresId, Verbs.Get, Summary = Summary.LibraryGenresId)]
+	public class GetLibraryGenre : IdBasedRequest, IReturn<LibraryGenre>
+	{
+	}
 
-        [ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false, Description = Description.Offset)]
-        public int Offset { get; set; }
-    }
+	[Route(Routes.LibraryCovers, Verbs.Get, Summary = Summary.LibraryCovers)]
+	public class GetLibraryCovers : PaginatedRequest, IReturn<PaginatedCoverResponse>
+	{
+	}
 
-    [Route(Routes.LibraryCoversId, Verbs.Get, Summary = Summary.LibraryCoversId)]
-    public class GetLibraryCover : IReturn<LibraryCover>
-    {
-	    [ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true, Description = Description.EntryId)]
-        public int Id { get; set; }
-    }
+	[Route(Routes.LibraryCoversU, Verbs.Get, Summary = Summary.LibraryCoversU)]
+	public class GetLibraryCoverChanges : SyncRequest, IReturn<PaginatedCoverResponse>
+	{
+	}
 
-    [Route(Routes.LibraryCoversIdRaw, Verbs.Get, Summary = Summary.LibraryCoversIdRaw)]
-    public class GetLibraryCoverData
-    {
-	    [ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true, Description = Description.EntryId)]
-        public int Id { get; set; }
-    }
+	[Route(Routes.LibraryCoversId, Verbs.Get, Summary = Summary.LibraryCoversId)]
+	public class GetLibraryCover : IdBasedRequest, IReturn<LibraryCover>
+	{
+	}
+
+	[Route(Routes.LibraryCoversIdRaw, Verbs.Get, Summary = Summary.LibraryCoversIdRaw)]
+	public class GetLibraryCoverData : IdBasedRequest
+	{
+	}
 }
