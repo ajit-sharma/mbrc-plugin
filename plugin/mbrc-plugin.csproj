@@ -204,11 +204,11 @@
     <Compile Include="Rest\ServiceInterface\PlayerService.cs" />
     <Compile Include="Rest\ServiceInterface\PlaylistService.cs" />
     <Compile Include="Rest\ServiceInterface\TrackService.cs" />
-    <Compile Include="Rest\ServiceModel\Library.cs" />
-    <Compile Include="Rest\ServiceModel\NowPlaying.cs" />
-    <Compile Include="Rest\ServiceModel\Player.cs" />
-    <Compile Include="Rest\ServiceModel\Playlist.cs" />
-    <Compile Include="Rest\ServiceModel\Track.cs" />
+    <Compile Include="Rest\ServiceModel\LibraryModel.cs" />
+    <Compile Include="Rest\ServiceModel\NowPlayingModel.cs" />
+    <Compile Include="Rest\ServiceModel\PlayerModel.cs" />
+    <Compile Include="Rest\ServiceModel\PlaylistModel.cs" />
+    <Compile Include="Rest\ServiceModel\TrackModel.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryAlbum.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryArtist.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryGenre.cs" />
