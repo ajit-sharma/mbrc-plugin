@@ -98,7 +98,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
 	    [ApiMember(Name = "action", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true,
 			Description = Description.PlayerAction)]
-		[ApiAllowableValues("action", typeof(PlayerAction))]
+		[ApiAllowableValues("action", typeof(PlaybackAction))]
 		public PlaybackAction Action { get; set; }
 		
     }
