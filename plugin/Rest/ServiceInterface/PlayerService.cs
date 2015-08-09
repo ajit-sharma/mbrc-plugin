@@ -40,7 +40,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             };
         }
 		
-        public SuccessResponse Put(PlayerAction request)
+        public SuccessResponse Get(PlayerAction request)
         {
 	        bool success;
 	        switch (request.Action)

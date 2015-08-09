@@ -93,7 +93,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public bool? Enabled { get; set; }
     }
 
-    [Route(Routes.PlayerAction, Verbs.Put, Summary = Summary.PlayerAction)]
+    [Route(Routes.PlayerAction, Verbs.Get, Summary = Summary.PlayerAction)]
     public class PlayerAction : IReturn<SuccessResponse>
     {
 	    [ApiMember(Name = "action", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true,
