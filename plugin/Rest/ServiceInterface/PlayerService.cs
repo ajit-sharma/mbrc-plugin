@@ -1,5 +1,7 @@
 ﻿#region
 
+using System;
+using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
@@ -19,24 +21,27 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _module = module;
         }
 
-        public StatusResponse Get(GetShuffleState request)
+        public ShuffleStateResponse Get(GetShuffleState request)
         {
-            return new StatusResponse
+            return new ShuffleStateResponse
             {
-                Enabled = _module.GetShuffleState()
+                State = _module.GetShuffleState()
             };
         }
 
         public SuccessResponse Put(SetShuffleState request)
         {
-            var success = request.Enabled != null 
-                ? _module.SetShuffleState((bool) request.Enabled) :
-                _module.SetShuffleState(!_module.GetShuffleState());
+            ShuffleState state;
+            Enum.TryParse(request.Status, out state);
 
-            return new SuccessStatusResponse
+            var success = request.Status != null
+                ? _module.SetShuffleState(state)
+                : _module.ToggleShuffleState();
+
+            return new SuccessShuffleStateResponse
             {
                 Success = success,
-                Enabled = _module.GetShuffleState()
+                State = _module.GetShuffleState()
             };
         }
 		

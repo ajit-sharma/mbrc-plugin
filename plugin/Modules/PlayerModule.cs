@@ -2,6 +2,8 @@
 
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
+using MusicBeePlugin.AndroidRemote.Enumerations;
+using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel;
 using ServiceStack.WebHost.Endpoints.Support.Templates;
 using RepeatMode = MusicBeePlugin.Plugin.RepeatMode;
@@ -36,7 +38,7 @@ namespace MusicBeePlugin.Modules
 
         public int GetVolume()
         {
-            return ((int)Math.Round(_api.Player_GetVolume() * 100, 1));
+            return ((int) Math.Round(_api.Player_GetVolume()*100, 1));
         }
 
         public bool SetVolume(int volume)
@@ -44,24 +46,49 @@ namespace MusicBeePlugin.Modules
             var success = false;
             if (volume >= 0)
             {
-                success =_api.Player_SetVolume((float)volume / 100);
+                success = _api.Player_SetVolume((float) volume/100);
             }
 
             if (_api.Player_GetMute())
             {
-                success =_api.Player_SetMute(false);
+                success = _api.Player_SetMute(false);
             }
             return success;
         }
 
-        public bool GetShuffleState()
+        public ShuffleState GetShuffleState()
         {
-            return _api.Player_GetShuffle();
+            ShuffleState state;
+            if (_api.Player_GetAutoDjEnabled())
+            {
+                state = ShuffleState.autodj;
+            }
+            else
+            {
+                var shuffleEnabled = _api.Player_GetShuffle();
+                state = shuffleEnabled ? ShuffleState.shuffle : ShuffleState.off;
+            }
+            return state;
         }
 
-        public bool SetShuffleState(bool enabled)
+        public bool SetShuffleState(ShuffleState state)
         {
-            return _api.Player_SetShuffle(enabled);
+            var success = false;
+            switch (state)
+            {
+                case ShuffleState.autodj:
+                    success = _api.Player_StartAutoDj();
+                    break;
+                case ShuffleState.off:
+                    success = _api.Player_SetShuffle(false);
+                    break;
+                case ShuffleState.shuffle:
+                    success = _api.Player_SetShuffle(true);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+            }
+            return success;
         }
 
         public bool GetMuteState()
@@ -108,9 +135,7 @@ namespace MusicBeePlugin.Modules
 
         public bool SetAutoDjState(bool enabled)
         {
-            return enabled
-                ? _api.Player_StartAutoDj()
-                : _api.Player_EndAutoDj();
+            return enabled ? _api.Player_StartAutoDj() : _api.Player_EndAutoDj();
         }
 
         public bool PausePlayback()
@@ -149,7 +174,7 @@ namespace MusicBeePlugin.Modules
                 Shuffle = _api.Player_GetShuffle(),
                 Scrobble = _api.Player_GetScrobbleEnabled(),
                 PlayerState = _api.Player_GetPlayState().ToString().ToLower(),
-                Volume = ((int)Math.Round(_api.Player_GetVolume() * 100, 1))
+                Volume = ((int) Math.Round(_api.Player_GetVolume()*100, 1))
             };
         }
 
@@ -174,8 +199,29 @@ namespace MusicBeePlugin.Modules
                     newMode = RepeatMode.None;
                     break;
             }
-            
+
             return _api.Player_SetRepeat(newMode);
+        }
+
+        public bool ToggleShuffleState()
+        {
+            var success = false;
+            var shuffleEnabled = _api.Player_GetShuffle();
+            var autoDjEnabled = _api.Player_GetAutoDjEnabled();
+
+            if (shuffleEnabled && !autoDjEnabled)
+            {
+                success = _api.Player_StartAutoDj();
+            }
+            else if (autoDjEnabled)
+            {
+                success = _api.Player_EndAutoDj();
+            }
+            else
+            {
+                success = _api.Player_SetShuffle(true);
+            }
+            return success;
         }
     }
 }

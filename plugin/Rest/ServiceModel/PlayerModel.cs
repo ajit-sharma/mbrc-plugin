@@ -1,6 +1,7 @@
 ﻿#region
 
 using System.Runtime.Serialization;
+using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -12,16 +13,17 @@ using ServiceStack.ServiceHost;
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route(Routes.PlayerShuffle, Verbs.Get, Summary = Summary.ShuffleGet)]
-    public class GetShuffleState : IReturn<StatusResponse>
+    public class GetShuffleState : IReturn<ShuffleStateResponse>
     {
     }
 
     [Route(Routes.PlayerShuffle, Verbs.Put, Summary = Summary.ShufflePut)]
-    public class SetShuffleState : IReturn<SuccessStatusResponse>
+    public class SetShuffleState : IReturn<SuccessShuffleStateResponse>
     {
-        [ApiMember(Name = "enabled", ParameterType = "query", DataType = SwaggerType.Boolean,
+        [ApiMember(Name = "status", ParameterType = "query", DataType = SwaggerType.String,
             Description = Description.ShuffleEnabled, IsRequired = false)]
-        public bool? Enabled { get; set; }
+        [ApiAllowableValues("status", typeof(ShuffleState))]
+        public string Status { get; set; }
     }
 
     [Route(Routes.PlayerScrobble, Verbs.Get, Summary = Summary.ScrobbleGet)]
@@ -120,6 +122,14 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public bool Enabled { get; set; }
     }
 
+
+    [DataContract]
+    public class SuccessShuffleStateResponse : SuccessResponse
+    {
+        [DataMember(Name = "state")]
+        public ShuffleState State { get; set; }
+    }
+
     /// <summary>
     ///     A response that returns the status of a functionality (enabled/disabled)
     /// </summary>
@@ -128,6 +138,13 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
         [DataMember(Name = "enabled")]
         public bool Enabled { get; set; }
+    }
+
+    [DataContract]
+    public class ShuffleStateResponse
+    {
+        [DataMember(Name = "state")]
+        public ShuffleState State { get; set; } 
     }
 
     [DataContract]

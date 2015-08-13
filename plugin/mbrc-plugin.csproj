@@ -142,6 +142,7 @@
     <Compile Include="AndroidRemote\configuration.cs" />
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
+    <Compile Include="AndroidRemote\Enumerations\ShuffleState.cs" />
     <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
     <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
     <Compile Include="Comparers\LibraryAlbumComparer.cs" />
