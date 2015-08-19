@@ -20,7 +20,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerShuffle, Verbs.Put, Summary = Summary.ShufflePut)]
     public class SetShuffleState : IReturn<SuccessShuffleStateResponse>
     {
-        [ApiMember(Name = "status", ParameterType = "query", DataType = SwaggerType.String,
+        [ApiMember(Name = "status", ParameterType = "body", DataType = SwaggerType.String,
             Description = Description.ShuffleEnabled, IsRequired = false)]
         [ApiAllowableValues("status", typeof(ShuffleState))]
         public string Status { get; set; }
@@ -34,7 +34,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerScrobble, Verbs.Put, Summary = Summary.ScrobbleSet)]
     public class SetScrobbleStatus : IReturn<SuccessStatusResponse>
     {
-        [ApiMember(Name = "enabled", ParameterType = "query", DataType = SwaggerType.Boolean,
+        [ApiMember(Name = "enabled", ParameterType = "body", DataType = SwaggerType.Boolean,
             Description = Description.ScrobbleEnabled, IsRequired = false)]
         public bool? Enabled { get; set; }
     }
@@ -48,7 +48,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerRepeat, Verbs.Put, Summary = Summary.RepeatPut)]
     public class SetRepeatMode : IReturn<SuccessResponse>
     {
-	    [ApiMember(Name = "mode", ParameterType = "query", DataType = SwaggerType.String,
+	    [ApiMember(Name = "mode", ParameterType = "body", DataType = SwaggerType.String,
             Description = Description.RepeatMode, IsRequired = false)]
         [ApiAllowableValues("mode", "all", "none")]
         public string Mode { get; set; }
@@ -62,7 +62,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerMute, Verbs.Put, Summary = Summary.MutePut)]
     public class SetMuteStatus : IReturn<SuccessStatusResponse>
     {
-	    [ApiMember(Name="enabled", ParameterType = "query", DataType = SwaggerType.Boolean, IsRequired = false,
+	    [ApiMember(Name="enabled", ParameterType = "body", DataType = SwaggerType.Boolean, IsRequired = false,
             Description = Description.Mute)]
         public bool? Enabled { get; set; }
     }
@@ -76,7 +76,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.PlayerVolume, Verbs.Put, Summary = Summary.VolumePut)]
     public class SetVolume : IReturn<SuccessResponse>
     {
-	    [ApiMember(Name = "value",ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
+	    [ApiMember(Name = "value",ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
             Description = Description.Volume)]
         [ApiAllowableValues("value", 0 , 100)]
         public int Value { get; set; }

@@ -22,11 +22,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	public class CreatePlaylist : IReturn<SuccessResponse>
 	{
 		[ApiMember(Name = "name", IsRequired = true, DataType = SwaggerType.String, Description = Description.PlaylistName,
-			ParameterType = "query")]
+			ParameterType = "body")]
 		public string Name { get; set; }
 
 		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList,
-			ParameterType = "query")]
+			ParameterType = "body")]
 		public string[] List { get; set; }
 	}
 
@@ -35,7 +35,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	public class PlaylistPlay : IReturn<SuccessResponse>
 	{
 		[ApiMember(Name = "path", IsRequired = true, Description = Description.PlaylistPlay, DataType = SwaggerType.String,
-			ParameterType = "query")]
+			ParameterType = "body")]
 		public string Path { get; set; }
 	}
 
@@ -71,7 +71,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	public class AddPlaylistTracks : IdBasedRequest, IReturn<SuccessResponse>
 	{
 		[ApiMember(Name = "list", DataType = SwaggerType.Array, IsRequired = false, Description = Description.PlaylistList,
-			ParameterType = "query")]
+			ParameterType = "body")]
 		public string[] List { get; set; }
 	}
 
@@ -84,11 +84,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
 		public int Id { get; set; }
 
 		[ApiMember(Name = "to", IsRequired = true, DataType = SwaggerType.Int, Description = Description.MoveTo,
-			ParameterType = "query")]
+			ParameterType = "body")]
 		public int To { get; set; }
 
 		[ApiMember(Name = "from", IsRequired = true, DataType = SwaggerType.Int, Description = Description.MoveFrom,
-			ParameterType = "query")]
+			ParameterType = "body")]
 		public int From { get; set; }
 	}
 

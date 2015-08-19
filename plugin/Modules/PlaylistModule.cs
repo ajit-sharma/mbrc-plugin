@@ -490,6 +490,10 @@ namespace MusicBeePlugin.Modules
 		/// <returns>A <see cref="SuccessResponse" /> is returned.</returns>
 		public SuccessResponse CreateNewPlaylist(string name, string[] list)
 		{
+		    if (list == null)
+		    {
+		        list = new string[]{};
+		    }
 			var path = _api.Playlist_CreatePlaylist(string.Empty, name, list);
 			var playlist = new Playlist
 			{

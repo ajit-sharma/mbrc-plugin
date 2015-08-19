@@ -27,7 +27,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [Route(Routes.NowplayingPlay, Verbs.Put, Summary = Summary.NowPlayingPlay)]
     public class NowPlayingPlay : IReturn<SuccessResponse>
     {
-		[ApiMember(Name = "path", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true,
+		[ApiMember(Name = "path", ParameterType = "body", DataType = SwaggerType.String, IsRequired = true,
             Description = Description.NowPlayingPath)]
         public string Path { get; set; }
     }
@@ -45,11 +45,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	[Route(Routes.NowplayingMove, Verbs.Put, Summary = Summary.NowPlayingMove)]
     public class NowPlayingMove : IReturn<SuccessResponse>
     {
-		[ApiMember(Name = "from", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
+		[ApiMember(Name = "from", ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
             Description = Description.NowPlayingFrom)]
         public int From { get; set; }
 
-        [ApiMember(Name = "to", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
+        [ApiMember(Name = "to", ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
             Description = Description.NowPlayingTo)]
         public int To { get; set; }
     }
@@ -58,15 +58,15 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	[Route(Routes.NowplayingQueue, Verbs.Put, Summary = Summary.NowPlayingQueue, Notes = Notes.NowPlayingQueue)]
     public class NowPlayingQueue : IReturn<SuccessResponse>
     {
-		[ApiMember(Name = "type", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Description.MetaType)]
+		[ApiMember(Name = "type", ParameterType = "body", DataType = SwaggerType.String, IsRequired = true, Description = Description.MetaType)]
         [ApiAllowableValues("type", typeof (MetaTag))]
         public MetaTag Type { get; set; }
 
-        [ApiMember(Name = "action", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Description.MoveAction)]
+        [ApiMember(Name = "action", ParameterType = "body", DataType = SwaggerType.String, IsRequired = true, Description = Description.MoveAction)]
         [ApiAllowableValues("action", typeof (QueueType))]
         public QueueType Action { get; set; }
 
-        [ApiMember(Name = "id", ParameterType = "query", DataType = SwaggerType.Long, IsRequired = true, Description = Description.NowPlayingQueueId)]
+        [ApiMember(Name = "id", ParameterType = "body", DataType = SwaggerType.Long, IsRequired = true, Description = Description.NowPlayingQueueId)]
         public long Id { get; set; }
     }
 }
