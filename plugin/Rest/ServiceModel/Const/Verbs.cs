@@ -16,6 +16,5 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
         public const string Put = "PUT";
 
 	    public const string Delete = "DELETE";
-        public const string Post = "POST";
     }
 }

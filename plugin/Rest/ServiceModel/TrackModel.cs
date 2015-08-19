@@ -22,10 +22,10 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	}
 
 	[Api]
-	[Route(Routes.TrackRating, Verbs.Post, Summary = Summary.RatingPut)]
+	[Route(Routes.TrackRating, Verbs.Put, Summary = Summary.RatingPut)]
 	public class SetTrackRating : IReturn<TrackRatingResponse>
 	{
-		[ApiMember(Name = "rating", ParameterType = "body", DataType = SwaggerType.Float, IsRequired = false,
+		[ApiMember(Name = "rating", ParameterType = "query", DataType = SwaggerType.Float, IsRequired = false,
 			Description = Description.Rating)]
 		[ApiAllowableValues("rating", 0, 5)]
 		public float? Rating { get; set; }
@@ -38,10 +38,10 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	}
 
 	[Api]
-	[Route(Routes.TrackPosition, Verbs.Post, Summary = Summary.TrackPositionSet)]
+	[Route(Routes.TrackPosition, Verbs.Put, Summary = Summary.TrackPositionSet)]
 	public class SetTrackPosition : IReturn<TrackPositionResponse>
 	{
-		[ApiMember(Name = "position", ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
+		[ApiMember(Name = "position", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = true,
 			Description = Description.Position)]
 		public int Position { get; set; }
 	}

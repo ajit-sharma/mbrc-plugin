@@ -43,7 +43,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             };
         }
 
-        public TrackRatingResponse Post(SetTrackRating request)
+        public TrackRatingResponse Put(SetTrackRating request)
         {
             return new TrackRatingResponse
             {
@@ -56,7 +56,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetPosition();
         }
 
-        public TrackPositionResponse Post(SetTrackPosition request)
+        public TrackPositionResponse Put(SetTrackPosition request)
         {
             return _module.SetPosition(request.Position);
         }
