@@ -68,8 +68,9 @@ namespace MusicBeePlugin.Modules
             {
                 if (rating >= 0 && rating <= 5)
                 {
+                    var newRating = rating.ToString(CultureInfo.InvariantCulture);
                     _api.Library_SetFileTag(_api.NowPlaying_GetFileUrl(), Plugin.MetaDataType.Rating,
-                        rating.ToString(CultureInfo.InvariantCulture));
+                        newRating);
                     _api.Library_CommitTagsToFile(_api.NowPlaying_GetFileUrl());
                     _api.Player_GetShowRatingTrack();
                     _api.MB_RefreshPanels();

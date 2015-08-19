@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.Runtime.Serialization;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -25,10 +26,10 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Api]
     [Route(Routes.NowplayingPlay, Verbs.Put, Summary = Summary.NowPlayingPlay)]
+    [DataContract]
     public class NowPlayingPlay : IReturn<SuccessResponse>
     {
-		[ApiMember(Name = "path", ParameterType = "body", DataType = SwaggerType.String, IsRequired = true,
-            Description = Description.NowPlayingPath)]
+		[DataMember(Name = "path")]
         public string Path { get; set; }
     }
 
@@ -41,32 +42,29 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public int Id { get; set; }
     }
 
-	[Api]
 	[Route(Routes.NowplayingMove, Verbs.Put, Summary = Summary.NowPlayingMove)]
+    [DataContract]
     public class NowPlayingMove : IReturn<SuccessResponse>
     {
-		[ApiMember(Name = "from", ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
-            Description = Description.NowPlayingFrom)]
+        [DataMember(Name = "from", IsRequired = true)]
         public int From { get; set; }
 
-        [ApiMember(Name = "to", ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
-            Description = Description.NowPlayingTo)]
+        [DataMember(Name = "to", IsRequired = true)]
         public int To { get; set; }
     }
 
 	[Api]
 	[Route(Routes.NowplayingQueue, Verbs.Put, Summary = Summary.NowPlayingQueue, Notes = Notes.NowPlayingQueue)]
+    [DataContract]
     public class NowPlayingQueue : IReturn<SuccessResponse>
     {
-		[ApiMember(Name = "type", ParameterType = "body", DataType = SwaggerType.String, IsRequired = true, Description = Description.MetaType)]
-        [ApiAllowableValues("type", typeof (MetaTag))]
+        [DataMember(Name = "type")]
         public MetaTag Type { get; set; }
 
-        [ApiMember(Name = "action", ParameterType = "body", DataType = SwaggerType.String, IsRequired = true, Description = Description.MoveAction)]
-        [ApiAllowableValues("action", typeof (QueueType))]
+        [DataMember(Name ="action")]
         public QueueType Action { get; set; }
 
-        [ApiMember(Name = "id", ParameterType = "body", DataType = SwaggerType.Long, IsRequired = true, Description = Description.NowPlayingQueueId)]
+        [DataMember(Name = "id")]
         public long Id { get; set; }
     }
 }

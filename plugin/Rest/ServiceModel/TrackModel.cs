@@ -1,5 +1,6 @@
 ﻿#region Dependencies
 
+using System.Runtime.Serialization;
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.Api.Swagger;
@@ -23,10 +24,10 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Api]
 	[Route(Routes.TrackRating, Verbs.Put, Summary = Summary.RatingPut)]
+    [DataContract]
 	public class SetTrackRating : IReturn<TrackRatingResponse>
 	{
-		[ApiMember(Name = "rating", ParameterType = "body", DataType = SwaggerType.Float, IsRequired = false,
-			Description = Description.Rating)]
+		[DataMember(Name = "rating", IsRequired = true)]
 		[ApiAllowableValues("rating", 0, 5)]
 		public float? Rating { get; set; }
 	}
@@ -39,10 +40,10 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Api]
 	[Route(Routes.TrackPosition, Verbs.Put, Summary = Summary.TrackPositionSet)]
+    [DataContract]
 	public class SetTrackPosition : IReturn<TrackPositionResponse>
 	{
-		[ApiMember(Name = "position", ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
-			Description = Description.Position)]
+		[DataMember(Name = "position", IsRequired = true)]
 		public int Position { get; set; }
 	}
 

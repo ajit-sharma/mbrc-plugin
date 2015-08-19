@@ -5,6 +5,7 @@ using System.Net;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using ServiceStack.Api.Swagger;
 using ServiceStack.Common;
+using ServiceStack.Common.Web;
 
 namespace MusicBeePlugin.Rest
 {
@@ -27,10 +28,19 @@ namespace MusicBeePlugin.Rest
                                                     Feature.Soap |
                                                     Feature.Soap11 |
                                                     Feature.Soap12 |
-                                                    Feature.Xml)
-            });   
+                                                    Feature.Xml),
 
-            Plugins.Add(new SwaggerFeature());
+                DefaultContentType = MimeTypes.Json,
+#if DEBUG
+                // Show StackTraces in service responses during development
+                DebugMode = true,
+#endif
+            });
+
+            Plugins.Add(new SwaggerFeature()
+            {
+                UseLowercaseUnderscoreModelPropertyNames = true
+            });
             RequestFilters.Add((req, res, requestDto) =>
             {
                 var address = req.RemoteIp;
@@ -40,6 +50,8 @@ namespace MusicBeePlugin.Rest
                 }
 
             });
+
         }
+       
     }
 }

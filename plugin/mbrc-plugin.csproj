@@ -225,6 +225,7 @@
     <Compile Include="Rest\ServiceModel\Type\NowPlaying.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlaylistTrack.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlaylistTrackInfo.cs" />
+    <Compile Include="Rest\ServiceModel\Type\RequestDto.cs" />
     <Compile Include="Rest\ServiceModel\Type\ResponseDto.cs" />
     <Compile Include="Rest\ServiceModel\Type\Track.cs" />
     <Compile Include="Rest\ServiceModel\Const\Verbs.cs" />

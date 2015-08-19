@@ -72,7 +72,9 @@ namespace MusicBeePlugin
         {
             Instance = this;
             JsConfig.ExcludeTypeInfo = true;
-	        JsConfig<DateTime>.SerializeFn = time => time.ToString("O");
+            JsConfig.EmitLowercaseUnderscoreNames = true;
+            JsConfig.PropertyConvention = JsonPropertyConvention.Lenient;
+            JsConfig<DateTime>.SerializeFn = time => time.ToString("O");
 	        JsConfig<DateTime?>.SerializeFn = time => time?.ToString("O") ?? string.Empty; 
 			_api = new MusicBeeApiInterface();
             _api.Initialise(apiInterfacePtr);
