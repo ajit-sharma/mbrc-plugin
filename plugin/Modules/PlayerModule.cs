@@ -5,6 +5,7 @@ using System;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Rest.ServiceModel;
+using MusicBeePlugin.Rest.ServiceModel.Enum;
 using ServiceStack.WebHost.Endpoints.Support.Templates;
 using RepeatMode = MusicBeePlugin.Plugin.RepeatMode;
 
@@ -117,14 +118,24 @@ namespace MusicBeePlugin.Modules
             return repeatState.ToLower();
         }
 
-        public bool SetRepeatState(string mode)
+        public bool SetRepeatState(ApiRepeatMode mode)
         {
             var success = false;
             RepeatMode repeatMode;
-            if (Enum.TryParse(mode, true, out repeatMode))
+
+            switch (mode)
             {
-                success = _api.Player_SetRepeat(repeatMode);
+                case ApiRepeatMode.all:
+                    repeatMode = RepeatMode.All;
+                    break;
+                case ApiRepeatMode.none:
+                    repeatMode = RepeatMode.None;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
+            success = _api.Player_SetRepeat(repeatMode);
+
             return success;
         }
 
@@ -169,12 +180,7 @@ namespace MusicBeePlugin.Modules
         {
             return new PlayerStatus
             {
-                Repeat = _api.Player_GetRepeat().ToString().ToLower(),
-                Mute = _api.Player_GetMute(),
-                Shuffle = _api.Player_GetShuffle(),
-                Scrobble = _api.Player_GetScrobbleEnabled(),
-                PlayerState = _api.Player_GetPlayState().ToString().ToLower(),
-                Volume = ((int) Math.Round(_api.Player_GetVolume()*100, 1))
+                Repeat = _api.Player_GetRepeat().ToString().ToLower(), Mute = _api.Player_GetMute(), Shuffle = _api.Player_GetShuffle(), Scrobble = _api.Player_GetScrobbleEnabled(), PlayerState = _api.Player_GetPlayState().ToString().ToLower(), Volume = ((int) Math.Round(_api.Player_GetVolume()*100, 1))
             };
         }
 

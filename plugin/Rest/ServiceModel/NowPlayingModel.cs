@@ -16,11 +16,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     public class AllNowPlaying : IReturn<PaginatedNowPlayingResponse>
     {
 		[ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
-            Description = Description.Offset)]
+            Description = Descriptions.Offset)]
         public int Offset { get; set; }
 
         [ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
-            Description = Description.Limit)]
+            Description = Descriptions.Limit)]
         public int Limit { get; set; }
     }
 
@@ -38,7 +38,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     public class NowPlayingRemove : IReturn<SuccessResponse>
     {
 		[ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true,
-            Description = Description.NowPlayingId)]
+            Description = Descriptions.NowPlayingId)]
         public int Id { get; set; }
     }
 

@@ -3,13 +3,12 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
     /// <summary>
     ///     Holds descriptions of various parameters
     /// </summary>
-    public class Description
+    public class Descriptions
     {
         public const string Mute = @"If the value is true or false it will mute/unmute the audio." +
                                    "\n If left empty it will toggle mute on/off depending on the previous state.";
 
-        public const string ShuffleEnabled = @"If the value is true or false it will enable/disable shuffle." +
-                                             "\n If left empty it will toggle shuffle on/off depending on the previous state.";
+        public const string ShuffleState = @"It changes the shuffle state to the specified [off, shuffle, autodj] or goes to the next if null";
 
         public const string ScrobbleEnabled =
             @"If the value is true or false it will enable/disable last.fm scrobbling." +

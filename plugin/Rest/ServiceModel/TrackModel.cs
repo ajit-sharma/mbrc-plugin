@@ -52,7 +52,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	public class GetTrackCoverData
 	{
 		[ApiMember(Name = "size", IsRequired = false, ParameterType = "query", DataType = SwaggerType.Int,
-			Description = Description.CoverSize)]
+			Description = Descriptions.CoverSize)]
 		public int? Size { get; set; }
 	}
 

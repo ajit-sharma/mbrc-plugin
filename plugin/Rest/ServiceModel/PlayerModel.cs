@@ -1,5 +1,6 @@
 ﻿#region
 
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceModel.Const;
@@ -18,12 +19,12 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlayerShuffle, Verbs.Put, Summary = Summary.ShufflePut)]
+    [DataContract]
     public class SetShuffleState : IReturn<SuccessShuffleStateResponse>
     {
-        [ApiMember(Name = "status", ParameterType = "body", DataType = SwaggerType.String,
-            Description = Description.ShuffleEnabled, IsRequired = false)]
-        [ApiAllowableValues("status", typeof(ShuffleState))]
-        public string Status { get; set; }
+        [DataMember(Name = "status", IsRequired = true)]
+        [Description(Descriptions.ShuffleState)]
+        public ShuffleState? Status { get; set; }
     }
 
     [Route(Routes.PlayerScrobble, Verbs.Get, Summary = Summary.ScrobbleGet)]
@@ -32,10 +33,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlayerScrobble, Verbs.Put, Summary = Summary.ScrobbleSet)]
+    [DataContract]
     public class SetScrobbleStatus : IReturn<SuccessStatusResponse>
     {
-        [ApiMember(Name = "enabled", ParameterType = "body", DataType = SwaggerType.Boolean,
-            Description = Description.ScrobbleEnabled, IsRequired = false)]
+        [DataMember(Name = "enabled", IsRequired = false)]
+        [Description(Descriptions.ScrobbleEnabled)]
         public bool? Enabled { get; set; }
     }
 
@@ -46,12 +48,12 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlayerRepeat, Verbs.Put, Summary = Summary.RepeatPut)]
+    [DataContract]
     public class SetRepeatMode : IReturn<SuccessResponse>
     {
-	    [ApiMember(Name = "mode", ParameterType = "body", DataType = SwaggerType.String,
-            Description = Description.RepeatMode, IsRequired = false)]
-        [ApiAllowableValues("mode", "all", "none")]
-        public string Mode { get; set; }
+	    [DataMember(Name = "mode", IsRequired = false)]
+        [Description(Descriptions.RepeatMode)]
+        public ApiRepeatMode? Mode { get; set; }
     }
 
     [Route(Routes.PlayerMute, Verbs.Get, Summary = Summary.MuteGet)]
@@ -60,10 +62,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlayerMute, Verbs.Put, Summary = Summary.MutePut)]
+    [DataContract]
     public class SetMuteStatus : IReturn<SuccessStatusResponse>
     {
-	    [ApiMember(Name="enabled", ParameterType = "body", DataType = SwaggerType.Boolean, IsRequired = false,
-            Description = Description.Mute)]
+	    [DataMember(Name="enabled",IsRequired = false)]
+        [Description(Descriptions.Mute)]
         public bool? Enabled { get; set; }
     }
 
@@ -74,33 +77,20 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlayerVolume, Verbs.Put, Summary = Summary.VolumePut)]
+    [DataContract]
     public class SetVolume : IReturn<SuccessResponse>
     {
-	    [ApiMember(Name = "value",ParameterType = "body", DataType = SwaggerType.Int, IsRequired = true,
-            Description = Description.Volume)]
+	    [DataMember(Name = "value", IsRequired = true)]
         [ApiAllowableValues("value", 0 , 100)]
         public int Value { get; set; }
     }
 
-    [Route(Routes.PlayerAutodj, Verbs.Get, Summary = Summary.AutoDjGet)]
-    public class GetAutoDjStatus : IReturn<StatusResponse>
-    {
-    }
-
-    [Route(Routes.PlayerAutodj, Verbs.Put, Summary = Summary.AutoDjPut)]
-    public class SetAutoDjStatus : IReturn<SuccessStatusResponse>
-    {
-	    [ApiMember(Name = "enabled", ParameterType = "query", DataType = SwaggerType.Boolean, IsRequired = false,
-			Description = Description.AutoDjPut)]
-        public bool? Enabled { get; set; }
-    }
-
     [Route(Routes.PlayerAction, Verbs.Get, Summary = Summary.PlayerAction)]
+    [DataContract]
     public class PlayerAction : IReturn<SuccessResponse>
     {
-	    [ApiMember(Name = "action", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true,
-			Description = Description.PlayerAction)]
-		[ApiAllowableValues("action", typeof(PlaybackAction))]
+        [DataMember(Name = "action", IsRequired = true)]
+        [Description(Descriptions.PlayerAction)]
 		public PlaybackAction Action { get; set; }
 		
     }

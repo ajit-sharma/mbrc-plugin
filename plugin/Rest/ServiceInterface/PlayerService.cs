@@ -31,11 +31,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetShuffleState request)
         {
-            ShuffleState state;
-            Enum.TryParse(request.Status, out state);
-
+            
             var success = request.Status != null
-                ? _module.SetShuffleState(state)
+                ? _module.SetShuffleState((ShuffleState) request.Status)
                 : _module.ToggleShuffleState();
 
             return new SuccessShuffleStateResponse
@@ -83,27 +81,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return _module.GetPlayerStatus();
         }
-
-        public StatusResponse Get(GetAutoDjStatus request)
-        {
-            return new StatusResponse
-            {
-                Enabled = _module.GetAutoDjState()
-            };
-        }
-
-        public SuccessResponse Put(SetAutoDjStatus request)
-        {
-	        var success = request.Enabled != null
-		        ? _module.SetAutoDjState((bool) request.Enabled)
-		        : _module.SetAutoDjState(!_module.GetAutoDjState());
-            return new SuccessStatusResponse
-            {
-                Success = success,
-                Enabled = _module.GetAutoDjState()
-            };
-        }
-
+        
         public VolumeResponse Get(GetVolume request)
         {
             return new VolumeResponse
@@ -173,8 +151,8 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public SuccessResponse Put(SetRepeatMode request)
         {
-            var success = !string.IsNullOrEmpty(request.Mode)
-                ? _module.SetRepeatState(request.Mode)
+            var success = request.Mode != null
+                ? _module.SetRepeatState((ApiRepeatMode) request.Mode)
                 : _module.ChangeRepeatMode();
 
             return new SuccessValueResponse

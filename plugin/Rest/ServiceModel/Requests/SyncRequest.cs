@@ -11,11 +11,11 @@ namespace MusicBeePlugin.Rest.ServiceModel.Requests
 	/// </summary>
 	public abstract class SyncRequest : PaginatedRequest
 	{
-		[ApiMember(Name = "change", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Description.UpdateChange)]
+		[ApiMember(Name = "change", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Descriptions.UpdateChange)]
 		[ApiAllowableValues("change", typeof(ChangeType))]
 		public ChangeType Change { get; set; }
 
-		[ApiMember(Name = "lastSync", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Description.TheDateOfTheLastSync)]
+		[ApiMember(Name = "lastSync", ParameterType = "query", DataType = SwaggerType.String, IsRequired = true, Description = Descriptions.TheDateOfTheLastSync)]
 		public DateTime LastSync { get; set; }
 	}
 }

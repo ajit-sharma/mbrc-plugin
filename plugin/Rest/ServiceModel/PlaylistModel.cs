@@ -1,13 +1,12 @@
 ﻿#region Dependencies
 
-using System;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Requests;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.Api.Swagger;
 using ServiceStack.ServiceHost;
-using ServiceStack.Text;
 
 #endregion
 
@@ -19,7 +18,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
-    [Api]
     [Route(Routes.Playlists, Verbs.Put, Summary = Summary.PlaylistPut)]
     [DataContract]
     public class CreatePlaylist : IReturn<SuccessResponse>
@@ -30,45 +28,39 @@ namespace MusicBeePlugin.Rest.ServiceModel
         [DataMember(Name = "list", IsRequired = false)]
         public string[] List { get; set; }
     }
-
-    [Api]
+   
     [Route(Routes.PlaylistsPlay, Verbs.Put, Summary = Summary.PlaylistPlay)]
+    [DataContract]
     public class PlaylistPlay : IReturn<SuccessResponse>
     {
-        [ApiMember(Name = "path", IsRequired = true, Description = Description.PlaylistPlay,
-            DataType = SwaggerType.String,
-            ParameterType = "body")]
+        [DataMember(Name = "path", IsRequired = true)]
+        [Description(Descriptions.PlaylistPlay)]
         public string Path { get; set; }
     }
 
-    [Api]
     [Route(Routes.PlaylistsId, Verbs.Get, Summary = Summary.GetsAPlaylist)]
     public class GetPlaylist : IdBasedRequest
     {
     }
 
-    [Api]
     [Route(Routes.PlaylistsId, Verbs.Delete, Summary = Summary.DeletesAPlaylist)]
     public class DeletePlaylist : IdBasedRequest, IReturn<SuccessResponse>
     {
     }
 
-    [Api]
     [Route(Routes.PlaylistsIdTracks, Verbs.Get, Summary = Summary.PlaylistTracks)]
     public class GetPlaylistTracks : PaginatedRequest, IReturn<PaginatedPlaylistTrackResponse>
     {
         [ApiMember(Name = "id", ParameterType = "path", IsRequired = true, DataType = SwaggerType.Int,
-            Description = Description.IdDesc)]
+            Description = Descriptions.IdDesc)]
         public int Id { get; set; }
     }
 
-    [Api]
     [Route(Routes.PlaylistsTrackInfo, Verbs.Get, Summary = Summary.PlaylistTrackInfo)]
     public class GetPlaylistTrackInfo : PaginatedRequest, IReturn<PaginatedPlaylistTrackInfoResponse>
     {
     }
 
-    [Api]
     [Route(Routes.PlaylistsIdTracks, Verbs.Put, Summary = Summary.PlaylistTrackAdd)]
     [DataContract]
     public class AddPlaylistTracks : IdBasedRequest, IReturn<SuccessResponse>
@@ -76,8 +68,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
         [DataMember(Name = "list", IsRequired = true)]
         public string[] List { get; set; }
     }
-
-    [Api]
+   
     [Route(Routes.PlaylistsIdTracksMove, Verbs.Put, Summary = Summary.PlaylistTrackMove)]
     [DataContract]
     public class MovePlaylistTrack : IReturn<SuccessResponse>
@@ -98,23 +89,20 @@ namespace MusicBeePlugin.Rest.ServiceModel
         public int position { get; set; }
 
         [ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
-            Description = Description.PlaylistIdDesc)]
+            Description = Descriptions.PlaylistIdDesc)]
         public int Id { get; set; }
     }
 
-    [Api]
     [Route(Routes.PlaylistsChanges, Verbs.Get, Summary = Summary.PlaylistChanges)]
     public class GetPlaylistChanges : SyncRequest, IReturn<PaginatedPlaylistResponse>
     {
     }
 
-    [Api]
     [Route(Routes.PlaylistTrackChanges, Verbs.Get, Summary = Summary.PlaylistTrackChanges)]
     public class GetPlaylistTrackChanges : SyncRequest, IReturn<PaginatedPlaylistTrackResponse>
     {
     }
 
-    [Api]
     [Route(Routes.PlaylistTrackInfoChanges, Verbs.Get, Summary = Summary.PlaylistTrackInfoChanges)]
     public class GetPlaylistTrackInfoChanges : SyncRequest, IReturn<PaginatedPlaylistTrackInfoResponse>
     {

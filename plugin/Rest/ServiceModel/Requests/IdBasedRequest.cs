@@ -10,7 +10,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Requests
 	public abstract class IdBasedRequest
 	{
 		[ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true,
-			Description = Description.EntryId)]
+			Description = Descriptions.EntryId)]
 		public int Id { get; set; }
 	}
 }

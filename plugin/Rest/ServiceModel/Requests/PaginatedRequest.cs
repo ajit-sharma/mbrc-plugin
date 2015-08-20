@@ -10,11 +10,11 @@ namespace MusicBeePlugin.Rest.ServiceModel.Requests
 	public abstract class PaginatedRequest
 	{
 		[ApiMember(Name = "limit", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
-			Description = Description.Limit)]
+			Description = Descriptions.Limit)]
 		public int Limit { get; set; }
 
 		[ApiMember(Name = "offset", ParameterType = "query", DataType = SwaggerType.Int, IsRequired = false,
-			Description = Description.Offset)]
+			Description = Descriptions.Offset)]
 		public int Offset { get; set; }
 	}
 }
