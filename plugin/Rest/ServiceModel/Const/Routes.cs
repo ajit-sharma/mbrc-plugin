@@ -31,7 +31,8 @@
 	    public const string PlaylistsPlay = "/playlists/play";
 	    public const string PlaylistsId = "/playlists/{id}";
 	    public const string PlaylistsIdTracks = "/playlists/{id}/tracks";
-	    public const string PlaylistsIdTracksMove = "/playlists/{id}/tracks/move";
+        public const string PlaylistsIdTracksPosition = "/playlists/{id}/tracks/{position}";
+        public const string PlaylistsIdTracksMove = "/playlists/{id}/tracks/{from}/{to}";
 		public const string PlaylistsChanges = "/playlists/u";
 		public const string PlaylistsTrackInfo = "/playlists/trackinfo";
 	    public const string PlaylistTrackInfoChanges = "/playlists/trackinfo/u";

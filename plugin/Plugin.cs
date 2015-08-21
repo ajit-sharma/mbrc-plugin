@@ -136,7 +136,7 @@ namespace MusicBeePlugin
             appHost.Container.Adapter = new NinjectIocAdapter(_kernel);
 
             appHost.Init();
-            appHost.Start(String.Format("http://+:{0}/", _persistence.Settings.HttpPort));
+            appHost.Start(string.Format("http://+:{0}/", _persistence.Settings.HttpPort));
 
             return _about;
         }
@@ -156,7 +156,7 @@ namespace MusicBeePlugin
             _about.Type = PluginType.General;
             _about.VersionMajor = Convert.ToInt16(v.Major);
             _about.VersionMinor = Convert.ToInt16(v.Minor);
-            //_about.Revision = Convert.ToInt16(v.Revision);
+            _about.Revision = Convert.ToInt16(v.Revision);
             _about.MinInterfaceVersion = MinInterfaceVersion;
             _about.MinApiRevision = MinApiRevision;
             _about.ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents;

@@ -23,9 +23,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     public class CreatePlaylist : IReturn<SuccessResponse>
     {
         [DataMember(Name = "name", IsRequired = true)]
+        [Description(Descriptions.PlaylistName)]
         public string Name { get; set; }
 
         [DataMember(Name = "list", IsRequired = false)]
+        [Description(Descriptions.PlaylistList)]
         public string[] List { get; set; }
     }
    
@@ -70,23 +72,27 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
    
     [Route(Routes.PlaylistsIdTracksMove, Verbs.Put, Summary = Summary.PlaylistTrackMove)]
-    [DataContract]
     public class MovePlaylistTrack : IReturn<SuccessResponse>
     {
-        [DataMember(Name = "id", IsRequired = true)]
+        [ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
+            Description = Descriptions.PlaylistIdDesc)]
         public int Id { get; set; }
-    
-        [DataMember(Name = "to", IsRequired = true)]
+
+        [ApiMember(Name = "to", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
+            Description = Descriptions.MoveTo)]
         public int To { get; set; }
 
-        [DataMember(Name = "from", IsRequired = true)]
+        [ApiMember(Name = "from", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
+            Description = Descriptions.MoveFrom)]
         public int From { get; set; }
     }
 
-    [Route(Routes.PlaylistsIdTracks, Verbs.Delete, Summary = Summary.PlaylistTrackDelete)]
+    [Route(Routes.PlaylistsIdTracksPosition, Verbs.Delete, Summary = Summary.PlaylistTrackDelete)]
     public class DeletePlaylistTracks : IReturn<SuccessResponse>
     {
-        public int position { get; set; }
+        [ApiMember(Name = "position", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
+            Description = Descriptions.PlaylistTrackPosition)]
+        public int Position { get; set; }
 
         [ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
             Description = Descriptions.PlaylistIdDesc)]

@@ -63,7 +63,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
         {
             return new SuccessResponse
             {
-                Success = _module.DeleteTrackFromPlaylist(request.Id, request.position)
+                Success = _module.DeleteTrackFromPlaylist(request.Id, request.Position)
             };
         }
 
