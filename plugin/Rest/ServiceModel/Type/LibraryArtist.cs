@@ -58,7 +58,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		///     A URL to the place the artist image is stored.
 		/// </summary>
-		[DataMember(Name = "imageUrl")]
+		[DataMember(Name = "image_url")]
 		public string ImageUrl { get; set; }
 	}
 }

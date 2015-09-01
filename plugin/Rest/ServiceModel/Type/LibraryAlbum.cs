@@ -43,19 +43,19 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// The id of the album artist.
 		/// </summary>
 		[References(typeof (LibraryArtist))]
-        [DataMember(Name = "artistId")]
+        [DataMember(Name = "artist_id")]
         public long ArtistId { get; set; }
 
 		/// <summary>
 		/// The id of the album cover.
 		/// </summary>
-		[DataMember(Name = "coverId")]
+		[DataMember(Name = "cover_id")]
         public long CoverId { get; set; }
 
 		/// <summary>
 		/// Unique album identifier retrieved from MusicBee.
 		/// </summary>
-		[DataMember(Name = "albumId")]
+		[DataMember(Name = "album_id")]
         public string AlbumId { get; set; }
 
 		/// <summary>

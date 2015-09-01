@@ -136,7 +136,7 @@ namespace MusicBeePlugin
             appHost.Container.Adapter = new NinjectIocAdapter(_kernel);
 
             appHost.Init();
-            appHost.Start(string.Format("http://+:{0}/", _persistence.Settings.HttpPort));
+            appHost.Start($"http://+:{_persistence.Settings.HttpPort}/");
 
             return _about;
         }
@@ -399,7 +399,7 @@ namespace MusicBeePlugin
         {
             var lyrics = _api.NowPlaying_GetLyrics()
                          ?? _api.NowPlaying_GetDownloadedLyrics();
-            if (String.IsNullOrEmpty(lyrics))
+            if (string.IsNullOrEmpty(lyrics))
             {
                 lyrics = "Lyrics Not Found";
             }

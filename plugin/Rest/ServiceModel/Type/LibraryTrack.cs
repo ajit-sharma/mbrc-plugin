@@ -25,28 +25,28 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		/// The id of the track's genre.
 		/// </summary>
-		[DataMember(Name = "genreId")]
+		[DataMember(Name = "genre_id")]
         [References(typeof (LibraryGenre))]
         public long GenreId { get; set; }
 
 		/// <summary>
 		/// The id of the track's artist.
 		/// </summary>
-		[DataMember(Name = "artistId")]
+		[DataMember(Name = "artist_id")]
         [References(typeof (LibraryArtist))]
         public long ArtistId { get; set; }
 
 		/// <summary>
 		/// The id of the album artist related with the album the track is part of.
 		/// </summary>
-		[DataMember(Name = "albumArtistId")]
+		[DataMember(Name = "album_artist_id")]
         [References(typeof (LibraryArtist))]
         public long AlbumArtistId { get; set; }
 
 		/// <summary>
 		/// The id of the album the track is part of.
 		/// </summary>
-		[DataMember(Name = "albumId")]
+		[DataMember(Name = "album_id")]
         [References(typeof (LibraryAlbum))]
         public long AlbumId { get; set; }
 

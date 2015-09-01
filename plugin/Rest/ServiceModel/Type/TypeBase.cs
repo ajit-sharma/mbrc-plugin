@@ -26,14 +26,14 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     of the <see langword="object" /> creation. Used during sync to determine
 		///     the newer additions.
 		/// </summary>
-		[DataMember(Name = "dateAdded")]
+		[DataMember(Name = "date_added")]
 		public DateTime DateAdded { get; set; } = DateTime.UtcNow;
 
 		/// <summary>
 		///     The Date the entry was last updated. It defaults in the UTC <see cref="DateTime" />
 		///     of the <see langword="object" /> creation. Used during sync to figure out the modified entries.
 		/// </summary>
-		[DataMember(Name = "dateUpdated")]
+		[DataMember(Name = "date_updated")]
 		public DateTime? DateUpdated { get; set; }
 
 		/// <summary>
@@ -42,7 +42,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     The objects are initially soft deleted and periodically a function is
 		///     responsible objects that have been deleted for a number of days.
 		/// </summary>
-		[DataMember(Name = "dateDeleted")]
+		[DataMember(Name = "date_deleted")]
 		public DateTime? DateDeleted { get; set; }
 	}
 }
