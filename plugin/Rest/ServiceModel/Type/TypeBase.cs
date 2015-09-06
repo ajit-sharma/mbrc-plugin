@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.Serialization;
+using MusicBeePlugin.AndroidRemote.Extensions;
 using ServiceStack.DataAnnotations;
 
 #endregion
@@ -27,14 +28,14 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     the newer additions.
 		/// </summary>
 		[DataMember(Name = "date_added")]
-		public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+		public long DateAdded { get; set; } = DateTime.UtcNow.ToUnixTime();
 
 		/// <summary>
 		///     The Date the entry was last updated. It defaults in the UTC <see cref="DateTime" />
 		///     of the <see langword="object" /> creation. Used during sync to figure out the modified entries.
 		/// </summary>
 		[DataMember(Name = "date_updated")]
-		public DateTime? DateUpdated { get; set; }
+		public long DateUpdated { get; set; }
 
 		/// <summary>
 		///     The Date the entry was deleted. As it is expected for an entry that is
@@ -43,6 +44,6 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     responsible objects that have been deleted for a number of days.
 		/// </summary>
 		[DataMember(Name = "date_deleted")]
-		public DateTime? DateDeleted { get; set; }
+		public long DateDeleted { get; set; }
 	}
 }
