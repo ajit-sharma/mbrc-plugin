@@ -64,45 +64,5 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 		{
 			return new HttpResult(_module.GetCoverData(request.Id), "image/jpeg");
 		}
-
-		public PaginatedTrackResponse Get(GetLibraryTrackChanges request)
-		{
-			var response = new PaginatedTrackResponse();
-			var data = _module.GetChangesSince<LibraryTrack>(request.LastSync, request.Change);
-			response.CreatePage(request.Limit, request.Offset, data);
-			return response;
-		}
-
-		public PaginatedArtistResponse Get(GetLibraryArtistChanges request)
-		{
-			var response = new PaginatedArtistResponse();
-			var data = _module.GetChangesSince<LibraryArtist>(request.LastSync, request.Change);
-			response.CreatePage(request.Limit, request.Offset, data);
-			return response;
-		}
-
-		public PaginatedAlbumResponse Get(GetLibraryAlbumChanges request)
-		{
-			var response = new PaginatedAlbumResponse();
-			var data = _module.GetChangesSince<LibraryAlbum>(request.LastSync, request.Change);
-			response.CreatePage(request.Limit, request.Offset, data);
-			return response;
-		}
-
-		public PaginatedGenreResponse Get(GetLibraryGenreChanges request)
-		{
-			var response = new PaginatedGenreResponse();
-			var data = _module.GetChangesSince<LibraryGenre>(request.LastSync, request.Change);
-			response.CreatePage(request.Limit, request.Offset, data);
-			return response;
-		}
-
-		public PaginatedCoverResponse Get(GetLibraryCoverChanges request)
-		{
-			var response = new PaginatedCoverResponse();
-			var data = _module.GetChangesSince<LibraryCover>(request.LastSync, request.Change);
-			response.CreatePage(request.Limit, request.Offset, data);
-			return response;
-		}
 	}
 }

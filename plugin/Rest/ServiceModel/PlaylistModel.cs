@@ -98,19 +98,4 @@ namespace MusicBeePlugin.Rest.ServiceModel
             Description = Descriptions.PlaylistIdDesc)]
         public int Id { get; set; }
     }
-
-    [Route(Routes.PlaylistsChanges, Verbs.Get, Summary = Summary.PlaylistChanges)]
-    public class GetPlaylistChanges : SyncRequest, IReturn<PaginatedPlaylistResponse>
-    {
-    }
-
-    [Route(Routes.PlaylistTrackChanges, Verbs.Get, Summary = Summary.PlaylistTrackChanges)]
-    public class GetPlaylistTrackChanges : SyncRequest, IReturn<PaginatedPlaylistTrackResponse>
-    {
-    }
-
-    [Route(Routes.PlaylistTrackInfoChanges, Verbs.Get, Summary = Summary.PlaylistTrackInfoChanges)]
-    public class GetPlaylistTrackInfoChanges : SyncRequest, IReturn<PaginatedPlaylistTrackInfoResponse>
-    {
-    }
 }

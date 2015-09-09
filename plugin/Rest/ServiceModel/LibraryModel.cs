@@ -14,12 +14,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	{
 	}
 
-	[Route(Routes.LibraryTracksU, Verbs.Get, Summary = Summary.LibrayTracksU)]
-	public class GetLibraryTrackChanges : SyncRequest, IReturn<PaginatedTrackResponse>
-	{
-	}
-
-
 	[Route(Routes.LibraryTracksId, Verbs.Get, Summary = Summary.LibraryTrackByIdGet)]
 	public class GetLibraryTrack : IdBasedRequest, IReturn<LibraryTrack>
 	{
@@ -27,11 +21,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Route(Routes.LibraryArtists, Verbs.Get, Summary = Summary.LibraryArtist)]
 	public class GetLibraryArtists : PaginatedRequest, IReturn<PaginatedArtistResponse>
-	{
-	}
-
-	[Route(Routes.LibraryArtistsU, Verbs.Get, Summary = Summary.LibraryArtistU)]
-	public class GetLibraryArtistChanges : SyncRequest, IReturn<PaginatedArtistResponse>
 	{
 	}
 
@@ -44,11 +33,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	public class GetLibraryAlbums : PaginatedRequest, IReturn<PaginatedAlbumResponse>
 	{
 	}
-
-	[Route(Routes.LibraryAlbumsU, Verbs.Get, Summary = Summary.LibraryAlbumsU)]
-	public class GetLibraryAlbumChanges : SyncRequest, IReturn<PaginatedAlbumResponse>
-	{
-	}
+    
 
 	[Route(Routes.LibraryAlbumsId, Verbs.Get, Summary = Summary.LibraryAlbumsId)]
 	public class GetLibraryAlbum : IdBasedRequest, IReturn<LibraryAlbum>
@@ -60,11 +45,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	{
 	}
 
-	[Route(Routes.LibraryGenresU, Verbs.Get, Summary = Summary.LibraryGenresU)]
-	public class GetLibraryGenreChanges : SyncRequest, IReturn<PaginatedGenreResponse>
-	{
-	}
-
 	[Route(Routes.LibraryGenresId, Verbs.Get, Summary = Summary.LibraryGenresId)]
 	public class GetLibraryGenre : IdBasedRequest, IReturn<LibraryGenre>
 	{
@@ -72,11 +52,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Route(Routes.LibraryCovers, Verbs.Get, Summary = Summary.LibraryCovers)]
 	public class GetLibraryCovers : PaginatedRequest, IReturn<PaginatedCoverResponse>
-	{
-	}
-
-	[Route(Routes.LibraryCoversU, Verbs.Get, Summary = Summary.LibraryCoversU)]
-	public class GetLibraryCoverChanges : SyncRequest, IReturn<PaginatedCoverResponse>
 	{
 	}
 

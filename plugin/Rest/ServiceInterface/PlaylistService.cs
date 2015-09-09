@@ -74,29 +74,5 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                 Success = _module.MovePlaylistTrack(request.Id, request.From, request.To)
             };
         }
-
-	    public object Get(GetPlaylistChanges request)
-	    {
-		    var paginatedPlaylistResponse = new PaginatedPlaylistResponse();
-		    var data = _module.GetChangesSince<Playlist>(request.LastSync, request.Change);
-			paginatedPlaylistResponse.CreatePage(request.Limit, request.Offset, data);
-		    return paginatedPlaylistResponse;
-	    }
-
-		public object Get(GetPlaylistTrackChanges request)
-		{
-			var paginatedPlaylistResponse = new PaginatedPlaylistTrackResponse();
-			var data = _module.GetChangesSince<PlaylistTrack>(request.LastSync, request.Change);
-			paginatedPlaylistResponse.CreatePage(request.Limit, request.Offset, data);
-			return paginatedPlaylistResponse;
-		}
-
-		public object Get(GetPlaylistTrackInfoChanges request)
-		{
-			var paginatedPlaylistResponse = new PaginatedPlaylistTrackInfoResponse();
-			var data = _module.GetChangesSince<PlaylistTrackInfo>(request.LastSync, request.Change);
-			paginatedPlaylistResponse.CreatePage(request.Limit, request.Offset, data);
-			return paginatedPlaylistResponse;
-		}
 	}
 }
