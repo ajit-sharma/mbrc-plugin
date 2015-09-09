@@ -61,9 +61,9 @@ namespace MusicBeePlugin.Modules
 			var transaction = db.OpenTransaction();
 			foreach (var playlist in playlistsToRemove)
 			{
-				playlist.DateDeleted = DateTime.UtcNow;
+				playlist.DateDeleted = DateTime.UtcNow.ToUnixTime();
 				cachedPlaylists.Remove(playlist);
-				db.UpdateOnly(new PlaylistTrack {DateDeleted = DateTime.UtcNow},
+				db.UpdateOnly(new PlaylistTrack {DateDeleted = DateTime.UtcNow.ToUnixTime()},
 					o => o.Update(p => p.DateDeleted)
 						.Where(pl => pl.PlaylistId == playlist.Id));
 			}
@@ -159,7 +159,7 @@ namespace MusicBeePlugin.Modules
 						var updated = cachedTracks.Find(track => track.Id == cached.Id);
 
 						updated.Position = cached.Position;
-						updated.DateUpdated = DateTime.UtcNow;
+						updated.DateUpdated = DateTime.UtcNow.ToUnixTime();
 						//Track has been updated so increment
 						tracksUpdated++;
 					}
@@ -178,7 +178,7 @@ namespace MusicBeePlugin.Modules
 					var updated = cachedTracks.Find(cTrack => cTrack.Id == trackInfo.Id);
 
 					updated.Position = trackInfo.Position;
-					updated.DateUpdated = DateTime.UtcNow;
+					updated.DateUpdated = DateTime.UtcNow.ToUnixTime();
 					// Track has been updated so increment.
 					tracksUpdated++;
 				}
@@ -192,7 +192,7 @@ namespace MusicBeePlugin.Modules
 				{
 					var cachedTrack = cachedTracks.Find(t => t.PlaylistId == playlist.Id
 					                                         && t.TrackInfoId == track.Id);
-					cachedTrack.DateDeleted = DateTime.UtcNow;
+					cachedTrack.DateDeleted = DateTime.UtcNow.ToUnixTime();
 					cachedPlaylistTracks.Remove(track);
 				}
 
@@ -214,7 +214,7 @@ namespace MusicBeePlugin.Modules
 
 				if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)
 				{
-					playlist.DateUpdated = DateTime.UtcNow;
+					playlist.DateUpdated = DateTime.UtcNow.ToUnixTime();
 					db.Save(playlist);
 				}
 
@@ -245,7 +245,10 @@ namespace MusicBeePlugin.Modules
 				{
 					foreach (var id in unused)
 					{
-						db.UpdateOnly(new PlaylistTrackInfo {DateDeleted = DateTime.UtcNow}, o => o.Update(p => p.DateDeleted)
+						db.UpdateOnly(new PlaylistTrackInfo
+						{
+						    DateDeleted = DateTime.UtcNow.ToUnixTime()
+						}, o => o.Update(p => p.DateDeleted)
 							.Where(p => p.Id == id));
 					}
 					transaction.Commit();
@@ -272,9 +275,9 @@ namespace MusicBeePlugin.Modules
 				id = info.Id;
 				// If the entry was previously soft deleted now the entry will be
 				// reused so we are remove the DateDeleted.
-				if (info.DateDeleted != null)
+				if (info.DateDeleted != 0)
 				{
-					info.DateDeleted = null;
+					info.DateDeleted = 0;
 					db.Save(info);
 				}
 			}
@@ -579,7 +582,7 @@ namespace MusicBeePlugin.Modules
 				var success = _api.Playlist_DeletePlaylist(playlist.Path);
 				if (success)
 				{
-					playlist.DateDeleted = DateTime.UtcNow;
+					playlist.DateDeleted = DateTime.UtcNow.ToUnixTime();
 					db.Save(playlist);
 				}
 				return success;

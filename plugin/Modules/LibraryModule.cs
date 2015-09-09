@@ -141,7 +141,7 @@ namespace MusicBeePlugin.Modules
 
 				foreach (var file in toDelete)
 				{
-					db.UpdateOnly(new LibraryTrack {DateDeleted = DateTime.UtcNow},
+					db.UpdateOnly(new LibraryTrack {DateDeleted = DateTime.UtcNow.ToUnixTime()},
 						o => o.Update(p => p.DateDeleted)
 							.Where(p => p.Path.Equals(file)));
 				}
@@ -181,8 +181,8 @@ namespace MusicBeePlugin.Modules
 					if (deletedTrack != null)
 					{
 						track.Id = deletedTrack.Id;
-						track.DateUpdated = DateTime.UtcNow;
-						track.DateDeleted = null;
+						track.DateUpdated = DateTime.UtcNow.ToUnixTime();
+						track.DateDeleted = 0;
 					}
 
 					db.Save(track);
@@ -271,7 +271,7 @@ namespace MusicBeePlugin.Modules
 
 				foreach (var libraryArtist in artistsToDelete)
 				{
-					libraryArtist.DateDeleted = DateTime.UtcNow;
+					libraryArtist.DateDeleted = DateTime.UtcNow.ToUnixTime();
 				}
 
 				if (artistsToDelete.Count > 0)
@@ -317,7 +317,7 @@ namespace MusicBeePlugin.Modules
 
 				foreach (var libraryGenre in genresToRemove)
 				{
-					libraryGenre.DateDeleted = DateTime.UtcNow;
+					libraryGenre.DateDeleted = DateTime.UtcNow.ToUnixTime();
 				}
 
 				if (genresToRemove.Count > 0)
@@ -354,8 +354,8 @@ namespace MusicBeePlugin.Modules
 			using (var db = _cHelper.GetDbConnection())
 			{
 				var albums = GetAlbumDataFromApi();
-				var cachedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted == null);
-				var deletedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted != null);
+				var cachedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted == 0);
+				var deletedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted != 0);
 				var comparer = new LibraryAlbumComparer();
 
 				var albumsToInsert = albums.Except(cachedAlbums, comparer).ToList();
@@ -363,7 +363,7 @@ namespace MusicBeePlugin.Modules
 
 				foreach (var album in albumsToRemove)
 				{
-					album.DateDeleted = DateTime.UtcNow;
+					album.DateDeleted = DateTime.UtcNow.ToFileTimeUtc();
 				}
 
 				if (albumsToRemove.Count > 0)

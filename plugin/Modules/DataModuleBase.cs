@@ -4,6 +4,7 @@ using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.OrmLite;
+using ServiceStack.Text;
 
 namespace MusicBeePlugin.Modules
 {
@@ -40,18 +41,20 @@ namespace MusicBeePlugin.Modules
 				switch (change)
 				{
 					case ChangeType.added:
-						list = db.Select<T>(pt => pt.DateAdded >= date && pt.DateDeleted == null);
+						list = db.Select<T>(pt => pt.DateAdded >= date.ToUnixTime());
 						break;
 					case ChangeType.deleted:
-						list = db.Select<T>(pt => pt.DateDeleted >= date);
+						list = db.Select<T>(pt => pt.DateDeleted >= date.ToUnixTime());
 						break;
 					case ChangeType.updated:
-						list = db.Select<T>(pt => pt.DateUpdated >= date && pt.DateDeleted == null);
+						list = db.Select<T>(pt => pt.DateUpdated >= date.ToUnixTime());
 						break;
+				    default:
+				        throw new ArgumentOutOfRangeException(nameof(change), change, null);
 				}
 			}
 
-			return list;
+		    return list;
 		}
 	}
 }

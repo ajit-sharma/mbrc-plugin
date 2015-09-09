@@ -148,6 +148,7 @@
     <Compile Include="AndroidRemote\Controller\Controller.cs" />
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Enumerations\ShuffleState.cs" />
+    <Compile Include="AndroidRemote\Extensions\Epoch.cs" />
     <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
     <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
     <Compile Include="Comparers\LibraryAlbumComparer.cs" />
@@ -297,7 +298,7 @@
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
-    <PostBuildEvent>XCOPY /Q /E /I /Y /C /R "$(TargetDir)*.*" "C:\Program Files\MusicBee\Plugins\"</PostBuildEvent>
+    <PostBuildEvent>XCOPY /Q /E /I /Y /C /R "$(TargetDir)*.*" "C:\Program Files (x86)\MusicBee\Plugins\"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.
