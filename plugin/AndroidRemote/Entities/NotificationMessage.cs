@@ -1,7 +1,7 @@
 ﻿#region
 
-using ServiceStack.Text;
 using System.Runtime.Serialization;
+using NServiceKit.Text;
 
 #endregion
 
@@ -45,7 +45,7 @@ namespace MusicBeePlugin.AndroidRemote.Entities
         public string ToJsonString()
         {
             var serialized = JsonSerializer.SerializeToString(this);
-            return string.Format("{0}\r\n", serialized);
+            return $"{serialized}\r\n";
         }
     }
 }

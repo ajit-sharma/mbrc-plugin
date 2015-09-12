@@ -3,7 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
+using NServiceKit.DataAnnotations;
 
 #endregion
 

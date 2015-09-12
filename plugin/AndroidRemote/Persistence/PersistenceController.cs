@@ -3,7 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using ServiceStack.Text;
+using NServiceKit.Text;
 
 #endregion
 
@@ -66,7 +66,7 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 			var startInfo = new ProcessStartInfo(_firewallUtility)
 			{
 				Verb = "runas",
-				Arguments = string.Format("-h {0} -s {1}", Settings.HttpPort, Settings.WebSocketPort)
+				Arguments = $"-h {Settings.HttpPort} -s {Settings.WebSocketPort}"
 			};
 			Process.Start(startInfo);
 		}

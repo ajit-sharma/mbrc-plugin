@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using NetFwTypeLib;
 using NLog;
 
 namespace MusicBeePlugin.Tools

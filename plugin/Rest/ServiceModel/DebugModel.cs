@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MusicBeePlugin.Rest.ServiceModel.Const;
-using ServiceStack.ServiceHost;
+using NServiceKit.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel
 {

@@ -8,7 +8,7 @@ using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using NLog;
-using ServiceStack.Text;
+using NServiceKit.Text;
 using LogLevel = Fleck.LogLevel;
 
 #endregion
@@ -86,25 +86,23 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 Logger.Debug("Starting Socket Server");
                 if (server == null)
                 {
-                    server = new WebSocketServer(string.Format("ws://0.0.0.0:{0}", _controller.Settings.WebSocketPort));
+                    server = new WebSocketServer($"ws://0.0.0.0:{_controller.Settings.WebSocketPort}");
                     server.Start(socket =>
                     {
                         socket.OnOpen = () =>
                         {
-                            Logger.Debug(string.Format("New client connected: {0}",
-                                socket.ConnectionInfo.ClientIpAddress));
+                            Logger.Debug($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
                             _allSockets.Add(socket);
                         };
 
                         socket.OnClose = () =>
                         {
-                            Logger.Debug(string.Format("Client has been disconnected: {0}",
-                                socket.ConnectionInfo.ClientIpAddress));
+                            Logger.Debug($"Client has been disconnected: {socket.ConnectionInfo.ClientIpAddress}");
                         };
 
                         socket.OnMessage = message =>
                         {
-                            Logger.Debug(string.Format("New message received: {0}", message));
+                            Logger.Debug($"New message received: {message}");
                             var notification = new NotificationMessage(JsonObject.Parse(message));
                             EventBus.FireEvent(new MessageEvent(notification.Message));
                         };
@@ -151,19 +149,19 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 switch (level)
                 {
                     case LogLevel.Debug:
-                        Logger.Debug(message, ex);
+                        Logger.Debug(ex, message);
                         break;
                     case LogLevel.Error:
-                        Logger.Error(message, ex);
+                        Logger.Error(ex, message);
                         break;
                     case LogLevel.Info:
-                        Logger.Info(message, ex);
+                        Logger.Info(ex, message);
                         break;
                     case LogLevel.Warn:
-                        Logger.Warn(message, ex);
+                        Logger.Warn(ex, message);
                         break;
                     default:
-                        Logger.Info(message, ex);
+                        Logger.Info(ex, message);
                         break;
                 }
             };

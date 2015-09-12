@@ -1,5 +1,5 @@
 ﻿using System.Runtime.Serialization;
-using ServiceStack.ServiceHost;
+using NServiceKit.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {

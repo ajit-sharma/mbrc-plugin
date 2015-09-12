@@ -4,8 +4,8 @@ using System.Runtime.Serialization;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.Api.Swagger;
-using ServiceStack.ServiceHost;
+using NServiceKit.Api.Swagger;
+using NServiceKit.ServiceHost;
 
 #endregion
 

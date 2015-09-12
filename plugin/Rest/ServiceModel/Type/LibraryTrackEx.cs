@@ -1,4 +1,4 @@
-using ServiceStack.DataAnnotations;
+using NServiceKit.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {

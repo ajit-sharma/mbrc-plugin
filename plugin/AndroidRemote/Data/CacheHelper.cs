@@ -1,7 +1,7 @@
 ﻿using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.OrmLite;
 using System.Data;
 using MusicBeePlugin.AndroidRemote.Persistence;
+using NServiceKit.OrmLite;
 
 namespace MusicBeePlugin.AndroidRemote.Data
 {

@@ -4,8 +4,8 @@ using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.Common.Web;
-using ServiceStack.ServiceInterface;
+using NServiceKit.Common.Web;
+using NServiceKit.ServiceInterface;
 
 #endregion
 
