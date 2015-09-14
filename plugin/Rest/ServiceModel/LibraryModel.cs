@@ -3,7 +3,7 @@
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Requests;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using NServiceKit.ServiceHost;
+using ServiceStack.ServiceHost;
 
 #endregion
 

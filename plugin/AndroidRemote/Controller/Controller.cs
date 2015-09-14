@@ -45,7 +45,7 @@ namespace MusicBeePlugin.AndroidRemote.Controller
             }
             catch (Exception ex)
             {
-                Logger.Trace(ex, "Controller");
+                Logger.TraceException("Controller", ex);
             }
         }
 

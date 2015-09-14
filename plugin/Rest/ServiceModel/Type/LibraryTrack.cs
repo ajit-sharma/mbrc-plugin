@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using NServiceKit.DataAnnotations;
+using ServiceStack.DataAnnotations;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {

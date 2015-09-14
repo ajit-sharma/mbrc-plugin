@@ -7,6 +7,7 @@ using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Utilities;
+using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
 using MusicBeeApiInterface = MusicBeePlugin.Plugin.MusicBeeApiInterface;
@@ -56,7 +57,7 @@ namespace MusicBeePlugin.Modules
             }
             catch (Exception e)
             {
-                Logger.Debug(e, "Exception");
+                Logger.DebugException("Exception", e);
             }
             return rating;
         }
@@ -79,7 +80,7 @@ namespace MusicBeePlugin.Modules
             }
             catch (Exception e)
             {
-                Logger.Debug(e, "Exception");
+                Logger.DebugException("Exception", e);
             }
             return rating;
         }

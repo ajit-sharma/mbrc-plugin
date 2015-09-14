@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.Tools;
-using NServiceKit.Text;
+using ServiceStack.Text;
 
 #endregion
 

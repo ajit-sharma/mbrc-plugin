@@ -1,6 +1,6 @@
 using MusicBeePlugin.Rest.ServiceModel.Const;
-using NServiceKit.Api.Swagger;
-using NServiceKit.ServiceHost;
+using ServiceStack.Api.Swagger;
+using ServiceStack.ServiceHost;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Requests
 {

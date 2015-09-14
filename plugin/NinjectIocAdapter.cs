@@ -1,7 +1,7 @@
 ﻿#region
 
 using Ninject;
-using NServiceKit.Configuration;
+using ServiceStack.Configuration;
 
 #endregion
 

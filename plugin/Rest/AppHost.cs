@@ -1,12 +1,11 @@
-
+using Funq;
+using ServiceStack.ServiceHost;
+using ServiceStack.WebHost.Endpoints;
 using System.Net;
 using MusicBeePlugin.AndroidRemote.Persistence;
-using NServiceKit.Api.Swagger;
-using NServiceKit.Common;
-using NServiceKit.Common.Web;
-using NServiceKit.ServiceHost;
-using NServiceKit.WebHost.Endpoints;
-
+using ServiceStack.Api.Swagger;
+using ServiceStack.Common;
+using ServiceStack.Common.Web;
 
 namespace MusicBeePlugin.Rest
 {
@@ -19,17 +18,17 @@ namespace MusicBeePlugin.Rest
         {
             _controller = controller;
         }
-        
-        public override void Configure(Funq.Container container)
+
+        public override void Configure(Container container)
         {
             SetConfig(new EndpointHostConfig()
             {
                 EnableFeatures = Feature.All.Remove(Feature.Csv |
-                                               Feature.Jsv |
-                                               Feature.Soap |
-                                               Feature.Soap11 |
-                                               Feature.Soap12 |
-                                               Feature.Xml),
+                                                    Feature.Jsv |
+                                                    Feature.Soap |
+                                                    Feature.Soap11 |
+                                                    Feature.Soap12 |
+                                                    Feature.Xml),
 
                 DefaultContentType = MimeTypes.Json,
 #if DEBUG
@@ -51,6 +50,8 @@ namespace MusicBeePlugin.Rest
                 }
 
             });
+
         }
+       
     }
 }

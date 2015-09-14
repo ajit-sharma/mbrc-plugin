@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using MusicBeePlugin.AndroidRemote.Data;
-using MusicBeePlugin.AndroidRemote.Extensions;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using NServiceKit.OrmLite;
+using ServiceStack.OrmLite;
+using ServiceStack.Text;
 
 namespace MusicBeePlugin.Modules
 {

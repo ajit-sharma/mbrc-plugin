@@ -13,6 +13,7 @@ using Ninject;
 using NLog;
 using NLog.Config;
 using NLog.Targets;
+using ServiceStack.Text;
 using System;
 using System.IO;
 using System.Reflection;
@@ -21,7 +22,6 @@ using System.Timers;
 using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.AndroidRemote.Utilities;
-using NServiceKit.Text;
 using Timer = System.Timers.Timer;
 
 #endregion

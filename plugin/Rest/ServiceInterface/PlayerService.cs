@@ -6,7 +6,7 @@ using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using NServiceKit.ServiceInterface;
+using ServiceStack.ServiceInterface;
 
 #endregion
 

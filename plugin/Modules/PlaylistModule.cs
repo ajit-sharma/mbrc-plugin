@@ -12,9 +12,9 @@ using MusicBeePlugin.Comparers;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
-using NServiceKit.Common.Web;
-using NServiceKit.OrmLite;
-using NServiceKit.Text;
+using ServiceStack.Common.Web;
+using ServiceStack.OrmLite;
+using ServiceStack.Text;
 
 #endregion
 
@@ -347,7 +347,7 @@ namespace MusicBeePlugin.Modules
 						trackInfo.DateAdded,
 						trackInfo.DateUpdated
 					}, playlistTrack => new {playlistTrack.Position})
-					.Where<PlaylistTrack>(p => p.PlaylistId == playlist.Id && p.DateDeleted == 0)
+					.Where<PlaylistTrack>(p => p.PlaylistId == playlist.Id && p.DateDeleted == null)
 					.OrderBy<PlaylistTrack>(pt => pt.Position);
 				var sql = join.ToSql();
 				var result = db.Query<PlaylistTrackInfo>(sql);
@@ -392,67 +392,60 @@ namespace MusicBeePlugin.Modules
 		{
 			using (var db = _cHelper.GetDbConnection())
 			{
-				return db.Select<Playlist>(pl => pl.DateDeleted == 0);
+				return db.Select<Playlist>(pl => pl.DateDeleted == null);
 			}
 		}
 
-	    /// <summary>
-	    ///     Retrieves a page of <see cref="Playlist" /> results.
-	    /// </summary>
-	    /// <param name="limit">The number of entries in the page.</param>
-	    /// <param name="offset">The index of the first result in the page.</param>
-	    /// <param name="after">Unix epoch after which the data will be retrieved</param>
-	    /// <returns>A PaginatedResponse containing playlists</returns>
-	    public PaginatedResponse<Playlist> GetAvailablePlaylists(int limit = 50, int offset = 0, long after = 0)
+		/// <summary>
+		///     Retrieves a page of <see cref="Playlist" /> results.
+		/// </summary>
+		/// <param name="limit">The number of entries in the page.</param>
+		/// <param name="offset">The index of the first result in the page.</param>
+		/// <returns>A PaginatedResponse containing playlists</returns>
+		public PaginatedResponse<Playlist> GetAvailablePlaylists(int limit = 50, int offset = 0)
 		{
-            using (var db = _cHelper.GetDbConnection())
-            {
-                var playlists = db.Select<Playlist>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
-                var paginated = new PaginatedPlaylistResponse();
-                paginated.CreatePage(limit, offset, playlists);
-                return paginated;
-            }
+			var playlists = GetCachedPlaylists();
+			var result = new PaginatedPlaylistResponse();
+			result.CreatePage(limit, offset, playlists);
+			return result;
 		}
 
-	    /// <summary>
-	    ///     Retrieves a page of <see cref="PlaylistTrackInfo" /> results.
-	    /// </summary>
-	    /// <param name="limit">The number of the results in the page.</param>
-	    /// <param name="offset">The index of the first result in the page.</param>
-	    /// <param name="after"></param>
-	    /// <returns></returns>
-	    public PaginatedResponse<PlaylistTrackInfo> GetPlaylistTracksInfo(int limit = 50, int offset = 0, long after = 0)
-		{		
+		/// <summary>
+		///     Retrieves a page of <see cref="PlaylistTrackInfo" /> results.
+		/// </summary>
+		/// <param name="limit">The number of the results in the page.</param>
+		/// <param name="offset">The index of the first result in the page.</param>
+		/// <returns></returns>
+		public PaginatedResponse<PlaylistTrackInfo> GetPlaylistTracksInfo(int limit = 50, int offset = 0)
+		{
+			List<PlaylistTrackInfo> trackInfo;
 			using (var db = _cHelper.GetDbConnection())
 			{
-				var trackInfo = db.Select<PlaylistTrackInfo>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
-                var paginated = new PaginatedPlaylistTrackInfoResponse();
-                paginated.CreatePage(limit, offset, trackInfo);
-                return paginated;
-            }
-			
+				trackInfo = db.Select<PlaylistTrackInfo>(ti => ti.DateDeleted == null);
+			}
+			var paginated = new PaginatedPlaylistTrackInfoResponse();
+			paginated.CreatePage(limit, offset, trackInfo);
+			return paginated;
 		}
 
-	    /// <summary>
-	    ///     Retrieves a page of <see cref="PlaylistTrack" /> results.
-	    /// </summary>
-	    /// <param name="id">The id of the playlist that contains the tracks.</param>
-	    /// <param name="limit">The number of the results in the page.</param>
-	    /// <param name="offset">The index of the first result in the page.</param>
-	    /// <param name="after"></param>
-	    /// <returns></returns>
-	    public PaginatedResponse<PlaylistTrack> GetPlaylistTracks(int id, int limit = 50, int offset = 0, long after = 0)
+		/// <summary>
+		///     Retrieves a page of <see cref="PlaylistTrack" /> results.
+		/// </summary>
+		/// <param name="id">The id of the playlist that contains the tracks.</param>
+		/// <param name="limit">The number of the results in the page.</param>
+		/// <param name="offset">The index of the first result in the page.</param>
+		/// <returns></returns>
+		public PaginatedResponse<PlaylistTrack> GetPlaylistTracks(int id, int limit = 50, int offset = 0)
 		{
 			var playlist = GetPlaylistById(id);
-			
+			List<PlaylistTrack> playlistTracks;
 			using (var db = _cHelper.GetDbConnection())
 			{
-			    var playlistTracks = db.Select<PlaylistTrack>(q => q.PlaylistId == playlist.Id && ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
-                var paginated = new PaginatedPlaylistTrackResponse();
-                paginated.CreatePage(limit, offset, playlistTracks);
-                return paginated;
-            }
-			
+				playlistTracks = db.Select<PlaylistTrack>(pl => pl.PlaylistId == playlist.Id);
+			}
+			var paginated = new PaginatedPlaylistTrackResponse();
+			paginated.CreatePage(limit, offset, playlistTracks);
+			return paginated;
 		}
 
 		/// <summary>

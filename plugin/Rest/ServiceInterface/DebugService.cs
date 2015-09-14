@@ -2,7 +2,7 @@
 
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
-using NServiceKit.ServiceInterface;
+using ServiceStack.ServiceInterface;
 
 #endregion
 

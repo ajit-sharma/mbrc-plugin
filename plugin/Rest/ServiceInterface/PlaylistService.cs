@@ -3,7 +3,7 @@
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using NServiceKit.ServiceInterface;
+using ServiceStack.ServiceInterface;
 
 #endregion
 
@@ -20,17 +20,17 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public PaginatedResponse<Playlist> Get(AllPlaylists request)
         {
-            return _module.GetAvailablePlaylists(request.Limit, request.Offset, request.After);
+            return _module.GetAvailablePlaylists(request.Limit, request.Offset);
         }
 
         public PaginatedResponse<PlaylistTrack> Get(GetPlaylistTracks request)
         {
-            return _module.GetPlaylistTracks(request.Id, request.Limit, request.Offset, request.After);
+            return _module.GetPlaylistTracks(request.Id, request.Limit, request.Offset);
         }
 
 	    public PaginatedResponse<PlaylistTrackInfo> Get(GetPlaylistTrackInfo request)
 	    {
-		    return _module.GetPlaylistTracksInfo(request.Limit, request.Offset, request.After);
+		    return _module.GetPlaylistTracksInfo(request.Limit, request.Offset);
 	    } 
 
         public SuccessResponse Put(CreatePlaylist request)

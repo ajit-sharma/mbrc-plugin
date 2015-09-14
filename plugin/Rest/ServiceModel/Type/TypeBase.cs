@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.Serialization;
 using MusicBeePlugin.AndroidRemote.Extensions;
-using NServiceKit.DataAnnotations;
+using ServiceStack.DataAnnotations;
 
 #endregion
 
