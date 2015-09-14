@@ -9,7 +9,7 @@ The development version does a complete rework and redesign of the API, depracat
 
 If you want to check the currently released plugin code please check the mb22-fixes branch.
 
-Currently there is no public documentation of the API Available but it is planned as soon as the version 1.x features are finalized, however there is a metadata page available when the plugin running that has information on most of the calls. Also there is some swagger documentation integrated with the API, but it seems not operational after the migration to NServiceKit.
+Currently there is no public documentation of the API Available but it is planned as soon as the version 1.x features are finalized, however there is a metadata page available when the plugin running that has information on most of the calls. The API is somewhat documented and build with ServiceStack.Api.Swagger, so if you put the *swagger-ui* folder in the MusicBee Plugins folder you should be able to access the documentation through *http://localhost:port/swagger-ui/index.html* (where port is the port marked as http at the plugin settings page). Please keep in mind that the resource list should be available under *http://localhost:port/resources*, and you will probably need to insert it manually if you downloaded and extracted the swagger-ui zip file.
 
 Building
 -------
@@ -18,16 +18,16 @@ To build the plugin you have to open it with Visual Studio 2015. After opening t
 Credits
 -------
 
-*   [NServiceKit](https://github.com/NServiceKit/NServiceKit)
+*  [ServiceStack v3](https://github.com/ServiceStackV3/ServiceStackV3)
 
-    NServiceKit.Text is used for JSON parsing
+    ServiceStack.Text is the library used for JSON serialization and deserialization.
 
-    NServiceKit.OrmLite.Sqlite is used for the internal cache.
+    ServiceStack.OrmLite.Sqlite is used for the internal cache.
 
-    *NServiceKit.OrmLite is provided as a library along with the repository
-    since the version used is build with System.Data.SQLite.Core v1.0.98.1 support instead of the System.Data.SQLite v1.0.88.0 that is available on NuGet*
+    *Plans are to use a fork of the ServiceStack.OrmLite.Sqlite library in order to add support for the latest version of System.Data.SQLite and use an newer version of SQLite*
 
-    [BSD LICENCE](https://github.com/NServiceKit/NServiceKit/blob/master/LICENSE)
+
+    [BSD LICENCE](https://github.com/ServiceStack/ServiceStack/blob/v3/LICENSE)
 
 *   [SQLite](https://www.sqlite.org/)
 
