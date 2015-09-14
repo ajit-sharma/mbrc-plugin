@@ -4,6 +4,7 @@ using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceInterface;
+using ServiceStack.WebHost.Endpoints.Support;
 
 #endregion
 
@@ -20,17 +21,17 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public PaginatedResponse<Playlist> Get(AllPlaylists request)
         {
-            return _module.GetAvailablePlaylists(request.Limit, request.Offset);
+            return _module.GetAvailablePlaylists(request.Limit, request.Offset, request.After);
         }
 
         public PaginatedResponse<PlaylistTrack> Get(GetPlaylistTracks request)
         {
-            return _module.GetPlaylistTracks(request.Id, request.Limit, request.Offset);
+            return _module.GetPlaylistTracks(request.Id, request.Limit, request.Offset, request.After);
         }
 
 	    public PaginatedResponse<PlaylistTrackInfo> Get(GetPlaylistTrackInfo request)
 	    {
-		    return _module.GetPlaylistTracksInfo(request.Limit, request.Offset);
+		    return _module.GetPlaylistTracksInfo(request.Limit, request.Offset, request.After);
 	    } 
 
         public SuccessResponse Put(CreatePlaylist request)

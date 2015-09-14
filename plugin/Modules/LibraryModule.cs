@@ -67,17 +67,18 @@ namespace MusicBeePlugin.Modules
 				ref newFiles, ref updatedFiles, ref deletedFiles);
 		}
 
-		/// <summary>
-		/// </summary>
-		/// <param name="offset"></param>
-		/// <param name="limit"></param>
-		/// <returns></returns>
-		public PaginatedResponse<LibraryCover> GetAllCovers(int offset, int limit)
+	    /// <summary>
+	    /// </summary>
+	    /// <param name="offset"></param>
+	    /// <param name="limit"></param>
+	    /// <param name="after"></param>
+	    /// <returns></returns>
+	    public PaginatedResponse<LibraryCover> GetAllCovers(int offset, int limit, long after)
 		{
 			using (var db = _cHelper.GetDbConnection())
 			{
-				var covers = db.Select<LibraryCover>();
-				var paginated = new PaginatedCoverResponse();
+                var covers = db.Select<LibraryCover>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
+                var paginated = new PaginatedCoverResponse();
 				paginated.CreatePage(limit, offset, covers);
 				return paginated;
 			}
@@ -132,8 +133,8 @@ namespace MusicBeePlugin.Modules
 				var genres = db.Select<LibraryGenre>();
 				var albums = db.Select<LibraryAlbum>();
 
-				var cached = db.Select<LibraryTrack>(tr => tr.DateDeleted == null).ToList();
-				var deleted = db.Select<LibraryTrack>(tr => tr.DateDeleted != null).ToList();
+				var cached = db.Select<LibraryTrack>(tr => tr.DateDeleted == 0).ToList();
+				var deleted = db.Select<LibraryTrack>(tr => tr.DateDeleted != 0).ToList();
 				var cachedPaths = cached.Select(tr => tr.Path).ToList();
 
 				var toInsert = files.Except(cachedPaths).ToList();
@@ -261,8 +262,8 @@ namespace MusicBeePlugin.Modules
 			using (var db = _cHelper.GetDbConnection())
 			{
 				var artists = GetArtistDataFromApi();
-				var cachedArtists = db.Select<LibraryArtist>(la => la.DateDeleted == null);
-				var deletedArtists = db.Select<LibraryArtist>(la => la.DateDeleted != null);
+				var cachedArtists = db.Select<LibraryArtist>(la => la.DateDeleted == 0);
+				var deletedArtists = db.Select<LibraryArtist>(la => la.DateDeleted != 0);
 
 				var comparer = new LibraryArtistComparer();
 
@@ -308,8 +309,8 @@ namespace MusicBeePlugin.Modules
 			using (var db = _cHelper.GetDbConnection())
 			{
 				var genres = GetGenreDataFromApi();
-				var cachedGenres = db.Select<LibraryGenre>(gen => gen.DateDeleted == null);
-				var deletedGenres = db.Select<LibraryGenre>(gen => gen.DateDeleted != null);
+				var cachedGenres = db.Select<LibraryGenre>(gen => gen.DateDeleted == 0);
+				var deletedGenres = db.Select<LibraryGenre>(gen => gen.DateDeleted != 0);
 				var comparer = new LibraryGenreComparer();
 
 				var genresToInsert = genres.Except(cachedGenres, comparer).ToList();
@@ -511,38 +512,40 @@ namespace MusicBeePlugin.Modules
 			return cached == 0;
 		}
 
-		/// <summary>
-		///     Retrieves A number of tracks from the database and returns a
-		///     Paginated response.
-		/// </summary>
-		/// <param name="limit">
-		///     The number of results in the response. If the
-		///     limit equals 0 then all the data are returned.
-		/// </param>
-		/// <param name="offset">The index of the first result.</param>
-		/// <returns></returns>
-		public PaginatedResponse<LibraryTrack> GetAllTracks(int limit, int offset)
+	    /// <summary>
+	    ///     Retrieves A number of tracks from the database and returns a
+	    ///     Paginated response.
+	    /// </summary>
+	    /// <param name="limit">
+	    ///     The number of results in the response. If the
+	    ///     limit equals 0 then all the data are returned.
+	    /// </param>
+	    /// <param name="offset">The index of the first result.</param>
+	    /// <param name="after"></param>
+	    /// <returns></returns>
+	    public PaginatedResponse<LibraryTrack> GetAllTracks(int limit, int offset, long after)
 		{
 			using (var db = _cHelper.GetDbConnection())
 			{
-				var data = db.Select<LibraryTrack>(q => q.OrderBy(x => x.Id));
+				var data = db.Select<LibraryTrack>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
 				var paginatedResult = new PaginatedTrackResponse();
 				paginatedResult.CreatePage(limit, offset, data);
 				return paginatedResult;
 			}
 		}
 
-		/// <summary>
-		///     Retrieves a number of <see cref="LibraryArtist" /> results (a page) from the cache.
-		/// </summary>
-		/// <param name="limit">The number of results in the page.</param>
-		/// <param name="offset">The first position in the result set.</param>
-		/// <returns></returns>
-		public PaginatedResponse<LibraryArtist> GetAllArtists(int limit, int offset)
+	    /// <summary>
+	    ///     Retrieves a number of <see cref="LibraryArtist" /> results (a page) from the cache.
+	    /// </summary>
+	    /// <param name="limit">The number of results in the page.</param>
+	    /// <param name="offset">The first position in the result set.</param>
+	    /// <param name="after"></param>
+	    /// <returns></returns>
+	    public PaginatedResponse<LibraryArtist> GetAllArtists(int limit, int offset, long after)
 		{
 			using (var db = _cHelper.GetDbConnection())
 			{
-				var data = db.Select<LibraryArtist>(q => q.OrderBy(x => x.Id));
+				var data = db.Select<LibraryArtist>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
 				var paginated = new PaginatedArtistResponse();
 				paginated.CreatePage(limit, offset, data);
 				return paginated;
@@ -572,32 +575,34 @@ namespace MusicBeePlugin.Modules
 			}
 		}
 
-		/// <summary>
-		/// </summary>
-		/// <param name="limit"></param>
-		/// <param name="offset"></param>
-		/// <returns></returns>
-		public PaginatedResponse<LibraryGenre> GetAllGenres(int limit, int offset)
+	    /// <summary>
+	    /// </summary>
+	    /// <param name="limit"></param>
+	    /// <param name="offset"></param>
+	    /// <param name="after"></param>
+	    /// <returns></returns>
+	    public PaginatedResponse<LibraryGenre> GetAllGenres(int limit, int offset, long after)
 		{
 			using (var db = _cHelper.GetDbConnection())
 			{
-				var data = db.Select<LibraryGenre>(q => q.OrderBy(x => x.Id));
+				var data = db.Select<LibraryGenre>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
 				var paginated = new PaginatedGenreResponse();
 				paginated.CreatePage(limit, offset, data);
 				return paginated;
 			}
 		}
 
-		/// <summary>
-		/// </summary>
-		/// <param name="limit"></param>
-		/// <param name="offset"></param>
-		/// <returns></returns>
-		public PaginatedResponse<LibraryAlbum> GetAllAlbums(int limit, int offset)
+	    /// <summary>
+	    /// </summary>
+	    /// <param name="limit"></param>
+	    /// <param name="offset"></param>
+	    /// <param name="after"></param>
+	    /// <returns></returns>
+	    public PaginatedResponse<LibraryAlbum> GetAllAlbums(int limit, int offset, long after)
 		{
 			using (var db = _cHelper.GetDbConnection())
 			{
-				var data = db.Select<LibraryAlbum>(q => q.OrderBy(x => x.Id));
+				var data = db.Select<LibraryAlbum>(q => ((q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after));
 				var paginated = new PaginatedAlbumResponse();
 				paginated.CreatePage(limit, offset, data);
 				return paginated;
@@ -689,7 +694,7 @@ namespace MusicBeePlugin.Modules
 		/// <returns></returns>
 		public string[] GetTrackPathById(long id)
 		{
-			var list = new List<String>();
+			var list = new List<string>();
 			try
 			{
 				using (var db = _cHelper.GetDbConnection())
@@ -713,7 +718,7 @@ namespace MusicBeePlugin.Modules
 		/// <returns></returns>
 		public string[] GetAlbumTracksById(long id)
 		{
-			var trackList = new List<String>();
+			var trackList = new List<string>();
 
 			try
 			{
@@ -739,7 +744,7 @@ namespace MusicBeePlugin.Modules
 		/// <returns></returns>
 		public string[] GetGenreTracksById(long id)
 		{
-			var tracklist = new List<String>();
+			var tracklist = new List<string>();
 
 			try
 			{

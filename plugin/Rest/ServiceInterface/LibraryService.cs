@@ -21,7 +21,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
 		public PaginatedResponse<LibraryTrack> Get(GetLibraryTracks request)
 		{
-			return _module.GetAllTracks(request.Limit, request.Offset);
+			return _module.GetAllTracks(request.Limit, request.Offset, request.After);
 		}
 
 		public LibraryTrack Get(GetLibraryTrack request)
@@ -31,7 +31,7 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
 		public PaginatedResponse<LibraryArtist> Get(GetLibraryArtists request)
 		{
-			return _module.GetAllArtists(request.Limit, request.Offset);
+			return _module.GetAllArtists(request.Limit, request.Offset, request.After);
 		}
 
 		public LibraryArtist Get(GetLibraryArtist request)
@@ -41,17 +41,17 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
 		public PaginatedResponse<LibraryGenre> Get(GetLibraryGenres request)
 		{
-			return _module.GetAllGenres(request.Limit, request.Offset);
+			return _module.GetAllGenres(request.Limit, request.Offset, request.After);
 		}
 
 		public PaginatedResponse<LibraryAlbum> Get(GetLibraryAlbums request)
 		{
-			return _module.GetAllAlbums(request.Limit, request.Offset);
+			return _module.GetAllAlbums(request.Limit, request.Offset, request.After);
 		}
 
 		public PaginatedResponse<LibraryCover> Get(GetLibraryCovers request)
 		{
-			return _module.GetAllCovers(request.Offset, request.Limit);
+			return _module.GetAllCovers(request.Offset, request.Limit, request.After);
 		}
 
 		public LibraryCover Get(GetLibraryCover request)
