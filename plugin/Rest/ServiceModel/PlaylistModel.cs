@@ -20,7 +20,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.Playlists, Verbs.Put, Summary = Summary.PlaylistPut)]
     [DataContract]
-    public class CreatePlaylist : IReturn<SuccessResponse>
+    public class CreatePlaylist : IReturn<ResponseBase>
     {
         [DataMember(Name = "name", IsRequired = true)]
         [Description(Descriptions.PlaylistName)]
@@ -33,7 +33,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
    
     [Route(Routes.PlaylistsPlay, Verbs.Put, Summary = Summary.PlaylistPlay)]
     [DataContract]
-    public class PlaylistPlay : IReturn<SuccessResponse>
+    public class PlaylistPlay : IReturn<ResponseBase>
     {
         [DataMember(Name = "path", IsRequired = true)]
         [Description(Descriptions.PlaylistPlay)]
@@ -46,7 +46,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlaylistsId, Verbs.Delete, Summary = Summary.DeletesAPlaylist)]
-    public class DeletePlaylist : IdBasedRequest, IReturn<SuccessResponse>
+    public class DeletePlaylist : IdBasedRequest, IReturn<ResponseBase>
     {
     }
 
@@ -65,14 +65,14 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.PlaylistsIdTracks, Verbs.Put, Summary = Summary.PlaylistTrackAdd)]
     [DataContract]
-    public class AddPlaylistTracks : IdBasedRequest, IReturn<SuccessResponse>
+    public class AddPlaylistTracks : IdBasedRequest, IReturn<ResponseBase>
     {
         [DataMember(Name = "list", IsRequired = true)]
         public string[] List { get; set; }
     }
    
     [Route(Routes.PlaylistsIdTracksMove, Verbs.Put, Summary = Summary.PlaylistTrackMove)]
-    public class MovePlaylistTrack : IReturn<SuccessResponse>
+    public class MovePlaylistTrack : IReturn<ResponseBase>
     {
         [ApiMember(Name = "id", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
             Description = Descriptions.PlaylistIdDesc)]
@@ -88,7 +88,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [Route(Routes.PlaylistsIdTracksPosition, Verbs.Delete, Summary = Summary.PlaylistTrackDelete)]
-    public class DeletePlaylistTracks : IReturn<SuccessResponse>
+    public class DeletePlaylistTracks : IReturn<ResponseBase>
     {
         [ApiMember(Name = "position", IsRequired = true, ParameterType = "path", DataType = SwaggerType.Int,
             Description = Descriptions.PlaylistTrackPosition)]

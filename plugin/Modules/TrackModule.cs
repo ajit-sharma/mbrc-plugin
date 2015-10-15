@@ -28,9 +28,9 @@ namespace MusicBeePlugin.Modules
             _model = model;
         }
 
-        public Track GetTrackInfo()
+        public TrackInfoResponse GetTrackInfo()
         {
-            var track = new Track
+            var track = new TrackInfoResponse
             {
                 Artist = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Artist),
                 Album = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.Album),
@@ -57,7 +57,7 @@ namespace MusicBeePlugin.Modules
             }
             catch (Exception e)
             {
-                Logger.DebugException("Exception", e);
+                Logger.Debug(e, "Exception");
             }
             return rating;
         }
@@ -80,7 +80,7 @@ namespace MusicBeePlugin.Modules
             }
             catch (Exception e)
             {
-                Logger.DebugException("Exception", e);
+                Logger.Debug(e, "Exception");
             }
             return rating;
         }
@@ -106,26 +106,26 @@ namespace MusicBeePlugin.Modules
         ///     Sets the position of the playing track
         /// </summary>
         /// <param name="newPosition"></param>
-        public TrackPositionResponse SetPosition(int newPosition)
+        public PositionResponse SetPosition(int newPosition)
         {
             _api.Player_SetPosition(newPosition);
 
             var currentPosition = _api.Player_GetPosition();
             var totalDuration = _api.NowPlaying_GetDuration();
 
-            return new TrackPositionResponse
+            return new PositionResponse
             {
                 Position = currentPosition,
                 Duration = totalDuration
             };
         }
 
-        public TrackPositionResponse GetPosition()
+        public PositionResponse GetPosition()
         {
             var currentPosition = _api.Player_GetPosition();
             var totalDuration = _api.NowPlaying_GetDuration();
 
-            return new TrackPositionResponse
+            return new PositionResponse
             {
                 Position = currentPosition,
                 Duration = totalDuration

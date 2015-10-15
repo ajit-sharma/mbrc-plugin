@@ -164,6 +164,7 @@
     <Compile Include="Modules\PlaylistModule.cs" />
     <Compile Include="Modules\TrackModule.cs" />
     <Compile Include="NinjectIocAdapter.cs" />
+    <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />
     <Compile Include="Rest\ServiceInterface\DebugService.cs" />
     <Compile Include="Rest\ServiceModel\Const\Descriptions.cs" />
     <Compile Include="Rest\ServiceModel\Const\Notes.cs" />
@@ -233,7 +234,7 @@
     <Compile Include="Rest\ServiceModel\Type\PlaylistTrackInfo.cs" />
     <Compile Include="Rest\ServiceModel\Type\RequestDto.cs" />
     <Compile Include="Rest\ServiceModel\Type\ResponseDto.cs" />
-    <Compile Include="Rest\ServiceModel\Type\Track.cs" />
+    <Compile Include="Rest\ServiceModel\Type\TrackInfoResponse.cs" />
     <Compile Include="Rest\ServiceModel\Const\Verbs.cs" />
     <Compile Include="Rest\ServiceModel\Type\TypeBase.cs" />
     <Compile Include="Tools\NetworkTools.cs" />

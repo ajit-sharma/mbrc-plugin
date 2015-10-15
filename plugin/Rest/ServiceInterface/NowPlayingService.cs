@@ -29,35 +29,34 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.GetCurrentQueue(request.Offset, request.Limit);
         }
 
-        public SuccessResponse Put(NowPlayingPlay request)
+        public ResponseBase Put(NowPlayingPlay request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success =
-                    !string.IsNullOrEmpty(request.Path) &&
-                    _module.NowplayingPlayNow(request.Path)
+                Code = (!string.IsNullOrEmpty(request.Path) &&
+                    _module.NowplayingPlayNow(request.Path)) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
-        public SuccessResponse Delete(NowPlayingRemove request)
+        public ResponseBase Delete(NowPlayingRemove request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.CurrentQueueRemoveTrack(request.Id)
+                Code = _module.CurrentQueueRemoveTrack(request.Id) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
-        public SuccessResponse Put(NowPlayingMove request)
+        public ResponseBase Put(NowPlayingMove request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.CurrentQueueMoveTrack(request.From, request.To)
+                Code = _module.CurrentQueueMoveTrack(request.From, request.To) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
-        public SuccessResponse Put(NowPlayingQueue request)
+        public ResponseBase Put(NowPlayingQueue request)
         {
-            String[] tracklist;
+            string[] tracklist;
 
             switch (request.Type)
             {
@@ -78,9 +77,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                     break;
             }
 
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.EnqueueTracks(request.Action, tracklist)
+                Code = _module.EnqueueTracks(request.Action, tracklist) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
     }

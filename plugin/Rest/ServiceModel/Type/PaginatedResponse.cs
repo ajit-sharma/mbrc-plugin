@@ -11,7 +11,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DataContract]
-    public abstract class PaginatedResponse<T>
+    public abstract class PaginatedResponse<T> : ResponseBase
     {
         [DataMember(Name = "total")]
         public int Total { get; set; }

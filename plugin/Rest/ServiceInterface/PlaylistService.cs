@@ -34,45 +34,45 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 		    return _module.GetPlaylistTracksInfo(request.Limit, request.Offset, request.After);
 	    } 
 
-        public SuccessResponse Put(CreatePlaylist request)
+        public ResponseBase Put(CreatePlaylist request)
         {
             return _module.CreateNewPlaylist(request.Name, request.List);
         }
 
-        public SuccessResponse Put(PlaylistPlay request)
+        public ResponseBase Put(PlaylistPlay request)
         {
             return _module.PlaylistPlayNow(request.Path);
         }
 
-        public SuccessResponse Put(AddPlaylistTracks request)
+        public ResponseBase Put(AddPlaylistTracks request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.PlaylistAddTracks(request.Id, request.List)
+                Code = _module.PlaylistAddTracks(request.Id, request.List) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
-        public SuccessResponse Delete(DeletePlaylist request)
+        public ResponseBase Delete(DeletePlaylist request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.PlaylistDelete(request.Id)
+                Code = _module.PlaylistDelete(request.Id) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
-        public SuccessResponse Delete(DeletePlaylistTracks request)
+        public ResponseBase Delete(DeletePlaylistTracks request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.DeleteTrackFromPlaylist(request.Id, request.Position)
+                Code = _module.DeleteTrackFromPlaylist(request.Id, request.Position) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
-        public SuccessResponse Put(MovePlaylistTrack request)
+        public ResponseBase Put(MovePlaylistTrack request)
         {
-            return new SuccessResponse
+            return new ResponseBase
             {
-                Success = _module.MovePlaylistTrack(request.Id, request.From, request.To)
+                Code = _module.MovePlaylistTrack(request.Id, request.From, request.To) ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 	}

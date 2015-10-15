@@ -22,41 +22,41 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _model = model;
         }
 
-        public Track Get(GetTrack request)
+        public TrackInfoResponse Get(GetTrack request)
         {
             return _module.GetTrackInfo();
         }
 
-        public TrackLyricsResponse Get(GetTrackLyrics request)
+        public LyricsResponse Get(GetTrackLyrics request)
         {
-            return new TrackLyricsResponse
+            return new LyricsResponse
             {
                 Lyrics = _model.Lyrics
             };
         }
 
-        public TrackRatingResponse Get(GetTrackRating request)
+        public RatingResponse Get(GetTrackRating request)
         {
-            return new TrackRatingResponse
+            return new RatingResponse
             {
                 Rating = _module.GetRating()
             };
         }
 
-        public TrackRatingResponse Put(SetTrackRating request)
+        public RatingResponse Put(SetTrackRating request)
         {
-            return new TrackRatingResponse
+            return new RatingResponse
             {
                 Rating = _module.SetRating(request.Rating ?? -1)
             };
         }
 
-        public TrackPositionResponse Get(GetTrackPosition request)
+        public PositionResponse Get(GetTrackPosition request)
         {
             return _module.GetPosition();
         }
 
-        public TrackPositionResponse Put(SetTrackPosition request)
+        public PositionResponse Put(SetTrackPosition request)
         {
             return _module.SetPosition(request.Position);
         }

@@ -27,7 +27,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	[Api]
     [Route(Routes.NowplayingPlay, Verbs.Put, Summary = Summary.NowPlayingPlay)]
     [DataContract]
-    public class NowPlayingPlay : IReturn<SuccessResponse>
+    public class NowPlayingPlay : IReturn<ResponseBase>
     {
 		[DataMember(Name = "path")]
         public string Path { get; set; }
@@ -35,7 +35,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Api]
 	[Route(Routes.NowplayingId, Verbs.Delete, Summary = Summary.NowPlayingDelete)]
-    public class NowPlayingRemove : IReturn<SuccessResponse>
+    public class NowPlayingRemove : IReturn<ResponseBase>
     {
 		[ApiMember(Name = "id", ParameterType = "path", DataType = SwaggerType.Int, IsRequired = true,
             Description = Descriptions.NowPlayingId)]
@@ -44,7 +44,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Route(Routes.NowplayingMove, Verbs.Put, Summary = Summary.NowPlayingMove)]
     [DataContract]
-    public class NowPlayingMove : IReturn<SuccessResponse>
+    public class NowPlayingMove : IReturn<ResponseBase>
     {
         [DataMember(Name = "from", IsRequired = true)]
         public int From { get; set; }
@@ -56,7 +56,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 	[Api]
 	[Route(Routes.NowplayingQueue, Verbs.Put, Summary = Summary.NowPlayingQueue, Notes = Notes.NowPlayingQueue)]
     [DataContract]
-    public class NowPlayingQueue : IReturn<SuccessResponse>
+    public class NowPlayingQueue : IReturn<ResponseBase>
     {
         [DataMember(Name = "type")]
         public MetaTag Type { get; set; }

@@ -7,7 +7,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 	/// Such as used in the display of the currently playing track.
 	/// </summary>
 	[DataContract]
-    public class Track
+    public class TrackInfoResponse : ResponseBase
     {
 		/// <summary>
 		/// The name of the artist performing the track.

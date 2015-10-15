@@ -2,11 +2,9 @@
 
 using System.ComponentModel;
 using System.Runtime.Serialization;
-using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceModel.Const;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.Api.Swagger;
 using ServiceStack.ServiceHost;
 
 #endregion
@@ -14,17 +12,17 @@ using ServiceStack.ServiceHost;
 namespace MusicBeePlugin.Rest.ServiceModel
 {
     [Route(Routes.PlayerShuffle, Verbs.Get, Summary = Summary.ShuffleGet)]
-    public class GetShuffleState : IReturn<ShuffleStateResponse>
+    public class GetShuffleState : IReturn<ShuffleResponse>
     {
     }
 
     [Route(Routes.PlayerShuffle, Verbs.Put, Summary = Summary.ShufflePut)]
     [DataContract]
-    public class SetShuffleState : IReturn<SuccessShuffleStateResponse>
+    public class SetShuffleState : IReturn<ShuffleState>
     {
         [DataMember(Name = "status", IsRequired = true)]
         [Description(Descriptions.ShuffleState)]
-        public ShuffleState? Status { get; set; }
+        public AndroidRemote.Enumerations.ShuffleState? Status { get; set; }
     }
 
     [Route(Routes.PlayerScrobble, Verbs.Get, Summary = Summary.ScrobbleGet)]
@@ -34,7 +32,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.PlayerScrobble, Verbs.Put, Summary = Summary.ScrobbleSet)]
     [DataContract]
-    public class SetScrobbleStatus : IReturn<SuccessStatusResponse>
+    public class SetScrobbleStatus : IReturn<StatusResponse>
     {
         [DataMember(Name = "enabled", IsRequired = false)]
         [Description(Descriptions.ScrobbleEnabled)]
@@ -49,7 +47,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.PlayerRepeat, Verbs.Put, Summary = Summary.RepeatPut)]
     [DataContract]
-    public class SetRepeatMode : IReturn<SuccessResponse>
+    public class SetRepeatMode : IReturn<ResponseBase>
     {
 	    [DataMember(Name = "mode", IsRequired = false)]
         [Description(Descriptions.RepeatMode)]
@@ -63,7 +61,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.PlayerMute, Verbs.Put, Summary = Summary.MutePut)]
     [DataContract]
-    public class SetMuteStatus : IReturn<SuccessStatusResponse>
+    public class SetMuteStatus : IReturn<StatusResponse>
     {
 	    [DataMember(Name="enabled",IsRequired = false)]
         [Description(Descriptions.Mute)]
@@ -78,7 +76,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.PlayerVolume, Verbs.Put, Summary = Summary.VolumePut)]
     [DataContract]
-    public class SetVolume : IReturn<SuccessResponse>
+    public class SetVolume : IReturn<ResponseBase>
     {
 	    [DataMember(Name = "value", IsRequired = true)]
         [ApiAllowableValues("value", 0 , 100)]
@@ -87,7 +85,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
     [Route(Routes.PlayerAction, Verbs.Get, Summary = Summary.PlayerAction)]
     [DataContract]
-    public class PlayerAction : IReturn<SuccessResponse>
+    public class PlayerAction : IReturn<ResponseBase>
     {
         [DataMember(Name = "action", IsRequired = true)]
         [Description(Descriptions.PlayerAction)]
@@ -106,60 +104,38 @@ namespace MusicBeePlugin.Rest.ServiceModel
     }
 
     [DataContract]
-    public class SuccessStatusResponse : SuccessResponse
-    {
-        [DataMember(Name = "enabled")]
-        public bool Enabled { get; set; }
-    }
-
-
-    [DataContract]
-    public class SuccessShuffleStateResponse : SuccessResponse
+    public class ShuffleState : ResponseBase
     {
         [DataMember(Name = "state")]
-        public ShuffleState State { get; set; }
+        public AndroidRemote.Enumerations.ShuffleState State { get; set; }
     }
 
     /// <summary>
     ///     A response that returns the status of a functionality (enabled/disabled)
     /// </summary>
     [DataContract]
-    public class StatusResponse
+    public class StatusResponse : ResponseBase
     {
         [DataMember(Name = "enabled")]
         public bool Enabled { get; set; }
     }
 
     [DataContract]
-    public class ShuffleStateResponse
+    public class ShuffleResponse : ResponseBase
     {
         [DataMember(Name = "state")]
-        public ShuffleState State { get; set; } 
+        public AndroidRemote.Enumerations.ShuffleState State { get; set; } 
     }
-
+    
     [DataContract]
-    public class SuccessVolumeResponse : SuccessResponse
+    public class VolumeResponse : ResponseBase
     {
         [DataMember(Name = "value")]
         public int Value { get; set; }
     }
 
     [DataContract]
-    public class VolumeResponse
-    {
-        [DataMember(Name = "value")]
-        public int Value { get; set; }
-    }
-
-    [DataContract]
-    public class SuccessValueResponse : SuccessResponse
-    {
-        [DataMember(Name = "value")]
-        public string Value { get; set; }
-    }
-
-    [DataContract]
-    public class ValueResponse
+    public class ValueResponse : ResponseBase
     {
         [DataMember(Name = "value")]
         public string Value { get; set; }

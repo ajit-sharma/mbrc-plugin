@@ -151,19 +151,19 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                 switch (level)
                 {
                     case LogLevel.Debug:
-                        Logger.Debug(message, ex);
+                        Logger.Debug(ex, message);
                         break;
                     case LogLevel.Error:
-                        Logger.Error(message, ex);
+                        Logger.Error(ex, message);
                         break;
                     case LogLevel.Info:
-                        Logger.Info(message, ex);
+                        Logger.Info(ex, message);
                         break;
                     case LogLevel.Warn:
-                        Logger.Warn(message, ex);
+                        Logger.Warn(ex, message);
                         break;
                     default:
-                        Logger.Info(message, ex);
+                        Logger.Info(ex, message);
                         break;
                 }
             };

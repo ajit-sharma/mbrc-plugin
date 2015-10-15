@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.Comparers;
+using MusicBeePlugin.Rest.ServiceInterface;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
@@ -461,11 +462,11 @@ namespace MusicBeePlugin.Modules
 		///     Given the hash representing of a playlist it plays the specified playlist.
 		/// </summary>
 		/// <param name="path">The playlist path</param>
-		public SuccessResponse PlaylistPlayNow(string path)
+		public ResponseBase PlaylistPlayNow(string path)
 		{
-			return new SuccessResponse
+			return new ResponseBase
 			{
-				Success = _api.Playlist_PlayNow(path)
+				Code = _api.Playlist_PlayNow(path) ? ApiCodes.Success : ApiCodes.Failure
 			};
 		}
 
@@ -499,8 +500,8 @@ namespace MusicBeePlugin.Modules
 		///     A string list containing the full paths of the tracks
 		///     that will be added to the playlist. If left empty an empty playlist will be created.
 		/// </param>
-		/// <returns>A <see cref="SuccessResponse" /> is returned.</returns>
-		public SuccessResponse CreateNewPlaylist(string name, string[] list)
+		/// <returns>A <see cref="ResponseBase" /> is returned.</returns>
+		public ResponseBase CreateNewPlaylist(string name, string[] list)
 		{
 		    if (list == null)
 		    {
@@ -525,9 +526,9 @@ namespace MusicBeePlugin.Modules
 					Task.Factory.StartNew(() => { SyncPlaylistDataWithCache(playlist); });
 				}
 
-				return new SuccessResponse
+				return new ResponseBase
 				{
-					Success = id > 0
+					Code = id > 0 ? ApiCodes.Success : ApiCodes.Failure
 				};
 			}
 		}

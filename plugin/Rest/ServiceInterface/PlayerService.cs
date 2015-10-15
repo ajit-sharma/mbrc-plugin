@@ -1,12 +1,11 @@
 ﻿#region
 
-using System;
-using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using ServiceStack.ServiceInterface;
+using ShuffleState = MusicBeePlugin.Rest.ServiceModel.ShuffleState;
 
 #endregion
 
@@ -21,29 +20,29 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             _module = module;
         }
 
-        public ShuffleStateResponse Get(GetShuffleState request)
+        public ShuffleResponse Get(GetShuffleState request)
         {
-            return new ShuffleStateResponse
+            return new ShuffleResponse
             {
                 State = _module.GetShuffleState()
             };
         }
 
-        public SuccessResponse Put(SetShuffleState request)
+        public ResponseBase Put(SetShuffleState request)
         {
             
             var success = request.Status != null
-                ? _module.SetShuffleState((ShuffleState) request.Status)
+                ? _module.SetShuffleState((AndroidRemote.Enumerations.ShuffleState) request.Status)
                 : _module.ToggleShuffleState();
 
-            return new SuccessShuffleStateResponse
+            return new ShuffleState
             {
-                Success = success,
+                Code = success ? ApiCodes.Success : ApiCodes.Failure,
                 State = _module.GetShuffleState()
             };
         }
 		
-        public SuccessResponse Get(PlayerAction request)
+        public ResponseBase Get(PlayerAction request)
         {
 	        bool success;
 	        switch (request.Action)
@@ -71,9 +70,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 			        break;
 	        }
 			
-	        return new SuccessResponse
+	        return new ResponseBase
             {
-                Success = success
+                Code = success ? ApiCodes.Success : ApiCodes.Failure
             };
         }
 
@@ -90,11 +89,11 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             };
         }
 
-        public SuccessResponse Put(SetVolume request)
+        public VolumeResponse Put(SetVolume request)
         {
-            return new SuccessVolumeResponse()
+            return new VolumeResponse()
             {
-                Success = _module.SetVolume(request.Value),
+                Code = _module.SetVolume(request.Value) ? ApiCodes.Success : ApiCodes.Failure,
                 Value = _module.GetVolume()
             };
         }
@@ -107,15 +106,15 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             };
         }
 
-        public SuccessStatusResponse Put(SetScrobbleStatus request)
+        public StatusResponse Put(SetScrobbleStatus request)
         {
             var success = request.Enabled != null
                 ? _module.SetScrobbleState((bool) request.Enabled)
                 : _module.SetScrobbleState(!_module.GetScrobbleState());
 
-            return new SuccessStatusResponse
+            return new StatusResponse
             {
-                Success = success,
+                Code = success ? ApiCodes.Success : ApiCodes.Failure,
                 Enabled = _module.GetScrobbleState()
             };
         }
@@ -128,15 +127,15 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             };
         }
 
-        public SuccessResponse Put(SetMuteStatus request)
+        public StatusResponse Put(SetMuteStatus request)
         {
 
             var success = request.Enabled != null
                 ? _module.SetMuteState((bool) request.Enabled)
                 : _module.SetMuteState(!_module.GetMuteState());
-            return new SuccessStatusResponse
+            return new StatusResponse
             {
-                Success = success,
+                Code = success ? ApiCodes.Success : ApiCodes.Failure,
                 Enabled = _module.GetMuteState()
             };
         }
@@ -149,15 +148,15 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             };
         }
 
-        public SuccessResponse Put(SetRepeatMode request)
+        public ValueResponse Put(SetRepeatMode request)
         {
             var success = request.Mode != null
                 ? _module.SetRepeatState((ApiRepeatMode) request.Mode)
                 : _module.ChangeRepeatMode();
 
-            return new SuccessValueResponse
+            return new ValueResponse()
             {
-                Success = success,
+                Code = success ? ApiCodes.Success : ApiCodes.Failure,
                 Value = _module.GetRepeatState()
             };
         }

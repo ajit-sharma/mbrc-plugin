@@ -3,6 +3,7 @@
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
 using MusicBeePlugin.AndroidRemote.Enumerations;
+using MusicBeePlugin.Rest.ServiceInterface;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using RepeatMode = MusicBeePlugin.Plugin.RepeatMode;
 
@@ -182,7 +183,8 @@ namespace MusicBeePlugin.Modules
                 Shuffle = GetShuffleState(),
                 Scrobble = _api.Player_GetScrobbleEnabled(),
                 PlayerState = _api.Player_GetPlayState().ToString().ToLower(),
-                Volume = ((int) Math.Round(_api.Player_GetVolume()*100, 1))
+                Volume = ((int) Math.Round(_api.Player_GetVolume()*100, 1)),
+                Code = ApiCodes.Success
             };
         }
 

@@ -12,20 +12,20 @@ namespace MusicBeePlugin.Rest.ServiceModel
 {
 	[Api("The API responsible for the track related operations")]
 	[Route(Routes.Track, Verbs.Get, Summary = Summary.TrackGet)]
-	public class GetTrack : IReturn<Track>
+	public class GetTrack : IReturn<TrackInfoResponse>
 	{
 	}
 
 	[Api]
 	[Route(Routes.TrackRating, Verbs.Get, Summary = Summary.RatingGet)]
-	public class GetTrackRating : IReturn<TrackRatingResponse>
+	public class GetTrackRating : IReturn<RatingResponse>
 	{
 	}
 
 	[Api]
 	[Route(Routes.TrackRating, Verbs.Put, Summary = Summary.RatingPut)]
     [DataContract]
-	public class SetTrackRating : IReturn<TrackRatingResponse>
+	public class SetTrackRating : IReturn<RatingResponse>
 	{
 		[DataMember(Name = "rating", IsRequired = true)]
 		[ApiAllowableValues("rating", 0, 5)]
@@ -34,14 +34,14 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Api]
 	[Route(Routes.TrackPosition, Verbs.Get, Summary = Summary.TrackPositionGet)]
-	public class GetTrackPosition : IReturn<TrackPositionResponse>
+	public class GetTrackPosition : IReturn<PositionResponse>
 	{
 	}
 
 	[Api]
 	[Route(Routes.TrackPosition, Verbs.Put, Summary = Summary.TrackPositionSet)]
     [DataContract]
-	public class SetTrackPosition : IReturn<TrackPositionResponse>
+	public class SetTrackPosition : IReturn<PositionResponse>
 	{
 		[DataMember(Name = "position", IsRequired = true)]
 		public int Position { get; set; }
@@ -58,7 +58,7 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
 	[Api]
 	[Route(Routes.TrackLyrics, Verbs.Get, Summary = Summary.LyricsGet)]
-	public class GetTrackLyrics : IReturn<TrackLyricsResponse>
+	public class GetTrackLyrics : IReturn<LyricsResponse>
 	{
 	}
 

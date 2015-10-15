@@ -34,7 +34,7 @@ namespace MusicBeePlugin.Modules
             while (true)
             {
                 var playListTrack = _api.NowPlayingList_QueryGetNextFile();
-                if (String.IsNullOrEmpty(playListTrack))
+                if (string.IsNullOrEmpty(playListTrack))
                 {
                     break;
                 }
@@ -42,12 +42,12 @@ namespace MusicBeePlugin.Modules
                 var artist = _api.Library_GetFileTag(playListTrack, Plugin.MetaDataType.Artist);
                 var title = _api.Library_GetFileTag(playListTrack, Plugin.MetaDataType.TrackTitle);
 
-                if (String.IsNullOrEmpty(artist))
+                if (string.IsNullOrEmpty(artist))
                 {
                     artist = "Unknown Artist";
                 }
 
-                if (String.IsNullOrEmpty(title))
+                if (string.IsNullOrEmpty(title))
                 {
                     var index = playListTrack.LastIndexOf('\\');
                     title = playListTrack.Substring(index + 1);

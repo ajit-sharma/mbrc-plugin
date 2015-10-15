@@ -1,14 +1,13 @@
 ﻿#region
 
 using System.Runtime.Serialization;
-using MusicBeePlugin.AndroidRemote.Enumerations;
 
 #endregion
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
     [DataContract]
-    public class PlayerStatus
+    public class PlayerStatus : ResponseBase
     {
         [DataMember(Name = "repeat")]
         public string Repeat { get; set; }
@@ -17,7 +16,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         public bool Mute { get; set; }
 
         [DataMember(Name = "shuffle")]
-        public ShuffleState Shuffle { get; set; }
+        public AndroidRemote.Enumerations.ShuffleState Shuffle { get; set; }
 
         [DataMember(Name = "scrobble")]
         public bool Scrobble { get; set; }
