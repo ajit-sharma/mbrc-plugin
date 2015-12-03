@@ -103,6 +103,30 @@ namespace MusicBeePlugin.Rest.ServiceModel
     {
     }
 
+    [Route(Routes.PlayerOutput, Verbs.Get, Summary = Summary.OutputGet)]
+    public class GetOutputDevices : IReturn<OutputDeviceResponse>
+    {
+    }
+
+    [Route(Routes.PlayerOutput, Verbs.Put, Summary = Summary.OutputPut)]
+    [DataContract]
+    public class PutOutputDevice : IReturn<OutputDeviceResponse>
+    {
+        [DataMember(Name = "active", IsRequired = true)]
+        [Description(Descriptions.ActiveOutput)]
+        public string Active { get; set; }
+    }
+
+    [DataContract]
+    public class OutputDeviceResponse : ResponseBase
+    {
+        [DataMember(Name = "devices")]
+        public string[] Devices { get; set; }
+        [DataMember(Name = "active")]
+        public string Active { get; set; }
+    
+    }
+
     [DataContract]
     public class ShuffleState : ResponseBase
     {

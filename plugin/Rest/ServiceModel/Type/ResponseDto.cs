@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using MusicBeePlugin.Rest.ServiceInterface;
+using ServiceStack.Service;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {

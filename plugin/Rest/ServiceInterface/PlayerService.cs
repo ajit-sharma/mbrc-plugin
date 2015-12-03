@@ -168,5 +168,28 @@ namespace MusicBeePlugin.Rest.ServiceInterface
                 Value = _module.GetPlayState()
             };
         }
+
+        public OutputDeviceResponse Get(GetOutputDevices request)
+        {
+            var outputDevices = _module.GetOutputDevices();
+            return new OutputDeviceResponse
+            {
+                Active = outputDevices.Active,
+                Devices = outputDevices.Devices,
+                Code = ApiCodes.Success
+            };
+        }
+
+        public OutputDeviceResponse Put(PutOutputDevice request)
+        {
+            var success = _module.SetOutputDevice(request.Active);
+            var outputDevices = _module.GetOutputDevices();
+            return new OutputDeviceResponse
+            {
+                Active = outputDevices.Active,
+                Devices = outputDevices.Devices,
+                Code = success? ApiCodes.Success : ApiCodes.Failure
+            };
+        }
     }
 }

@@ -5,6 +5,8 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
     /// </summary>
     public class Descriptions
     {
+        public const string ActiveOutput = @"Represents the active output of Musicbee";
+
         public const string Mute = @"If the value is true or false it will mute/unmute the audio." +
                                    "\n If left empty it will toggle mute on/off depending on the previous state.";
 

@@ -62,5 +62,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
 		public const string LibraryCoversU = @"Gets the changes on the covers table.";
 	    public const string PlaylistTrackChanges = @"Gets the changes in the playlist tracks.";
 	    public const string PlaylistTrackInfoChanges = @"Gets the changes in the playlist track info.";
+        public const string OutputGet = @"Gets all the output devices available in MusicBee";
+        public const string OutputPut = @"Changes the active output device in MusicBee";
     }
 }

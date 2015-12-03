@@ -177,6 +177,7 @@
     <Compile Include="Rest\ServiceModel\Requests\PaginatedRequest.cs" />
     <Compile Include="Rest\ServiceModel\Requests\IdBasedRequest.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryCover.cs" />
+    <Compile Include="Rest\ServiceModel\Type\OutputDevice.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
     <Compile Include="Rest\ServiceModel\Type\PlayerStatus.cs" />
     <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />

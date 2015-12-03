@@ -15,6 +15,7 @@
         public const string PlayerPlaystate = @"/player/playstate";
         public const string PlayerAction = "/player/action";
         public const string PlayerStatus = "/player/status";
+        public const string PlayerOutput = "/player/output";
         #endregion
 
         #region Playing Track API
@@ -66,6 +67,5 @@
 	    public const string LibraryGenresU = "/library/genres/u";
 	    public const string LibraryCoversU = "/library/covers/u";
 	    #endregion
-
     }
 }

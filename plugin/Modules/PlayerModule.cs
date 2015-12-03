@@ -233,5 +233,23 @@ namespace MusicBeePlugin.Modules
             }
             return success;
         }
+
+        public OutputDevice GetOutputDevices()
+        {
+            string[] devices;
+            string active;
+            _api.Player_GetOutputDevices(out devices, out active);
+
+            return new OutputDevice
+            {
+                Active = active,
+                Devices = devices
+            };
+        }
+
+        public bool SetOutputDevice(string active)
+        {
+            return  _api.Player_SetOutputDevice(active);
+        }
     }
 }
