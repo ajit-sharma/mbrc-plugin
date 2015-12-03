@@ -6,8 +6,8 @@ namespace MusicBeePlugin
     public partial class Plugin
     {
         public const short PluginInfoVersion = 1;
-        public const short MinInterfaceVersion = 33;
-        public const short MinApiRevision = 45;
+        public const short MinInterfaceVersion = 35;
+        public const short MinApiRevision = 47;
 
         [StructLayout(LayoutKind.Sequential)]
         public struct MusicBeeApiInterface
@@ -222,12 +222,18 @@ namespace MusicBeePlugin
             // api version 43
             public MB_AddTreeNodeDelegate MB_AddTreeNode;
             public MB_DownloadFileDelegate MB_DownloadFile;
-            // api version 44
+            // api version 47
             public Setting_GetFileConvertCommandLineDelegate Setting_GetFileConvertCommandLine;
             public Player_OpenStreamHandleDelegate Player_OpenStreamHandle;
             public Player_UpdatePlayStatisticsDelegate Player_UpdatePlayStatistics;
             public Library_GetArtworkExDelegate Library_GetArtworkEx;
             public Library_SetArtworkExDelegate Library_SetArtworkEx;
+            public MB_GetVisualiserInformationDelegate MB_GetVisualiserInformation;
+            public MB_ShowVisualiserDelegate MB_ShowVisualiser;
+            public MB_GetPluginViewInformationDelegate MB_GetPluginViewInformation;
+            public MB_ShowPluginViewDelegate MB_ShowPluginView;
+            public Player_GetOutputDevicesDelegate Player_GetOutputDevices;
+            public Player_SetOutputDeviceDelegate Player_SetOutputDevice;
         }
 
         public enum MusicBeeVersion
@@ -345,7 +351,9 @@ namespace MusicBeePlugin
             ResumePlayCounters = 10,
             EnablePlugin = 11,
             DisablePlugin = 12,
-            RenderingDevicesChanged = 13
+            RenderingDevicesChanged = 13,
+            FullscreenOn = 14,
+            FullscreenOff = 15
         }
 
         public enum FilePropertyType
@@ -443,9 +451,7 @@ namespace MusicBeePlugin
             Virtual14 = 139,
             Virtual15 = 140,
             Virtual16 = 141,
-            Year = 88,
-             /** addition **/
-            AlbumId = 108
+            Year = 88
         }
         
         public enum FileCodec
@@ -638,6 +644,14 @@ namespace MusicBeePlugin
             FolderThumb = 8
         }
 
+        public enum WindowState
+        {
+            Off = -1,
+            Normal = 0,
+            Fullscreen = 1,
+            Desktop = 2
+        }
+
         public delegate void MB_ReleaseStringDelegate(string p1);
         public delegate void MB_TraceDelegate(string p1);
         public delegate IntPtr MB_WindowHandleDelegate();
@@ -659,6 +673,10 @@ namespace MusicBeePlugin
         public delegate bool MB_OpenFilterInTabDelegate(MetaDataType field1, ComparisonType comparison1, string value1, MetaDataType field2, ComparisonType comparison2, string value2);
         public delegate bool MB_SetWindowSizeDelegate(int width, int height);
         public delegate bool MB_DownloadFileDelegate(string url, DownloadTarget target, string targetFolder, bool cancelDownload);
+        public delegate bool MB_GetVisualiserInformationDelegate(out string[] visualiserNames, out string defaultVisualiserName, out WindowState defaultState, out WindowState currentState);
+        public delegate bool MB_ShowVisualiserDelegate(string visualiserName, WindowState state);
+        public delegate bool MB_GetPluginViewInformationDelegate(string pluginFilename, out string[] viewNames, out string defaultViewName, out WindowState defaultState, out WindowState currentState);
+        public delegate bool MB_ShowPluginViewDelegate(string pluginFilename, string viewName, WindowState state);
         public delegate string Setting_GetFieldNameDelegate(MetaDataType field);
         public delegate string Setting_GetPersistentStoragePathDelegate();
         public delegate string Setting_GetSkinDelegate();
@@ -726,6 +744,8 @@ namespace MusicBeePlugin
         public delegate bool Player_SetReplayGainModeDelegate(ReplayGainMode mode);
         public delegate int Player_OpenStreamHandleDelegate(string url, bool useMusicBeeSettings, bool enableDsp, ReplayGainMode gainType);
         public delegate bool Player_UpdatePlayStatisticsDelegate(string url, PlayStatisticType countType, bool disableScrobble);
+        public delegate bool Player_GetOutputDevicesDelegate(out string[] deviceNames, out string activeDeviceName);
+        public delegate bool Player_SetOutputDeviceDelegate(string deviceName);
         public delegate string NowPlaying_GetFileUrlDelegate();
         public delegate int NowPlaying_GetDurationDelegate();
         public delegate string NowPlaying_GetFilePropertyDelegate(FilePropertyType type);
