@@ -61,6 +61,24 @@ namespace MusicBeePlugin.Rest.ServiceInterface
             return _module.SetPosition(request.Position);
         }
 
+        public LfmRatingResponse Get(GetLfmRating request)
+        {
+            return new LfmRatingResponse
+            {
+                Status = _module.RequestLoveStatus(string.Empty),
+                Code = ApiCodes.Success
+            };
+        }
+
+        public LfmRatingResponse Put(PutLfmRating request)
+        {
+            return new LfmRatingResponse
+            {
+                Status = _module.RequestLoveStatus(request.Status),
+                Code = ApiCodes.Success
+            };
+        }
+
         [AddHeader(ContentType = "image/jpeg")]
         public object Get(GetTrackCoverData request)
         {

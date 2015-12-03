@@ -5,7 +5,9 @@ namespace MusicBeePlugin.Rest.ServiceModel.Const
     /// </summary>
     public class Summary
     {
-	    public const string RatingPut = @"Sets the track rating for the playing track";
+        public const string LfmRatingGet = "@Gets the last fm loved status (rating).";
+        public const string LfmRatingPut = "@Changes the last fm loved status of the track.";
+        public const string RatingPut = @"Sets the track rating for the playing track";
         public const string ShuffleGet = @"Gets the current state of shuffle.";
         public const string ShufflePut = @"Sets the shuffle status.";
         public const string ScrobbleGet = @"Gets the status of last.fm scrobbling";

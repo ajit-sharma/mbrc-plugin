@@ -7,10 +7,8 @@ using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Utilities;
-using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
-using MusicBeeApiInterface = MusicBeePlugin.Plugin.MusicBeeApiInterface;
 
 #endregion
 
@@ -19,10 +17,10 @@ namespace MusicBeePlugin.Modules
     public class TrackModule
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private readonly Plugin.MusicBeeApiInterface _api;
         private readonly LyricCoverModel _model;
-        private readonly MusicBeeApiInterface _api;
 
-        public TrackModule(MusicBeeApiInterface api, LyricCoverModel model)
+        public TrackModule(Plugin.MusicBeeApiInterface api, LyricCoverModel model)
         {
             _api = api;
             _model = model;
@@ -92,7 +90,7 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         public void RequestNowPlayingTrackCover()
         {
-            if (!String.IsNullOrEmpty(_api.NowPlaying_GetArtwork()))
+            if (!string.IsNullOrEmpty(_api.NowPlaying_GetArtwork()))
             {
                 _api.NowPlaying_GetArtwork();
             }
@@ -138,14 +136,14 @@ namespace MusicBeePlugin.Modules
         /// <param name="action">
         ///     The action can be either love, or ban.
         /// </param>
-        public void RequestLoveStatus(string action)
+        public LastfmStatus RequestLoveStatus(string action)
         {
             var hwnd = _api.MB_GetWindowHandle();
             var mb = (Form) Control.FromHandle(hwnd);
 
             if (action.Equals("toggle", StringComparison.OrdinalIgnoreCase))
             {
-                if (GetLfmStatus() == LastfmStatus.Love || GetLfmStatus() == LastfmStatus.Ban)
+                if (GetLfmStatus() == LastfmStatus.love || GetLfmStatus() == LastfmStatus.ban)
                 {
                     mb.Invoke(new MethodInvoker(SetLfmNormalStatus));
                 }
@@ -162,8 +160,12 @@ namespace MusicBeePlugin.Modules
             {
                 mb.Invoke(new MethodInvoker(SetLfmLoveBan));
             }
+            else if (action.Equals("normal", StringComparison.OrdinalIgnoreCase))
+            {
+                mb.Invoke(new MethodInvoker(SetLfmNormalStatus));
+            }
 
-            //SendSocketMessage(Constants.NowPlayingLfmRating, Constants.Reply, GetLfmStatus());
+            return GetLfmStatus();
         }
 
         private void SetLfmNormalStatus()
@@ -188,15 +190,15 @@ namespace MusicBeePlugin.Modules
             var apiReply = _api.NowPlaying_GetFileTag(Plugin.MetaDataType.RatingLove);
             if (apiReply.Equals("L") || apiReply.Equals("lfm") || apiReply.Equals("Llfm"))
             {
-                lastfmStatus = LastfmStatus.Love;
+                lastfmStatus = LastfmStatus.love;
             }
             else if (apiReply.Equals("B") || apiReply.Equals("Blfm"))
             {
-                lastfmStatus = LastfmStatus.Ban;
+                lastfmStatus = LastfmStatus.ban;
             }
             else
             {
-                lastfmStatus = LastfmStatus.Normal;
+                lastfmStatus = LastfmStatus.normal;
             }
             return lastfmStatus;
         }

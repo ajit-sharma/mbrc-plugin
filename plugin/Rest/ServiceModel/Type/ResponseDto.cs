@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
+using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Rest.ServiceInterface;
-using ServiceStack.Service;
 
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
@@ -34,4 +34,12 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		[DataMember(Name = "duration")]
 		public int Duration { get; set; }
 	}
+
+    [DataContract]
+    public class LfmRatingResponse : ResponseBase
+    {
+        [DataMember(Name = "status")]
+        public LastfmStatus Status { get;set; }
+        
+    }
 }

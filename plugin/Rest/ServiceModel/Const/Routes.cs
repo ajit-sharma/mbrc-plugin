@@ -25,6 +25,7 @@
         public const string TrackCover = "/track/cover/";
         public const string TrackLyrics = "/track/lyrics";
         public const string TrackLyricsRaw = "/track/lyrics/raw";
+        public const string LfmRating = "/track/lfmrating";
 		#endregion
 
 		#region Playlist API
