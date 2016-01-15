@@ -40,7 +40,8 @@ namespace MusicBeePlugin.Modules
             Plugin.MetaDataType.Genre,
             Plugin.MetaDataType.TrackTitle,
             Plugin.MetaDataType.Year,
-            Plugin.MetaDataType.TrackNo
+            Plugin.MetaDataType.TrackNo,
+            Plugin.MetaDataType.DiscNo
         };
 
         /// <summary>
@@ -172,6 +173,7 @@ namespace MusicBeePlugin.Modules
                         Title = meta.Title,
                         Year = meta.Year,
                         Position = meta.Position,
+                        Disc = meta.Disc,
                         GenreId = genre?.Id ?? 0,
                         AlbumArtistId = albumArtist?.Id ?? 0,
                         ArtistId = artist?.Id ?? 0,

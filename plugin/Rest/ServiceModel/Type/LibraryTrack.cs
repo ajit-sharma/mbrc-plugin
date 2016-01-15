@@ -22,6 +22,12 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		[DataMember(Name = "position")]
         public int Position { get; set; }
 
+        /// <summary>
+        /// The disc field
+        /// </summary>
+        [DataMember(Name = "disc")]
+        public int Disc { get; set; }
+
 		/// <summary>
 		/// The id of the track's genre.
 		/// </summary>

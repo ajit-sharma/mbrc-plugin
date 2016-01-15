@@ -33,10 +33,14 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		    Title = tags[i++];
 		    Year = tags[i++];
 
-			var trackNo = tags[i];
+			var trackNo = tags[i++];
+            var discNo = tags[i];
 			int position;
+            int disc;
 			int.TryParse(trackNo, out position);
+            int.TryParse(discNo, out disc);
 		    Position = position;
+            Disc = disc;
 
 	    }
         /// <summary>
@@ -97,5 +101,10 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
         /// </summary>
         [BelongTo(typeof(LibraryTrack))]
         public string Path { get; set; }
+
+        /// <summary>
+        /// The disc number of the album
+        /// </summary>
+        public int Disc { get; set; }
     }
 }
