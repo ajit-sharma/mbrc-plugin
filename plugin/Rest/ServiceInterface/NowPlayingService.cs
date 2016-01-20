@@ -6,6 +6,7 @@ using MusicBeePlugin.AndroidRemote.Enumerations;
 using MusicBeePlugin.Modules;
 using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
+using ServiceStack.Common;
 using ServiceStack.ServiceInterface;
 
 
@@ -56,31 +57,44 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
         public ResponseBase Put(NowPlayingQueue request)
         {
-            string[] tracklist;
+            var tracklist = request.Path.IsNullOrEmpty() 
+                ? GetTracklist(request.Type, request.Id) 
+                : new []{ request.Path };
+           
+            return new ResponseBase
+            {
+                Code = _module.EnqueueTracks(request.Action, tracklist) ? ApiCodes.Success : ApiCodes.Failure
+            };
+        }
 
-            switch (request.Type)
+        /// <summary>
+        /// Gets the tracklist based on the meta tag type provided and the id of the item.
+        /// </summary>
+        /// <param name="tag">The tag defining the type of the metadata, genre, artist etc <see cref="MetaTag"/></param>
+        /// <param name="id">The id of the item in the database</param>
+        /// <returns></returns>
+        private string[] GetTracklist(MetaTag tag, long id)
+        {
+            string[] tracklist;
+            switch (tag)
             {
                 case MetaTag.artist:
-                    tracklist = _libModule.GetArtistTracksById(request.Id);
+                    tracklist = _libModule.GetArtistTracksById(id);
                     break;
                 case MetaTag.album:
-                    tracklist = _libModule.GetAlbumTracksById(request.Id);
+                    tracklist = _libModule.GetAlbumTracksById(id);
                     break;
                 case MetaTag.genre:
-                    tracklist = _libModule.GetGenreTracksById(request.Id);
+                    tracklist = _libModule.GetGenreTracksById(id);
                     break;
                 case MetaTag.track:
-                    tracklist = _libModule.GetTrackPathById(request.Id);
+                    tracklist = _libModule.GetTrackPathById(id);
                     break;
                 default:
                     tracklist = new string[] {};
                     break;
             }
-
-            return new ResponseBase
-            {
-                Code = _module.EnqueueTracks(request.Action, tracklist) ? ApiCodes.Success : ApiCodes.Failure
-            };
+            return tracklist;
         }
     }
 }

@@ -66,5 +66,8 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
         [DataMember(Name = "id")]
         public long Id { get; set; }
+
+        [DataMember(Name = "path")]
+        public string Path { get; set; }
     }
 }
