@@ -102,10 +102,6 @@ namespace MusicBeePlugin.Modules
         /// <param name="index"></param>
         public bool CurrentQueueRemoveTrack(int index)
         {
-            if (index > 0)
-            {
-                index--;
-            }
             return _api.NowPlayingList_RemoveAt(index);
         }
 
