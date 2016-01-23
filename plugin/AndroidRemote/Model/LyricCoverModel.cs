@@ -66,8 +66,8 @@ namespace MusicBeePlugin.AndroidRemote.Model
                 return;
             }
 
-            Cover = String.IsNullOrEmpty(base64)
-                ? String.Empty
+            Cover = string.IsNullOrEmpty(base64)
+                ? string.Empty
                 : Utilities.Utilities.GetResizedBase64(base64);
             _previousCoverHash = hash;
 

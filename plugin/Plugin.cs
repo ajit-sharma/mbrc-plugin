@@ -16,6 +16,9 @@ using NLog.Targets;
 using ServiceStack.Text;
 using System;
 using System.IO;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Timers;
@@ -61,8 +64,9 @@ namespace MusicBeePlugin
 
         private StandardKernel _kernel;
         private PersistenceController _persistence;
+        private Subject<string> _volumeEventDebouncer =new Subject<string>();
 
-
+    
         /// <summary>
         ///     This function initialized the Plugin.
         /// </summary>
@@ -138,8 +142,13 @@ namespace MusicBeePlugin
             appHost.Init();
             appHost.Start($"http://+:{_persistence.Settings.HttpPort}/");
 
+            _volumeEventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(SendNotificationMessage);
+           
             return _about;
         }
+
+        
+
 
         private void InitializeAbout()
         {
@@ -178,7 +187,7 @@ namespace MusicBeePlugin
             config.AddTarget("debugger", debugger);
 
             consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message} ${exception}";
-            fileTarget.FileName = string.Format("{0}\\error.log", _mStoragePath);
+            fileTarget.FileName = $"{_mStoragePath}\\error.log";
             fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}||${exception}";
 
             debugger.Layout = fileTarget.Layout;
@@ -333,6 +342,7 @@ namespace MusicBeePlugin
         {
             //Unused (Settings are explicitly saved on button click)
         }
+        
 
         /// <summary>
         ///     Receives event Notifications from MusicBee. It is only required if the about.ReceiveNotificationFlags =
@@ -351,7 +361,7 @@ namespace MusicBeePlugin
                     SendNotificationMessage(NotificationMessage.TrackChanged);
                     break;
                 case NotificationType.VolumeLevelChanged:
-                    SendNotificationMessage(NotificationMessage.VolumeChanged);
+                    _volumeEventDebouncer.OnNext(NotificationMessage.VolumeChanged);
                     break;
                 case NotificationType.VolumeMuteChanged:
                     SendNotificationMessage(NotificationMessage.MuteStatusChanged);
