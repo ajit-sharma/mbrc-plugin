@@ -36,17 +36,17 @@ namespace MusicBeePlugin.AndroidRemote.Model
                     lStr = lStr.Replace("\0", " ");
                     const string pattern = "\\[\\d:\\d{2}.\\d{3}\\] ";
                     var regEx = new Regex(pattern);
-                    var intermediate = regEx.Replace(lStr, String.Empty);
+                    var intermediate = regEx.Replace(lStr, string.Empty);
                     _lyrics = SecurityElement.Escape(intermediate);
                 }
                 catch (Exception ex)
                 {
                     Logger.Debug(ex);
-                    _lyrics = String.Empty;
+                    _lyrics = string.Empty;
                 }
                 finally
                 {
-                    if (!String.IsNullOrEmpty(_lyrics))
+                    if (!string.IsNullOrEmpty(_lyrics))
                     {
                         var notification = new NotificationMessage(NotificationMessage.LyricsChanged);
                         var @event = new MessageEvent(MessageEvent.Notify, notification.ToJsonString());
@@ -68,7 +68,7 @@ namespace MusicBeePlugin.AndroidRemote.Model
 
             Cover = string.IsNullOrEmpty(base64)
                 ? string.Empty
-                : Utilities.Utilities.GetResizedBase64(base64);
+                : base64;
             _previousCoverHash = hash;
 
             var notification = new NotificationMessage(NotificationMessage.CoverChanged);
