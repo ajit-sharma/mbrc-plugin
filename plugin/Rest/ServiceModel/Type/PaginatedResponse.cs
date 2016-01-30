@@ -48,6 +48,10 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
                 Data = data;
                 Limit = limit;
             }
+            else
+            {
+                Data = new List<T>();
+            }
         }
     }
 
