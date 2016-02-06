@@ -7,7 +7,6 @@ using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Networking;
 using MusicBeePlugin.Modules;
-using MusicBeePlugin.Rest;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using Ninject;
 using NLog;
@@ -15,8 +14,8 @@ using NLog.Config;
 using NLog.Targets;
 using ServiceStack.Text;
 using System;
+using System.Diagnostics;
 using System.IO;
-using System.Reactive;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
@@ -25,6 +24,7 @@ using System.Timers;
 using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.AndroidRemote.Utilities;
+using Nancy.Hosting.Self;
 using Timer = System.Timers.Timer;
 
 #endregion
@@ -86,6 +86,7 @@ namespace MusicBeePlugin
             _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
 
             InitializeLoggingConfiguration();
+            Debug.WriteLine("OOOO");
 
             InjectionModule.Api = _api;
             InjectionModule.StoragePath = _mStoragePath;
@@ -136,12 +137,21 @@ namespace MusicBeePlugin
 
             StartPlayerStatusMonitoring();
 
-            var appHost = _kernel.Get<AppHost>();
-            appHost.Container.Adapter = new NinjectIocAdapter(_kernel);
+            
 
-            appHost.Init();
-            appHost.Start($"http://+:{_persistence.Settings.HttpPort}/");
-
+            try
+            {
+                var nancyHost = new NancyHost(new Uri($"http://+:{_persistence.Settings.HttpPort}/"));
+                nancyHost.Start();
+            }
+            catch (Exception ex)
+            {
+#if DEBUG
+                Debug.WriteLine(ex);
+#endif
+            }
+            
+      
             _volumeEventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(SendNotificationMessage);
            
             return _about;

@@ -1,20 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using NetFwTypeLib;
 using NLog;
 
 namespace MusicBeePlugin.Tools
 {
-    class NetworkTools
+    internal class NetworkTools
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
-        /// Gets a list of the IP Addresses of the network interfaces on the host machine.
+        ///     Gets a list of the IP Addresses of the network interfaces on the host machine.
         /// </summary>
         /// <returns>List{System.String}.</returns>
         public static List<string> GetPrivateAddressList()
@@ -27,7 +26,7 @@ namespace MusicBeePlugin.Tools
         }
 
         /// <summary>
-        /// Given an IP Address it returns it's subnet mask.
+        ///     Given an IP Address it returns it's subnet mask.
         /// </summary>
         /// <param name="ipAddress">The ip address.</param>
         /// <returns>IPAddress.</returns>
@@ -43,11 +42,11 @@ namespace MusicBeePlugin.Tools
             {
                 return information.IPv4Mask;
             }
-            throw new ArgumentException(string.Format("unable to find subnet mask for '{0}'", address));
+            throw new ArgumentException($"unable to find subnet mask for '{address}'");
         }
 
         /// <summary>
-        /// Gets the network address.
+        ///     Gets the network address.
         /// </summary>
         /// <param name="address">The address.</param>
         /// <param name="subnetMask">The subnet mask.</param>
@@ -61,8 +60,8 @@ namespace MusicBeePlugin.Tools
             if (addressBytes.Length != maskBytes.Length)
             {
                 throw new ArgumentException("ip and mask lengths don't match");
-            } 
-            
+            }
+
             var broadcastBytes = new byte[addressBytes.Length];
             for (var i = 0; i < broadcastBytes.Length; i++)
             {

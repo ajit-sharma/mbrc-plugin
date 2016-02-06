@@ -85,65 +85,97 @@
   <ItemGroup>
     <Reference Include="Fleck, Version=0.13.0.57, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Fleck.0.13.0.57\lib\net40\Fleck.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
+    </Reference>
+    <Reference Include="Nancy.Bootstrappers.Ninject, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Bootstrappers.Ninject.1.4.1\lib\net40\Nancy.Bootstrappers.Ninject.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
+    </Reference>
+    <Reference Include="Nancy.Hosting.Self, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Hosting.Self.1.4.1\lib\net40\Nancy.Hosting.Self.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
+    </Reference>
+    <Reference Include="Nancy.Serialization.ServiceStack, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nancy.Serialization.ServiceStack.1.4.1\lib\net40\Nancy.Serialization.ServiceStack.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="Ninject">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.ChildKernel, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.ChildKernel.3.2.0.0\lib\net40\Ninject.Extensions.ChildKernel.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.0.1\lib\net40\NLog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Api.Swagger">
-      <HintPath>..\packages\ServiceStack.Api.Swagger.3.9.71\lib\net35\ServiceStack.Api.Swagger.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack.Common">
-      <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Common.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="ServiceStack.Interfaces">
       <HintPath>..\packages\ServiceStack.Common.3.9.71\lib\net35\ServiceStack.Interfaces.dll</HintPath>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
     <Reference Include="ServiceStack.OrmLite, Version=3.9.71.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\ServiceStack.OrmLite.Sqlite32.3.9.71\lib\net40\ServiceStack.OrmLite.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="ServiceStack.OrmLite.SqliteNET, Version=3.9.71.0, Culture=neutral, processorArchitecture=x86">
       <HintPath>..\packages\ServiceStack.OrmLite.Sqlite32.3.9.71\lib\net40\ServiceStack.OrmLite.SqliteNET.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ServiceStack.ServiceInterface">
-      <HintPath>..\packages\ServiceStack.3.9.71\lib\net35\ServiceStack.ServiceInterface.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="ServiceStack.Text">
       <HintPath>..\packages\ServiceStack.Text.3.9.71\lib\net35\ServiceStack.Text.dll</HintPath>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Data.SQLite">
       <HintPath>..\packages\System.Data.SQLite.x86.1.0.88.0\lib\net40\System.Data.SQLite.dll</HintPath>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Data.SQLite.Linq">
       <HintPath>..\packages\System.Data.SQLite.x86.1.0.88.0\lib\net40\System.Data.SQLite.Linq.dll</HintPath>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System.Drawing" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net40\System.Reactive.Core.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net40\System.Reactive.Interfaces.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-Linq.2.2.5\lib\net40\System.Reactive.Linq.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="System.Reactive.PlatformServices, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
@@ -165,6 +197,7 @@
     <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
     <Compile Include="AndroidRemote\Enumerations\ShuffleState.cs" />
     <Compile Include="AndroidRemote\Extensions\Epoch.cs" />
+    <Compile Include="AndroidRemote\Page.cs" />
     <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
     <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
     <Compile Include="Comparers\LibraryAlbumComparer.cs" />
@@ -180,18 +213,12 @@
     <Compile Include="Modules\PlaylistModule.cs" />
     <Compile Include="Modules\TrackModule.cs" />
     <Compile Include="NinjectIocAdapter.cs" />
+    <Compile Include="RemoteBootstrapper.cs" />
     <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />
-    <Compile Include="Rest\ServiceInterface\DebugService.cs" />
-    <Compile Include="Rest\ServiceModel\Const\Descriptions.cs" />
-    <Compile Include="Rest\ServiceModel\Const\Notes.cs" />
-    <Compile Include="Rest\ServiceModel\Const\Routes.cs" />
-    <Compile Include="Rest\ServiceModel\Const\Summary.cs" />
-    <Compile Include="Rest\ServiceModel\DebugModel.cs" />
+    <Compile Include="Rest\ServiceInterface\DebugApiModule.cs" />
     <Compile Include="Rest\ServiceModel\Enum\ChangeType.cs" />
     <Compile Include="Rest\ServiceModel\Enum\PlayerAction.cs" />
     <Compile Include="Rest\ServiceModel\Enum\ApiRepeatMode.cs" />
-    <Compile Include="Rest\ServiceModel\Requests\PaginatedRequest.cs" />
-    <Compile Include="Rest\ServiceModel\Requests\IdBasedRequest.cs" />
     <Compile Include="Rest\ServiceModel\Type\LibraryCover.cs" />
     <Compile Include="Rest\ServiceModel\Type\OutputDevice.cs" />
     <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
@@ -211,7 +238,6 @@
     <Compile Include="AndroidRemote\Networking\ServiceDiscovery.cs" />
     <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
     <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
-    <Compile Include="Rest\AppHost.cs" />
     <Compile Include="AllowedAddresses.cs" />
     <Compile Include="InfoWindow.cs">
       <SubType>Form</SubType>
@@ -231,12 +257,11 @@
     <Compile Include="AndroidRemote\Persistence\UserSettings.cs" />
     <Compile Include="AndroidRemote\Networking\SocketServer.cs" />
     <Compile Include="AndroidRemote\Utilities\StateAction.cs" />
-    <Compile Include="Rest\ServiceInterface\LibraryService.cs" />
-    <Compile Include="Rest\ServiceInterface\NowPlayingService.cs" />
-    <Compile Include="Rest\ServiceInterface\PlayerService.cs" />
-    <Compile Include="Rest\ServiceInterface\PlaylistService.cs" />
-    <Compile Include="Rest\ServiceInterface\TrackService.cs" />
-    <Compile Include="Rest\ServiceModel\LibraryModel.cs" />
+    <Compile Include="Rest\ServiceInterface\LibraryApiModule.cs" />
+    <Compile Include="Rest\ServiceInterface\NowPlayingApiModule.cs" />
+    <Compile Include="Rest\ServiceInterface\PlayerApiModule.cs" />
+    <Compile Include="Rest\ServiceInterface\PlaylistApiModule.cs" />
+    <Compile Include="Rest\ServiceInterface\TrackApiModule.cs" />
     <Compile Include="Rest\ServiceModel\NowPlayingModel.cs" />
     <Compile Include="Rest\ServiceModel\PlayerModel.cs" />
     <Compile Include="Rest\ServiceModel\PlaylistModel.cs" />
@@ -252,7 +277,6 @@
     <Compile Include="Rest\ServiceModel\Type\RequestDto.cs" />
     <Compile Include="Rest\ServiceModel\Type\ResponseDto.cs" />
     <Compile Include="Rest\ServiceModel\Type\TrackInfoResponse.cs" />
-    <Compile Include="Rest\ServiceModel\Const\Verbs.cs" />
     <Compile Include="Rest\ServiceModel\Type\TypeBase.cs" />
     <Compile Include="Tools\NetworkTools.cs" />
   </ItemGroup>
@@ -297,17 +321,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="NetFwTypeLib">
-      <Guid>{58FBCF7C-E7A9-467C-80B3-FC65E8FCCA08}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>

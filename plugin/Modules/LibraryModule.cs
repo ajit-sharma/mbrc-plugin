@@ -10,7 +10,6 @@ using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Comparers;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
-using ServiceStack.Common.Web;
 using ServiceStack.OrmLite;
 using ServiceStack.Text;
 
@@ -105,7 +104,8 @@ namespace MusicBeePlugin.Modules
             }
             catch (Exception)
             {
-                throw HttpError.NotFound("Cover resource with id {0} does not exist".Fmt(id));
+                //TODO: fix the handling of cover not found 
+                return null;
             }
         }
 
@@ -488,9 +488,6 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         /// <param name="id">The id of the entry in the database.</param>
         /// <returns></returns>
-        /// <exception cref="Exception">
-        ///     <see cref="HttpError.NotFound" />
-        /// </exception>
         public LibraryTrack GetTrackById(int id)
         {
             try
@@ -502,7 +499,8 @@ namespace MusicBeePlugin.Modules
             }
             catch (Exception)
             {
-                throw HttpError.NotFound("Track resource with id {0} does not exist".Fmt(id));
+                //TODO: fix the handling of not found.
+                return null;
             }
         }
 
@@ -565,9 +563,6 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         /// <param name="id">The id of the artist.</param>
         /// <returns>The cached <see cref="LibraryArtist" /> for the provided id.</returns>
-        /// <exception cref="Exception">
-        ///     <see cref="HttpError.NotFound" />
-        /// </exception>
         public LibraryArtist GetArtistById(int id)
         {
             using (var db = _cHelper.GetDbConnection())
@@ -578,7 +573,8 @@ namespace MusicBeePlugin.Modules
                 }
                 catch
                 {
-                    throw HttpError.NotFound("Artist resource with id {0} does not exist".Fmt(id));
+                    //Todo: fix the handling of not found.
+                    return null;
                 }
             }
         }
