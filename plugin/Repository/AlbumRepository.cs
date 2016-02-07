@@ -16,37 +16,37 @@
             throw new System.NotImplementedException();
         }
 
-        public void SaveAlbums(IEnumerable<LibraryAlbum> Albums)
+        public void SaveAlbums(ICollection<LibraryAlbum> Albums)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryAlbum> GetAllAlbums()
+        public ICollection<LibraryAlbum> GetAllAlbums()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryAlbum> GetAlbumPage(int offset, int limit)
+        public ICollection<LibraryAlbum> GetAlbumPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch)
+        public ICollection<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryAlbum> GetCachedAlbums()
+        public ICollection<LibraryAlbum> GetCachedAlbums()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryAlbum> GetDeletedAlbums()
+        public ICollection<LibraryAlbum> GetDeletedAlbums()
         {
             throw new System.NotImplementedException();
         }
 
-        public void DeleteAlbums(IEnumerable<LibraryAlbum> Albums)
+        public void DeleteAlbums(ICollection<LibraryAlbum> Albums)
         {
             throw new System.NotImplementedException();
         }

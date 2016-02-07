@@ -1,6 +1,7 @@
 ﻿namespace MusicBeePlugin.Repository
 {
     using System.Collections.Generic;
+    using System.Linq;
 
     using DapperExtensions;
 
@@ -21,27 +22,27 @@
             throw new System.NotImplementedException();
         }
 
-        public void SaveGenres(IEnumerable<LibraryGenre> genres)
+        public void SaveGenres(ICollection<LibraryGenre> genres)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryGenre> GetAllGenres()
+        public ICollection<LibraryGenre> GetAllGenres()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryGenre> GetGenrePage(int offset, int limit)
+        public ICollection<LibraryGenre> GetGenrePage(int offset, int limit)
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
                 var page = limit == 0 ? 0 : offset / limit;
                 var libraryGenres = connection.GetPage<LibraryGenre>(null, new List<ISort>(), page, limit);
-                return libraryGenres;
+                return libraryGenres.ToList();
             }
         }
 
-        public IEnumerable<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch)
+        public ICollection<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch)
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
@@ -51,31 +52,31 @@
                 group.Predicates.Add(Predicates.Field<LibraryGenre>(genre => genre.DateUpdated, Operator.Gt, epoch));
                 group.Predicates.Add(Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Gt, epoch));
                 var libraryGenres = connection.GetPage<LibraryGenre>(group, new List<ISort>(), page, limit);
-                return libraryGenres;
+                return libraryGenres.ToList();
             }
         }
 
-        public IEnumerable<LibraryGenre> GetCachedGenres()
+        public ICollection<LibraryGenre> GetCachedGenres()
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
                 var predicate = Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Eq, 0);
                 var libraryGenres = connection.GetList<LibraryGenre>(predicate);
-                return libraryGenres;
+                return libraryGenres.ToList();
             }
         }
 
-        public IEnumerable<LibraryGenre> GetDeletedGenres()
+        public ICollection<LibraryGenre> GetDeletedGenres()
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
                 var predicate = Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Gt, 0);
                 var libraryGenres = connection.GetList<LibraryGenre>(predicate);
-                return libraryGenres;
+                return libraryGenres.ToList();
             }
         }
 
-        public void DeleteGenres(IEnumerable<LibraryGenre> genres)
+        public void DeleteGenres(ICollection<LibraryGenre> genres)
         {
             throw new System.NotImplementedException();
         }

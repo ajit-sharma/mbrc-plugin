@@ -78,8 +78,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>
-    </AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>signature_key.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
@@ -171,8 +170,6 @@
     </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
@@ -198,8 +195,9 @@
     <Compile Include="Comparers\PlaylistComparer.cs" />
     <Compile Include="Comparers\PlaylistTrackInfoComparer.cs" />
     <Compile Include="InjectionModule.cs" />
+    <Compile Include="IPlayerApiAdapter.cs" />
+    <Compile Include="Model\Modifications.cs" />
     <Compile Include="Modules\LibraryModule.cs" />
-    <Compile Include="Modules\DataModuleBase.cs" />
     <Compile Include="Modules\NowPlayingModule.cs" />
     <Compile Include="Modules\PlayerModule.cs" />
     <Compile Include="Modules\PlaylistModule.cs" />
@@ -213,7 +211,13 @@
     <Compile Include="Repository\ICoverRepository.cs" />
     <Compile Include="Repository\IGenreRepository.cs" />
     <Compile Include="Repository\GenreRepository.cs" />
+    <Compile Include="Repository\IPlaylistRepository.cs" />
+    <Compile Include="Repository\IPlaylistTrackInfoRepository.cs" />
+    <Compile Include="Repository\IPlaylistTrackRepository.cs" />
     <Compile Include="Repository\ITrackRepository.cs" />
+    <Compile Include="Repository\PlaylistRepository.cs" />
+    <Compile Include="Repository\PlaylistTrackInfoRepository.cs" />
+    <Compile Include="Repository\PlaylistTrackRepository.cs" />
     <Compile Include="Repository\TrackRepository.cs" />
     <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />
     <Compile Include="Rest\ServiceInterface\DebugApiModule.cs" />
@@ -286,6 +290,7 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="signature_key.snk" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

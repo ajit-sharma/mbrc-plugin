@@ -1,57 +1,57 @@
-﻿namespace MusicBeePlugin.Repository
+namespace MusicBeePlugin.Repository
 {
     using System.Collections.Generic;
 
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class ArtistRepository : IArtistRepository
+    class PlaylistRepository : IPlaylistRepository
     {
-        public LibraryArtist GetArtist(long id)
+        public Playlist GetPlaylist(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveArtist(LibraryArtist artist)
+        public int SavePlaylist(Playlist Playlist)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveArtists(ICollection<LibraryArtist> artists)
+        public void SavePlaylists(ICollection<Playlist> Playlists)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetAllArtists()
+        public ICollection<Playlist> GetAllPlaylists()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetArtistPage(int offset, int limit)
+        public ICollection<Playlist> GetPlaylistPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch)
+        public ICollection<Playlist> GetUpdatedPlaylists(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetCachedArtists()
+        public ICollection<Playlist> GetCachedPlaylists()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetDeletedArtists()
+        public ICollection<Playlist> GetDeletedPlaylists()
         {
             throw new System.NotImplementedException();
         }
 
-        public void DeleteArtists(ICollection<LibraryArtist> artists)
+        public void DeletePlaylists(ICollection<Playlist> Playlists)
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetArtistCount()
+        public int GetPlaylistCount()
         {
             throw new System.NotImplementedException();
         }

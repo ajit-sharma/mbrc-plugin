@@ -12,42 +12,42 @@
             throw new NotImplementedException();
         }
 
-        public void SaveCover(LibraryCover Cover)
+        public int SaveCover(LibraryCover Cover)
         {
             throw new NotImplementedException();
         }
 
-        public void SaveCovers(IEnumerable<LibraryCover> Covers)
+        public void SaveCovers(ICollection<LibraryCover> Covers)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LibraryCover> GetAllCovers()
+        public ICollection<LibraryCover> GetAllCovers()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LibraryCover> GetCoverPage(int offset, int limit)
+        public ICollection<LibraryCover> GetCoverPage(int offset, int limit)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LibraryCover> GetUpdatedCovers(int offset, int limit, long epoch)
+        public ICollection<LibraryCover> GetUpdatedCovers(int offset, int limit, long epoch)
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LibraryCover> GetCachedCovers()
+        public ICollection<LibraryCover> GetCachedCovers()
         {
             throw new NotImplementedException();
         }
 
-        public IEnumerable<LibraryCover> GetDeletedCovers()
+        public ICollection<LibraryCover> GetDeletedCovers()
         {
             throw new NotImplementedException();
         }
 
-        public void DeleteCovers(IEnumerable<LibraryCover> Covers)
+        public void DeleteCovers(ICollection<LibraryCover> Covers)
         {
             throw new NotImplementedException();
         }

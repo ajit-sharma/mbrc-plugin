@@ -16,44 +16,49 @@
             throw new System.NotImplementedException();
         }
 
-        public void SaveTracks(IEnumerable<LibraryTrack> Tracks)
+        public void SaveTracks(ICollection<LibraryTrack> Tracks)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryTrack> GetAllTracks()
+        public ICollection<LibraryTrack> GetAllTracks()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryTrack> GetTrackPage(int offset, int limit)
+        public ICollection<LibraryTrack> GetTrackPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch)
+        public ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryTrack> GetCachedTracks()
+        public ICollection<LibraryTrack> GetCachedTracks()
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryTrack> GetDeletedTracks()
+        public ICollection<LibraryTrack> GetDeletedTracks()
         {
             throw new System.NotImplementedException();
         }
 
-        public void DeleteTracks(IEnumerable<LibraryTrack> Tracks)
+        public void DeleteTracks(ICollection<LibraryTrack> Tracks)
         {
             throw new System.NotImplementedException();
         }
 
-        public IEnumerable<LibraryTrack> GetTracksByAlbumId(long id)
+        public ICollection<LibraryTrack> GetTracksByAlbumId(long id)
         {
             throw new System.NotImplementedException();
-        } 
+        }
+
+        public int GetTrackCount()
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

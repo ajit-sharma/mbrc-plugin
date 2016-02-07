@@ -1,31 +1,29 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MusicBeePlugin.Repository
+﻿namespace MusicBeePlugin.Repository
 {
+    using System.Collections.Generic;
+
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     public interface ICoverRepository
     {
+        void DeleteCovers(ICollection<LibraryCover> Covers);
+
+        ICollection<LibraryCover> GetAllCovers();
+
+        ICollection<LibraryCover> GetCachedCovers();
+
         LibraryCover GetCover(long id);
 
-        void SaveCover(LibraryCover Cover);
-
-        void SaveCovers(IEnumerable<LibraryCover> Covers);
-
-        IEnumerable<LibraryCover> GetAllCovers();
-
-        IEnumerable<LibraryCover> GetCoverPage(int offset, int limit);
-
-        IEnumerable<LibraryCover> GetUpdatedCovers(int offset, int limit, long epoch);
-
-        IEnumerable<LibraryCover> GetCachedCovers();
-
-        IEnumerable<LibraryCover> GetDeletedCovers();
-
-        void DeleteCovers(IEnumerable<LibraryCover> Covers);
-
         int GetCoverCount();
+
+        ICollection<LibraryCover> GetCoverPage(int offset, int limit);
+
+        ICollection<LibraryCover> GetDeletedCovers();
+
+        ICollection<LibraryCover> GetUpdatedCovers(int offset, int limit, long epoch);
+
+        int SaveCover(LibraryCover Cover);
+
+        void SaveCovers(ICollection<LibraryCover> Covers);
     }
 }

@@ -10,21 +10,21 @@ namespace MusicBeePlugin.Repository
 
         void SaveTrack(LibraryTrack Track);
 
-        void SaveTracks(IEnumerable<LibraryTrack> Tracks);
+        void SaveTracks(ICollection<LibraryTrack> Tracks);
 
-        IEnumerable<LibraryTrack> GetAllTracks();
+        ICollection<LibraryTrack> GetAllTracks();
 
-        IEnumerable<LibraryTrack> GetTrackPage(int offset, int limit);
+        ICollection<LibraryTrack> GetTrackPage(int offset, int limit);
 
-        IEnumerable<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch);
+        ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch);
 
-        IEnumerable<LibraryTrack> GetCachedTracks();
+        ICollection<LibraryTrack> GetCachedTracks();
 
-        IEnumerable<LibraryTrack> GetDeletedTracks();
+        ICollection<LibraryTrack> GetDeletedTracks();
 
-        void DeleteTracks(IEnumerable<LibraryTrack> Tracks);
+        void DeleteTracks(ICollection<LibraryTrack> Tracks);
 
-        IEnumerable<LibraryTrack> GetTracksByAlbumId(long id);
+        ICollection<LibraryTrack> GetTracksByAlbumId(long id);
 
         int GetTrackCount();
     }

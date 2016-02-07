@@ -23,19 +23,19 @@ namespace MusicBeePlugin.Repository
 
         void SaveGenre(LibraryGenre genre);
 
-        void SaveGenres(IEnumerable<LibraryGenre> genres);
+        void SaveGenres(ICollection<LibraryGenre> genres);
 
-        IEnumerable<LibraryGenre> GetAllGenres();
+        ICollection<LibraryGenre> GetAllGenres();
 
-        IEnumerable<LibraryGenre> GetGenrePage(int offset, int limit);
+        ICollection<LibraryGenre> GetGenrePage(int offset, int limit);
 
-        IEnumerable<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch);
+        ICollection<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch);
 
-        IEnumerable<LibraryGenre> GetCachedGenres();
+        ICollection<LibraryGenre> GetCachedGenres();
 
-        IEnumerable<LibraryGenre> GetDeletedGenres();
+        ICollection<LibraryGenre> GetDeletedGenres();
 
-        void DeleteGenres(IEnumerable<LibraryGenre> genres);
+        void DeleteGenres(ICollection<LibraryGenre> genres);
 
         int GetGenreCount();
     }

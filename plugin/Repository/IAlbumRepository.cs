@@ -1,32 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MusicBeePlugin.Repository
+﻿namespace MusicBeePlugin.Repository
 {
+    using System.Collections.Generic;
+
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     public interface IAlbumRepository
     {
+        void DeleteAlbums(ICollection<LibraryAlbum> Albums);
+
         LibraryAlbum GetAlbum(long id);
+
+        int GetAlbumCount();
+
+        ICollection<LibraryAlbum> GetAlbumPage(int offset, int limit);
+
+        ICollection<LibraryAlbum> GetAllAlbums();
+
+        ICollection<LibraryAlbum> GetCachedAlbums();
+
+        ICollection<LibraryAlbum> GetDeletedAlbums();
+
+        ICollection<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch);
 
         void SaveAlbum(LibraryAlbum Album);
 
-        void SaveAlbums(IEnumerable<LibraryAlbum> Albums);
-
-        IEnumerable<LibraryAlbum> GetAllAlbums();
-
-        IEnumerable<LibraryAlbum> GetAlbumPage(int offset, int limit);
-
-        IEnumerable<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch);
-
-        IEnumerable<LibraryAlbum> GetCachedAlbums();
-
-        IEnumerable<LibraryAlbum> GetDeletedAlbums();
-
-        void DeleteAlbums(IEnumerable<LibraryAlbum> Albums);
-
-        int GetAlbumCount();
+        void SaveAlbums(ICollection<LibraryAlbum> Albums);
     }
 }

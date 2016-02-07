@@ -13,19 +13,19 @@ namespace MusicBeePlugin.Repository
 
         void SaveArtist(LibraryArtist artist);
 
-        void SaveArtists(IEnumerable<LibraryArtist> artists);
+        void SaveArtists(ICollection<LibraryArtist> artists);
 
-        IEnumerable<LibraryArtist> GetAllArtists();
+        ICollection<LibraryArtist> GetAllArtists();
 
-        IEnumerable<LibraryArtist> GetArtistPage(int offset, int limit);
+        ICollection<LibraryArtist> GetArtistPage(int offset, int limit);
 
-        IEnumerable<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch);
+        ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch);
 
-        IEnumerable<LibraryArtist> GetCachedArtists();
+        ICollection<LibraryArtist> GetCachedArtists();
 
-        IEnumerable<LibraryArtist> GetDeletedArtists();
+        ICollection<LibraryArtist> GetDeletedArtists();
 
-        void DeleteArtists(IEnumerable<LibraryArtist> artists);
+        void DeleteArtists(ICollection<LibraryArtist> artists);
 
         int GetArtistCount();
     }
