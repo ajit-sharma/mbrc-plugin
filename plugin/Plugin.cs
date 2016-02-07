@@ -291,8 +291,8 @@ namespace MusicBeePlugin
             {
                 _mWindow = _kernel.Get<InfoWindow>();
                 var libraryModule = _kernel.Get<LibraryModule>();
-                var cachedTracks = libraryModule.GetCachedEntitiesCount<LibraryTrack>();
-                var cachedCovers = libraryModule.GetCachedEntitiesCount<LibraryCover>();
+                var cachedTracks = libraryModule.GetCachedTrackCount();
+                var cachedCovers = libraryModule.GetCachedCoverCount();
                 _mWindow.UpdateCacheStatus(cachedCovers, cachedTracks);
             }
 

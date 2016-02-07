@@ -11,13 +11,15 @@ using MusicBeePlugin.Comparers;
 using MusicBeePlugin.Rest.ServiceInterface;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
-using ServiceStack.OrmLite;
-using ServiceStack.Text;
 
 #endregion
 
 namespace MusicBeePlugin.Modules
 {
+    using Dapper;
+
+    using MusicBeePlugin.AndroidRemote.Extensions;
+
     /// <summary>
     ///     This module is responsible for the playlist functionality.
     ///     It implements all the playlist operation with the MusicBee API and the

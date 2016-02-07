@@ -2,10 +2,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
-using MusicBeePlugin.AndroidRemote.Data;
+
 using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Comparers;
 using MusicBeePlugin.Rest.ServiceModel.Type;
@@ -15,12 +14,27 @@ using NLog;
 
 namespace MusicBeePlugin.Modules
 {
+    using Dapper;
+
+    using MusicBeePlugin.AndroidRemote.Extensions;
+    using MusicBeePlugin.Repository;
+
     /// <summary>
     ///     Class SyncModule.
     ///     Hosts the functionality responsible for the library sync operations.
     /// </summary>
     public class LibraryModule : DataModuleBase
     {
+        private readonly IGenreRepository genreRepository;
+
+        private readonly IArtistRepository artistRepository;
+
+        private readonly IAlbumRepository albumRepository;
+
+        private readonly ITrackRepository trackRepository;
+
+        private readonly ICoverRepository coverRepository;
+
         /// <summary>
         ///     Gets the Default logger instance for the class.
         /// </summary>
@@ -29,7 +43,7 @@ namespace MusicBeePlugin.Modules
         /// <summary>
         ///     The fields (MetaData) that MusicBee Remote caches.
         /// </summary>
-        private readonly Plugin.MetaDataType[] _fields =
+        private readonly Plugin.MetaDataType[] fields =
         {
             Plugin.MetaDataType.Artist,
             Plugin.MetaDataType.AlbumArtist,
@@ -44,10 +58,14 @@ namespace MusicBeePlugin.Modules
         /// <summary>
         ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>
-        public LibraryModule(Plugin.MusicBeeApiInterface api, CacheHelper cHelper)
+        public LibraryModule(Plugin.MusicBeeApiInterface api, IGenreRepository genreRepository, IArtistRepository artistRepository, IAlbumRepository albumRepository, ITrackRepository trackRepository, ICoverRepository coverRepository)
         {
+            this.albumRepository = albumRepository;
+            this.trackRepository = trackRepository;
+            this.coverRepository = coverRepository;
+            this.genreRepository = genreRepository;
+            this.artistRepository = artistRepository;
             _api = api;
-            _cHelper = cHelper;
         }
 
         /// <summary>
@@ -73,38 +91,27 @@ namespace MusicBeePlugin.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryCover> GetAllCovers(int offset, int limit, long after)
         {
-            using (var db = _cHelper.GetDbConnection())
-            {
-                var covers =
-                    db.Select<LibraryCover>(
-                        q => (q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after);
-                var paginated = new PaginatedCoverResponse();
-                paginated.CreatePage(limit, offset, covers);
-                return paginated;
-            }
+            var updatedCovers = this.coverRepository.GetUpdatedCovers(offset, limit, after);
+            var total = this.coverRepository.GetCoverCount();
+            var paginatedResponse = new PaginatedCoverResponse
+                                        {
+                                            Total = total,
+                                            Limit = limit,
+                                            Offset = offset,
+                                            Data = updatedCovers.ToList()
+                                        };
+
+            return paginatedResponse;
         }
 
         /// <summary>
         /// </summary>
         /// <param name="id"></param>
         /// <param name="includeImage"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <returns></returns>       
         public LibraryCover GetLibraryCover(int id, bool includeImage = false)
         {
-            try
-            {
-                using (var db = _cHelper.GetDbConnection())
-                {
-                    var cover = db.GetById<LibraryCover>(id);
-                    return cover;
-                }
-            }
-            catch (Exception)
-            {
-                //TODO: fix the handling of cover not found 
-                return null;
-            }
+            return this.coverRepository.GetCover(id);
         }
 
         /// <summary>
@@ -127,76 +134,72 @@ namespace MusicBeePlugin.Modules
             string[] files = {};
             _api.Library_QueryFilesEx(string.Empty, ref files);
 
-            using (var db = _cHelper.GetDbConnection())
-            using (var trans = db.OpenTransaction())
+            var artists = this.artistRepository.GetAllArtists();
+            var genres = this.genreRepository.GetAllGenres();
+            var albums = this.albumRepository.GetAllAlbums();
+
+            var cached = this.trackRepository.GetCachedTracks();
+            var deleted = this.trackRepository.GetDeletedTracks();
+            var cachedPaths = cached.Select(tr => tr.Path).ToList();
+
+            var toInsert = files.Except(cachedPaths).ToList();
+            var toDelete = cachedPaths.Except(files).ToList();
+
+            foreach (var file in toDelete)
             {
-                var artists = db.Select<LibraryArtist>();
-                var genres = db.Select<LibraryGenre>();
-                var albums = db.Select<LibraryAlbum>();
-
-                var cached = db.Select<LibraryTrack>(tr => tr.DateDeleted == 0).ToList();
-                var deleted = db.Select<LibraryTrack>(tr => tr.DateDeleted != 0).ToList();
-                var cachedPaths = cached.Select(tr => tr.Path).ToList();
-
-                var toInsert = files.Except(cachedPaths).ToList();
-                var toDelete = cachedPaths.Except(files).ToList();
-
-                foreach (var file in toDelete)
-                {
-                    db.UpdateOnly(new LibraryTrack {DateDeleted = DateTime.UtcNow.ToUnixTime()},
-                        o => o.Update(p => p.DateDeleted)
-                            .Where(p => p.Path.Equals(file)));
-                }
-
-                foreach (var file in toInsert)
-                {
-                    var deletedTrack = deleted.Find(tr => tr.Path.Equals(file));
-                    string[] tags = {};
-                    _api.Library_GetFileTags(file, _fields, ref tags);
-
-                    var meta = new LibraryTrackEx(tags);
-
-                    var genre = genres.SingleOrDefault(q => q.Name == meta.Genre);
-                    var artist = artists.SingleOrDefault(q => q.Name == meta.Artist);
-                    var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
-                    var album = albums.SingleOrDefault(q => q.Name == meta.Album);
-
-                    if (album != null && albumArtist != null)
-                    {
-                        album.ArtistId = albumArtist.Id;
-                    }
-
-                    var track = new LibraryTrack
-                    {
-                        Title = meta.Title,
-                        Year = meta.Year,
-                        Position = meta.Position,
-                        Disc = meta.Disc,
-                        GenreId = genre?.Id ?? 0,
-                        AlbumArtistId = albumArtist?.Id ?? 0,
-                        ArtistId = artist?.Id ?? 0,
-                        AlbumId = album?.Id ?? 0,
-                        Path = file
-                    };
-
-                    // Current track was detected in the list of deleted tracks.
-                    // So we are going to update the existing entry.
-                    if (deletedTrack != null)
-                    {
-                        track.Id = deletedTrack.Id;
-                        track.DateUpdated = DateTime.UtcNow.ToUnixTime();
-                        track.DateDeleted = 0;
-                    }
-
-                    db.Save(track);
-                }
-
-                db.UpdateAll(albums);
-                trans.Commit();
-
-                Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
-                Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
+//                db.UpdateOnly(new LibraryTrack { DateDeleted = DateTime.UtcNow.ToUnixTime() },
+//                    o => o.Update(p => p.DateDeleted)
+//                        .Where(p => p.Path.Equals(file)));
             }
+
+            foreach (var file in toInsert)
+            {
+                var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file));
+                string[] tags = { };
+                _api.Library_GetFileTags(file, this.fields, ref tags);
+
+                var meta = new LibraryTrackEx(tags);
+
+                var genre = genres.SingleOrDefault(q => q.Name == meta.Genre);
+                var artist = artists.SingleOrDefault(q => q.Name == meta.Artist);
+                var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
+                var album = albums.SingleOrDefault(q => q.Name == meta.Album);
+
+                if (album != null && albumArtist != null)
+                {
+                    album.ArtistId = albumArtist.Id;
+                }
+
+                var track = new LibraryTrack
+                {
+                    Title = meta.Title,
+                    Year = meta.Year,
+                    Position = meta.Position,
+                    Disc = meta.Disc,
+                    GenreId = genre?.Id ?? 0,
+                    AlbumArtistId = albumArtist?.Id ?? 0,
+                    ArtistId = artist?.Id ?? 0,
+                    AlbumId = album?.Id ?? 0,
+                    Path = file
+                };
+
+                // Current track was detected in the list of deleted tracks.
+                // So we are going to update the existing entry.
+                if (deletedTrack != null)
+                {
+                    track.Id = deletedTrack.Id;
+                    track.DateUpdated = DateTime.UtcNow.ToUnixTime();
+                    track.DateDeleted = 0;
+                }
+
+                //db.Save(track);
+            }
+
+            //db.UpdateAll(albums);
+            //trans.Commit();
+
+            Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
+            Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
         }
 
         /// <summary>
@@ -264,8 +267,8 @@ namespace MusicBeePlugin.Modules
             using (var db = _cHelper.GetDbConnection())
             {
                 var artists = GetArtistDataFromApi();
-                var cachedArtists = db.Select<LibraryArtist>(la => la.DateDeleted == 0);
-                var deletedArtists = db.Select<LibraryArtist>(la => la.DateDeleted != 0);
+                var cachedArtists = this.artistRepository.GetCachedArtists();
+                var deletedArtists = this.artistRepository.GetDeletedArtists();
 
                 var comparer = new LibraryArtistComparer();
 
@@ -279,14 +282,14 @@ namespace MusicBeePlugin.Modules
 
                 if (artistsToDelete.Count > 0)
                 {
-                    db.SaveAll(artistsToDelete);
+                    this.artistRepository.DeleteArtists(artistsToDelete);                   
                     Logger.Debug("Artists: {0} entries deleted.", artistsToDelete.Count);
                 }
 
                 foreach (var libraryArtist in artistsToInsert)
                 {
                     var artist =
-                        deletedArtists.Find(art => art.Name
+                        deletedArtists.First(art => art.Name
                             .Equals(libraryArtist.Name,
                                 StringComparison.InvariantCultureIgnoreCase));
                     if (artist != null)
@@ -297,7 +300,7 @@ namespace MusicBeePlugin.Modules
 
                 if (artistsToInsert.Count > 0)
                 {
-                    db.SaveAll(artistsToInsert);
+                    this.artistRepository.SaveArtists(artistsToInsert);
                     Logger.Debug("Artists: {0} entries inserted", artistsToInsert.Count);
                 }
             }
@@ -308,45 +311,42 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         public void UpdateGenreTable()
         {
-            using (var db = _cHelper.GetDbConnection())
+            var genres = this.GetGenreDataFromApi();
+            var cachedGenres = this.genreRepository.GetCachedGenres();
+            var deletedGenres = this.genreRepository.GetDeletedGenres();
+            var comparer = new LibraryGenreComparer();
+
+            var genresToInsert = genres.Except(cachedGenres, comparer).ToList();
+            var genresToRemove = cachedGenres.Except(genres, comparer).ToList();
+
+            foreach (var libraryGenre in genresToRemove)
             {
-                var genres = GetGenreDataFromApi();
-                var cachedGenres = db.Select<LibraryGenre>(gen => gen.DateDeleted == 0);
-                var deletedGenres = db.Select<LibraryGenre>(gen => gen.DateDeleted != 0);
-                var comparer = new LibraryGenreComparer();
+                libraryGenre.DateDeleted = DateTime.UtcNow.ToUnixTime();
+            }
 
-                var genresToInsert = genres.Except(cachedGenres, comparer).ToList();
-                var genresToRemove = cachedGenres.Except(genres, comparer).ToList();
+            if (genresToRemove.Count > 0)
+            {
+                this.genreRepository.DeleteGenres(genresToRemove);
+                Logger.Debug("Genres: {0} entries removed", genresToRemove.Count);
+            }
 
-                foreach (var libraryGenre in genresToRemove)
+            foreach (var libraryGenre in genresToInsert)
+            {
+                var genre = deletedGenres.First(gen => gen.Name.Equals(libraryGenre.Name,
+                    StringComparison.InvariantCultureIgnoreCase));
+                if (genre != null)
                 {
-                    libraryGenre.DateDeleted = DateTime.UtcNow.ToUnixTime();
-                }
-
-                if (genresToRemove.Count > 0)
-                {
-                    db.SaveAll(genresToRemove);
-                    Logger.Debug("Genres: {0} entries removed", genresToRemove.Count);
-                }
-
-                foreach (var libraryGenre in genresToInsert)
-                {
-                    var genre =
-                        deletedGenres.Find(gen => gen.Name
-                            .Equals(libraryGenre.Name,
-                                StringComparison.InvariantCultureIgnoreCase));
-                    if (genre != null)
-                    {
-                        libraryGenre.Id = genre.Id;
-                    }
-                }
-
-                if (genresToInsert.Count > 0)
-                {
-                    db.SaveAll(genresToInsert);
-                    Logger.Debug("Genres: {0} entries inserted", genresToInsert.Count);
+                    libraryGenre.Id = genre.Id;
                 }
             }
+
+            if (genresToInsert.Count <= 0)
+            {
+                return;
+            }
+
+            this.genreRepository.SaveGenres(genresToInsert);
+            Logger.Debug("Genres: {0} entries inserted", genresToInsert.Count);
         }
 
         /// <summary>
@@ -357,8 +357,8 @@ namespace MusicBeePlugin.Modules
             using (var db = _cHelper.GetDbConnection())
             {
                 var albums = GetAlbumDataFromApi();
-                var cachedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted == 0);
-                var deletedAlbums = db.Select<LibraryAlbum>(gen => gen.DateDeleted != 0);
+                var cachedAlbums = this.albumRepository.GetCachedAlbums();
+                var deletedAlbums = this.albumRepository.GetDeletedAlbums();
                 var comparer = new LibraryAlbumComparer();
 
                 var albumsToInsert = albums.Except(cachedAlbums, comparer).ToList();
@@ -371,14 +371,14 @@ namespace MusicBeePlugin.Modules
 
                 if (albumsToRemove.Count > 0)
                 {
-                    db.SaveAll(albumsToRemove);
+                    this.albumRepository.DeleteAlbums(albumsToRemove);                    
                     Logger.Debug("Albums: {0} entries removed", albumsToRemove.Count);
                 }
 
                 foreach (var albumEntry in albumsToInsert)
                 {
                     var album =
-                        deletedAlbums.Find(gen => gen.Name
+                        deletedAlbums.First(gen => gen.Name
                             .Equals(albumEntry.Name,
                                 StringComparison.InvariantCultureIgnoreCase));
                     if (album != null)
@@ -389,7 +389,7 @@ namespace MusicBeePlugin.Modules
 
                 if (albumsToInsert.Count > 0)
                 {
-                    db.SaveAll(albumsToInsert);
+                    this.albumRepository.SaveAlbums(albumsToInsert);
                     Logger.Debug("Albums: {0} entries inserted", albumsToInsert.Count);
                 }
             }
@@ -402,54 +402,49 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         public void BuildCoverCachePerAlbum()
         {
-            using (var db = _cHelper.GetDbConnection())
-            using (var trans = db.OpenTransaction())
+            var albums = this.albumRepository.GetAllAlbums();
+          
+            foreach (var album in albums)
             {
-                var albums = db.Select<LibraryAlbum>();
-                foreach (var album in albums)
+                var trackList = this.trackRepository.GetTracksByAlbumId(album.Id);
+
+                if (!trackList.Any())
                 {
-                    var trackList = db.Select<LibraryTrack>(tr => tr.AlbumId == album.Id)
-                        .OrderBy(tr => tr.Position)
-                        .ToList();
+                    continue;
+                }
+                var track = trackList.First();
+                string coverUrl = null;
 
-                    if (trackList.Count == 0)
-                    {
-                        continue;
-                    }
-                    var track = trackList[0];
-                    string coverUrl = null;
+                var locations = Plugin.PictureLocations.None;
+                byte[] imageData = { };
 
-                    var locations = Plugin.PictureLocations.None;
-                    byte[] imageData = {};
+                _api.Library_GetArtworkEx(track.Path, 0, false, ref locations, ref coverUrl, ref imageData);
 
-                    _api.Library_GetArtworkEx(track.Path, 0, false, ref locations, ref coverUrl, ref imageData);
-
-                    if (string.IsNullOrEmpty(coverUrl))
-                    {
-                        _api.Library_GetArtworkEx(track.Path, 0, true, ref locations, ref coverUrl, ref imageData);
-                    }
-
-                    var coverHash = !string.IsNullOrEmpty(coverUrl)
-                        ? Utilities.StoreCoverToCache(coverUrl)
-                        : Utilities.StoreCoverToCache(imageData);
-
-                    if (string.IsNullOrEmpty(coverHash))
-                    {
-                        continue;
-                    }
-
-                    var cover = new LibraryCover
-                    {
-                        Hash = coverHash
-                    };
-
-                    db.Save(cover);
-                    album.CoverId = (int) db.GetLastInsertId();
+                if (string.IsNullOrEmpty(coverUrl))
+                {
+                    _api.Library_GetArtworkEx(track.Path, 0, true, ref locations, ref coverUrl, ref imageData);
                 }
 
-                db.UpdateAll(albums);
-                trans.Commit();
+                var coverHash = !string.IsNullOrEmpty(coverUrl)
+                    ? Utilities.StoreCoverToCache(coverUrl)
+                    : Utilities.StoreCoverToCache(imageData);
+
+                if (string.IsNullOrEmpty(coverHash))
+                {
+                    continue;
+                }
+
+                var cover = new LibraryCover
+                {
+                    Hash = coverHash
+                };
+
+//                db.Save(cover);
+//                album.CoverId = (int)db.GetLastInsertId();
             }
+//
+//            db.UpdateAll(albums);
+//            trans.Commit();
         }
 
         /// <summary>
@@ -488,18 +483,7 @@ namespace MusicBeePlugin.Modules
         /// <returns></returns>
         public LibraryTrack GetTrackById(int id)
         {
-            try
-            {
-                using (var db = _cHelper.GetDbConnection())
-                {
-                    return db.GetByIdOrDefault<LibraryTrack>(id);
-                }
-            }
-            catch (Exception)
-            {
-                //TODO: fix the handling of not found.
-                return null;
-            }
+            return this.trackRepository.GetTrack(id);
         }
 
         /// <summary>
@@ -508,8 +492,7 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         public bool IsCacheEmpty()
         {
-            var cached = GetCachedEntitiesCount<LibraryTrack>();
-            return cached == 0;
+            return this.trackRepository.GetTrackCount() == 0;
         }
 
         /// <summary>
@@ -525,15 +508,17 @@ namespace MusicBeePlugin.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryTrack> GetAllTracks(int limit, int offset, long after)
         {
-            using (var db = _cHelper.GetDbConnection())
-            {
-                var data =
-                    db.Select<LibraryTrack>(
-                        q => (q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after);
-                var paginatedResult = new PaginatedTrackResponse();
-                paginatedResult.CreatePage(limit, offset, data);
-                return paginatedResult;
-            }
+            var tracks = this.trackRepository.GetUpdatedTracks(offset, limit, after);
+            var total = this.trackRepository.GetTrackCount();
+            var paginated = new PaginatedTrackResponse
+                                {
+                                    Total = total,
+                                    Offset = offset,
+                                    Limit = limit,
+                                    Data = tracks.ToList()
+                                };
+
+            return paginated;
         }
 
         /// <summary>
@@ -545,15 +530,17 @@ namespace MusicBeePlugin.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryArtist> GetAllArtists(int limit, int offset, long after)
         {
-            using (var db = _cHelper.GetDbConnection())
+            var artists = this.artistRepository.GetUpdatedArtists(offset, limit, after);
+            var total = this.artistRepository.GetArtistCount();
+            var paginated = new PaginatedArtistResponse
             {
-                var data =
-                    db.Select<LibraryArtist>(
-                        q => (q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after);
-                var paginated = new PaginatedArtistResponse();
-                paginated.CreatePage(limit, offset, data);
-                return paginated;
-            }
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = artists.ToList()
+            };
+
+            return paginated;
         }
 
         /// <summary>
@@ -563,18 +550,7 @@ namespace MusicBeePlugin.Modules
         /// <returns>The cached <see cref="LibraryArtist" /> for the provided id.</returns>
         public LibraryArtist GetArtistById(int id)
         {
-            using (var db = _cHelper.GetDbConnection())
-            {
-                try
-                {
-                    return db.GetById<LibraryArtist>(id);
-                }
-                catch
-                {
-                    //Todo: fix the handling of not found.
-                    return null;
-                }
-            }
+            return this.artistRepository.GetArtist(id);            
         }
 
         /// <summary>
@@ -585,15 +561,17 @@ namespace MusicBeePlugin.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryGenre> GetAllGenres(int limit, int offset, long after)
         {
-            using (var db = _cHelper.GetDbConnection())
+            var genres = this.genreRepository.GetUpdatedGenres(limit, offset, after);
+            var total = this.genreRepository.GetGenreCount();
+            var paginated = new PaginatedGenreResponse
             {
-                var data =
-                    db.Select<LibraryGenre>(
-                        q => (q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after);
-                var paginated = new PaginatedGenreResponse();
-                paginated.CreatePage(limit, offset, data);
-                return paginated;
-            }
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = genres.ToList()
+            };
+
+            return paginated;
         }
 
         /// <summary>
@@ -604,15 +582,17 @@ namespace MusicBeePlugin.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryAlbum> GetAllAlbums(int limit, int offset, long after)
         {
-            using (var db = _cHelper.GetDbConnection())
+            var albums = this.albumRepository.GetUpdatedAlbums(offset, limit, after);
+            var total = this.albumRepository.GetAlbumCount();
+            var paginated = new PaginatedAlbumResponse
             {
-                var data =
-                    db.Select<LibraryAlbum>(
-                        q => (q.DateAdded > after) || (q.DateDeleted > after) || q.DateUpdated > after);
-                var paginated = new PaginatedAlbumResponse();
-                paginated.CreatePage(limit, offset, data);
-                return paginated;
-            }
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = albums.ToList()
+            };
+
+            return paginated;
         }
 
         /// <summary>
@@ -624,28 +604,7 @@ namespace MusicBeePlugin.Modules
             var cover = GetLibraryCover(id);
             return Utilities.GetCoverStreamFromCache(cover.Hash);
         }
-
-        /// <summary>
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        public int GetCachedEntitiesCount<T>()
-        {
-            var total = 0;
-            try
-            {
-                using (var db = _cHelper.GetDbConnection())
-                {
-                    total = db.Select<T>().Count;
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
-            return total;
-        }
-
+        
         /// <summary>
         ///     Given a long id of a an artist in the database
         ///     it will return a String array of the paths of the Artist's
@@ -656,39 +615,27 @@ namespace MusicBeePlugin.Modules
         public string[] GetArtistTracksById(long id)
         {
             var trackList = new List<string>();
-            try
-            {
-                using (var db = _cHelper.GetDbConnection())
-                {
-                    var albumList = db.Select<LibraryAlbum>(q => q.ArtistId == id)
-                        .OrderBy(x => x.Name).ToList();
-                    foreach (var albumTrackList in albumList
-                        .Select(album => GetTrackListByAlbumId(db, album.Id)))
-                    {
-                        trackList.AddRange(albumTrackList.Select(t => t.Path).ToList());
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
+//            try
+//            {
+//                using (var db = _cHelper.GetDbConnection())
+//                {
+//                    var albumList = db.Select<LibraryAlbum>(q => q.ArtistId == id)
+//                        .OrderBy(x => x.Name).ToList();
+//                    var albums = this.albumRepository.getAlbumsByArtist(id);
+//                    foreach (
+//                        var albumTrackList in
+//                            albumList.Select(album => this.trackRepository.GetTracksByAlbumId(album.Id))) ;
+//                    {
+//                        trackList.AddRange(albumTrackList.Select(t => t.Path).ToList());
+//                    }
+//                }
+//            }
+//            catch (Exception e)
+//            {
+//                Logger.Debug(e);
+//            }
 
             return trackList.ToArray();
-        }
-
-        /// <summary>
-        ///     Given a database connection and an album id it will return a list of Tracks
-        ///     ordered by position.
-        /// </summary>
-        /// <param name="db"></param>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        private static List<LibraryTrack> GetTrackListByAlbumId(IDbConnection db, long id)
-        {
-            return db.Select<LibraryTrack>(q => q.AlbumId == id)
-                .OrderBy(x => x.Position)
-                .ToList();
         }
 
         /// <summary>
@@ -701,16 +648,10 @@ namespace MusicBeePlugin.Modules
         public string[] GetTrackPathById(long id)
         {
             var list = new List<string>();
-            try
+            var track = this.trackRepository.GetTrack(id);
+            if (track != null)
             {
-                using (var db = _cHelper.GetDbConnection())
-                {
-                    list = db.Select<LibraryTrack>(q => q.Id == id).Select(t => t.Path).ToList();
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
+                list.Add(track.Path);
             }
 
             return list.ToArray();
@@ -725,18 +666,8 @@ namespace MusicBeePlugin.Modules
         public string[] GetAlbumTracksById(long id)
         {
             var trackList = new List<string>();
-
-            try
-            {
-                using (var db = _cHelper.GetDbConnection())
-                {
-                    trackList.AddRange(GetTrackListByAlbumId(db, id).Select(t => t.Path));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.Debug(e);
-            }
+            var tracks = this.trackRepository.GetTracksByAlbumId(id);
+            trackList.AddRange(tracks.Select(track => track.Path));            
             return trackList.ToArray();
         }
 
@@ -782,6 +713,16 @@ namespace MusicBeePlugin.Modules
             }
 
             return tracklist.ToArray();
+        }
+
+        public int GetCachedTrackCount()
+        {
+            return this.trackRepository.GetTrackCount();
+        }
+
+        public int GetCachedCoverCount()
+        {
+            return this.coverRepository.GetCoverCount();
         }
     }
 }

@@ -7,7 +7,7 @@
     using MusicBeePlugin.AndroidRemote.Data;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class LibraryGenreRepository : ILibraryGenreRepository
+    class GenreRepository : IGenreRepository
     {
         private CacheHelper cHelper;
 
@@ -53,6 +53,36 @@
                 var libraryGenres = connection.GetPage<LibraryGenre>(group, new List<ISort>(), page, limit);
                 return libraryGenres;
             }
+        }
+
+        public IEnumerable<LibraryGenre> GetCachedGenres()
+        {
+            using (var connection = this.cHelper.GetDbConnection())
+            {
+                var predicate = Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Eq, 0);
+                var libraryGenres = connection.GetList<LibraryGenre>(predicate);
+                return libraryGenres;
+            }
+        }
+
+        public IEnumerable<LibraryGenre> GetDeletedGenres()
+        {
+            using (var connection = this.cHelper.GetDbConnection())
+            {
+                var predicate = Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Gt, 0);
+                var libraryGenres = connection.GetList<LibraryGenre>(predicate);
+                return libraryGenres;
+            }
+        }
+
+        public void DeleteGenres(IEnumerable<LibraryGenre> genres)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int GetGenreCount()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

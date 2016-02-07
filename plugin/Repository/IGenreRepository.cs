@@ -6,9 +6,9 @@ namespace MusicBeePlugin.Repository
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     /// <summary>
-    /// The LibraryGenreRepository interface.
+    /// The GenreRepository interface.
     /// </summary>
-    public interface ILibraryGenreRepository
+    public interface IGenreRepository
     {
         /// <summary>
         /// Gets a specific genre from the repository by the genre id.
@@ -30,5 +30,13 @@ namespace MusicBeePlugin.Repository
         IEnumerable<LibraryGenre> GetGenrePage(int offset, int limit);
 
         IEnumerable<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch);
+
+        IEnumerable<LibraryGenre> GetCachedGenres();
+
+        IEnumerable<LibraryGenre> GetDeletedGenres();
+
+        void DeleteGenres(IEnumerable<LibraryGenre> genres);
+
+        int GetGenreCount();
     }
 }

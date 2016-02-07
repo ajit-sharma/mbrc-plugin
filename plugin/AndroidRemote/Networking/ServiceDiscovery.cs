@@ -79,7 +79,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 			if (incoming["context"].Contains("discovery"))
 			{
 				var addresses = NetworkTools.GetPrivateAddressList();
-				var clientAddress = IPAddress.Parse(incoming.Get("address"));
+				var clientAddress = IPAddress.Parse((string) incoming["address"]);
 				var interfaceAddress = String.Empty;
 				foreach (var ifAddress in from address in addresses
 					let ifAddress = IPAddress.Parse(address)
@@ -101,7 +101,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 					{"port", _controller.Settings.WebSocketPort},
 					{"http", _controller.Settings.HttpPort}
 				};
-				var response = Encoding.UTF8.GetBytes(JsonSerializer.SerializeToString(notify));
+				var response = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(notify));
 				_mListener.Send(response, response.Length, mEndPoint);
 			}
 			_mListener.BeginReceive(OnDataReceived, null);

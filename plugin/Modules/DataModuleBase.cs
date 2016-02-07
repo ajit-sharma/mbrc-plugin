@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using MusicBeePlugin.AndroidRemote.Data;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
 using MusicBeePlugin.Rest.ServiceModel.Type;
-using ServiceStack.OrmLite;
-using ServiceStack.Text;
 
 namespace MusicBeePlugin.Modules
 {
