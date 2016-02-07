@@ -1,9 +1,7 @@
 ﻿#region
 
-using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 
 #endregion
 
@@ -12,8 +10,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 	/// <summary>
 	/// Represents an album entry stored in the library.
 	/// </summary>
-	[DataContract(Name = "libraryAlbum")]
-    [Alias("LibraryAlbum")]
+	[DataContract(Name = "library_album")]
     public class LibraryAlbum : TypeBase
     {
 		/// <summary>
@@ -42,7 +39,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		/// The id of the album artist.
 		/// </summary>
-		[References(typeof (LibraryArtist))]
+		
         [DataMember(Name = "artist_id")]
         public long ArtistId { get; set; }
 
@@ -61,8 +58,8 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		/// A list with the tracks contained in the album.
 		/// </summary>
-		[Ignore]
         [IgnoreDataMember]
         public List<LibraryTrack> TrackList { get; set; }
     }
+    
 }

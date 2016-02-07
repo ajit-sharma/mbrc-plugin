@@ -1,10 +1,8 @@
 ﻿#region Dependencies
 
 using MusicBeePlugin.Modules;
-using MusicBeePlugin.Rest.ServiceModel;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using Nancy;
-using ServiceStack.ServiceInterface;
 
 #endregion
 
@@ -15,14 +13,16 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 	/// </summary>
 	internal class DebugApiModule : NancyModule
 	{
-		private readonly LibraryModule _module;
+		private readonly LibraryModule module;
 
 		/// <summary>
+		/// Initializes a new instance of the <see cref="DebugApiModule"/> class. 
 		/// </summary>
-		/// <param name="module"></param>
+		/// <param name="module">
+		/// </param>
 		public DebugApiModule(LibraryModule module)
 		{
-			_module = module;
+			this.module = module;
 		    Get["/debug"] = _ => new ResponseBase
 		    {
 		        Code = ApiCodes.Success
@@ -30,9 +30,9 @@ namespace MusicBeePlugin.Rest.ServiceInterface
 
 		    Get["/test"] = _ =>
 		    {
-		        _module.UpdateArtistTable();
-		        _module.UpdateGenreTable();
-		        _module.UpdateAlbumTable();
+		        this.module.UpdateArtistTable();
+		        this.module.UpdateGenreTable();
+		        this.module.UpdateAlbumTable();
 
 		        return new ResponseBase
 		        {

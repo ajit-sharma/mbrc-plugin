@@ -3,13 +3,16 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using ServiceStack.Text;
 
 #endregion
 
 namespace MusicBeePlugin.AndroidRemote.Persistence
 {
-	/// <summary>
+    using System.Security;
+
+    using Newtonsoft.Json;
+
+    /// <summary>
 	///     Class responsible for the store and retrieve of Settings and other objects
 	///     in the filesystem.
 	/// </summary>
@@ -18,23 +21,25 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 		/// <summary>
 		///     The path of the firewall utility.
 		/// </summary>
-		private readonly string _firewallUtility;
+		private readonly string firewallUtility;
 
 		/// <summary>
 		///     The application settings filename.
 		/// </summary>
-		private readonly string _settingsFilename;
+		private readonly string settingsFilename;
 
-		/// <summary>
-		///     Creates a new PersistenceController that stores an retrieves data in the
-		///     specified <paramref name="storagePath" />.
-		/// </summary>
-		/// <param name="storagePath">The path where the files will be stored.</param>
-		public PersistenceController(string storagePath)
+	    /// <summary>
+	    /// Initializes a new instance of the <see cref="PersistenceController"/> class. 
+	    ///     specified <paramref name="storagePath"/>.
+	    /// </summary>
+	    /// <param name="storagePath">
+	    /// The path where the files will be stored.
+	    /// </param>
+	    public PersistenceController(string storagePath)
 		{
-			_settingsFilename = string.Format("{0}\\settings.json", storagePath);
-			_firewallUtility = AppDomain.CurrentDomain.BaseDirectory + "\\Plugins\\firewall-utility.exe";
-			Settings = new UserSettings();
+	        this.settingsFilename = $"{storagePath}\\settings.json";
+			this.firewallUtility = AppDomain.CurrentDomain.BaseDirectory + "\\Plugins\\firewall-utility.exe";
+	        this.Settings = new UserSettings();
 		}
 
 		/// <summary>
@@ -42,18 +47,18 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 		/// </summary>
 		public UserSettings Settings { get; private set; }
 
-		/// <summary>
-		///     Saves the plugin settings to the filesystem.
-		/// </summary>
-		public void SaveSettings()
+        /// <summary>
+        ///     Saves the plugin settings to the filesystem.
+        /// </summary>
+        public void SaveSettings()
 		{
-			var settings = JsonSerializer.SerializeToString(Settings);
-			if (_settingsFilename == null) return;
-			File.WriteAllText(_settingsFilename, settings);
+			var settings = JsonConvert.SerializeObject(this.Settings);
+			if (this.settingsFilename == null) return;
+			File.WriteAllText(this.settingsFilename, settings);
 
-			if (Settings.UpdateFirewallEnabled)
+			if (this.Settings.UpdateFirewallEnabled)
 			{
-				UpdateFirewallRules();
+			    this.UpdateFirewallRules();
 			}
 		}
 
@@ -63,11 +68,10 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 		/// </summary>
 		public void UpdateFirewallRules()
 		{
-			var startInfo = new ProcessStartInfo(_firewallUtility)
+			var startInfo = new ProcessStartInfo(this.firewallUtility)
 			{
 				Verb = "runas",
-				Arguments = string.Format("-h {0} -s {1}", Settings.HttpPort, Settings.WebSocketPort)
-			};
+				Arguments = $"-h {this.Settings.HttpPort} -s {this.Settings.WebSocketPort}" };
 			Process.Start(startInfo);
 		}
 
@@ -77,13 +81,13 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 		/// </summary>
 		public void LoadSettings()
 		{
-			if (!File.Exists(_settingsFilename)) return;
-			var sr = File.OpenText(_settingsFilename);
+			if (!File.Exists(this.settingsFilename)) return;
+			var sr = File.OpenText(this.settingsFilename);
 			var settings = sr.ReadToEnd();
 			sr.Close();
 			if (!string.IsNullOrEmpty(settings))
 			{
-				Settings = JsonSerializer.DeserializeFromString<UserSettings>(settings);
+			    this.Settings = JsonConvert.DeserializeObject<UserSettings>(settings);
 			}
 		}
 
@@ -97,7 +101,7 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
 		{
 			var isAllowed = false;
 
-			switch (Settings.Allowed)
+			switch (this.Settings.Allowed)
 			{
 				case AllowedAddresses.Specific:
 					foreach (var source in Settings.AllowedAddresses)

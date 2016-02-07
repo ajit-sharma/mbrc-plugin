@@ -1,9 +1,7 @@
 ﻿#region Dependencies
 
 using System;
-using System.Diagnostics;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 
 #endregion
 
@@ -38,8 +36,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		///     Used internally for sorting
 		/// </summary>
-		[IgnoreDataMember]
-		[Ignore]
+		[IgnoreDataMember]	
 		public int Position { get; set; }
 
 		/// <summary>

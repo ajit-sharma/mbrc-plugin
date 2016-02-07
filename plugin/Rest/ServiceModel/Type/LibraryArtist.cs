@@ -1,24 +1,19 @@
-﻿#region Dependencies
-
-using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
-
-#endregion
-
+﻿
 namespace MusicBeePlugin.Rest.ServiceModel.Type
 {
-	/// <summary>
+    using System.Runtime.Serialization;
+
+    /// <summary>
 	///     This class represents an Artist with the information used in the
 	///     cache and API.
 	/// </summary>
 	[DataContract]
-	[Alias("LibraryArtist")]
 	public class LibraryArtist : TypeBase
 	{
 		/// <summary>
 		/// Backing field for the <see cref="Name"/> property
 		/// </summary>
-		private string _name;
+		private string name;
 
 		/// <summary>
 		///     Parametrized constructor of the LibraryArtist class. It creates a
@@ -41,18 +36,16 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     The name property of the artist. The name should be unique.
 		/// </summary>
 		[DataMember(Name = "name")]
-		[Index(Unique = true)]
 		public string Name
 		{
-			get { return _name; }
-			set { _name = string.IsNullOrEmpty(value) ? "[Empty]" : value; }
+			get { return this.name; }
+			set { this.name = string.IsNullOrEmpty(value) ? "[Empty]" : value; }
 		}
 
 		/// <summary>
 		///     The genre id property that represents the artist's genre.
 		/// </summary>
 		[DataMember(Name = "genre")]
-		[References(typeof (LibraryGenre))]
 		public long GenreId { get; set; }
 
 		/// <summary>

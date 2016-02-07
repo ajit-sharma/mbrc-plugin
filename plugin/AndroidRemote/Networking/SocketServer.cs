@@ -7,8 +7,8 @@ using Fleck;
 using MusicBeePlugin.AndroidRemote.Entities;
 using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Persistence;
+using Newtonsoft.Json.Linq;
 using NLog;
-using ServiceStack.Text;
 using LogLevel = Fleck.LogLevel;
 
 #endregion
@@ -24,7 +24,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         private readonly List<IWebSocketConnection> _allSockets;
         private readonly PersistenceController _controller;
         private bool _isRunning;
-        private WebSocketServer server;
+        private WebSocketServer _server;
 
         /// <summary>
         /// </summary>
@@ -49,11 +49,11 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         }
 
         /// <summary>
-        ///     Disposes anything Related to the socket server at the end of life of the Object.
+        ///     Disposes anything Related to the socket _server at the end of life of the Object.
         /// </summary>
         public void Dispose()
         {
-            server.Dispose();
+            _server.Dispose();
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         public void Stop()
         {
             Logger.Debug("Stopping Socket Server");
-            if (server == null) return;
-            server.Dispose();
-            server = null;
+            if (_server == null) return;
+            _server.Dispose();
+            _server = null;
         }
 
         /// <summary>
@@ -84,28 +84,26 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             try
             {
                 Logger.Debug("Starting Socket Server");
-                if (server == null)
+                if (_server == null)
                 {
-                    server = new WebSocketServer(string.Format("ws://0.0.0.0:{0}", _controller.Settings.WebSocketPort));
-                    server.Start(socket =>
+                    _server = new WebSocketServer($"ws://0.0.0.0:{_controller.Settings.WebSocketPort}");
+                    _server.Start(socket =>
                     {
                         socket.OnOpen = () =>
                         {
-                            Logger.Debug(string.Format("New client connected: {0}",
-                                socket.ConnectionInfo.ClientIpAddress));
+                            Logger.Debug($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
                             _allSockets.Add(socket);
                         };
 
                         socket.OnClose = () =>
                         {
-                            Logger.Debug(string.Format("Client has been disconnected: {0}",
-                                socket.ConnectionInfo.ClientIpAddress));
+                            Logger.Debug($"Client has been disconnected: {socket.ConnectionInfo.ClientIpAddress}");
                         };
 
                         socket.OnMessage = message =>
                         {
-                            Logger.Debug(string.Format("New message received: {0}", message));
-                            var notification = new NotificationMessage(JsonObject.Parse(message));
+                            Logger.Debug($"New message received: {message}");
+                            var notification = new NotificationMessage(JObject.Parse(message));
                             EventBus.FireEvent(new MessageEvent(notification.Message));
                         };
                     });

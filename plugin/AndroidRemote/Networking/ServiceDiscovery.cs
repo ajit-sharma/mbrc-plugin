@@ -8,7 +8,8 @@ using System.Net.Sockets;
 using System.Text;
 using MusicBeePlugin.AndroidRemote.Persistence;
 using MusicBeePlugin.Tools;
-using ServiceStack.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
@@ -73,9 +74,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 			var mEndPoint = new IPEndPoint(IPAddress.Any, Port);
 			var request = _mListener.EndReceive(ar, ref mEndPoint);
 			var mRequest = Encoding.UTF8.GetString(request);
-			var incoming = JsonObject.Parse(mRequest);
+			var incoming = JObject.Parse(mRequest);
 
-			if (incoming.Get("context").Contains("discovery"))
+			if (incoming["context"].Contains("discovery"))
 			{
 				var addresses = NetworkTools.GetPrivateAddressList();
 				var clientAddress = IPAddress.Parse(incoming.Get("address"));

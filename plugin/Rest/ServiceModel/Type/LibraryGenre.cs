@@ -1,7 +1,6 @@
 ﻿#region Dependencies
 
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 
 #endregion
 
@@ -11,7 +10,6 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 	///     A representation of a Music Genre.
 	/// </summary>
 	[DataContract]
-	[Alias("LibraryGenre")]
 	public class LibraryGenre : TypeBase
 	{
 		/// <summary>
@@ -39,7 +37,6 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		///     The name of the genre. The name must be unique.
 		/// </summary>
-		[Index(Unique = true)]
 		[DataMember(Name = "name")]
 		public string Name
 		{

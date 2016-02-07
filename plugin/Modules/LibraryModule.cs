@@ -10,8 +10,6 @@ using MusicBeePlugin.AndroidRemote.Utilities;
 using MusicBeePlugin.Comparers;
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using NLog;
-using ServiceStack.OrmLite;
-using ServiceStack.Text;
 
 #endregion
 

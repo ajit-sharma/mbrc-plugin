@@ -2,7 +2,6 @@
 
 using System;
 using System.Runtime.Serialization;
-using ServiceStack.DataAnnotations;
 
 #endregion
 
@@ -19,14 +18,12 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		///     The id of the track info related with the current entry.
 		/// </summary>
 		[DataMember(Name = "track_info_id")]
-		[References(typeof (PlaylistTrackInfo))]
 		public long TrackInfoId { get; set; }
 
 		/// <summary>
 		///     The id of the playlist in which the entry exists.
 		/// </summary>
 		[DataMember(Name = "playlist_id")]
-		[References(typeof (Playlist))]
 		public long PlaylistId { get; set; }
 
 		/// <summary>

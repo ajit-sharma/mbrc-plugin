@@ -3,7 +3,6 @@
 using System;
 using System.Runtime.Serialization;
 using MusicBeePlugin.AndroidRemote.Extensions;
-using ServiceStack.DataAnnotations;
 
 #endregion
 
@@ -18,8 +17,7 @@ namespace MusicBeePlugin.Rest.ServiceModel.Type
 		/// <summary>
 		///     The identity of the entry stored in the database.
 		/// </summary>
-		[DataMember(Name = "id")]
-		[AutoIncrement]
+		[DataMember(Name = "id")]	
 		public long Id { get; set; }
 
 		/// <summary>

@@ -1,7 +1,8 @@
 ﻿#region
 
-using ServiceStack.Text;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 #endregion
 
@@ -30,9 +31,9 @@ namespace MusicBeePlugin.AndroidRemote.Entities
             Message = message;
         }
 
-        public NotificationMessage(JsonObject jObj)
+        public NotificationMessage(JObject obj)
         {
-            Message = jObj.Get("message");
+            Message = (string) obj["message"];
         }
 
         public NotificationMessage()
@@ -44,8 +45,8 @@ namespace MusicBeePlugin.AndroidRemote.Entities
 
         public string ToJsonString()
         {
-            var serialized = JsonSerializer.SerializeToString(this);
-            return string.Format("{0}\r\n", serialized);
+            var serialized = JsonConvert.SerializeObject(this, Formatting.None);
+            return $"{serialized}\r\n";
         }
     }
 }
