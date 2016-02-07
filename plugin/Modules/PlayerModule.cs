@@ -3,9 +3,7 @@
 using MusicBeePlugin.Rest.ServiceModel.Type;
 using System;
 using MusicBeePlugin.AndroidRemote.Enumerations;
-using MusicBeePlugin.Rest.ServiceInterface;
 using MusicBeePlugin.Rest.ServiceModel.Enum;
-using RepeatMode = MusicBeePlugin.Plugin.RepeatMode;
 
 #endregion
 
@@ -13,243 +11,132 @@ namespace MusicBeePlugin.Modules
 {
     public class PlayerModule
     {
-        private readonly Plugin.MusicBeeApiInterface _api;
+        private readonly IPlayerApiAdapter api;
 
-        public PlayerModule(Plugin.MusicBeeApiInterface api)
+        public PlayerModule(IPlayerApiAdapter api)
         {
-            _api = api;
+            this.api = api;
         }
 
         public bool PlayNextTrack()
         {
-            return _api.Player_PlayNextTrack();
+            return this.api.PlayNext();
         }
 
         public bool StopPlayback()
         {
-            return _api.Player_Stop();
+            return this.api.StopPlayback();
         }
 
         public bool PlayPreviousTrack()
         {
-            return _api.Player_PlayPreviousTrack();
+            return this.api.PlayPrevious();
         }
 
         public int GetVolume()
         {
-            return ((int) Math.Round(_api.Player_GetVolume()*100, 1));
+            return this.api.GetVolume();
         }
 
         public bool SetVolume(int volume)
         {
-            var success = false;
-            if (volume >= 0)
-            {
-                success = _api.Player_SetVolume((float) volume/100);
-            }
-
-            if (_api.Player_GetMute())
-            {
-                success = _api.Player_SetMute(false);
-            }
-            return success;
+            return this.api.SetVolume(volume);
         }
-
+        
         public ShuffleState GetShuffleState()
         {
-            ShuffleState state;
-            if (_api.Player_GetAutoDjEnabled())
-            {
-                state = ShuffleState.autodj;
-            }
-            else
-            {
-                var shuffleEnabled = _api.Player_GetShuffle();
-                state = shuffleEnabled ? ShuffleState.shuffle : ShuffleState.off;
-            }
-            return state;
+            return this.api.GetShuffleState();
         }
 
         public bool SetShuffleState(ShuffleState state)
         {
-            var success = false;
-            switch (state)
-            {
-                case ShuffleState.autodj:
-                    success = _api.Player_StartAutoDj();
-                    break;
-                case ShuffleState.off:
-                    success = _api.Player_SetShuffle(false);
-                    break;
-                case ShuffleState.shuffle:
-                    success = _api.Player_SetShuffle(true);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
-            }
-            return success;
+            return this.api.SetShuffleState(state);
         }
 
         public bool GetMuteState()
         {
-            return _api.Player_GetMute();
+            return this.api.GetMuteState();
         }
 
         public bool SetMuteState(bool enabled)
         {
-            return _api.Player_SetMute(enabled);
+            return this.api.SetMute(enabled);
+            
         }
 
         public bool GetScrobbleState()
         {
-            return _api.Player_GetScrobbleEnabled();
+            return this.api.GetScrobbleState();
         }
 
         public bool SetScrobbleState(bool enabled)
         {
-            return _api.Player_SetScrobbleEnabled(enabled);
+            return this.api.SetScrobbleState(enabled);
         }
 
         public string GetRepeatState()
         {
-            var repeatState = _api.Player_GetRepeat().ToString();
-            return repeatState.ToLower();
+            return this.api.GetRepeatState();
         }
 
         public bool SetRepeatState(ApiRepeatMode mode)
         {
-            var success = false;
-            RepeatMode repeatMode;
-
-            switch (mode)
-            {
-                case ApiRepeatMode.all:
-                    repeatMode = RepeatMode.All;
-                    break;
-                case ApiRepeatMode.none:
-                    repeatMode = RepeatMode.None;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-            }
-            success = _api.Player_SetRepeat(repeatMode);
-
-            return success;
+            return this.api.SetRepeatState(mode);
         }
 
         public bool GetAutoDjState()
         {
-            return _api.Player_GetAutoDjEnabled();
+            return this.api.GetAutoDjState();
         }
 
         public bool SetAutoDjState(bool enabled)
         {
-            return enabled ? _api.Player_StartAutoDj() : _api.Player_EndAutoDj();
+            return this.api.ChangeAutoDj(enabled);
         }
 
         public bool PausePlayback()
         {
-            var success = false;
-            var playState = _api.Player_GetPlayState();
-            if (playState == Plugin.PlayState.Playing)
-            {
-                success = _api.Player_PlayPause();
-            }
-            return success;
+            return this.api.PausePlayback();
         }
 
         public bool StartPlayback()
         {
-            var success = false;
-            var playState = _api.Player_GetPlayState();
-            if (playState != Plugin.PlayState.Playing)
-            {
-                success = _api.Player_PlayPause();
-            }
-            return success;
+            return this.api.StartPlayback();
         }
 
         public string GetPlayState()
         {
-            return _api.Player_GetPlayState().ToString().ToLower();
+            return this.api.GetPlayState();
         }
 
         public PlayerStatus GetPlayerStatus()
         {
-            return new PlayerStatus
-            {
-                Repeat = _api.Player_GetRepeat().ToString().ToLower(),
-                Mute = _api.Player_GetMute(),
-                Shuffle = GetShuffleState(),
-                Scrobble = _api.Player_GetScrobbleEnabled(),
-                PlayerState = _api.Player_GetPlayState().ToString().ToLower(),
-                Volume = ((int) Math.Round(_api.Player_GetVolume()*100, 1)),
-                Code = ApiCodes.Success
-            };
+            return this.api.GetStatus();
         }
 
         public bool PlayPause()
         {
-            return _api.Player_PlayPause();
+            return this.api.PlayPause();
         }
 
         public bool ChangeRepeatMode()
         {
-            var repeat = _api.Player_GetRepeat();
-            RepeatMode newMode;
-            switch (repeat)
-            {
-                case RepeatMode.None:
-                    newMode = RepeatMode.All;
-                    break;
-                case RepeatMode.All:
-                    newMode = RepeatMode.One;
-                    break;
-                default:
-                    newMode = RepeatMode.None;
-                    break;
-            }
-
-            return _api.Player_SetRepeat(newMode);
+            return this.api.ChangeRepeat();
         }
 
         public bool ToggleShuffleState()
         {
-            var success = false;
-            var shuffleEnabled = _api.Player_GetShuffle();
-            var autoDjEnabled = _api.Player_GetAutoDjEnabled();
-
-            if (shuffleEnabled && !autoDjEnabled)
-            {
-                success = _api.Player_StartAutoDj();
-            }
-            else if (autoDjEnabled)
-            {
-                success = _api.Player_EndAutoDj();
-            }
-            else
-            {
-                success = _api.Player_SetShuffle(true);
-            }
-            return success;
+            return this.api.ToggleShuffle();
         }
 
         public OutputDevice GetOutputDevices()
         {
-            string[] devices;
-            string active;
-            _api.Player_GetOutputDevices(out devices, out active);
-
-            return new OutputDevice
-            {
-                Active = active,
-                Devices = devices
-            };
+            return this.api.GetOutputDevices();
         }
 
         public bool SetOutputDevice(string active)
         {
-            return  _api.Player_SetOutputDevice(active);
+            return this.api.SetOutputDevice(active);
         }
     }
 }

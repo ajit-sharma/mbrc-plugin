@@ -7,6 +7,7 @@ namespace MusicBeePlugin.Modules
     using System.Threading.Tasks;
 
     using MusicBeePlugin.AndroidRemote.Extensions;
+    using MusicBeePlugin.ApiAdapters;
     using MusicBeePlugin.Comparers;
     using MusicBeePlugin.Repository;
     using MusicBeePlugin.Rest.ServiceInterface;
@@ -32,14 +33,14 @@ namespace MusicBeePlugin.Modules
 
         private readonly IPlaylistTrackRepository trackRepository;
 
-        private Plugin.MusicBeeApiInterface api;
+        private readonly IPlaylistApiAdapter api;
 
         /// <summary>
         ///     Creates a new <see cref="PlaylistModule" />.
         /// </summary>
         /// <param name="api"></param>       
         public PlaylistModule(
-            Plugin.MusicBeeApiInterface api, 
+            IPlaylistApiAdapter api, 
             IPlaylistRepository playlistRepository, 
             IPlaylistTrackRepository trackRepository, 
             IPlaylistTrackInfoRepository trackInfoRepository)
@@ -66,7 +67,7 @@ namespace MusicBeePlugin.Modules
                 list = new string[] { };
             }
 
-            var path = this.api.Playlist_CreatePlaylist(string.Empty, name, list);
+            var path = this.api.CreatePlaylist(name, list);
             var playlist = new Playlist { Path = path, Name = name, Tracks = list.Count() };
             var id = this.playlistRepository.SavePlaylist(playlist);
             playlist.Id = id;
@@ -89,7 +90,7 @@ namespace MusicBeePlugin.Modules
         public bool DeleteTrackFromPlaylist(int id, int position)
         {
             var playlist = this.GetPlaylistById(id);
-            var success = this.api.Playlist_RemoveAt(playlist.Path, position);
+            var success = this.api.RemoveTrack(playlist.Path, position);
             if (success)
             {
                 Task.Factory.StartNew(
@@ -193,28 +194,7 @@ namespace MusicBeePlugin.Modules
         /// <returns>The List of tracks for the <paramref name="playlist" />.</returns>
         public List<PlaylistTrackInfo> GetPlaylistTracksFromApi(Playlist playlist)
         {
-            var list = new List<PlaylistTrackInfo>();
-            var trackList = new string[] { };
-            if (this.api.Playlist_QueryFilesEx(playlist.Path, ref trackList))
-            {
-                var position = 0;
-                list.AddRange(
-                    trackList.Select(
-                        trackPath =>
-                        new PlaylistTrackInfo
-                            {
-                                Path = trackPath, 
-                                Artist =
-                                    this.api.Library_GetFileTag(trackPath, Plugin.MetaDataType.Artist), 
-                                Title =
-                                    this.api.Library_GetFileTag(
-                                        trackPath, 
-                                        Plugin.MetaDataType.TrackTitle), 
-                                Position = position++
-                            }));
-            }
-
-            return list;
+            return api.GetPlaylistTracks(playlist.Path);
         }
 
         /// <summary>
@@ -251,18 +231,7 @@ namespace MusicBeePlugin.Modules
         public bool MovePlaylistTrack(int id, int from, int to)
         {
             var playlist = this.GetPlaylistById(id);
-            int[] aFrom = { @from };
-            int dIn;
-            if (@from > to)
-            {
-                dIn = to - 1;
-            }
-            else
-            {
-                dIn = to;
-            }
-
-            var success = this.api.Playlist_MoveFiles(playlist.Path, aFrom, dIn);
+            var success = this.api.MoveTrack(playlist.Path, from, to);
             if (success)
             {
                 Task.Factory.StartNew(() => { this.SyncPlaylistDataWithCache(playlist); });
@@ -280,7 +249,7 @@ namespace MusicBeePlugin.Modules
         public bool PlaylistAddTracks(int id, string[] list)
         {
             var playlist = this.GetPlaylistById(id);
-            var success = this.api.Playlist_AppendFiles(playlist.Path, list);
+            var success = this.api.AddTracks(playlist.Path, list);
             if (success)
             {
                 Task.Factory.StartNew(() => { this.SyncPlaylistDataWithCache(playlist); });
@@ -297,7 +266,7 @@ namespace MusicBeePlugin.Modules
         public bool PlaylistDelete(int id)
         {
             var playlist = this.GetPlaylistById(id);
-            var success = this.api.Playlist_DeletePlaylist(playlist.Path);
+            var success = this.api.DeletePlaylist(playlist.Path);
             if (success)
             {
                 playlist.DateDeleted = DateTime.UtcNow.ToUnixTime();
@@ -313,7 +282,7 @@ namespace MusicBeePlugin.Modules
         /// <param name="path">The playlist path</param>
         public ResponseBase PlaylistPlayNow(string path)
         {
-            return new ResponseBase { Code = this.api.Playlist_PlayNow(path) ? ApiCodes.Success : ApiCodes.Failure };
+            return new ResponseBase { Code = this.api.PlayNow(path) ? ApiCodes.Success : ApiCodes.Failure };
         }
 
         /// <summary>
@@ -481,25 +450,7 @@ namespace MusicBeePlugin.Modules
         /// <returns>A list of <see cref="Playlist" /> objects.</returns>
         private List<Playlist> GetPlaylistsFromApi()
         {
-            this.api.Playlist_QueryPlaylists();
-            var playlists = new List<Playlist>();
-            while (true)
-            {
-                var path = this.api.Playlist_QueryGetNextPlaylist();
-                var name = this.api.Playlist_GetName(path);
-                string[] tracks = { };
-                this.api.Playlist_QueryFilesEx(path, ref tracks);
-
-                if (string.IsNullOrEmpty(path))
-                {
-                    break;
-                }
-
-                var playlist = new Playlist { Name = name, Path = path, Tracks = tracks.Count() };
-                playlists.Add(playlist);
-            }
-
-            return playlists;
+            return this.api.GetPlaylists();
         }
 
         /// <summary>

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-plugin", "plugin\mbrc-plugin.csproj", "{F5D46BA1-6F21-40EF-9695-46105CCACD08}"
 EndProject
@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{105227
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "firewall-utility", "firewall-utility\firewall-utility.csproj", "{48E9B838-6430-459B-9B44-D1E3548DF393}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-core", "mbrc-core\mbrc-core.csproj", "{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,17 +46,29 @@ Global
 		{48E9B838-6430-459B-9B44-D1E3548DF393}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{48E9B838-6430-459B-9B44-D1E3548DF393}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{48E9B838-6430-459B-9B44-D1E3548DF393}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Debug|Win32.Build.0 = Debug|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{C1353233-3C38-4E1E-A6C1-CE32B5A85C6D}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_AssemblyInfoFilename = Properties\AssemblyInfo.cs
-		BuildVersion_BuildVersioningStyle = None.None.Increment.None
-		BuildVersion_ConfigurationName = Release
-		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_UpdateFileVersion = True
-		BuildVersion_UseGlobalSettings = False
 		BuildVersion_UseUniversalClock = True
+		BuildVersion_UseGlobalSettings = False
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_ConfigurationName = Release
+		BuildVersion_BuildVersioningStyle = None.None.Increment.None
+		BuildVersion_AssemblyInfoFilename = Properties\AssemblyInfo.cs
 	EndGlobalSection
 EndGlobal
