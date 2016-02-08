@@ -84,168 +84,18 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Dapper, Version=1.40.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Dapper.1.42\lib\net40\Dapper.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="DapperExtensions, Version=1.4.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DapperExtensions.1.4.4\lib\net40\DapperExtensions.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="Fleck, Version=0.13.0.57, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Fleck.0.13.0.57\lib\net40\Fleck.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Nancy, Version=1.4.2.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.1.4.3\lib\net40\Nancy.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="Nancy.Bootstrappers.Ninject, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Bootstrappers.Ninject.1.4.1\lib\net40\Nancy.Bootstrappers.Ninject.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="Nancy.Hosting.Self, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Hosting.Self.1.4.1\lib\net40\Nancy.Hosting.Self.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="Nancy.Serialization.JsonNet, Version=1.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Nancy.Serialization.JsonNet.1.4.1\lib\net40\Nancy.Serialization.JsonNet.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="Ninject">
-      <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
-      <EmbedAssembly>true</EmbedAssembly>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Ninject.Extensions.ChildKernel, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.Extensions.ChildKernel.3.2.0.0\lib\net40\Ninject.Extensions.ChildKernel.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.2.3\lib\net40\NLog.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.99.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Data.SQLite.Core.1.0.99.0\lib\net40\System.Data.SQLite.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Core.2.2.5\lib\net40\System.Reactive.Core.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="System.Reactive.Interfaces, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Interfaces.2.2.5\lib\net40\System.Reactive.Interfaces.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="System.Reactive.Linq, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-Linq.2.2.5\lib\net40\System.Reactive.Linq.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
-    <Reference Include="System.Reactive.PlatformServices, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Rx-PlatformServices.2.2.5\lib\net40\System.Reactive.PlatformServices.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AndroidRemote\Commands\ForceClientDisconnect.cs" />
-    <Compile Include="AndroidRemote\Commands\NotifyClient.cs" />
-    <Compile Include="AndroidRemote\Commands\RestartSocketCommand.cs" />
-    <Compile Include="AndroidRemote\Commands\ShowFirstRunDialogCommand.cs" />
-    <Compile Include="AndroidRemote\Commands\SocketStatusChanged.cs" />
-    <Compile Include="AndroidRemote\Commands\StartServiceBroadcast.cs" />
-    <Compile Include="AndroidRemote\Commands\StartSocketServer.cs" />
-    <Compile Include="AndroidRemote\Commands\StopSocketServer.cs" />
-    <Compile Include="AndroidRemote\configuration.cs" />
-    <Compile Include="AndroidRemote\Controller\Controller.cs" />
-    <Compile Include="AndroidRemote\Data\CacheHelper.cs" />
-    <Compile Include="AndroidRemote\Enumerations\ShuffleState.cs" />
-    <Compile Include="AndroidRemote\Extensions\Epoch.cs" />
-    <Compile Include="AndroidRemote\Page.cs" />
-    <Compile Include="AndroidRemote\Persistence\LastUpdated.cs" />
-    <Compile Include="AndroidRemote\Persistence\PersistenceController.cs" />
-    <Compile Include="ApiAdapters\ITrackApiAdapter.cs" />
-    <Compile Include="Comparers\LibraryAlbumComparer.cs" />
-    <Compile Include="Comparers\LibraryArtistComparer.cs" />
-    <Compile Include="Comparers\LibraryGenreComparer.cs" />
-    <Compile Include="Comparers\PlaylistComparer.cs" />
-    <Compile Include="Comparers\PlaylistTrackInfoComparer.cs" />
-    <Compile Include="InjectionModule.cs" />
-    <Compile Include="ApiAdapters\IPlayerApiAdapter.cs" />
-    <Compile Include="Model\Modifications.cs" />
-    <Compile Include="Modules\LibraryModule.cs" />
-    <Compile Include="Modules\NowPlayingModule.cs" />
-    <Compile Include="Modules\PlayerModule.cs" />
-    <Compile Include="Modules\PlaylistModule.cs" />
-    <Compile Include="Modules\TrackModule.cs" />
-    <Compile Include="PlayerApiAdapter.cs" />
-    <Compile Include="RemoteBootstrapper.cs" />
-    <Compile Include="Repository\AlbumRepository.cs" />
-    <Compile Include="Repository\ArtistRepository.cs" />
-    <Compile Include="Repository\CoverRepository.cs" />
-    <Compile Include="Repository\IAlbumRepository.cs" />
-    <Compile Include="Repository\IArtistRepository.cs" />
-    <Compile Include="Repository\ICoverRepository.cs" />
-    <Compile Include="Repository\IGenreRepository.cs" />
-    <Compile Include="Repository\GenreRepository.cs" />
-    <Compile Include="Repository\IPlaylistRepository.cs" />
-    <Compile Include="Repository\IPlaylistTrackInfoRepository.cs" />
-    <Compile Include="Repository\IPlaylistTrackRepository.cs" />
-    <Compile Include="Repository\ITrackRepository.cs" />
-    <Compile Include="Repository\PlaylistRepository.cs" />
-    <Compile Include="Repository\PlaylistTrackInfoRepository.cs" />
-    <Compile Include="Repository\PlaylistTrackRepository.cs" />
-    <Compile Include="Repository\TrackRepository.cs" />
-    <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />
-    <Compile Include="Rest\ServiceInterface\DebugApiModule.cs" />
-    <Compile Include="Rest\ServiceModel\Enum\ChangeType.cs" />
-    <Compile Include="Rest\ServiceModel\Enum\PlayerAction.cs" />
-    <Compile Include="Rest\ServiceModel\Enum\ApiRepeatMode.cs" />
-    <Compile Include="Rest\ServiceModel\Type\LibraryCover.cs" />
-    <Compile Include="Rest\ServiceModel\Type\OutputDevice.cs" />
-    <Compile Include="Rest\ServiceModel\Type\PaginatedResponse.cs" />
-    <Compile Include="Rest\ServiceModel\Type\PlayerStatus.cs" />
-    <Compile Include="Rest\ServiceModel\Type\Playlist.cs" />
-    <Compile Include="AndroidRemote\Entities\NotificationMessage.cs" />
-    <Compile Include="AndroidRemote\Enumerations\MetaTag.cs" />
-    <Compile Include="AndroidRemote\Enumerations\LastfmStatus.cs" />
-    <Compile Include="AndroidRemote\Enumerations\PlayerState.cs" />
-    <Compile Include="AndroidRemote\Enumerations\QueueType.cs" />
-    <Compile Include="AndroidRemote\Enumerations\Repeat.cs" />
-    <Compile Include="AndroidRemote\Events\EventBus.cs" />
-    <Compile Include="AndroidRemote\Events\MessageEvent.cs" />
-    <Compile Include="AndroidRemote\Interfaces\ICommand.cs" />
-    <Compile Include="AndroidRemote\Interfaces\IEvent.cs" />
-    <Compile Include="AndroidRemote\Networking\Constants.cs" />
-    <Compile Include="AndroidRemote\Networking\ServiceDiscovery.cs" />
-    <Compile Include="AndroidRemote\Utilities\IdGenerator.cs" />
-    <Compile Include="AndroidRemote\Utilities\Utilities.cs" />
-    <Compile Include="AllowedAddresses.cs" />
+    <Compile Include="ApiAdapters\PlaylistApiAdapter.cs" />
+    <Compile Include="ApiAdapters\TrackApiAdapter.cs" />
+    <Compile Include="ApiAdapters\PlayerApiAdapter.cs" />
     <Compile Include="InfoWindow.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -254,38 +104,12 @@
     </Compile>
     <Compile Include="MusicBeeInterface.cs" />
     <Compile Include="Plugin.cs" />
-    <Compile Include="AndroidRemote\Model\LyricCoverModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="AndroidRemote\Persistence\UserSettings.cs" />
-    <Compile Include="AndroidRemote\Networking\SocketServer.cs" />
-    <Compile Include="AndroidRemote\Utilities\StateAction.cs" />
-    <Compile Include="Rest\ServiceInterface\LibraryApiModule.cs" />
-    <Compile Include="Rest\ServiceInterface\NowPlayingApiModule.cs" />
-    <Compile Include="Rest\ServiceInterface\PlayerApiModule.cs" />
-    <Compile Include="Rest\ServiceInterface\PlaylistApiModule.cs" />
-    <Compile Include="Rest\ServiceInterface\TrackApiModule.cs" />
-    <Compile Include="Rest\ServiceModel\NowPlayingModel.cs" />
-    <Compile Include="Rest\ServiceModel\PlayerModel.cs" />
-    <Compile Include="Rest\ServiceModel\PlaylistModel.cs" />
-    <Compile Include="Rest\ServiceModel\TrackModel.cs" />
-    <Compile Include="Rest\ServiceModel\Type\LibraryAlbum.cs" />
-    <Compile Include="Rest\ServiceModel\Type\LibraryArtist.cs" />
-    <Compile Include="Rest\ServiceModel\Type\LibraryGenre.cs" />
-    <Compile Include="Rest\ServiceModel\Type\LibraryTrack.cs" />
-    <Compile Include="Rest\ServiceModel\Type\LibraryTrackEx.cs" />
-    <Compile Include="Rest\ServiceModel\Type\NowPlaying.cs" />
-    <Compile Include="Rest\ServiceModel\Type\PlaylistTrack.cs" />
-    <Compile Include="Rest\ServiceModel\Type\PlaylistTrackInfo.cs" />
-    <Compile Include="Rest\ServiceModel\Type\RequestDto.cs" />
-    <Compile Include="Rest\ServiceModel\Type\ResponseDto.cs" />
-    <Compile Include="Rest\ServiceModel\Type\TrackInfoResponse.cs" />
-    <Compile Include="Rest\ServiceModel\Type\TypeBase.cs" />
-    <Compile Include="Tools\NetworkTools.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
@@ -330,7 +154,12 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\mbrc-core\mbrc-core.csproj">
+      <Project>{c1353233-3c38-4e1e-a6c1-ce32b5a85c6d}</Project>
+      <Name>mbrc-core</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ProjectExtensions>
     <VisualStudio>

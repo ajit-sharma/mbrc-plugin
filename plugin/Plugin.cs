@@ -7,7 +7,7 @@ using MusicBeePlugin.AndroidRemote.Events;
 using MusicBeePlugin.AndroidRemote.Model;
 using MusicBeePlugin.AndroidRemote.Networking;
 using MusicBeePlugin.Modules;
-using MusicBeePlugin.Rest.ServiceModel.Type;
+
 using Ninject;
 using NLog;
 using NLog.Config;
@@ -18,18 +18,19 @@ using System.IO;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using System.Reflection;
-using System.Threading.Tasks;
+
 using System.Timers;
 using System.Windows.Forms;
 using MusicBeePlugin.AndroidRemote.Persistence;
-using MusicBeePlugin.AndroidRemote.Utilities;
-using Nancy.Hosting.Self;
+
 using Timer = System.Timers.Timer;
 
 #endregion
 
 namespace MusicBeePlugin
 {
+    using MusicBeeRemoteCore;
+
     /// <summary>
     ///     The MusicBee Plugin class. Used to communicate with the MusicBee API.
     /// </summary>
@@ -79,46 +80,19 @@ namespace MusicBeePlugin
 
             _mStoragePath = _api.Setting_GetPersistentStoragePath() + "\\mb_remote";
 
-            InitializeLoggingConfiguration();
-            Debug.WriteLine("OOOO");
+            var supportedApi = this._api.ApiRevision >= MinApiRevision;
 
-            InjectionModule.Api = _api;
-            InjectionModule.StoragePath = _mStoragePath;
-
-            Utilities.StoragePath = _mStoragePath;
-
-            _kernel = new StandardKernel(new InjectionModule());
-
-            _persistence = _kernel.Get<PersistenceController>();
-            _persistence.LoadSettings();
+            MusicBeeRemoteEntryPoint mbrc = new MusicBeeRemoteEntryPointImpl();
+            mbrc.StoragePath = this._mStoragePath;
+           
+            mbrc.init(supportedApi);
 
             InitializeAbout();
+            
+            return _about;
+            
 
-            if (_api.ApiRevision < MinApiRevision)
-            {
-                return _about;
-            }
-
-            var controller = _kernel.Get<Controller>();
-            controller.InjectKernel(_kernel);
-            Configuration.Register(controller);
-            EventBus.Controller = controller;
-
-            var libraryModule = _kernel.Get<LibraryModule>();
-            var playlistModule = _kernel.Get<PlaylistModule>();
-
-            if (libraryModule.IsCacheEmpty())
-            {
-                Task.Factory.StartNew(() =>
-                {
-	                _api.MB_SetBackgroundTaskMessage("MBR: Currently building the metadata cache.");
-                    libraryModule.BuildCache();
-	                playlistModule.SyncPlaylistsWithCache();
-					_api.MB_SetBackgroundTaskMessage("MBRC: Currently processing the album covers.");
-					libraryModule.BuildCoverCachePerAlbum();
-	                _api.MB_SetBackgroundTaskMessage("MBRC: Cache Ready.");
-                });
-            }
+            
 
             UpdateCachedCover();
             UpdateCachedLyrics();
@@ -133,17 +107,7 @@ namespace MusicBeePlugin
 
             
 
-            try
-            {
-                var nancyHost = new NancyHost(new Uri($"http://+:{_persistence.Settings.HttpPort}/"));
-                nancyHost.Start();
-            }
-            catch (Exception ex)
-            {
-#if DEBUG
-                Debug.WriteLine(ex);
-#endif
-            }
+
             
       
             _volumeEventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(SendNotificationMessage);
@@ -175,42 +139,7 @@ namespace MusicBeePlugin
             _about.ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents;
         }
 
-        /// <summary>
-        ///     Initializes the logging configuration.
-        /// </summary>
-        private void InitializeLoggingConfiguration()
-        {
-            var config = new LoggingConfiguration();
 
-            var consoleTarget = new ColoredConsoleTarget();
-            var fileTarget = new FileTarget();
-            var debugger = new DebuggerTarget();
-
-            config.AddTarget("console", consoleTarget);
-            config.AddTarget("file", fileTarget);
-            config.AddTarget("debugger", debugger);
-
-            consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message} ${exception}";
-            fileTarget.FileName = $"{_mStoragePath}\\error.log";
-            fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}||${exception}";
-
-            debugger.Layout = fileTarget.Layout;
-
-            var consoleRule = new LoggingRule("*", LogLevel.Debug, consoleTarget);
-            config.LoggingRules.Add(consoleRule);
-
-#if DEBUG
-			var fileRule = new LoggingRule("*", LogLevel.Debug, fileTarget);
-#else
-			var fileRule = new LoggingRule("*", LogLevel.Error, fileTarget);
-#endif
-			config.LoggingRules.Add(fileRule);
-
-            var debuggerRule = new LoggingRule("*", LogLevel.Debug, debugger);
-            config.LoggingRules.Add(debuggerRule);
-
-            LogManager.Configuration = config;
-        }
 
         /// <summary>
         ///     Starts the player status monitoring.
@@ -340,7 +269,7 @@ namespace MusicBeePlugin
 
         /// <summary>
         ///     Called by MusicBee when the user clicks Apply or Save in the MusicBee Preferences screen.
-        ///     Used to save the temporary Plugin SettingsModel if the have changed.
+        ///     Used to save the temporary Plugin SettingsModel if the have Changed.
         /// </summary>
         public void SaveSettings()
         {
