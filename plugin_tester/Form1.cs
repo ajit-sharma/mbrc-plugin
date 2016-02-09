@@ -12,6 +12,9 @@
 
         private void button1_Click(object sender, EventArgs e)
         {
+            var path = System.Reflection.Assembly.GetEntryAssembly().Location;
+            var directory = System.IO.Path.GetDirectoryName(path);
+
             var entry = new MusicBeeRemoteCore.MusicBeeRemoteEntryPointImpl();
             var provider = new MyProvider(
                 new PlayerApiAdapter(), 
@@ -20,6 +23,7 @@
                 new LibraryAdapter(), 
                 new NowPlayingApiAdapter());
 
+            entry.StoragePath = directory;
             entry.init(true, provider);
         }
     }

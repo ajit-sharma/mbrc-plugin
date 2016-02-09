@@ -8,6 +8,7 @@ namespace MusicBeePlugin
 
     using MusicBeePlugin.AndroidRemote.Entities;
     using MusicBeePlugin.AndroidRemote.Events;
+    using MusicBeePlugin.ApiAdapters;
     using MusicBeePlugin.Modules;
 
     using MusicBeeRemoteCore;
@@ -89,7 +90,14 @@ namespace MusicBeePlugin
 
             this.mbrc = new MusicBeeRemoteEntryPointImpl { StoragePath = this.storagePath };
             this.mbrc.setMessageHandler(this);
-            this.mbrc.init(supportedApi, TODO);
+            this.mbrc.init(
+                supportedApi, 
+                new BindingProviderImpl(
+                    new PlayerApiAdapter(this.api), 
+                    new PlaylistApiAdapter(this.api), 
+                    new TrackApiAdapter(this.api), 
+                    new LibraryApiAdapter(this.api), 
+                    new NowPlayingApiAdapter(this.api)));
 
             if (supportedApi)
             {

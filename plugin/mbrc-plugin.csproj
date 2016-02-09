@@ -98,6 +98,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApiAdapters\BindingProviderImpl.cs" />
+    <Compile Include="ApiAdapters\LibraryApiAdapter.cs" />
+    <Compile Include="ApiAdapters\NowPlayingApiAdapter.cs" />
     <Compile Include="ApiAdapters\PlaylistApiAdapter.cs" />
     <Compile Include="ApiAdapters\TrackApiAdapter.cs" />
     <Compile Include="ApiAdapters\PlayerApiAdapter.cs" />

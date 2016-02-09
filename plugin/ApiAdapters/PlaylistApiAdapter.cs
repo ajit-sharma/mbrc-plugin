@@ -9,6 +9,11 @@
     {
         private readonly Plugin.MusicBeeApiInterface api;
 
+        public PlaylistApiAdapter(Plugin.MusicBeeApiInterface api)
+        {
+            this.api = api;
+        }
+
         public bool AddTracks(string path, string[] list)
         {
             return this.api.Playlist_AppendFiles(path, list);
