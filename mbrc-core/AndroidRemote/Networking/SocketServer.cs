@@ -1,38 +1,46 @@
-#region
-
-using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using Fleck;
-using MusicBeePlugin.AndroidRemote.Entities;
-using MusicBeePlugin.AndroidRemote.Events;
-using MusicBeePlugin.AndroidRemote.Persistence;
-using Newtonsoft.Json.Linq;
-using NLog;
-using LogLevel = Fleck.LogLevel;
-
-#endregion
-
 namespace MusicBeePlugin.AndroidRemote.Networking
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net.Sockets;
+
+    using Fleck;
+
+    using MusicBeePlugin.AndroidRemote.Entities;
+    using MusicBeePlugin.AndroidRemote.Events;
+    using MusicBeePlugin.AndroidRemote.Persistence;
+
+    using Newtonsoft.Json.Linq;
+
+    using NLog;
+
+    using LogLevel = Fleck.LogLevel;
+
     /// <summary>
     ///     Wrapper class for the websocket functionality
     /// </summary>
     public sealed class SocketServer : IDisposable
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly List<IWebSocketConnection> _allSockets;
+
         private readonly PersistenceController _controller;
+
+        private readonly EventBus bus;
+
         private bool _isRunning;
+
         private WebSocketServer _server;
 
         /// <summary>
         /// </summary>
-        public SocketServer(PersistenceController controller)
+        public SocketServer(PersistenceController controller, EventBus bus)
         {
-            _controller = controller;
-            IsRunning = false;
-            _allSockets = new List<IWebSocketConnection>();
+            this._controller = controller;
+            this.bus = bus;
+            this.IsRunning = false;
+            this._allSockets = new List<IWebSocketConnection>();
             SetupLogger();
         }
 
@@ -40,11 +48,15 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// </summary>
         public bool IsRunning
         {
-            get { return _isRunning; }
+            get
+            {
+                return this._isRunning;
+            }
+
             private set
             {
-                _isRunning = value;
-                EventBus.FireEvent(new MessageEvent(MessageEvent.SocketStatusChange, _isRunning));
+                this._isRunning = value;
+                this.bus.Publish(new MessageEvent(MessageEvent.SocketStatusChange, this._isRunning));
             }
         }
 
@@ -53,7 +65,7 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         /// </summary>
         public void Dispose()
         {
-            _server.Dispose();
+            this._server.Dispose();
         }
 
         /// <summary>
@@ -64,15 +76,25 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         }
 
         /// <summary>
-        ///     It stops the SocketServer.
+        ///     Restarts the main socket that is listening for new clients.
+        ///     Useful when the user wants to change the listening port.
         /// </summary>
-        /// <returns></returns>
-        public void Stop()
+        public void RestartSocket()
         {
-            Logger.Debug("Stopping Socket Server");
-            if (_server == null) return;
-            _server.Dispose();
-            _server = null;
+            this.Stop();
+            this.Start();
+        }
+
+        /// <summary>
+        ///     Sends the specified message to all the available clients
+        /// </summary>
+        /// <param name="message">The message.</param>
+        public void Send(string message)
+        {
+            foreach (var connection in this._allSockets)
+            {
+                connection.Send(message);
+            }
         }
 
         /// <summary>
@@ -84,32 +106,35 @@ namespace MusicBeePlugin.AndroidRemote.Networking
             try
             {
                 Logger.Debug("Starting Socket Server");
-                if (_server == null)
+                if (this._server == null)
                 {
-                    _server = new WebSocketServer($"ws://0.0.0.0:{_controller.Settings.WebSocketPort}");
-                    _server.Start(socket =>
-                    {
-                        socket.OnOpen = () =>
-                        {
-                            Logger.Debug($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
-                            _allSockets.Add(socket);
-                        };
+                    this._server = new WebSocketServer($"ws://0.0.0.0:{this._controller.Settings.WebSocketPort}");
+                    this._server.Start(
+                        socket =>
+                            {
+                                socket.OnOpen = () =>
+                                    {
+                                        Logger.Debug($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
+                                        this._allSockets.Add(socket);
+                                    };
 
-                        socket.OnClose = () =>
-                        {
-                            Logger.Debug($"Client has been disconnected: {socket.ConnectionInfo.ClientIpAddress}");
-                        };
+                                socket.OnClose =
+                                    () =>
+                                        {
+                                            Logger.Debug(
+                                                $"Client has been disconnected: {socket.ConnectionInfo.ClientIpAddress}");
+                                        };
 
-                        socket.OnMessage = message =>
-                        {
-                            Logger.Debug($"New message received: {message}");
-                            var notification = new NotificationMessage(JObject.Parse(message));
-                            EventBus.FireEvent(new MessageEvent(notification.Message));
-                        };
-                    });
+                                socket.OnMessage = message =>
+                                    {
+                                        Logger.Debug($"New message received: {message}");
+                                        var notification = new NotificationMessage(JObject.Parse(message));
+                                        this.bus.Publish(new MessageEvent(notification.Message));
+                                    };
+                            });
                 }
 
-                IsRunning = true;
+                this.IsRunning = true;
             }
             catch (SocketException se)
             {
@@ -118,25 +143,19 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         }
 
         /// <summary>
-        ///     Restarts the main socket that is listening for new clients.
-        ///     Useful when the user wants to change the listening port.
+        ///     It stops the SocketServer.
         /// </summary>
-        public void RestartSocket()
+        /// <returns></returns>
+        public void Stop()
         {
-            Stop();
-            Start();
-        }
-
-        /// <summary>
-        ///     Sends the specified message to all the available clients
-        /// </summary>
-        /// <param name="message">The message.</param>
-        public void Send(string message)
-        {
-            foreach (var connection in _allSockets)
+            Logger.Debug("Stopping Socket Server");
+            if (this._server == null)
             {
-                connection.Send(message);
+                return;
             }
+
+            this._server.Dispose();
+            this._server = null;
         }
 
         /// <summary>
@@ -145,26 +164,26 @@ namespace MusicBeePlugin.AndroidRemote.Networking
         private static void SetupLogger()
         {
             FleckLog.LogAction = (level, message, ex) =>
-            {
-                switch (level)
                 {
-                    case LogLevel.Debug:
-                        Logger.Debug(ex, message);
-                        break;
-                    case LogLevel.Error:
-                        Logger.Error(ex, message);
-                        break;
-                    case LogLevel.Info:
-                        Logger.Info(ex, message);
-                        break;
-                    case LogLevel.Warn:
-                        Logger.Warn(ex, message);
-                        break;
-                    default:
-                        Logger.Info(ex, message);
-                        break;
-                }
-            };
+                    switch (level)
+                    {
+                        case LogLevel.Debug:
+                            Logger.Debug(ex, message);
+                            break;
+                        case LogLevel.Error:
+                            Logger.Error(ex, message);
+                            break;
+                        case LogLevel.Info:
+                            Logger.Info(ex, message);
+                            break;
+                        case LogLevel.Warn:
+                            Logger.Warn(ex, message);
+                            break;
+                        default:
+                            Logger.Info(ex, message);
+                            break;
+                    }
+                };
         }
     }
 }

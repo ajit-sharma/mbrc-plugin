@@ -8,11 +8,13 @@ namespace MusicBeePlugin
         /// <summary>
         /// When selected every single IP address while be allowed to connect.
         /// </summary>
-        All,
+        All, 
+
         /// <summary>
         /// When selected only the IP addresses inside a specific range will be allowed to connect.
         /// </summary>
-        Range,
+        Range, 
+
         /// <summary>
         /// When selected only the specified IP addresses will be allowed to connect.
         /// </summary>

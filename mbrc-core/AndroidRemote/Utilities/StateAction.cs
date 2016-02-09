@@ -9,7 +9,8 @@
         /// <summary>
         /// Represents the change to the opposite of the current state.
         /// </summary>
-        Toggle,
+        Toggle, 
+
         /// <summary>
         /// Represent a request for the current state.
         /// </summary>

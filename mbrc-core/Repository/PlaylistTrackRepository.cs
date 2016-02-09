@@ -6,32 +6,12 @@ namespace MusicBeePlugin.Repository
 
     class PlaylistTrackRepository : IPlaylistTrackRepository
     {
-        public PlaylistTrack GetPlaylistTrack(long id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SavePlaylistTrack(PlaylistTrack track)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SavePlaylistTracks(ICollection<PlaylistTrack> tracks)
+        public void DeletePlaylistTracks(ICollection<PlaylistTrack> tracks)
         {
             throw new System.NotImplementedException();
         }
 
         public ICollection<PlaylistTrack> GetAllPlaylistTracks()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICollection<PlaylistTrack> GetPlaylistTrackPage(int offset, int limit)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICollection<PlaylistTrack> GetUpdatedPlaylistTracks(int id, int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
@@ -46,7 +26,7 @@ namespace MusicBeePlugin.Repository
             throw new System.NotImplementedException();
         }
 
-        public void DeletePlaylistTracks(ICollection<PlaylistTrack> tracks)
+        public PlaylistTrack GetPlaylistTrack(long id)
         {
             throw new System.NotImplementedException();
         }
@@ -56,12 +36,32 @@ namespace MusicBeePlugin.Repository
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetTracksForPlaylist(long id)
+        public ICollection<PlaylistTrack> GetPlaylistTrackPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
         public int GetTrackCountForPlaylist(int id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ICollection<PlaylistTrack> GetTracksForPlaylist(long id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ICollection<PlaylistTrack> GetUpdatedPlaylistTracks(int id, int offset, int limit, long epoch)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SavePlaylistTrack(PlaylistTrack track)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SavePlaylistTracks(ICollection<PlaylistTrack> tracks)
         {
             throw new System.NotImplementedException();
         }

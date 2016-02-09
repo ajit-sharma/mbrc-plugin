@@ -1,30 +1,29 @@
-﻿
-using System.Collections.Generic;
-
-namespace MusicBeePlugin.Repository
+﻿namespace MusicBeePlugin.Repository
 {
+    using System.Collections.Generic;
+
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     public interface IPlaylistRepository
     {
-        Playlist GetPlaylist(long id);
-
-        int SavePlaylist(Playlist Playlist);
-
-        void SavePlaylists(ICollection<Playlist> Playlists);
+        void DeletePlaylists(ICollection<Playlist> Playlists);
 
         ICollection<Playlist> GetAllPlaylists();
-
-        ICollection<Playlist> GetPlaylistPage(int offset, int limit);
-
-        ICollection<Playlist> GetUpdatedPlaylists(int offset, int limit, long epoch);
 
         ICollection<Playlist> GetCachedPlaylists();
 
         ICollection<Playlist> GetDeletedPlaylists();
 
-        void DeletePlaylists(ICollection<Playlist> Playlists);
+        Playlist GetPlaylist(long id);
 
         int GetPlaylistCount();
+
+        ICollection<Playlist> GetPlaylistPage(int offset, int limit);
+
+        ICollection<Playlist> GetUpdatedPlaylists(int offset, int limit, long epoch);
+
+        int SavePlaylist(Playlist Playlist);
+
+        void SavePlaylists(ICollection<Playlist> Playlists);
     }
 }

@@ -1,7 +1,5 @@
 namespace MusicBeePlugin.Modules
 {
-    using System;
-    using System.Collections.Generic;
     using System.Linq;
 
     using MusicBeePlugin.AndroidRemote.Enumerations;
@@ -9,9 +7,9 @@ namespace MusicBeePlugin.Modules
 
     public class NowPlayingModule
     {
-        private IPlayerApiAdapter api;
+        private INowPlayingApiAdapter api;
 
-        public NowPlayingModule(IPlayerApiAdapter api)
+        public NowPlayingModule(INowPlayingApiAdapter api)
         {
             this.api = api;
         }
@@ -25,7 +23,7 @@ namespace MusicBeePlugin.Modules
         {
             return this.api.NowPlayingMoveTrack(from, to);
         }
-        
+
         /// <summary>
         /// </summary>
         /// <param name="index"></param>
@@ -62,7 +60,7 @@ namespace MusicBeePlugin.Modules
 
         public PaginatedResponse<NowPlaying> GetCurrentQueue(int offset = 0, int limit = 50)
         {
-            var tracks = this.api.GetNowPlayingList();            
+            var tracks = this.api.GetNowPlayingList();
             var paginated = new PaginatedNowPlayingResponse();
             paginated.CreatePage(limit, offset, tracks.ToList());
             return paginated;

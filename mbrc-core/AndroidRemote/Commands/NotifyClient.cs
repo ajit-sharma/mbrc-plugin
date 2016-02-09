@@ -1,24 +1,20 @@
-﻿#region
-
-using MusicBeePlugin.AndroidRemote.Interfaces;
-using MusicBeePlugin.AndroidRemote.Networking;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Commands
+﻿namespace MusicBeePlugin.AndroidRemote.Commands
 {
+    using MusicBeePlugin.AndroidRemote.Interfaces;
+    using MusicBeePlugin.AndroidRemote.Networking;
+
     internal class NotifyClient : ICommand
     {
         private readonly SocketServer _server;
 
         public NotifyClient(SocketServer server)
         {
-            _server = server;
+            this._server = server;
         }
 
         public void Execute(IEvent eEvent)
         {
-            _server.Send(eEvent.GetDataString());
+            this._server.Send(eEvent.GetDataString());
         }
     }
 }

@@ -1,19 +1,17 @@
 ﻿namespace MusicBeePlugin.ApiAdapters
 {
     using System;
+    using System.Diagnostics;
     using System.Globalization;
     using System.Windows.Forms;
 
     using MusicBeePlugin.AndroidRemote.Enumerations;
     using MusicBeePlugin.AndroidRemote.Model;
     using MusicBeePlugin.Rest.ServiceModel.Type;
-
-    using NLog;
-
+    
     class TrackApiAdapter : ITrackApiAdapter
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-
+  
         private readonly Plugin.MusicBeeApiInterface api;
 
         public TrackApiAdapter(Plugin.MusicBeeApiInterface api)
@@ -71,7 +69,7 @@
             }
             catch (Exception e)
             {
-                Logger.Debug(e, "Exception");
+                Debug.WriteLine(e);
             }
 
             return rating;
@@ -88,6 +86,18 @@
                                 Path = this.api.NowPlaying_GetFileUrl()
                             };
             return track;
+        }
+
+        public void RequestCover(LyricCoverModel model)
+        {
+            if (!string.IsNullOrEmpty(this.api.NowPlaying_GetArtwork()))
+            {
+                this.api.NowPlaying_GetArtwork();
+            }
+            else if (this.api.ApiRevision >= 17)
+            {
+                model.SetCover(this.api.NowPlaying_GetDownloadedArtwork());
+            }
         }
 
         public PositionResponse SetPosition(int newPosition)
@@ -118,22 +128,10 @@
             }
             catch (Exception e)
             {
-                Logger.Debug(e, "Exception");
+                Debug.WriteLine("Exception");
             }
 
             return rating;
-        }
-
-        public void RequestCover(LyricCoverModel model)
-        {
-            if (!string.IsNullOrEmpty(this.api.NowPlaying_GetArtwork()))
-            {
-                this.api.NowPlaying_GetArtwork();
-            }
-            else if (this.api.ApiRevision >= 17)
-            {
-                model.SetCover(this.api.NowPlaying_GetDownloadedArtwork());
-            }
         }
 
         private LastfmStatus GetLfmStatus()

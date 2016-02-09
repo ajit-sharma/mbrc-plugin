@@ -1,47 +1,45 @@
-﻿#region
-
-using System.Runtime.Serialization;
-using MusicBeePlugin.Rest.ServiceModel.Enum;
-using MusicBeePlugin.Rest.ServiceModel.Type;
-#endregion
-
-namespace MusicBeePlugin.Rest.ServiceModel
+﻿namespace MusicBeePlugin.Rest.ServiceModel
 {
+    using System.Runtime.Serialization;
+
+    using MusicBeePlugin.Rest.ServiceModel.Enum;
+    using MusicBeePlugin.Rest.ServiceModel.Type;
+
     [DataContract]
     public class SetShuffleState
     {
         [DataMember(Name = "status", IsRequired = true)]
         public AndroidRemote.Enumerations.ShuffleState? Status { get; set; }
     }
-    
+
     [DataContract]
     public class SetScrobbleStatus
     {
         [DataMember(Name = "enabled", IsRequired = false)]
         public bool? Enabled { get; set; }
     }
-   
+
     [DataContract]
     public class SetRepeatMode
     {
-	    [DataMember(Name = "mode", IsRequired = false)]
+        [DataMember(Name = "mode", IsRequired = false)]
         public ApiRepeatMode? Mode { get; set; }
     }
-    
+
     [DataContract]
     public class SetMuteStatus
     {
-	    [DataMember(Name="enabled",IsRequired = false)]
+        [DataMember(Name = "enabled", IsRequired = false)]
         public bool? Enabled { get; set; }
     }
-   
+
     [DataContract]
     public class SetVolume
     {
-	    [DataMember(Name = "value", IsRequired = true)]
+        [DataMember(Name = "value", IsRequired = true)]
         public int Value { get; set; }
     }
-    
+
     [DataContract]
     public class PutOutputDevice
     {
@@ -52,11 +50,11 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [DataContract]
     public class OutputDeviceResponse : ResponseBase
     {
-        [DataMember(Name = "devices")]
-        public string[] Devices { get; set; }
         [DataMember(Name = "active")]
         public string Active { get; set; }
-    
+
+        [DataMember(Name = "devices")]
+        public string[] Devices { get; set; }
     }
 
     [DataContract]
@@ -80,9 +78,9 @@ namespace MusicBeePlugin.Rest.ServiceModel
     public class ShuffleResponse : ResponseBase
     {
         [DataMember(Name = "state")]
-        public AndroidRemote.Enumerations.ShuffleState State { get; set; } 
+        public AndroidRemote.Enumerations.ShuffleState State { get; set; }
     }
-    
+
     [DataContract]
     public class VolumeResponse : ResponseBase
     {

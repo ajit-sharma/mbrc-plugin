@@ -2,8 +2,10 @@
 {
     public enum LastfmStatus
     {
-        normal,
-        love,
+        normal, 
+
+        love, 
+
         ban
     }
 }

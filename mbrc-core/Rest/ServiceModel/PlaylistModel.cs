@@ -1,28 +1,24 @@
-﻿#region Dependencies
+﻿namespace MusicBeePlugin.Rest.ServiceModel
+{
+    using System.Runtime.Serialization;
 
-using System.Runtime.Serialization;
-
-#endregion
-
-namespace MusicBeePlugin.Rest.ServiceModel
-{   
     [DataContract]
     public class CreatePlaylist
     {
-        [DataMember(Name = "name", IsRequired = true)]
-        public string Name { get; set; }
-
         [DataMember(Name = "list", IsRequired = false)]
         public string[] List { get; set; }
+
+        [DataMember(Name = "name", IsRequired = true)]
+        public string Name { get; set; }
     }
-     
+
     [DataContract]
     public class PlaylistPlay
     {
         [DataMember(Name = "path", IsRequired = true)]
         public string Path { get; set; }
     }
-        
+
     [DataContract]
     public class AddPlaylistTracks
     {

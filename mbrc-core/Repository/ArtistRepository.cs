@@ -6,17 +6,7 @@
 
     class ArtistRepository : IArtistRepository
     {
-        public LibraryArtist GetArtist(long id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SaveArtist(LibraryArtist artist)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SaveArtists(ICollection<LibraryArtist> artists)
+        public void DeleteArtists(ICollection<LibraryArtist> artists)
         {
             throw new System.NotImplementedException();
         }
@@ -26,12 +16,17 @@
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetArtistPage(int offset, int limit)
+        public LibraryArtist GetArtist(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch)
+        public int GetArtistCount()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ICollection<LibraryArtist> GetArtistPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
@@ -46,12 +41,17 @@
             throw new System.NotImplementedException();
         }
 
-        public void DeleteArtists(ICollection<LibraryArtist> artists)
+        public ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetArtistCount()
+        public void SaveArtist(LibraryArtist artist)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SaveArtists(ICollection<LibraryArtist> artists)
         {
             throw new System.NotImplementedException();
         }

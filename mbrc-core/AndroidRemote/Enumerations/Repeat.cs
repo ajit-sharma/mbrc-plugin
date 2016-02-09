@@ -8,11 +8,13 @@
         /// <summary>
         /// Represents the deactivated repeat functionality
         /// </summary>
-        None,
+        None, 
+
         /// <summary>
         /// Represents the on track repeat
         /// </summary>
-        One,
+        One, 
+
         /// <summary>
         /// Represents the repeat of the whole playlist
         /// </summary>

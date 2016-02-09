@@ -2,7 +2,8 @@
 {
     public enum ApiRepeatMode
     {
-        all,
+        all, 
+
         none
     }
 }

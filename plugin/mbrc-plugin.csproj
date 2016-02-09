@@ -85,6 +85,11 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
+      <Private>False</Private>
+      <EmbedAssembly>true</EmbedAssembly>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -158,6 +163,9 @@
     <ProjectReference Include="..\mbrc-core\mbrc-core.csproj">
       <Project>{c1353233-3c38-4e1e-a6c1-ce32b5a85c6d}</Project>
       <Name>mbrc-core</Name>
+      <EmbedAssembly>true</EmbedAssembly>
+      <Private>False</Private>
+      <EmbedAssemblyDependencies>true</EmbedAssemblyDependencies>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

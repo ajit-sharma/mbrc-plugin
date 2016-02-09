@@ -2,36 +2,26 @@
 {
     using System.Collections.Generic;
 
+    using DapperExtensions;
+
+    using MusicBeePlugin.AndroidRemote.Data;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     class TrackRepository : ITrackRepository
     {
-        public LibraryTrack GetTrack(long id)
+        private readonly CacheHelper helper;
+
+        public TrackRepository(CacheHelper helper)
         {
-            throw new System.NotImplementedException();
+            this.helper = helper;
         }
 
-        public void SaveTrack(LibraryTrack Track)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SaveTracks(ICollection<LibraryTrack> Tracks)
+        public void DeleteTracks(ICollection<LibraryTrack> Tracks)
         {
             throw new System.NotImplementedException();
         }
 
         public ICollection<LibraryTrack> GetAllTracks()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICollection<LibraryTrack> GetTrackPage(int offset, int limit)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
@@ -46,7 +36,22 @@
             throw new System.NotImplementedException();
         }
 
-        public void DeleteTracks(ICollection<LibraryTrack> Tracks)
+        public LibraryTrack GetTrack(long id)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int GetTrackCount()
+        {
+            using (var connection = this.helper.GetDbConnection())
+            {
+                var count = connection.Count<LibraryTrack>(null);
+                connection.Close();
+                return count;
+            }
+        }
+
+        public ICollection<LibraryTrack> GetTrackPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
@@ -56,7 +61,17 @@
             throw new System.NotImplementedException();
         }
 
-        public int GetTrackCount()
+        public ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SaveTrack(LibraryTrack Track)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SaveTracks(ICollection<LibraryTrack> Tracks)
         {
             throw new System.NotImplementedException();
         }

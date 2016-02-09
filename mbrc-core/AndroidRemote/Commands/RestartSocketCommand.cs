@@ -1,24 +1,20 @@
-﻿#region
-
-using MusicBeePlugin.AndroidRemote.Interfaces;
-using MusicBeePlugin.AndroidRemote.Networking;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Commands
+﻿namespace MusicBeePlugin.AndroidRemote.Commands
 {
+    using MusicBeePlugin.AndroidRemote.Interfaces;
+    using MusicBeePlugin.AndroidRemote.Networking;
+
     internal class RestartSocketCommand : ICommand
     {
         private readonly SocketServer _server;
 
         public RestartSocketCommand(SocketServer server)
         {
-            _server = server;
+            this._server = server;
         }
 
         public void Execute(IEvent eEvent)
         {
-            _server.RestartSocket();
+            this._server.RestartSocket();
         }
     }
 }

@@ -1,12 +1,14 @@
-﻿using System;
-using System.Data;
-using System.Data.SQLite;
-using System.IO;
-using Dapper;
-using NLog;
-
-namespace MusicBeePlugin.AndroidRemote.Data
+﻿namespace MusicBeePlugin.AndroidRemote.Data
 {
+    using System;
+    using System.Data;
+    using System.Data.SQLite;
+    using System.IO;
+
+    using Dapper;
+
+    using NLog;
+
     /// <summary>
     ///     Class CacheHelper.
     ///     Is used to handle the library data and cover cache
@@ -14,9 +16,10 @@ namespace MusicBeePlugin.AndroidRemote.Data
     public class CacheHelper
     {
         private const string DbName = @"\\cache.db";
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
-        private readonly string _dbFilePath;
 
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        private readonly string _dbFilePath;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="CacheHelper" /> class.
@@ -24,11 +27,11 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// <param name="storagePath">The storage path.</param>
         public CacheHelper(string storagePath)
         {
-            _dbFilePath = storagePath + DbName;
+            this._dbFilePath = storagePath + DbName;
 
             try
             {
-                CreateDatabase();
+                this.CreateDatabase();
             }
             catch (Exception e)
             {
@@ -42,21 +45,20 @@ namespace MusicBeePlugin.AndroidRemote.Data
         /// <returns></returns>
         public IDbConnection GetDbConnection()
         {
-            return new SQLiteConnection($"Data Source={_dbFilePath}");
+            return new SQLiteConnection($"Data Source={this._dbFilePath}");
         }
 
         private void CreateDatabase()
         {
-            if (File.Exists(_dbFilePath))
+            if (File.Exists(this._dbFilePath))
             {
                 return;
             }
 
-            using (var connection = GetDbConnection())
+            using (var connection = this.GetDbConnection())
             {
                 connection.Open();
-                connection.Execute(
-                    @"create table LibraryGenre (
+                connection.Execute(@"create table LibraryGenre (
                       Id integer primary key AUTOINCREMENT,
                       Name varchar(255) not null,
                       DateAdded integer default (strftime('%s', 'now')),
@@ -66,8 +68,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
 
                 connection.Execute(@"create unique index uidx_librarygenre_name on LibraryGenre (Name);");
 
-                connection.Execute(
-                    @"create table LibraryArtist (
+                connection.Execute(@"create table LibraryArtist (
                         Id integer primary key AUTOINCREMENT,
                         Name varchar(255) not null,
                         GenreId integer not null,
@@ -79,8 +80,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         );");
 
                 connection.Execute(@"create unique index uidx_libraryartist_name on LibraryArtist (Name);");
-                connection.Execute(
-                    @"create table LibraryAlbum
+                connection.Execute(@"create table LibraryAlbum
                     (
                         Id integer primary key AUTOINCREMENT,
                         Name varchar(255),
@@ -96,8 +96,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
 
                 connection.Execute(@"create unique index uidx_libraryalbum_name on LibraryAlbum (Name);");
 
-                connection.Execute(
-                    @"create table LibraryCover (
+                connection.Execute(@"create table LibraryCover (
                         Id integer primary key AUTOINCREMENT,
                         Hash varchar(40),
                         DateAdded integer default (strftime('%s', 'now')),
@@ -105,8 +104,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         DateDeleted integer default 0
                     );");
 
-                connection.Execute(
-                    @"create table LibraryTrack (
+                connection.Execute(@"create table LibraryTrack (
                         Id integer primary key AUTOINCREMENT,
                         Title varchar(255),
                         Position integer default 0,
@@ -128,8 +126,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
 
                 connection.Execute(@"create unique index uidx_librarytrack_title on LibraryTrack (Title);");
 
-                connection.Execute(
-                    @"create table Playlist (
+                connection.Execute(@"create table Playlist (
                         Id integer primary key AUTOINCREMENT,
                         Name varchar(255),
                         Tracks integer default 0,
@@ -140,8 +137,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         DateDeleted integer default 0
                     );");
 
-                connection.Execute(
-                    @"create table PlaylistTrackInfo (
+                connection.Execute(@"create table PlaylistTrackInfo (
                         Id integer primary key AUTOINCREMENT,
                         Path varchar (255),
                         Artist varchar (255),
@@ -151,8 +147,7 @@ namespace MusicBeePlugin.AndroidRemote.Data
                         DateDeleted integer default 0
                     );");
 
-                connection.Execute(
-                    @"create table PlaylistTrack (
+                connection.Execute(@"create table PlaylistTrack (
                         Id integer primary key AUTOINCREMENT,
                         TrackInfoId integer not null,
                         PlaylistId integer not null,

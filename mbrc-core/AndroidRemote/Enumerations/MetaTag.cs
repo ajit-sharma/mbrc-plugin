@@ -5,10 +5,14 @@
     /// </summary>
     public enum MetaTag
     {
-        artist,
-        album,
-        genre,
-        track,
+        artist, 
+
+        album, 
+
+        genre, 
+
+        track, 
+
         none
     }
 }

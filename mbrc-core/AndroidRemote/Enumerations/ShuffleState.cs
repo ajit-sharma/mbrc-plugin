@@ -2,8 +2,10 @@
 {
     public enum ShuffleState
     {
-        off,
-        autodj,
+        off, 
+
+        autodj, 
+
         shuffle
     }
 }

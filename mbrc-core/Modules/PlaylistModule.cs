@@ -27,13 +27,13 @@ namespace MusicBeePlugin.Modules
         /// </summary>
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        private readonly IPlaylistApiAdapter api;
+
         private readonly IPlaylistRepository playlistRepository;
 
         private readonly IPlaylistTrackInfoRepository trackInfoRepository;
 
         private readonly IPlaylistTrackRepository trackRepository;
-
-        private readonly IPlaylistApiAdapter api;
 
         /// <summary>
         ///     Creates a new <see cref="PlaylistModule" />.
@@ -194,7 +194,7 @@ namespace MusicBeePlugin.Modules
         /// <returns>The List of tracks for the <paramref name="playlist" />.</returns>
         public List<PlaylistTrackInfo> GetPlaylistTracksFromApi(Playlist playlist)
         {
-            return api.GetPlaylistTracks(playlist.Path);
+            return this.api.GetPlaylistTracks(playlist.Path);
         }
 
         /// <summary>
@@ -539,9 +539,9 @@ namespace MusicBeePlugin.Modules
             // Reactivating
             comparer.IncludePosition = true;
             Logger.Debug(
-                "{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.",
-                tracksToInsert.Count(),
-                tracksToDelete.Count(),
+                "{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.", 
+                tracksToInsert.Count(), 
+                tracksToDelete.Count(), 
                 tracksUpdated);
 
             foreach (var track in tracksToDelete)
@@ -566,7 +566,7 @@ namespace MusicBeePlugin.Modules
             cachedPlaylistTracks.Sort();
 
             Logger.Debug(
-                "The playlists should be equal now: {0}",
+                "The playlists should be equal now: {0}", 
                 playlistTracks.SequenceEqual(cachedPlaylistTracks, comparer));
 
             if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)

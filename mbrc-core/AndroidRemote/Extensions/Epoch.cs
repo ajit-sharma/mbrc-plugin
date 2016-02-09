@@ -1,11 +1,7 @@
-﻿#region Dependencies
-
-using System;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Extensions
+﻿namespace MusicBeePlugin.AndroidRemote.Extensions
 {
+    using System;
+
     public static class Epoch
     {
         public static DateTime FromUnixTime(this long epoch)

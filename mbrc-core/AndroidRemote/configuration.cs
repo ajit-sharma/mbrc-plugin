@@ -1,12 +1,8 @@
-﻿#region
-
-using MusicBeePlugin.AndroidRemote.Commands;
-using MusicBeePlugin.AndroidRemote.Events;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote
+﻿namespace MusicBeePlugin.AndroidRemote
 {
+    using MusicBeePlugin.AndroidRemote.Commands;
+    using MusicBeePlugin.AndroidRemote.Events;
+
     internal class Configuration
     {
         public static void Register(Controller.Controller controller)

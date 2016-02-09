@@ -1,78 +1,76 @@
-﻿#region Dependencies
-
-using MusicBeePlugin.Modules;
-using Nancy;
-
-#endregion
-
-namespace MusicBeePlugin.Rest.ServiceInterface
+﻿namespace MusicBeePlugin.Rest.ServiceInterface
 {
+    using MusicBeePlugin.Modules;
+
+    using Nancy;
+
     internal class LibraryApiModule : NancyModule
     {
         private readonly LibraryModule _module;
 
         public LibraryApiModule(LibraryModule module)
         {
-            _module = module;
+            this._module = module;
 
-            Get["/library/tracks"] = _ =>
-            {
-                var limit = (int) Request.Query["limit"];
-                var offset = (int) Request.Query["offset"];
-                var after = (int) Request.Query["after"];
-
-                return _module.GetAllTracks(limit, offset, after);
-            };
-
-            Get["/library/tracks/{id}"] = parameters => _module.GetTrackById(parameters.id);
-
-            Get["/library/artists"] = _ =>
-            {
-                var limit = (int) Request.Query["limit"];
-                var offset = (int) Request.Query["offset"];
-                var after = (int) Request.Query["after"];
-
-                return _module.GetAllArtists(limit, offset, after);
-            };
-
-            Get["/library/artists/{id}"] = parameters => _module.GetArtistById(parameters.id);
-
-            Get["/library/genres"] = _ =>
-            {
-                var limit = (int) Request.Query["limit"];
-                var offset = (int) Request.Query["offset"];
-                var after = (int) Request.Query["after"];
-
-                return _module.GetAllGenres(limit, offset, after);
-            };
-
-            Get["/library/albums"] = _ =>
-            {
-                var limit = (int) Request.Query["limit"];
-                var offset = (int) Request.Query["offset"];
-                var after = (int) Request.Query["after"];
-
-                return _module.GetAllAlbums(limit, offset, after);
-            };
-
-            Get["/library/covers"] = _ =>
-            {
-                var limit = (int) Request.Query["limit"];
-                var offset = (int) Request.Query["offset"];
-                var after = (int) Request.Query["after"];
-                return _module.GetAllCovers(limit, offset, after);
-            };
-
-            Get["/library/covers/{id}"] = parameters => _module.GetLibraryCover(parameters.id, true);
-
-            Get["/library/covers/{id}/raw"] = parameters =>
-            {
-                return new Response
+            this.Get["/library/tracks"] = _ =>
                 {
-                    ContentType = "image/jpeg",
-                    Contents = stream => _module.GetCoverData(parameters.id)
+                    var limit = (int)this.Request.Query["limit"];
+                    var offset = (int)this.Request.Query["offset"];
+                    var after = (int)this.Request.Query["after"];
+
+                    return this._module.GetAllTracks(limit, offset, after);
                 };
-            };
+
+            this.Get["/library/tracks/{id}"] = parameters => this._module.GetTrackById(parameters.id);
+
+            this.Get["/library/artists"] = _ =>
+                {
+                    var limit = (int)this.Request.Query["limit"];
+                    var offset = (int)this.Request.Query["offset"];
+                    var after = (int)this.Request.Query["after"];
+
+                    return this._module.GetAllArtists(limit, offset, after);
+                };
+
+            this.Get["/library/artists/{id}"] = parameters => this._module.GetArtistById(parameters.id);
+
+            this.Get["/library/genres"] = _ =>
+                {
+                    var limit = (int)this.Request.Query["limit"];
+                    var offset = (int)this.Request.Query["offset"];
+                    var after = (int)this.Request.Query["after"];
+
+                    return this._module.GetAllGenres(limit, offset, after);
+                };
+
+            this.Get["/library/albums"] = _ =>
+                {
+                    var limit = (int)this.Request.Query["limit"];
+                    var offset = (int)this.Request.Query["offset"];
+                    var after = (int)this.Request.Query["after"];
+
+                    return this._module.GetAllAlbums(limit, offset, after);
+                };
+
+            this.Get["/library/covers"] = _ =>
+                {
+                    var limit = (int)this.Request.Query["limit"];
+                    var offset = (int)this.Request.Query["offset"];
+                    var after = (int)this.Request.Query["after"];
+                    return this._module.GetAllCovers(limit, offset, after);
+                };
+
+            this.Get["/library/covers/{id}"] = parameters => this._module.GetLibraryCover(parameters.id, true);
+
+            this.Get["/library/covers/{id}/raw"] =
+                parameters =>
+                    {
+                        return new Response
+                                   {
+                                       ContentType = "image/jpeg", 
+                                       Contents = stream => this._module.GetCoverData(parameters.id)
+                                   };
+                    };
         }
     }
 }

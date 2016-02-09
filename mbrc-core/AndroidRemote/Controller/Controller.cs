@@ -1,43 +1,46 @@
-﻿#region
-
-using System;
-using System.Collections.Generic;
-using MusicBeePlugin.AndroidRemote.Interfaces;
-using Ninject;
-using NLog;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Controller
+﻿namespace MusicBeePlugin.AndroidRemote.Controller
 {
+    using System;
+    using System.Collections.Generic;
+
+    using MusicBeePlugin.AndroidRemote.Interfaces;
+
+    using Ninject;
+
+    using NLog;
+
     public class Controller
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private readonly Dictionary<string, Type> _commandMap;
+
         private IKernel _kernel;
 
         public Controller()
         {
-            _commandMap = new Dictionary<string, Type>();
+            this._commandMap = new Dictionary<string, Type>();
         }
 
         public void AddCommand(string eventType, Type command)
         {
-            if (_commandMap.ContainsKey(eventType)) return;
-            _commandMap.Add(eventType, command);
-        }
+            if (this._commandMap.ContainsKey(eventType))
+            {
+                return;
+            }
 
-        public void RemoveCommand(string eventType)
-        {
-            if (_commandMap.ContainsKey(eventType))
-                _commandMap.Remove(eventType);
+            this._commandMap.Add(eventType, command);
         }
 
         public void CommandExecute(IEvent e)
         {
-            if (!_commandMap.ContainsKey(e.Type)) return;
-            var commandType = _commandMap[e.Type];
-            var command = (ICommand) _kernel.Get(commandType);
+            if (!this._commandMap.ContainsKey(e.Type))
+            {
+                return;
+            }
+
+            var commandType = this._commandMap[e.Type];
+            var command = (ICommand)this._kernel.Get(commandType);
 
             try
             {
@@ -51,7 +54,15 @@ namespace MusicBeePlugin.AndroidRemote.Controller
 
         public void InjectKernel(IKernel kernel)
         {
-            _kernel = kernel;
+            this._kernel = kernel;
+        }
+
+        public void RemoveCommand(string eventType)
+        {
+            if (this._commandMap.ContainsKey(eventType))
+            {
+                this._commandMap.Remove(eventType);
+            }
         }
     }
 }

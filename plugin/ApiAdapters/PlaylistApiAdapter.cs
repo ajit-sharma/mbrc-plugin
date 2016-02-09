@@ -9,9 +9,42 @@
     {
         private readonly Plugin.MusicBeeApiInterface api;
 
+        public bool AddTracks(string path, string[] list)
+        {
+            return this.api.Playlist_AppendFiles(path, list);
+        }
+
         public string CreatePlaylist(string name, string[] list)
         {
             return this.api.Playlist_CreatePlaylist(string.Empty, name, list);
+        }
+
+        public bool DeletePlaylist(string path)
+        {
+            return this.api.Playlist_DeletePlaylist(path);
+        }
+
+        public List<Playlist> GetPlaylists()
+        {
+            this.api.Playlist_QueryPlaylists();
+            var playlists = new List<Playlist>();
+            while (true)
+            {
+                var path = this.api.Playlist_QueryGetNextPlaylist();
+                var name = this.api.Playlist_GetName(path);
+                string[] tracks = { };
+                this.api.Playlist_QueryFilesEx(path, ref tracks);
+
+                if (string.IsNullOrEmpty(path))
+                {
+                    break;
+                }
+
+                var playlist = new Playlist { Name = name, Path = path, Tracks = tracks.Count() };
+                playlists.Add(playlist);
+            }
+
+            return playlists;
         }
 
         public List<PlaylistTrackInfo> GetPlaylistTracks(string path)
@@ -40,11 +73,6 @@
             return list;
         }
 
-        public bool RemoveTrack(string path, int position)
-        {
-            return this.api.Playlist_RemoveAt(path, position);
-        }
-
         public bool MoveTrack(string path, int @from, int to)
         {
             int[] aFrom = { @from };
@@ -61,42 +89,14 @@
             return this.api.Playlist_MoveFiles(path, aFrom, dIn);
         }
 
-        public bool AddTracks(string path, string[] list)
-        {
-            return this.api.Playlist_AppendFiles(path, list);
-        }
-
-        public bool DeletePlaylist(string path)
-        {
-            return this.api.Playlist_DeletePlaylist(path);
-        }
-
         public bool PlayNow(string path)
         {
             return this.api.Playlist_PlayNow(path);
         }
 
-        public List<Playlist> GetPlaylists()
+        public bool RemoveTrack(string path, int position)
         {
-            this.api.Playlist_QueryPlaylists();
-            var playlists = new List<Playlist>();
-            while (true)
-            {
-                var path = this.api.Playlist_QueryGetNextPlaylist();
-                var name = this.api.Playlist_GetName(path);
-                string[] tracks = { };
-                this.api.Playlist_QueryFilesEx(path, ref tracks);
-
-                if (string.IsNullOrEmpty(path))
-                {
-                    break;
-                }
-
-                var playlist = new Playlist { Name = name, Path = path, Tracks = tracks.Count() };
-                playlists.Add(playlist);
-            }
-
-            return playlists;
+            return this.api.Playlist_RemoveAt(path, position);
         }
     }
 }

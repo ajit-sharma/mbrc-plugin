@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Nancy.Bootstrappers.Ninject;
-using Ninject;
-
-namespace MusicBeePlugin
+﻿namespace MusicBeePlugin
 {
+    using Nancy.Bootstrappers.Ninject;
+
     public class RemoteBootstrapper : NinjectNancyBootstrapper
     {
     }

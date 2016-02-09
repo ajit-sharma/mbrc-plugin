@@ -1,11 +1,7 @@
-﻿#region Dependencies
-
-using System.Runtime.Serialization;
-
-#endregion
-
-namespace MusicBeePlugin.Rest.ServiceModel
+﻿namespace MusicBeePlugin.Rest.ServiceModel
 {
+    using System.Runtime.Serialization;
+
     [DataContract]
     public class SetTrackRating
     {

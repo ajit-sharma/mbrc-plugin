@@ -1,12 +1,9 @@
-﻿#region
-
-using System.Runtime.Serialization;
-using MusicBeePlugin.AndroidRemote.Enumerations;
-
-#endregion
-
-namespace MusicBeePlugin.Rest.ServiceModel
+﻿namespace MusicBeePlugin.Rest.ServiceModel
 {
+    using System.Runtime.Serialization;
+
+    using MusicBeePlugin.AndroidRemote.Enumerations;
+
     [DataContract]
     public class NowPlayingPlay
     {
@@ -34,9 +31,6 @@ namespace MusicBeePlugin.Rest.ServiceModel
     [DataContract]
     public class NowPlayingQueue
     {
-        [DataMember(Name = "type")]
-        public MetaTag Type { get; set; }
-
         [DataMember(Name = "action")]
         public QueueType Action { get; set; }
 
@@ -45,5 +39,8 @@ namespace MusicBeePlugin.Rest.ServiceModel
 
         [DataMember(Name = "path")]
         public string Path { get; set; }
+
+        [DataMember(Name = "type")]
+        public MetaTag Type { get; set; }
     }
 }

@@ -30,6 +30,11 @@ namespace MusicBeePlugin
             this.api = api;
         }
 
+        public bool ChangeAutoDj(bool enabled)
+        {
+            return enabled ? this.api.Player_StartAutoDj() : this.api.Player_EndAutoDj();
+        }
+
         public bool ChangeRepeat()
         {
             var repeat = this.api.Player_GetRepeat();
@@ -89,6 +94,11 @@ namespace MusicBeePlugin
             return urls.Length > 0 ? urls[0] : string.Empty;
         }
 
+        public bool GetAutoDjState()
+        {
+            return this.api.Player_GetAutoDjEnabled();
+        }
+
         public byte[] GetCoverData(string path)
         {
             string coverUrl = null;
@@ -127,6 +137,11 @@ namespace MusicBeePlugin
             string[] files = { };
             this.api.Library_QueryFilesEx(string.Empty, ref files);
             return files;
+        }
+
+        public bool GetMuteState()
+        {
+            return this.api.Player_GetMute();
         }
 
         public ICollection<NowPlaying> GetNowPlayingList()
@@ -183,13 +198,45 @@ namespace MusicBeePlugin
             return new OutputDevice { Active = active, Devices = devices };
         }
 
+        public string GetPlayState()
+        {
+            return this.api.Player_GetPlayState().ToString().ToLower();
+        }
+
+        public string GetRepeatState()
+        {
+            var repeatState = this.api.Player_GetRepeat().ToString();
+            return repeatState.ToLower();
+        }
+
+        public bool GetScrobbleState()
+        {
+            return this.api.Player_GetScrobbleEnabled();
+        }
+
+        public ShuffleState GetShuffleState()
+        {
+            ShuffleState state;
+            if (this.api.Player_GetAutoDjEnabled())
+            {
+                state = ShuffleState.autodj;
+            }
+            else
+            {
+                var shuffleEnabled = this.api.Player_GetShuffle();
+                state = shuffleEnabled ? ShuffleState.shuffle : ShuffleState.off;
+            }
+
+            return state;
+        }
+
         public PlayerStatus GetStatus()
         {
             return new PlayerStatus
                        {
                            Repeat = this.api.Player_GetRepeat().ToString().ToLower(), 
                            Mute = this.api.Player_GetMute(), 
-                           Shuffle = GetShuffleState(), 
+                           Shuffle = this.GetShuffleState(), 
                            Scrobble = this.api.Player_GetScrobbleEnabled(), 
                            PlayerState = this.api.Player_GetPlayState().ToString().ToLower(), 
                            Volume = (int)Math.Round(this.api.Player_GetVolume() * 100, 1), 
@@ -246,6 +293,18 @@ namespace MusicBeePlugin
             return this.api.NowPlayingList_RemoveAt(index);
         }
 
+        public bool PausePlayback()
+        {
+            var success = false;
+            var playState = this.api.Player_GetPlayState();
+            if (playState == Plugin.PlayState.Playing)
+            {
+                success = this.api.Player_PlayPause();
+            }
+
+            return success;
+        }
+
         public bool PlayNext()
         {
             return this.api.Player_PlayNextTrack();
@@ -289,30 +348,41 @@ namespace MusicBeePlugin
             return success;
         }
 
+        public bool SetMute(bool enabled)
+        {
+            return this.api.Player_SetMute(enabled);
+        }
+
         public bool SetOutputDevice(string active)
         {
             return this.api.Player_SetOutputDevice(active);
         }
 
-        public bool SetVolume(int volume)
+        public bool SetRepeatState(ApiRepeatMode mode)
         {
             var success = false;
-            if (volume >= 0)
+            Plugin.RepeatMode repeatMode;
+
+            switch (mode)
             {
-                success = this.api.Player_SetVolume((float)volume / 100);
+                case ApiRepeatMode.all:
+                    repeatMode = Plugin.RepeatMode.All;
+                    break;
+                case ApiRepeatMode.none:
+                    repeatMode = Plugin.RepeatMode.None;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
             }
 
-            if (this.api.Player_GetMute())
-            {
-                success = this.api.Player_SetMute(false);
-            }
+            success = this.api.Player_SetRepeat(repeatMode);
 
             return success;
         }
 
-        public string GetPlayState()
+        public bool SetScrobbleState(bool enabled)
         {
-            return this.api.Player_GetPlayState().ToString().ToLower();
+            return this.api.Player_SetScrobbleEnabled(enabled);
         }
 
         public bool SetShuffleState(ShuffleState state)
@@ -332,41 +402,22 @@ namespace MusicBeePlugin
                 default:
                     throw new ArgumentOutOfRangeException(nameof(state), state, null);
             }
+
             return success;
         }
 
-        public ShuffleState GetShuffleState()
-        {
-            ShuffleState state;
-            if (this.api.Player_GetAutoDjEnabled())
-            {
-                state = ShuffleState.autodj;
-            }
-            else
-            {
-                var shuffleEnabled = this.api.Player_GetShuffle();
-                state = shuffleEnabled ? ShuffleState.shuffle : ShuffleState.off;
-            }
-            return state;
-        }
-
-        public bool SetRepeatState(ApiRepeatMode mode)
+        public bool SetVolume(int volume)
         {
             var success = false;
-            Plugin.RepeatMode repeatMode;
-
-            switch (mode)
+            if (volume >= 0)
             {
-                case ApiRepeatMode.all:
-                    repeatMode = Plugin.RepeatMode.All;
-                    break;
-                case ApiRepeatMode.none:
-                    repeatMode = Plugin.RepeatMode.None;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
+                success = this.api.Player_SetVolume((float)volume / 100);
             }
-            success = this.api.Player_SetRepeat(repeatMode);
+
+            if (this.api.Player_GetMute())
+            {
+                success = this.api.Player_SetMute(false);
+            }
 
             return success;
         }
@@ -379,54 +430,8 @@ namespace MusicBeePlugin
             {
                 success = this.api.Player_PlayPause();
             }
+
             return success;
-        }
-
-        public bool PausePlayback()
-        {
-            var success = false;
-            var playState = this.api.Player_GetPlayState();
-            if (playState == Plugin.PlayState.Playing)
-            {
-                success = this.api.Player_PlayPause();
-            }
-            return success;
-        }
-
-        public bool ChangeAutoDj(bool enabled)
-        {
-            return enabled ? this.api.Player_StartAutoDj() : this.api.Player_EndAutoDj();
-        }
-
-        public bool GetAutoDjState()
-        {
-            return this.api.Player_GetAutoDjEnabled();
-        }
-
-        public string GetRepeatState()
-        {
-            var repeatState = this.api.Player_GetRepeat().ToString();
-            return repeatState.ToLower();
-        }
-
-        public bool SetScrobbleState(bool enabled)
-        {
-            return this.api.Player_SetScrobbleEnabled(enabled);
-        }
-
-        public bool GetScrobbleState()
-        {
-            return this.api.Player_GetScrobbleEnabled();
-        }
-
-        public bool GetMuteState()
-        {
-            return this.api.Player_GetMute();
-        }
-
-        public bool SetMute(bool enabled)
-        {
-            return this.api.Player_SetMute(enabled);
         }
 
         public bool StopPlayback()

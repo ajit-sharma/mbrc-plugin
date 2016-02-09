@@ -1,14 +1,9 @@
-#region
-
-using MusicBeePlugin.Rest.ServiceModel.Type;
-using System;
-using MusicBeePlugin.AndroidRemote.Enumerations;
-using MusicBeePlugin.Rest.ServiceModel.Enum;
-
-#endregion
-
 namespace MusicBeePlugin.Modules
 {
+    using MusicBeePlugin.AndroidRemote.Enumerations;
+    using MusicBeePlugin.Rest.ServiceModel.Enum;
+    using MusicBeePlugin.Rest.ServiceModel.Type;
+
     public class PlayerModule
     {
         private readonly IPlayerApiAdapter api;
@@ -18,70 +13,9 @@ namespace MusicBeePlugin.Modules
             this.api = api;
         }
 
-        public bool PlayNextTrack()
+        public bool ChangeRepeatMode()
         {
-            return this.api.PlayNext();
-        }
-
-        public bool StopPlayback()
-        {
-            return this.api.StopPlayback();
-        }
-
-        public bool PlayPreviousTrack()
-        {
-            return this.api.PlayPrevious();
-        }
-
-        public int GetVolume()
-        {
-            return this.api.GetVolume();
-        }
-
-        public bool SetVolume(int volume)
-        {
-            return this.api.SetVolume(volume);
-        }
-        
-        public ShuffleState GetShuffleState()
-        {
-            return this.api.GetShuffleState();
-        }
-
-        public bool SetShuffleState(ShuffleState state)
-        {
-            return this.api.SetShuffleState(state);
-        }
-
-        public bool GetMuteState()
-        {
-            return this.api.GetMuteState();
-        }
-
-        public bool SetMuteState(bool enabled)
-        {
-            return this.api.SetMute(enabled);
-            
-        }
-
-        public bool GetScrobbleState()
-        {
-            return this.api.GetScrobbleState();
-        }
-
-        public bool SetScrobbleState(bool enabled)
-        {
-            return this.api.SetScrobbleState(enabled);
-        }
-
-        public string GetRepeatState()
-        {
-            return this.api.GetRepeatState();
-        }
-
-        public bool SetRepeatState(ApiRepeatMode mode)
-        {
-            return this.api.SetRepeatState(mode);
+            return this.api.ChangeRepeat();
         }
 
         public bool GetAutoDjState()
@@ -89,44 +23,9 @@ namespace MusicBeePlugin.Modules
             return this.api.GetAutoDjState();
         }
 
-        public bool SetAutoDjState(bool enabled)
+        public bool GetMuteState()
         {
-            return this.api.ChangeAutoDj(enabled);
-        }
-
-        public bool PausePlayback()
-        {
-            return this.api.PausePlayback();
-        }
-
-        public bool StartPlayback()
-        {
-            return this.api.StartPlayback();
-        }
-
-        public string GetPlayState()
-        {
-            return this.api.GetPlayState();
-        }
-
-        public PlayerStatus GetPlayerStatus()
-        {
-            return this.api.GetStatus();
-        }
-
-        public bool PlayPause()
-        {
-            return this.api.PlayPause();
-        }
-
-        public bool ChangeRepeatMode()
-        {
-            return this.api.ChangeRepeat();
-        }
-
-        public bool ToggleShuffleState()
-        {
-            return this.api.ToggleShuffle();
+            return this.api.GetMuteState();
         }
 
         public OutputDevice GetOutputDevices()
@@ -134,9 +33,104 @@ namespace MusicBeePlugin.Modules
             return this.api.GetOutputDevices();
         }
 
+        public PlayerStatus GetPlayerStatus()
+        {
+            return this.api.GetStatus();
+        }
+
+        public string GetPlayState()
+        {
+            return this.api.GetPlayState();
+        }
+
+        public string GetRepeatState()
+        {
+            return this.api.GetRepeatState();
+        }
+
+        public bool GetScrobbleState()
+        {
+            return this.api.GetScrobbleState();
+        }
+
+        public ShuffleState GetShuffleState()
+        {
+            return this.api.GetShuffleState();
+        }
+
+        public int GetVolume()
+        {
+            return this.api.GetVolume();
+        }
+
+        public bool PausePlayback()
+        {
+            return this.api.PausePlayback();
+        }
+
+        public bool PlayNextTrack()
+        {
+            return this.api.PlayNext();
+        }
+
+        public bool PlayPause()
+        {
+            return this.api.PlayPause();
+        }
+
+        public bool PlayPreviousTrack()
+        {
+            return this.api.PlayPrevious();
+        }
+
+        public bool SetAutoDjState(bool enabled)
+        {
+            return this.api.ChangeAutoDj(enabled);
+        }
+
+        public bool SetMuteState(bool enabled)
+        {
+            return this.api.SetMute(enabled);
+        }
+
         public bool SetOutputDevice(string active)
         {
             return this.api.SetOutputDevice(active);
+        }
+
+        public bool SetRepeatState(ApiRepeatMode mode)
+        {
+            return this.api.SetRepeatState(mode);
+        }
+
+        public bool SetScrobbleState(bool enabled)
+        {
+            return this.api.SetScrobbleState(enabled);
+        }
+
+        public bool SetShuffleState(ShuffleState state)
+        {
+            return this.api.SetShuffleState(state);
+        }
+
+        public bool SetVolume(int volume)
+        {
+            return this.api.SetVolume(volume);
+        }
+
+        public bool StartPlayback()
+        {
+            return this.api.StartPlayback();
+        }
+
+        public bool StopPlayback()
+        {
+            return this.api.StopPlayback();
+        }
+
+        public bool ToggleShuffleState()
+        {
+            return this.api.ToggleShuffle();
         }
     }
 }

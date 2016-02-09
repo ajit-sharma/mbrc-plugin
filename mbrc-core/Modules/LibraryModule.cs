@@ -26,6 +26,8 @@ namespace MusicBeePlugin.Modules
 
         private readonly IAlbumRepository albumRepository;
 
+        private readonly ILibraryApiAdapter api;
+
         private readonly IArtistRepository artistRepository;
 
         private readonly ICoverRepository coverRepository;
@@ -34,13 +36,11 @@ namespace MusicBeePlugin.Modules
 
         private readonly ITrackRepository trackRepository;
 
-        private readonly IPlayerApiAdapter api;
-
         /// <summary>
         ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>
         public LibraryModule(
-            IPlayerApiAdapter api, 
+            ILibraryApiAdapter api, 
             IGenreRepository genreRepository, 
             IArtistRepository artistRepository, 
             IAlbumRepository albumRepository, 
@@ -76,7 +76,7 @@ namespace MusicBeePlugin.Modules
                 var hash = Utilities.CacheArtistImage(imageUrl, name);
                 artist.ImageUrl = hash;
 
-                //Todo: update the artist entry
+                // Todo: update the artist entry
             }
         }
 
@@ -124,7 +124,7 @@ namespace MusicBeePlugin.Modules
                 {
                     hash = Utilities.StoreCoverToCache(coverUrl);
                 }
-                
+
                 if (string.IsNullOrEmpty(hash))
                 {
                     continue;
@@ -135,7 +135,6 @@ namespace MusicBeePlugin.Modules
             }
 
             this.albumRepository.SaveAlbums(albums);
-            
         }
 
         /// <summary>
@@ -338,30 +337,29 @@ namespace MusicBeePlugin.Modules
         {
             var tracklist = new List<string>();
 
-//            try
-//            {
-//                using (var db = _cHelper.GetDbConnection())
-//                {
-//                    var sql = "SELECT LibraryTrack.Id AS Id, " + "LibraryTrack.Title AS Title, "
-//                              + "LibraryTrack.Path AS Path, " + "LibraryTrack.Year AS Year, "
-//                              + "LibraryTrack.Position AS Position, " + "LibraryGenre.Name AS Genre, "
-//                              + "artist.Name AS Artist, " + "albumArtist.Name AS AlbumArtist, "
-//                              + "LibraryAlbum.Name AS Album " + "FROM LibraryTrack "
-//                              + "INNER JOIN  LibraryGenre ON LibraryTrack.GenreId = LibraryGenre.Id "
-//                              + "LEFT OUTER JOIN  LibraryArtist artist ON LibraryTrack.ArtistId = artist.Id "
-//                              + "LEFT OUTER JOIN  LibraryArtist albumArtist ON LibraryTrack.AlbumArtistId = albumArtist.Id "
-//                              + "LEFT OUTER JOIN  LibraryAlbum ON LibraryTrack.AlbumId = LibraryAlbum.Id  "
-//                              + "WHERE LibraryGenre.Id = " + id + " "
-//                              + "ORDER BY albumArtist.Name ASC , LibraryAlbum.Name ASC ,LibraryTrack.Position ASC";
-//                    var result = db.Query<LibraryTrackEx>(sql);
-//                    tracklist.AddRange(result.Select(track => track.Path));
-//                }
-//            }
-//            catch (Exception e)
-//            {
-//                Logger.Debug(e);
-//            }
-
+            // try
+            // {
+            // using (var db = _cHelper.GetDbConnection())
+            // {
+            // var sql = "SELECT LibraryTrack.Id AS Id, " + "LibraryTrack.Title AS Title, "
+            // + "LibraryTrack.Path AS Path, " + "LibraryTrack.Year AS Year, "
+            // + "LibraryTrack.Position AS Position, " + "LibraryGenre.Name AS Genre, "
+            // + "artist.Name AS Artist, " + "albumArtist.Name AS AlbumArtist, "
+            // + "LibraryAlbum.Name AS Album " + "FROM LibraryTrack "
+            // + "INNER JOIN  LibraryGenre ON LibraryTrack.GenreId = LibraryGenre.Id "
+            // + "LEFT OUTER JOIN  LibraryArtist artist ON LibraryTrack.ArtistId = artist.Id "
+            // + "LEFT OUTER JOIN  LibraryArtist albumArtist ON LibraryTrack.AlbumArtistId = albumArtist.Id "
+            // + "LEFT OUTER JOIN  LibraryAlbum ON LibraryTrack.AlbumId = LibraryAlbum.Id  "
+            // + "WHERE LibraryGenre.Id = " + id + " "
+            // + "ORDER BY albumArtist.Name ASC , LibraryAlbum.Name ASC ,LibraryTrack.Position ASC";
+            // var result = db.Query<LibraryTrackEx>(sql);
+            // tracklist.AddRange(result.Select(track => track.Path));
+            // }
+            // }
+            // catch (Exception e)
+            // {
+            // Logger.Debug(e);
+            // }
             return tracklist.ToArray();
         }
 
@@ -421,7 +419,6 @@ namespace MusicBeePlugin.Modules
         public void SyncCheckForChanges(string[] cachedFiles, DateTime lastSync)
         {
             this.api.GetSyncDelta(cachedFiles, lastSync);
-
         }
 
         /// <summary>
@@ -552,15 +549,14 @@ namespace MusicBeePlugin.Modules
             this.genreRepository.SaveGenres(genresToInsert);
             Logger.Debug("Genres: {0} entries inserted", genresToInsert.Count);
         }
-        
+
         /// <summary>
         ///     Checks for updates the <see cref="LibraryTrack" /> table.
         /// </summary>
         private void UpdateTrackTable()
         {
-            
             var files = this.api.GetLibraryFiles();
-            
+
             var artists = this.artistRepository.GetAllArtists();
             var genres = this.genreRepository.GetAllGenres();
             var albums = this.albumRepository.GetAllAlbums();
@@ -582,7 +578,6 @@ namespace MusicBeePlugin.Modules
             foreach (var file in toInsert)
             {
                 var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file));
-
 
                 var meta = this.api.GetTags(file);
 

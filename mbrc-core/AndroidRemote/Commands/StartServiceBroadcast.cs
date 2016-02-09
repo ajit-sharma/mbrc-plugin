@@ -1,24 +1,20 @@
-﻿#region
-
-using MusicBeePlugin.AndroidRemote.Interfaces;
-using MusicBeePlugin.AndroidRemote.Networking;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Commands
+﻿namespace MusicBeePlugin.AndroidRemote.Commands
 {
+    using MusicBeePlugin.AndroidRemote.Interfaces;
+    using MusicBeePlugin.AndroidRemote.Networking;
+
     internal class StartServiceBroadcast : ICommand
     {
         private readonly ServiceDiscovery _service;
 
         public StartServiceBroadcast(ServiceDiscovery service)
         {
-            _service = service;
+            this._service = service;
         }
 
         public void Execute(IEvent eEvent)
         {
-            _service.Start();
+            this._service.Start();
         }
     }
 }

@@ -14,10 +14,10 @@
 
         TrackInfoResponse GetTrackInfo();
 
+        void RequestCover(LyricCoverModel model);
+
         PositionResponse SetPosition(int newPosition);
 
         float SetRating(float rating);
-
-        void RequestCover(LyricCoverModel model);
     }
 }

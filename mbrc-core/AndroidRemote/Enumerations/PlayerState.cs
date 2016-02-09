@@ -8,19 +8,23 @@
         /// <summary>
         /// Represents an undefined state.
         /// </summary>
-        Undefined,
+        Undefined, 
+
         /// <summary>
         /// Represents a new track loading state.
         /// </summary>
-        Loading,
+        Loading, 
+
         /// <summary>
         /// Represents a track playing state.
         /// </summary>
-        Playing,
+        Playing, 
+
         /// <summary>
         /// Represents a track being paused state.
         /// </summary>
-        Paused,
+        Paused, 
+
         /// <summary>
         /// Represents a track being stopped state.
         /// </summary>

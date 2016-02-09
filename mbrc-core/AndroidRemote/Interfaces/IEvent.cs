@@ -2,9 +2,12 @@
 {
     public interface IEvent
     {
-        object Data { get; }
-        string Type { get; }
         string ClientId { get; }
+
+        object Data { get; }
+
+        string Type { get; }
+
         string GetDataString();
     }
 }

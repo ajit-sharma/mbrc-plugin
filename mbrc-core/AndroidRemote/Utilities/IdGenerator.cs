@@ -18,8 +18,9 @@
             var result = new StringBuilder(maxSize);
             foreach (var b in data)
             {
-                result.Append(chars[b%(chars.Length - 1)]);
+                result.Append(chars[b % (chars.Length - 1)]);
             }
+
             return result.ToString();
         }
     }

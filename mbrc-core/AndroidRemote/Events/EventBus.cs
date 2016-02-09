@@ -1,18 +1,20 @@
-﻿#region
-
-using MusicBeePlugin.AndroidRemote.Interfaces;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Events
+﻿namespace MusicBeePlugin.AndroidRemote.Events
 {
-    internal class EventBus
-    {
-        public static Controller.Controller Controller;
+    using MusicBeePlugin.AndroidRemote.Controller;
+    using MusicBeePlugin.AndroidRemote.Interfaces;
 
-        public static void FireEvent(IEvent e)
+    public class EventBus
+    {
+        private Controller controller;
+
+        public EventBus(Controller controller)
         {
-            Controller.CommandExecute(e);
+            this.controller = controller;
+        }
+
+        public void Publish(IEvent e)
+        {
+            this.controller.CommandExecute(e);
         }
     }
 }

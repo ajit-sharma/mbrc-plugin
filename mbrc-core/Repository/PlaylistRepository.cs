@@ -6,32 +6,12 @@ namespace MusicBeePlugin.Repository
 
     class PlaylistRepository : IPlaylistRepository
     {
-        public Playlist GetPlaylist(long id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int SavePlaylist(Playlist Playlist)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SavePlaylists(ICollection<Playlist> Playlists)
+        public void DeletePlaylists(ICollection<Playlist> Playlists)
         {
             throw new System.NotImplementedException();
         }
 
         public ICollection<Playlist> GetAllPlaylists()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICollection<Playlist> GetPlaylistPage(int offset, int limit)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public ICollection<Playlist> GetUpdatedPlaylists(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
@@ -46,12 +26,32 @@ namespace MusicBeePlugin.Repository
             throw new System.NotImplementedException();
         }
 
-        public void DeletePlaylists(ICollection<Playlist> Playlists)
+        public Playlist GetPlaylist(long id)
         {
             throw new System.NotImplementedException();
         }
 
         public int GetPlaylistCount()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ICollection<Playlist> GetPlaylistPage(int offset, int limit)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public ICollection<Playlist> GetUpdatedPlaylists(int offset, int limit, long epoch)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int SavePlaylist(Playlist Playlist)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void SavePlaylists(ICollection<Playlist> Playlists)
         {
             throw new System.NotImplementedException();
         }

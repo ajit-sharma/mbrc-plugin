@@ -1,16 +1,11 @@
-﻿#region
-
-using MusicBeePlugin.AndroidRemote.Interfaces;
-
-#endregion
-
-namespace MusicBeePlugin.AndroidRemote.Commands
+﻿namespace MusicBeePlugin.AndroidRemote.Commands
 {
+    using MusicBeePlugin.AndroidRemote.Interfaces;
+
     internal class ShowFirstRunDialogCommand : ICommand
     {
         public void Execute(IEvent eEvent)
         {
-            
         }
     }
 }

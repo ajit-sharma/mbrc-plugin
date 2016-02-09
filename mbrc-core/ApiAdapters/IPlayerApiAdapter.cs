@@ -1,46 +1,40 @@
 ﻿namespace MusicBeePlugin
 {
-    using System;
-    using System.Collections.Generic;
-
     using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Model;
     using MusicBeePlugin.Rest.ServiceModel.Enum;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     public interface IPlayerApiAdapter
     {
-        ICollection<LibraryAlbum> GetAlbumList();
+        bool ChangeAutoDj(bool enabled);
 
-        ICollection<LibraryArtist> GetArtistList();
+        bool ChangeRepeat();
 
-        string GetArtistUrl(string name);
+        bool GetAutoDjState();
 
-        byte[] GetCoverData(string path);
+        bool GetMuteState();
 
-        string GetCoverUrl(string path);
+        /// <summary>
+        /// Gets the available output devices from the API
+        /// </summary>
+        /// <returns>
+        /// The <see cref="OutputDevice"/>.
+        /// </returns>
+        OutputDevice GetOutputDevices();
 
-        ICollection<LibraryGenre> GetGenreList();
+        string GetPlayState();
 
-        string[] GetLibraryFiles();
+        string GetRepeatState();
 
-        Modifications GetSyncDelta(string[] cachedFiles, DateTime lastSync);
+        bool GetScrobbleState();
 
-        LibraryTrackEx GetTags(string file);
+        ShuffleState GetShuffleState();
 
-        bool NowPlayingMoveTrack(int @from, int to);
+        PlayerStatus GetStatus();
 
-        bool NowPlayingRemove(int index);
+        int GetVolume();
 
-        bool QueueNow(string[] tracklist);
-
-        bool QueueLast(string[] tracklist);
-
-        bool QueueNext(string[] tracklist);
-
-        bool PlayNow(string path);
-
-        ICollection<NowPlaying> GetNowPlayingList();
+        bool PausePlayback();
 
         /// <summary>
         /// Plays the next track available in the queue and returns true on success or
@@ -51,56 +45,26 @@
         /// </returns>
         bool PlayNext();
 
-        /// <summary>
-        /// Gets the available output devices from the API
-        /// </summary>
-        /// <returns>
-        /// The <see cref="OutputDevice"/>.
-        /// </returns>
-        OutputDevice GetOutputDevices();
+        bool PlayPause();
+
+        bool PlayPrevious();
+
+        bool SetMute(bool enabled);
 
         bool SetOutputDevice(string active);
+
+        bool SetRepeatState(ApiRepeatMode mode);
+
+        bool SetScrobbleState(bool enabled);
+
+        bool SetShuffleState(ShuffleState state);
+
+        bool SetVolume(int volume);
+
+        bool StartPlayback();
 
         bool StopPlayback();
 
         bool ToggleShuffle();
-
-        bool ChangeRepeat();
-
-        bool PlayPause();
-
-        PlayerStatus GetStatus();
-
-        bool PlayPrevious();
-
-        int GetVolume();
-
-        bool SetVolume(int volume);
-
-        string GetPlayState();
-
-        bool SetShuffleState(ShuffleState state);
-
-        ShuffleState GetShuffleState();
-
-        bool SetRepeatState(ApiRepeatMode mode);
-
-        bool StartPlayback();
-
-        bool PausePlayback();
-
-        bool ChangeAutoDj(bool enabled);
-
-        bool GetAutoDjState();
-
-        string GetRepeatState();
-
-        bool SetScrobbleState(bool enabled);
-
-        bool GetScrobbleState();
-
-        bool GetMuteState();
-
-        bool SetMute(bool enabled);
     }
 }

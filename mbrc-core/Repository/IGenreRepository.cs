@@ -1,5 +1,4 @@
-﻿
-namespace MusicBeePlugin.Repository
+﻿namespace MusicBeePlugin.Repository
 {
     using System.Collections.Generic;
 
@@ -10,6 +9,14 @@ namespace MusicBeePlugin.Repository
     /// </summary>
     public interface IGenreRepository
     {
+        void DeleteGenres(ICollection<LibraryGenre> genres);
+
+        ICollection<LibraryGenre> GetAllGenres();
+
+        ICollection<LibraryGenre> GetCachedGenres();
+
+        ICollection<LibraryGenre> GetDeletedGenres();
+
         /// <summary>
         /// Gets a specific genre from the repository by the genre id.
         /// </summary>
@@ -21,22 +28,14 @@ namespace MusicBeePlugin.Repository
         /// </returns>
         LibraryGenre GetGenre(long id);
 
-        void SaveGenre(LibraryGenre genre);
-
-        void SaveGenres(ICollection<LibraryGenre> genres);
-
-        ICollection<LibraryGenre> GetAllGenres();
+        int GetGenreCount();
 
         ICollection<LibraryGenre> GetGenrePage(int offset, int limit);
 
         ICollection<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch);
 
-        ICollection<LibraryGenre> GetCachedGenres();
+        void SaveGenre(LibraryGenre genre);
 
-        ICollection<LibraryGenre> GetDeletedGenres();
-
-        void DeleteGenres(ICollection<LibraryGenre> genres);
-
-        int GetGenreCount();
+        void SaveGenres(ICollection<LibraryGenre> genres);
     }
 }
