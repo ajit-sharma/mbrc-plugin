@@ -1,6 +1,7 @@
 namespace MusicBeePlugin
 {
     using System;
+    using System.Diagnostics;
     using System.IO;
     using System.Reflection;
     using System.Timers;
@@ -79,6 +80,8 @@ namespace MusicBeePlugin
         /// <returns></returns>
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
+            this.InitializeAbout();
+
             this.api = new MusicBeeApiInterface();
             this.api.Initialise(apiInterfacePtr);
             var supportedApi = this.api.ApiRevision >= MinApiRevision;
@@ -87,14 +90,23 @@ namespace MusicBeePlugin
 
             this.mbrc = new MusicBeeRemoteEntryPointImpl { StoragePath = this.storagePath };
             this.mbrc.setMessageHandler(this);
-            this.mbrc.init(
-                supportedApi, 
-                new BindingProviderImpl(
-                    new PlayerApiAdapter(this.api), 
-                    new PlaylistApiAdapter(this.api), 
-                    new TrackApiAdapter(this.api), 
-                    new LibraryApiAdapter(this.api), 
-                    new NowPlayingApiAdapter(this.api)));
+            try
+            {
+                this.mbrc.init(
+            supportedApi,
+            new BindingProviderImpl(
+                new PlayerApiAdapter(this.api),
+                new PlaylistApiAdapter(this.api),
+                new TrackApiAdapter(this.api),
+                new LibraryApiAdapter(this.api),
+                new NowPlayingApiAdapter(this.api)));
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine(ex);
+                this.OnMessageAvailable("MBRC failed to initialize");
+                return this.about;
+            }
 
             if (supportedApi)
             {
@@ -106,8 +118,7 @@ namespace MusicBeePlugin
                 this.UpdateCachedLyrics();
                 this.StartPlayerStatusMonitoring();
             }
-
-            this.InitializeAbout();
+            
             return this.about;
         }
 

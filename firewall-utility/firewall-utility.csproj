@@ -22,21 +22,21 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\build\bin\Debug\</OutputPath>
+    <OutputPath>..\build\bin\firewall-utility\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <BaseIntermediateOutputPath>..\build\obj\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\build\obj\firewall-utility\Debug\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\build\bin\Release\</OutputPath>
+    <OutputPath>..\build\bin\firewall-utility\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <BaseIntermediateOutputPath>..\build\obj\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>..\build\obj\firewall-utility\Release\</BaseIntermediateOutputPath>
   </PropertyGroup>
   <PropertyGroup />
   <ItemGroup>
