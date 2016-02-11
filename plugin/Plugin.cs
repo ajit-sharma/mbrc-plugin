@@ -9,12 +9,9 @@ namespace MusicBeePlugin
     using MusicBeePlugin.AndroidRemote.Entities;
     using MusicBeePlugin.AndroidRemote.Events;
     using MusicBeePlugin.ApiAdapters;
-    using MusicBeePlugin.Modules;
 
     using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.Interfaces;
-
-    using Ninject;
 
     using Timer = System.Timers.Timer;
 
@@ -227,11 +224,9 @@ namespace MusicBeePlugin
         {
             if (this.window == null || !this.window.Visible)
             {
-                var kernel = this.mbrc.GetKernel();
-                this.window = kernel.Get<InfoWindow>();
-                var libraryModule = kernel.Get<LibraryModule>();
-                var cachedTracks = libraryModule.GetCachedTrackCount();
-                var cachedCovers = libraryModule.GetCachedCoverCount();
+                this.window = new InfoWindow(this.mbrc.Settings);
+                var cachedTracks = this.mbrc.CachedTrackCount;
+                var cachedCovers = this.mbrc.CachedCoverCount;
                 this.window.UpdateCacheStatus(cachedCovers, cachedTracks);
             }
 

@@ -47,6 +47,12 @@
         void setMessageHandler(IMessageHandler messageHandler);
 
         void setVersion(string version);
+
+       PersistenceController Settings { get; }
+
+        int CachedTrackCount { get; }
+
+        int CachedCoverCount { get; }
     }
 
     public class MusicBeeRemoteEntryPointImpl : MusicBeeRemoteEntryPoint
@@ -57,7 +63,25 @@
 
         private IMessageHandler messageHandler;
 
-        private PersistenceController persistence;
+        public PersistenceController Settings { get; private set; }
+
+        public int CachedTrackCount
+        {
+            get
+            {
+                var module = this.kernel.Get<LibraryModule>();
+                return module.GetCachedTrackCount();
+            } 
+        }
+
+        public int CachedCoverCount
+        {
+            get
+            {
+                var module = this.kernel.Get<LibraryModule>();
+                return module.GetCachedCoverCount();
+            }
+        }
 
         public string StoragePath { get; set; }
 
@@ -104,8 +128,8 @@
 
             this.kernel = new StandardKernel(new InjectionModule(provider));
 
-            this.persistence = this.kernel.Get<PersistenceController>();
-            this.persistence.LoadSettings();
+            this.Settings = this.kernel.Get<PersistenceController>();
+            this.Settings.LoadSettings();
 
             var controller = this.kernel.Get<Controller>();
             controller.InjectKernel(this.kernel);
@@ -147,7 +171,7 @@
 
         public void setVersion(string version)
         {
-            this.persistence.Settings.CurrentVersion = version;
+            this.Settings.Settings.CurrentVersion = version;
         }
 
         public void SetupModule(IBindingProvider bindingsProvider)
@@ -213,7 +237,7 @@
         {
             try
             {
-                var nancyHost = new NancyHost(new Uri($"http://+:{this.persistence.Settings.HttpPort}/"));
+                var nancyHost = new NancyHost(new Uri($"http://+:{this.Settings.Settings.HttpPort}/"));
                 nancyHost.Start();
             }
             catch (Exception ex)
