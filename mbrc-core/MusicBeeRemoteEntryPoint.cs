@@ -57,6 +57,8 @@
 
     public class MusicBeeRemoteEntryPointImpl : MusicBeeRemoteEntryPoint
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         private Subject<string> eventDebouncer = new Subject<string>();
 
         private StandardKernel kernel;
@@ -181,19 +183,22 @@
 
         private void BuildCache(LibraryModule libraryModule, PlaylistModule playlistModule)
         {
-            if (libraryModule.IsCacheEmpty())
-            {
-                Task.Factory.StartNew(
-                    () =>
-                        {
-                            this.messageHandler?.OnMessageAvailable("MBR: Currently building the metadata cache.");
-                            libraryModule.BuildCache();
-                            playlistModule.SyncPlaylistsWithCache();
-                            this.messageHandler?.OnMessageAvailable("MBRC: Currently processing the album covers.");
-                            libraryModule.BuildCoverCachePerAlbum();
-                            this.messageHandler?.OnMessageAvailable("MBRC: Cache Ready.");
-                        });
-            }
+            var observable = Observable.Create<string>(o =>
+                {
+                    if (!libraryModule.IsCacheEmpty())
+                    {
+                        o.OnNext("MBR: Currently building the metadata cache.");
+                        libraryModule.BuildCache();
+                        playlistModule.SyncPlaylistsWithCache();
+                        o.OnNext("MBRC: Currently processing the album covers.");
+                        libraryModule.BuildCoverCachePerAlbum();
+                        o.OnNext("MBRC: Cache Ready.");
+                    }
+                    o.OnCompleted();
+                    return () => { };
+                });
+
+            observable.Subscribe(s => this.messageHandler?.OnMessageAvailable(s), ex => Logger.Debug(ex, "Cache Build"));
         }
 
         /// <summary>
