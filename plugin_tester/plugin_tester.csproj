@@ -7,10 +7,15 @@
     <ProjectGuid>{AEA93D81-20F6-4F2F-9568-5C7B6E2BECF6}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>plugin_tester</RootNamespace>
+    <RootNamespace>MusicBeeRemoteTester</RootNamespace>
     <AssemblyName>plugin_tester</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <AssemblyInfoFilePath>Properties\AssemblyInfo.cs</AssemblyInfoFilePath>
+    <UpdateAssemblyVersion>True</UpdateAssemblyVersion>
+    <UpdateAssemblyFileVersion>False</UpdateAssemblyFileVersion>
+    <UpdateAssemblyInfoVersion>False</UpdateAssemblyInfoVersion>
+    <AssemblyVersionSettings>None.None.None.Increment</AssemblyVersionSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -71,7 +76,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -86,6 +93,10 @@
     <ProjectReference Include="..\mbrc-core\mbrc-core.csproj">
       <Project>{c1353233-3c38-4e1e-a6c1-ce32b5a85c6d}</Project>
       <Name>mbrc-core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\mbrc-data\mbrc-data.csproj">
+      <Project>{097ffcd1-5d60-42f9-b621-3d8dc016780e}</Project>
+      <Name>mbrc-data</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

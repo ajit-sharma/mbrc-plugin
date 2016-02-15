@@ -5,7 +5,7 @@
 
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class CoverRepository : ICoverRepository
+    public class CoverRepository : ICoverRepository
     {
         public void DeleteCovers(ICollection<LibraryCover> Covers)
         {

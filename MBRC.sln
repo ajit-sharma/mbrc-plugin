@@ -18,6 +18,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-core", "mbrc-core\mbrc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plugin_tester", "plugin_tester\plugin_tester.csproj", "{AEA93D81-20F6-4F2F-9568-5C7B6E2BECF6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-data", "mbrc-data\mbrc-data.csproj", "{097FFCD1-5D60-42F9-B621-3D8DC016780E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,17 +74,29 @@ Global
 		{AEA93D81-20F6-4F2F-9568-5C7B6E2BECF6}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{AEA93D81-20F6-4F2F-9568-5C7B6E2BECF6}.Release|Win32.ActiveCfg = Release|Any CPU
 		{AEA93D81-20F6-4F2F-9568-5C7B6E2BECF6}.Release|Win32.Build.0 = Release|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Debug|Win32.Build.0 = Debug|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Release|Win32.ActiveCfg = Release|Any CPU
+		{097FFCD1-5D60-42F9-B621-3D8DC016780E}.Release|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseUniversalClock = True
-		BuildVersion_UseGlobalSettings = False
-		BuildVersion_UpdateFileVersion = True
-		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_ConfigurationName = Release
-		BuildVersion_BuildVersioningStyle = None.None.Increment.None
 		BuildVersion_AssemblyInfoFilename = Properties\AssemblyInfo.cs
+		BuildVersion_BuildVersioningStyle = None.None.Increment.None
+		BuildVersion_ConfigurationName = Release
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_UseGlobalSettings = False
+		BuildVersion_UseUniversalClock = True
 	EndGlobalSection
 EndGlobal

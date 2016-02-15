@@ -3,14 +3,14 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using DapperExtensions;
-
+    using Dapper;
+    
     using MusicBeePlugin.AndroidRemote.Data;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class GenreRepository : IGenreRepository
+    public class GenreRepository : IGenreRepository
     {
-        private CacheHelper cHelper;
+        private DatabaseProvider cHelper;
 
         public void DeleteGenres(ICollection<LibraryGenre> genres)
         {
@@ -26,8 +26,7 @@
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
-                var predicate = Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Eq, 0);
-                var libraryGenres = connection.GetList<LibraryGenre>(predicate);
+                var libraryGenres = connection.GetList<LibraryGenre>("where DateDeleted == 0");
                 return libraryGenres.ToList();
             }
         }
@@ -36,8 +35,7 @@
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
-                var predicate = Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Gt, 0);
-                var libraryGenres = connection.GetList<LibraryGenre>(predicate);
+                var libraryGenres = connection.GetList<LibraryGenre>("where DateDeleted > 0");
                 return libraryGenres.ToList();
             }
         }
@@ -57,7 +55,7 @@
             using (var connection = this.cHelper.GetDbConnection())
             {
                 var page = limit == 0 ? 0 : offset / limit;
-                var libraryGenres = connection.GetPage<LibraryGenre>(null, new List<ISort>(), page, limit);
+                var libraryGenres = connection.GetListPaged<LibraryGenre>(page, limit, string.Empty, string.Empty);
                 return libraryGenres.ToList();
             }
         }
@@ -67,11 +65,12 @@
             using (var connection = this.cHelper.GetDbConnection())
             {
                 var page = limit == 0 ? 0 : offset / limit;
-                var group = new PredicateGroup { Operator = GroupOperator.Or, Predicates = new List<IPredicate>() };
-                group.Predicates.Add(Predicates.Field<LibraryGenre>(genre => genre.DateAdded, Operator.Gt, epoch));
-                group.Predicates.Add(Predicates.Field<LibraryGenre>(genre => genre.DateUpdated, Operator.Gt, epoch));
-                group.Predicates.Add(Predicates.Field<LibraryGenre>(genre => genre.DateDeleted, Operator.Gt, epoch));
-                var libraryGenres = connection.GetPage<LibraryGenre>(group, new List<ISort>(), page, limit);
+
+                var libraryGenres = connection.GetListPaged<LibraryGenre>(
+                    page,
+                    limit,
+                    "where DateAdded > 0 or DateUpdated > 0 or DateDeleted > 0",
+                    string.Empty);
                 return libraryGenres.ToList();
             }
         }

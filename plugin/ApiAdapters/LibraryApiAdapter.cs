@@ -7,7 +7,10 @@
     using MusicBeePlugin.Model;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class LibraryApiAdapter : ILibraryApiAdapter
+    /// <summary>
+    /// The library api adapter.
+    /// </summary>
+    public class LibraryApiAdapter : ILibraryApiAdapter
     {
         private readonly Plugin.MusicBeeApiInterface api;
 

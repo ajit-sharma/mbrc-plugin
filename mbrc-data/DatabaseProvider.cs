@@ -10,10 +10,10 @@
     using NLog;
 
     /// <summary>
-    ///     Class CacheHelper.
+    ///     Class DatabaseProvider.
     ///     Is used to handle the library data and cover cache
     /// </summary>
-    public class CacheHelper
+    public class DatabaseProvider
     {
         private const string DbName = @"\\cache.db";
 
@@ -22,10 +22,10 @@
         private readonly string _dbFilePath;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="CacheHelper" /> class.
+        ///     Initializes a new instance of the <see cref="DatabaseProvider" /> class.
         /// </summary>
         /// <param name="storagePath">The storage path.</param>
-        public CacheHelper(string storagePath)
+        public DatabaseProvider(string storagePath)
         {
             this._dbFilePath = storagePath + DbName;
 

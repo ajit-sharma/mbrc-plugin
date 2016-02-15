@@ -2,6 +2,7 @@
 {
     using System;
     using System.Diagnostics;
+    using System.Linq;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
     using System.Threading.Tasks;
@@ -19,6 +20,7 @@
 
     using MusicBeeRemoteCore.Interfaces;
 
+    using Nancy;
     using Nancy.Hosting.Self;
 
     using Ninject;
@@ -242,8 +244,16 @@
         {
             try
             {
-                var nancyHost = new NancyHost(new Uri($"http://+:{this.Settings.Settings.HttpPort}/"));
+                var bootstrapper = new Bootstrapper(this.kernel);
+                bootstrapper.Initialise();
+                var modules = bootstrapper.GetAllModules(new NancyContext());
+                Debug.Write($@"loaded {modules.Count()}");
+
+                var nancyHost = new NancyHost(new Uri($"http://localhost:{this.Settings.Settings.HttpPort}/"), bootstrapper);
                 nancyHost.Start();
+                
+
+
             }
             catch (Exception ex)
             {

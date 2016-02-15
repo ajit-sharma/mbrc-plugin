@@ -4,54 +4,54 @@
 
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class ArtistRepository : IArtistRepository
+    public class AlbumRepository : IAlbumRepository
     {
-        public void DeleteArtists(ICollection<LibraryArtist> artists)
+        public void DeleteAlbums(ICollection<LibraryAlbum> Albums)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetAllArtists()
+        public LibraryAlbum GetAlbum(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public LibraryArtist GetArtist(long id)
+        public int GetAlbumCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetArtistCount()
+        public ICollection<LibraryAlbum> GetAlbumPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetArtistPage(int offset, int limit)
+        public ICollection<LibraryAlbum> GetAllAlbums()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetCachedArtists()
+        public ICollection<LibraryAlbum> GetCachedAlbums()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetDeletedArtists()
+        public ICollection<LibraryAlbum> GetDeletedAlbums()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch)
+        public ICollection<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveArtist(LibraryArtist artist)
+        public void SaveAlbum(LibraryAlbum Album)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveArtists(ICollection<LibraryArtist> artists)
+        public void SaveAlbums(ICollection<LibraryAlbum> Albums)
         {
             throw new System.NotImplementedException();
         }

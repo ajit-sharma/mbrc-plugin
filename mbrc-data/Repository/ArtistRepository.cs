@@ -4,54 +4,54 @@
 
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class PlaylistTrackInfoRepository : IPlaylistTrackInfoRepository
+    public class ArtistRepository : IArtistRepository
     {
-        public void DeletePlaylistTrackInfo(ICollection<PlaylistTrackInfo> tracks)
+        public void DeleteArtists(ICollection<LibraryArtist> artists)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrackInfo> GetAllPlaylistTrackInfo()
+        public ICollection<LibraryArtist> GetAllArtists()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrackInfo> GetCachedPlaylistTrackInfo()
+        public LibraryArtist GetArtist(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrackInfo> GetDeletedPlaylistTrackInfo()
+        public int GetArtistCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public PlaylistTrackInfo GetPlaylistTrackInfo(long id)
+        public ICollection<LibraryArtist> GetArtistPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetPlaylistTrackInfoCount()
+        public ICollection<LibraryArtist> GetCachedArtists()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrackInfo> GetPlaylistTrackInfoPage(int offset, int limit)
+        public ICollection<LibraryArtist> GetDeletedArtists()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrackInfo> GetUpdatedPlaylistTrackInfo(int offset, int limit, long epoch)
+        public ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SavePlaylistTrackInfo(PlaylistTrackInfo track)
+        public void SaveArtist(LibraryArtist artist)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SavePlaylistTrackInfo(ICollection<PlaylistTrackInfo> tracks)
+        public void SaveArtists(ICollection<LibraryArtist> artists)
         {
             throw new System.NotImplementedException();
         }

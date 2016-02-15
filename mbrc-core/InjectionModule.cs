@@ -32,7 +32,7 @@
             this.Bind<ILibraryApiAdapter>().ToMethod(context => this.provider.LibraryApi).InSingletonScope();
             this.Bind<INowPlayingApiAdapter>().ToMethod(context => this.provider.NowPlayingApi).InSingletonScope();
            
-            this.Bind<CacheHelper>().ToSelf().WithConstructorArgument("storagePath", StoragePath);
+            this.Bind<DatabaseProvider>().ToSelf().WithConstructorArgument("storagePath", StoragePath);
             this.Bind<LibraryModule>().ToSelf().InSingletonScope();
             this.Bind<NowPlayingModule>().ToSelf().InSingletonScope();
             this.Bind<PlayerModule>().ToSelf().InSingletonScope();

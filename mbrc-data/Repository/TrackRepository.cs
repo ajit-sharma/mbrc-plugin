@@ -1,17 +1,18 @@
 ﻿namespace MusicBeePlugin.Repository
 {
+    using System;
     using System.Collections.Generic;
 
-    using DapperExtensions;
+    using Dapper;
 
     using MusicBeePlugin.AndroidRemote.Data;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class TrackRepository : ITrackRepository
+    public class TrackRepository : ITrackRepository
     {
-        private readonly CacheHelper helper;
+        private readonly DatabaseProvider helper;
 
-        public TrackRepository(CacheHelper helper)
+        public TrackRepository(DatabaseProvider helper)
         {
             this.helper = helper;
         }
@@ -45,7 +46,7 @@
         {
             using (var connection = this.helper.GetDbConnection())
             {
-                var count = connection.Count<LibraryTrack>(null);
+                var count = connection.RecordCount<LibraryTrack>(string.Empty);
                 connection.Close();
                 return count;
             }

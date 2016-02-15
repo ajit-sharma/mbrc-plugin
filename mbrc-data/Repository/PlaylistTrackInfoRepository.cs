@@ -4,54 +4,54 @@
 
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class AlbumRepository : IAlbumRepository
+    public class PlaylistTrackInfoRepository : IPlaylistTrackInfoRepository
     {
-        public void DeleteAlbums(ICollection<LibraryAlbum> Albums)
+        public void DeletePlaylistTrackInfo(ICollection<PlaylistTrackInfo> tracks)
         {
             throw new System.NotImplementedException();
         }
 
-        public LibraryAlbum GetAlbum(long id)
+        public ICollection<PlaylistTrackInfo> GetAllPlaylistTrackInfo()
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetAlbumCount()
+        public ICollection<PlaylistTrackInfo> GetCachedPlaylistTrackInfo()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetAlbumPage(int offset, int limit)
+        public ICollection<PlaylistTrackInfo> GetDeletedPlaylistTrackInfo()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetAllAlbums()
+        public PlaylistTrackInfo GetPlaylistTrackInfo(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetCachedAlbums()
+        public int GetPlaylistTrackInfoCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetDeletedAlbums()
+        public ICollection<PlaylistTrackInfo> GetPlaylistTrackInfoPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch)
+        public ICollection<PlaylistTrackInfo> GetUpdatedPlaylistTrackInfo(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveAlbum(LibraryAlbum Album)
+        public void SavePlaylistTrackInfo(PlaylistTrackInfo track)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveAlbums(ICollection<LibraryAlbum> Albums)
+        public void SavePlaylistTrackInfo(ICollection<PlaylistTrackInfo> tracks)
         {
             throw new System.NotImplementedException();
         }

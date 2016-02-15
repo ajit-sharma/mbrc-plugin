@@ -4,7 +4,7 @@ namespace MusicBeePlugin.Repository
 
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
-    class PlaylistTrackRepository : IPlaylistTrackRepository
+    public class PlaylistTrackRepository : IPlaylistTrackRepository
     {
         public void DeletePlaylistTracks(ICollection<PlaylistTrack> tracks)
         {
