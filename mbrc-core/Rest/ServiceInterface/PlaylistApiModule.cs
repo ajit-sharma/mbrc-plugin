@@ -7,7 +7,7 @@
     using Nancy;
     using Nancy.ModelBinding;
 
-    internal class PlaylistApiModule : NancyModule
+    public class PlaylistApiModule : NancyModule
     {
         private readonly PlaylistModule _module;
 

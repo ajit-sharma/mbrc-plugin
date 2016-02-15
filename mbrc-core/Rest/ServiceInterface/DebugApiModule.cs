@@ -8,7 +8,7 @@
     /// <summary>
     ///     Service Responsible for Debug
     /// </summary>
-    internal class DebugApiModule : NancyModule
+    public class DebugApiModule : NancyModule
     {
         private readonly LibraryModule module;
 

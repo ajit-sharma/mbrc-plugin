@@ -10,7 +10,7 @@
     using Nancy;
     using Nancy.ModelBinding;
 
-    internal class TrackApiModule : NancyModule
+    public class TrackApiModule : NancyModule
     {
         private readonly LyricCoverModel _model;
 

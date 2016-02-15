@@ -8,7 +8,7 @@
     using Nancy;
     using Nancy.ModelBinding;
 
-    internal class NowPlayingApiModule : NancyModule
+    public class NowPlayingApiModule : NancyModule
     {
         private readonly LibraryModule _libModule;
 

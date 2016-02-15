@@ -4,7 +4,7 @@
 
     using Nancy;
 
-    internal class LibraryApiModule : NancyModule
+    public class LibraryApiModule : NancyModule
     {
         private readonly LibraryModule _module;
 

@@ -8,7 +8,7 @@
     using Nancy;
     using Nancy.ModelBinding;
 
-    internal class PlayerApiModule : NancyModule
+    public class PlayerApiModule : NancyModule
     {
         private readonly PlayerModule _module;
 
