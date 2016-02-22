@@ -21,7 +21,7 @@
             this._module = module;
             this._model = model;
 
-            this.Get["/track"] = _ => this._module.GetTrackInfo();
+            this.Get["/track"] = _ => this.Response.AsJson(this._module.GetTrackInfo());
             this.Get["/track/lyrics"] = _ => new LyricsResponse { Lyrics = this._model.Lyrics };
 
             this.Get["/track/rating"] = _ => new RatingResponse { Rating = this._module.GetRating() };
@@ -42,7 +42,11 @@
 
             this.Get["/track/lfmrating"] =
                 _ =>
-                new LfmRatingResponse { Status = this._module.RequestLoveStatus(string.Empty), Code = ApiCodes.Success };
+                new LfmRatingResponse
+                    {
+                        Status = this._module.RequestLoveStatus(string.Empty),
+                        Code = ApiCodes.Success
+                    };
 
             this.Put["/track/lfmrating"] = _ =>
                 {

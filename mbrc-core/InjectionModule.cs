@@ -10,6 +10,9 @@
     using MusicBeePlugin.Repository;
 
     using MusicBeeRemoteCore.Interfaces;
+    using MusicBeeRemoteCore.Rest;
+
+    using Newtonsoft.Json;
 
     using Ninject.Modules;
 
@@ -54,6 +57,7 @@
             this.Bind<ICoverRepository>().To<CoverRepository>().InSingletonScope();
             this.Bind<IPlaylistTrackRepository>().To<PlaylistTrackRepository>().InSingletonScope();
             this.Bind<IPlaylistTrackInfoRepository>().To<PlaylistTrackInfoRepository>().InSingletonScope();
+            this.Bind<JsonSerializer>().To<CustomJsonSerializer>().InSingletonScope();
         }
     }
 }

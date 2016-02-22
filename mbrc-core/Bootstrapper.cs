@@ -1,5 +1,7 @@
 ﻿namespace MusicBeeRemoteCore
 {
+    using System.Diagnostics;
+
     using MusicBeePlugin.Rest.ServiceInterface;
 
     using Nancy;
@@ -11,21 +13,19 @@
 
     class Bootstrapper : NinjectNancyBootstrapper
     {
-        
+        private IKernel container;
+
         public Bootstrapper(IKernel existingContainer)
         {
-            ConfigureApplicationContainer(existingContainer);
+            this.container = existingContainer;
+            this.container.Load<FactoryModule>();
         }
 
-        public bool RequestContainerConfigured { get; set; }
-        public bool ApplicationContainerConfigured { get; set; }
-
-        protected override void ConfigureApplicationContainer(IKernel existingContainer)
+        protected override IKernel GetApplicationContainer()
         {
-            base.ConfigureApplicationContainer(existingContainer);
-            this.ApplicationContainerConfigured = true;
+            return this.container;
         }
-              
+
         protected override void ApplicationStartup(IKernel container, IPipelines pipelines)
         {
 #if DEBUG
@@ -34,15 +34,8 @@
             base.ApplicationStartup(container, pipelines);
             
         }
-        
-        protected override void ConfigureRequestContainer(IKernel container, NancyContext context)
-        {
-            base.ConfigureRequestContainer(container, context);
-            this.RequestContainerConfigured = true;
-        }
-
-        
-
+       
+ 
         protected override DiagnosticsConfiguration DiagnosticsConfiguration => new DiagnosticsConfiguration
                                                                                     {
                                                                                         Password = "12345"

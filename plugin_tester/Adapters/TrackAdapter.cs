@@ -5,6 +5,7 @@
     using MusicBeePlugin.AndroidRemote.Enumerations;
     using MusicBeePlugin.AndroidRemote.Model;
     using MusicBeePlugin.ApiAdapters;
+    using MusicBeePlugin.Rest.ServiceInterface;
     using MusicBeePlugin.Rest.ServiceModel.Type;
 
     internal class TrackAdapter : ITrackApiAdapter
@@ -26,7 +27,15 @@
 
         public TrackInfoResponse GetTrackInfo()
         {
-            throw new NotImplementedException();
+            return new TrackInfoResponse
+                       {
+                           Album = "Panic", 
+                           Artist = "Caravan Palace", 
+                           Code = ApiCodes.Success, 
+                           Path = "C:\\Music\\Caravan Palace\\Panic\\RockItForMe.mp3", 
+                           Title = "Rock it for me", 
+                           Year = "2012"
+                       };
         }
 
         public void RequestCover(LyricCoverModel model)

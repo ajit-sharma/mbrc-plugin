@@ -245,10 +245,8 @@
             try
             {
                 var bootstrapper = new Bootstrapper(this.kernel);
-                bootstrapper.Initialise();
-                var modules = bootstrapper.GetAllModules(new NancyContext());
-                Debug.Write($@"loaded {modules.Count()}");
-
+                //bootstrapper.Initialise();
+ 
                 var nancyHost = new NancyHost(new Uri($"http://localhost:{this.Settings.Settings.HttpPort}/"), bootstrapper);
                 nancyHost.Start();
                 
