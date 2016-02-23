@@ -1,0 +1,61 @@
+swagger: '2.0'
+info:
+  title: MusicBee Remote API
+  description: MusicBeeRemote
+  version: "1.0.0"
+host: vmwin:8188
+schemes:
+  - http
+basePath: /
+produces:
+  - application/json
+paths:
+  /track:
+    get:
+      summary: The currently playing track info
+      description: |
+        The endpoint returns information about the now playing track
+      tags:
+        - Track
+      responses:
+        200:
+          description: An array of products
+          schema:
+            $ref: '#/definitions/TrackInfo'
+  /track/cover:
+    get:
+      summary: The cover of the playing track
+      description: |
+        The endpoint returns the cover of the currently playing track
+      produces:
+        - image/jpeg
+      tags:
+        - Track
+      responses:
+        200:
+          description: The cover image
+
+definitions:
+  TrackInfo:
+    type: object
+    properties:
+      code:
+        type: integer
+        minimum: 100
+        maximum: 600
+        description: A response code from the plugin API, it should be 200 for success
+      album:
+        type: string
+        description: The album of the playing track
+      artist:
+        type: string
+        description: The artist of the playing track
+      title:
+        type: string
+        description: The title of the playing track
+      year:
+        type: string
+        description: The year in which the playing track was released
+      path:
+        type: string
+        description: The path of the file in the filesystem
