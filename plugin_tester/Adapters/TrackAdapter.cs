@@ -10,6 +10,12 @@
 
     internal class TrackAdapter : ITrackApiAdapter
     {
+
+        private const int DURATION = 200030303;
+        private float rating;
+
+        private int position;
+
         public LastfmStatus GetLoveStatus(string action)
         {
             throw new NotImplementedException();
@@ -17,12 +23,17 @@
 
         public PositionResponse GetPosition()
         {
-            throw new NotImplementedException();
+            return new PositionResponse
+                       {
+                           Code = ApiCodes.Success,
+                           Position = this.position,
+                           Duration = DURATION
+                       };
         }
 
         public float GetRating()
         {
-            throw new NotImplementedException();
+            return this.rating;
         }
 
         public TrackInfoResponse GetTrackInfo()
@@ -45,12 +56,19 @@
 
         public PositionResponse SetPosition(int newPosition)
         {
-            throw new NotImplementedException();
+            this.position = newPosition <= DURATION ? newPosition : DURATION;
+            return new PositionResponse
+                       {
+                           Code = ApiCodes.Success,
+                           Duration = DURATION,
+                           Position = this.position
+                       };
         }
 
         public float SetRating(float rating)
         {
-            throw new NotImplementedException();
+            this.rating = rating;
+            return rating;
         }
     }
 }
