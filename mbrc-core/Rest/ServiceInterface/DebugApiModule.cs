@@ -20,7 +20,7 @@
         public DebugApiModule(LibraryModule module)
         {
             this.module = module;
-            this.Get["/debug"] = _ => new ResponseBase { Code = ApiCodes.Success };
+            this.Get["/debug"] = _ => this.Response.AsJson(new ResponseBase { Code = ApiCodes.Success });
 
             this.Get["/test"] = _ =>
                 {
@@ -28,7 +28,7 @@
                     this.module.UpdateGenreTable();
                     this.module.UpdateAlbumTable();
 
-                    return new ResponseBase { Code = ApiCodes.Success };
+                    return this.Response.AsJson(new ResponseBase { Code = ApiCodes.Success });
                 };
         }
     }

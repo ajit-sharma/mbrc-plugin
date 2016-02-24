@@ -18,10 +18,14 @@
                     var offset = (int)this.Request.Query["offset"];
                     var after = (int)this.Request.Query["after"];
 
-                    return this._module.GetAllTracks(limit, offset, after);
+                    return this.Response.AsJson(this._module.GetAllTracks(limit, offset, after));
                 };
 
-            this.Get["/library/tracks/{id}"] = parameters => this._module.GetTrackById(parameters.id);
+            this.Get["/library/tracks/{id}"] = parameters =>
+                {
+                    var id = (int)parameters.id;
+                    return this.Response.AsJson(this._module.GetTrackById(id));
+                };
 
             this.Get["/library/artists"] = _ =>
                 {
@@ -29,10 +33,14 @@
                     var offset = (int)this.Request.Query["offset"];
                     var after = (int)this.Request.Query["after"];
 
-                    return this._module.GetAllArtists(limit, offset, after);
+                    return this.Response.AsJson(this._module.GetAllArtists(limit, offset, after));
                 };
 
-            this.Get["/library/artists/{id}"] = parameters => this._module.GetArtistById(parameters.id);
+            this.Get["/library/artists/{id}"] = parameters =>
+                {
+                    var id = (int)parameters.id;
+                    return this.Response.AsJson(this._module.GetArtistById(id));
+                };
 
             this.Get["/library/genres"] = _ =>
                 {
@@ -40,7 +48,7 @@
                     var offset = (int)this.Request.Query["offset"];
                     var after = (int)this.Request.Query["after"];
 
-                    return this._module.GetAllGenres(limit, offset, after);
+                    return this.Response.AsJson(this._module.GetAllGenres(limit, offset, after));
                 };
 
             this.Get["/library/albums"] = _ =>
@@ -49,7 +57,7 @@
                     var offset = (int)this.Request.Query["offset"];
                     var after = (int)this.Request.Query["after"];
 
-                    return this._module.GetAllAlbums(limit, offset, after);
+                    return this.Response.AsJson(this._module.GetAllAlbums(limit, offset, after));
                 };
 
             this.Get["/library/covers"] = _ =>
@@ -57,10 +65,14 @@
                     var limit = (int)this.Request.Query["limit"];
                     var offset = (int)this.Request.Query["offset"];
                     var after = (int)this.Request.Query["after"];
-                    return this._module.GetAllCovers(limit, offset, after);
+                    return this.Response.AsJson(this._module.GetAllCovers(limit, offset, after));
                 };
 
-            this.Get["/library/covers/{id}"] = parameters => this._module.GetLibraryCover(parameters.id, true);
+            this.Get["/library/covers/{id}"] = parameters =>
+                {
+                    var id = (int)parameters.id;
+                    return this.Response.AsJson(this._module.GetLibraryCover(id, true));
+                };
 
             this.Get["/library/covers/{id}/raw"] =
                 parameters =>
