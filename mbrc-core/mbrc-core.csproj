@@ -122,7 +122,7 @@
     <Compile Include="AndroidRemote\Enumerations\PlayerState.cs" />
     <Compile Include="AndroidRemote\Enumerations\QueueType.cs" />
     <Compile Include="AndroidRemote\Enumerations\Repeat.cs" />
-    <Compile Include="AndroidRemote\Enumerations\ShuffleState.cs" />
+    <Compile Include="AndroidRemote\Enumerations\Shuffle.cs" />
     <Compile Include="AndroidRemote\Events\EventBus.cs" />
     <Compile Include="AndroidRemote\Events\MessageEvent.cs" />
     <Compile Include="AndroidRemote\Extensions\Epoch.cs" />

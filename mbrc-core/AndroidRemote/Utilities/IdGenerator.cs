@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Utilities
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Utilities
 {
     using System.Security.Cryptography;
     using System.Text;

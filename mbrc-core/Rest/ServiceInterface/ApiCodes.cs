@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.Rest.ServiceInterface
+﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
     public class ApiCodes
     {

@@ -1,8 +1,10 @@
-﻿namespace MusicBeePlugin
+﻿namespace MusicBeeRemoteCore
 {
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Rest.ServiceModel.Enum;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
     public interface IPlayerApiAdapter
     {
@@ -28,7 +30,7 @@
 
         bool GetScrobbleState();
 
-        ShuffleState GetShuffleState();
+        Shuffle GetShuffleState();
 
         PlayerStatus GetStatus();
 
@@ -57,7 +59,7 @@
 
         bool SetScrobbleState(bool enabled);
 
-        bool SetShuffleState(ShuffleState state);
+        bool SetShuffleState(Shuffle state);
 
         bool SetVolume(int volume);
 

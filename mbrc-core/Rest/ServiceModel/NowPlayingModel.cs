@@ -1,8 +1,8 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel
 {
     using System.Runtime.Serialization;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
     [DataContract]
     public class NowPlayingPlay

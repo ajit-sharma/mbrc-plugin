@@ -2,10 +2,10 @@
 {
     using System;
 
-    using MusicBeePlugin;
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Rest.ServiceModel.Enum;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     internal class PlayerApiAdapter : IPlayerApiAdapter
     {
@@ -49,7 +49,7 @@
             throw new NotImplementedException();
         }
 
-        public ShuffleState GetShuffleState()
+        public Shuffle GetShuffleState()
         {
             throw new NotImplementedException();
         }
@@ -104,7 +104,7 @@
             throw new NotImplementedException();
         }
 
-        public bool SetShuffleState(ShuffleState state)
+        public bool SetShuffleState(Shuffle state)
         {
             throw new NotImplementedException();
         }

@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Enumerations
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Enumerations
 {
     /// <summary>
     /// Represents the player's play state

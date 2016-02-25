@@ -2,7 +2,7 @@
 {
     using System.Diagnostics;
 
-    using MusicBeePlugin.Rest.ServiceInterface;
+    using MusicBeeRemoteCore.Rest.ServiceInterface;
 
     using Nancy;
     using Nancy.Bootstrapper;

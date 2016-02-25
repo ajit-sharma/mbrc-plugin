@@ -1,4 +1,4 @@
-namespace MusicBeePlugin
+namespace MusicBeeRemoteCore
 {
     /// <summary>
     /// Represents the available IP address filterin options.

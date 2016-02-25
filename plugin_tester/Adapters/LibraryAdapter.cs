@@ -3,9 +3,11 @@
     using System;
     using System.Collections.Generic;
 
-    using MusicBeePlugin;
-    using MusicBeePlugin.Model;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.Model;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
 
     internal class LibraryAdapter: ILibraryApiAdapter
     {

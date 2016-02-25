@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote
+﻿namespace MusicBeeRemoteCore.AndroidRemote
 {
     internal class Page
     {

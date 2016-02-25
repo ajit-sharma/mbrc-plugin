@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.Tools
+﻿namespace MusicBeeRemoteCore.Tools
 {
     using System;
     using System.Collections.Generic;

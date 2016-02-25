@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Enum
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Enum
 {
     /// <summary>
     /// The type of change requested from the update API.

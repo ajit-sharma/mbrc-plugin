@@ -1,8 +1,10 @@
-namespace MusicBeePlugin.Comparers
+namespace MusicBeeRemoteCore.Comparers
 {
     using System.Collections.Generic;
 
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
 
     /// <summary>
     /// Custom <c>EqualityComparer</c> for playlist tracks. 

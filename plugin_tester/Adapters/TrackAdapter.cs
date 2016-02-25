@@ -2,11 +2,11 @@
 {
     using System;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.AndroidRemote.Model;
-    using MusicBeePlugin.ApiAdapters;
-    using MusicBeePlugin.Rest.ServiceInterface;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.ApiAdapters;
+    using MusicBeeRemoteCore.Rest.ServiceInterface;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     internal class TrackAdapter : ITrackApiAdapter
     {

@@ -1,4 +1,4 @@
-namespace MusicBeePlugin.Modules
+namespace MusicBeeRemoteCore.Modules
 {
     using System;
     using System.Collections.Generic;
@@ -6,12 +6,14 @@ namespace MusicBeePlugin.Modules
     using System.Linq;
     using System.Threading.Tasks;
 
-    using MusicBeePlugin.AndroidRemote.Extensions;
-    using MusicBeePlugin.ApiAdapters;
-    using MusicBeePlugin.Comparers;
-    using MusicBeePlugin.Repository;
-    using MusicBeePlugin.Rest.ServiceInterface;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Extensions;
+    using MusicBeeRemoteCore.ApiAdapters;
+    using MusicBeeRemoteCore.Comparers;
+    using MusicBeeRemoteCore.Rest.ServiceInterface;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository;
 
     using NLog;
 

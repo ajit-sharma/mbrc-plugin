@@ -1,10 +1,12 @@
-﻿namespace MusicBeePlugin
+﻿namespace MusicBeeRemoteCore
 {
     using System;
     using System.Collections.Generic;
 
-    using MusicBeePlugin.Model;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Model;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
 
     public interface ILibraryApiAdapter
     {

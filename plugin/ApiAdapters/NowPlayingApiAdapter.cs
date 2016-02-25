@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace MusicBeePlugin.ApiAdapters
+namespace MusicBeeRemoteCore.ApiAdapters
 {
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     class NowPlayingApiAdapter : INowPlayingApiAdapter
     {

@@ -1,4 +1,4 @@
-namespace MusicBeePlugin
+namespace MusicBeeRemoteCore
 {
     using System;
     using System.Collections.Generic;
@@ -9,8 +9,8 @@ namespace MusicBeePlugin
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
-    using MusicBeePlugin.AndroidRemote.Persistence;
-    using MusicBeePlugin.Tools;
+    using MusicBeeRemoteCore.AndroidRemote.Persistence;
+    using MusicBeeRemoteCore.Tools;
 
     /// <summary>
     ///     Represents the Settings and monitoring dialog of the plugin.

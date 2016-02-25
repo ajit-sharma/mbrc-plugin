@@ -3,8 +3,8 @@
     using System;
     using System.Collections.Generic;
 
-    using MusicBeePlugin;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     internal class NowPlayingApiAdapter : INowPlayingApiAdapter
     {

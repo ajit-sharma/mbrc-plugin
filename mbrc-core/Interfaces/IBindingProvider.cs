@@ -1,8 +1,8 @@
 ﻿
 namespace MusicBeeRemoteCore.Interfaces
 {
-    using MusicBeePlugin;
-    using MusicBeePlugin.ApiAdapters;
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.ApiAdapters;
 
     public interface IBindingProvider
     {

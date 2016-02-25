@@ -1,4 +1,4 @@
-namespace MusicBeePlugin
+namespace MusicBeeRemoteCore
 {
     using System;
     using System.Diagnostics;
@@ -7,9 +7,9 @@ namespace MusicBeePlugin
     using System.Timers;
     using System.Windows.Forms;
 
-    using MusicBeePlugin.AndroidRemote.Entities;
-    using MusicBeePlugin.AndroidRemote.Events;
-    using MusicBeePlugin.ApiAdapters;
+    using MusicBeeRemoteCore.AndroidRemote.Entities;
+    using MusicBeeRemoteCore.AndroidRemote.Events;
+    using MusicBeeRemoteCore.ApiAdapters;
 
     using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.Interfaces;

@@ -1,4 +1,4 @@
-namespace MusicBeePlugin
+namespace MusicBeeRemoteCore
 {
     partial class InfoWindow
     {

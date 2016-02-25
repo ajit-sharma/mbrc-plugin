@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.Model
+﻿namespace MusicBeeRemoteCore.Model
 {
     public class Modifications
     {

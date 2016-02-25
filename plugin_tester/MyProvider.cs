@@ -1,7 +1,7 @@
 ﻿namespace plugin_tester
 {
-    using MusicBeePlugin;
-    using MusicBeePlugin.ApiAdapters;
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.ApiAdapters;
 
     using MusicBeeRemoteCore.Interfaces;
 

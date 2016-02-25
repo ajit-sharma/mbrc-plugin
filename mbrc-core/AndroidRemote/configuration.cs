@@ -1,7 +1,7 @@
-﻿namespace MusicBeePlugin.AndroidRemote
+﻿namespace MusicBeeRemoteCore.AndroidRemote
 {
-    using MusicBeePlugin.AndroidRemote.Commands;
-    using MusicBeePlugin.AndroidRemote.Events;
+    using MusicBeeRemoteCore.AndroidRemote.Commands;
+    using MusicBeeRemoteCore.AndroidRemote.Events;
 
     internal class Configuration
     {

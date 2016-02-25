@@ -1,6 +1,6 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Commands
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Commands
 {
-    using MusicBeePlugin.AndroidRemote.Interfaces;
+    using MusicBeeRemoteCore.AndroidRemote.Interfaces;
 
     internal class ShowFirstRunDialogCommand : ICommand
     {

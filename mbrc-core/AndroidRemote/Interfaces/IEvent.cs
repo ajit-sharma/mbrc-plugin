@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Interfaces
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Interfaces
 {
     public interface IEvent
     {

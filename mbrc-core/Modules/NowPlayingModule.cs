@@ -1,9 +1,9 @@
-namespace MusicBeePlugin.Modules
+namespace MusicBeeRemoteCore.Modules
 {
     using System.Linq;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     public class NowPlayingModule
     {

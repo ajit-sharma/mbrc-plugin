@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Data
+﻿namespace MusicBeeRemoteData
 {
     using System;
     using System.Data;

@@ -1,9 +1,9 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Type
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
 {
     using System;
     using System.Runtime.Serialization;
 
-    using MusicBeePlugin.AndroidRemote.Extensions;
+    using MusicBeeRemoteCore.AndroidRemote.Extensions;
 
     /// <summary>
     ///     The <c>base</c> of all the POCOs stored in the database.

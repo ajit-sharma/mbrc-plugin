@@ -1,14 +1,16 @@
-namespace MusicBeePlugin
+namespace MusicBeeRemoteCore
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Model;
-    using MusicBeePlugin.Rest.ServiceInterface;
-    using MusicBeePlugin.Rest.ServiceModel.Enum;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Model;
+    using MusicBeeRemoteCore.Rest.ServiceInterface;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
     class PlayerApiAdapter : IPlayerApiAdapter
     {
@@ -79,17 +81,17 @@ namespace MusicBeePlugin
             return this.api.Player_GetScrobbleEnabled();
         }
 
-        public ShuffleState GetShuffleState()
+        public Shuffle GetShuffleState()
         {
-            ShuffleState state;
+            Shuffle state;
             if (this.api.Player_GetAutoDjEnabled())
             {
-                state = ShuffleState.autodj;
+                state = Shuffle.autodj;
             }
             else
             {
                 var shuffleEnabled = this.api.Player_GetShuffle();
-                state = shuffleEnabled ? ShuffleState.shuffle : ShuffleState.off;
+                state = shuffleEnabled ? Shuffle.shuffle : Shuffle.off;
             }
 
             return state;
@@ -178,18 +180,18 @@ namespace MusicBeePlugin
             return this.api.Player_SetScrobbleEnabled(enabled);
         }
 
-        public bool SetShuffleState(ShuffleState state)
+        public bool SetShuffleState(Shuffle state)
         {
             var success = false;
             switch (state)
             {
-                case ShuffleState.autodj:
+                case Shuffle.autodj:
                     success = this.api.Player_StartAutoDj();
                     break;
-                case ShuffleState.off:
+                case Shuffle.off:
                     success = this.api.Player_SetShuffle(false);
                     break;
-                case ShuffleState.shuffle:
+                case Shuffle.shuffle:
                     success = this.api.Player_SetShuffle(true);
                     break;
                 default:

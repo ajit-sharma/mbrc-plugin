@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Type
+﻿namespace MusicBeeRemoteData.Entities
 {
     using System.Runtime.Serialization;
 

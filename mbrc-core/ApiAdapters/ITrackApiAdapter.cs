@@ -1,8 +1,8 @@
-﻿namespace MusicBeePlugin.ApiAdapters
+﻿namespace MusicBeeRemoteCore.ApiAdapters
 {
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.AndroidRemote.Model;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     public interface ITrackApiAdapter
     {

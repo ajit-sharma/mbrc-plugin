@@ -1,4 +1,4 @@
-namespace MusicBeePlugin.AndroidRemote.Networking
+namespace MusicBeeRemoteCore.AndroidRemote.Networking
 {
     using System;
     using System.Collections.Generic;
@@ -6,9 +6,9 @@ namespace MusicBeePlugin.AndroidRemote.Networking
 
     using Fleck;
 
-    using MusicBeePlugin.AndroidRemote.Entities;
-    using MusicBeePlugin.AndroidRemote.Events;
-    using MusicBeePlugin.AndroidRemote.Persistence;
+    using MusicBeeRemoteCore.AndroidRemote.Entities;
+    using MusicBeeRemoteCore.AndroidRemote.Events;
+    using MusicBeeRemoteCore.AndroidRemote.Persistence;
 
     using Newtonsoft.Json.Linq;
 

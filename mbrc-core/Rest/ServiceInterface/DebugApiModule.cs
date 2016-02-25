@@ -1,7 +1,7 @@
-﻿namespace MusicBeePlugin.Rest.ServiceInterface
+﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
-    using MusicBeePlugin.Modules;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Modules;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     using Nancy;
 
@@ -10,12 +10,16 @@
     /// </summary>
     public class DebugApiModule : NancyModule
     {
+        /// <summary>
+        /// The module responsible for for the library API functionality.
+        /// </summary>
         private readonly LibraryModule module;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DebugApiModule"/> class. 
         /// </summary>
         /// <param name="module">
+        /// The library module
         /// </param>
         public DebugApiModule(LibraryModule module)
         {

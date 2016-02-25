@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin
+﻿namespace MusicBeeRemoteCore
 {
     using System;
     using System.Drawing;

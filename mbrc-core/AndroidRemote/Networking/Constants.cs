@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Networking
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Networking
 {
     internal static class Constants
     {

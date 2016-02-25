@@ -1,9 +1,9 @@
-﻿namespace MusicBeePlugin.Repository
+﻿namespace MusicBeeRemoteData.Repository
 {
     using System;
     using System.Collections.Generic;
 
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteData.Entities;
 
     public class CoverRepository : ICoverRepository
     {

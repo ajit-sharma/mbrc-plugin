@@ -1,4 +1,4 @@
-namespace MusicBeePlugin.AndroidRemote.Persistence
+namespace MusicBeeRemoteCore.AndroidRemote.Persistence
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
@@ -17,7 +17,7 @@ namespace MusicBeePlugin.AndroidRemote.Persistence
             this.HttpPort = 8188;
             this.WebSocketPort = 8187;
             this.AllowedAddresses = new List<string>();
-            this.Allowed = MusicBeePlugin.AllowedAddresses.All;
+            this.Allowed = MusicBeeRemoteCore.AllowedAddresses.All;
             this.BaseIp = string.Empty;
             this.LastOctetMax = 254;
             this.UpdateFirewallEnabled = true;

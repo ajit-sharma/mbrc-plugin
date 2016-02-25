@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Enum
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Enum
 {
     public enum PlaybackAction
     {

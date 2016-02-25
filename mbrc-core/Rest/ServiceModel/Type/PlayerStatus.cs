@@ -1,8 +1,10 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Type
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
 {
     using System.Runtime.Serialization;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
     [DataContract]
     public class PlayerStatus : ResponseBase
@@ -20,7 +22,7 @@
         public bool Scrobble { get; set; }
 
         [DataMember(Name = "shuffle")]
-        public ShuffleState Shuffle { get; set; }
+        public Shuffle Shuffle { get; set; }
 
         [DataMember(Name = "volume")]
         public int Volume { get; set; }

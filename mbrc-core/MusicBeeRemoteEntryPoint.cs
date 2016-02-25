@@ -7,16 +7,16 @@
     using System.Reactive.Subjects;
     using System.Threading.Tasks;
 
-    using MusicBeePlugin;
-    using MusicBeePlugin.AndroidRemote;
-    using MusicBeePlugin.AndroidRemote.Controller;
-    using MusicBeePlugin.AndroidRemote.Entities;
-    using MusicBeePlugin.AndroidRemote.Events;
-    using MusicBeePlugin.AndroidRemote.Model;
-    using MusicBeePlugin.AndroidRemote.Networking;
-    using MusicBeePlugin.AndroidRemote.Persistence;
-    using MusicBeePlugin.AndroidRemote.Utilities;
-    using MusicBeePlugin.Modules;
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.AndroidRemote;
+    using MusicBeeRemoteCore.AndroidRemote.Controller;
+    using MusicBeeRemoteCore.AndroidRemote.Entities;
+    using MusicBeeRemoteCore.AndroidRemote.Events;
+    using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.AndroidRemote.Networking;
+    using MusicBeeRemoteCore.AndroidRemote.Persistence;
+    using MusicBeeRemoteCore.AndroidRemote.Utilities;
+    using MusicBeeRemoteCore.Modules;
 
     using MusicBeeRemoteCore.Interfaces;
 

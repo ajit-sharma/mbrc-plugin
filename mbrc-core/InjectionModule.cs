@@ -1,16 +1,16 @@
-﻿namespace MusicBeePlugin
+﻿namespace MusicBeeRemoteCore
 {
-    using MusicBeePlugin.AndroidRemote.Data;
-    using MusicBeePlugin.AndroidRemote.Events;
-    using MusicBeePlugin.AndroidRemote.Model;
-    using MusicBeePlugin.AndroidRemote.Networking;
-    using MusicBeePlugin.AndroidRemote.Persistence;
-    using MusicBeePlugin.ApiAdapters;
-    using MusicBeePlugin.Modules;
-    using MusicBeePlugin.Repository;
-
+    using MusicBeeRemoteCore.AndroidRemote.Events;
+    using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.AndroidRemote.Networking;
+    using MusicBeeRemoteCore.AndroidRemote.Persistence;
+    using MusicBeeRemoteCore.ApiAdapters;
+    using MusicBeeRemoteCore.Modules;
     using MusicBeeRemoteCore.Interfaces;
     using MusicBeeRemoteCore.Rest;
+
+    using MusicBeeRemoteData;
+    using MusicBeeRemoteData.Repository;
 
     using Newtonsoft.Json;
 

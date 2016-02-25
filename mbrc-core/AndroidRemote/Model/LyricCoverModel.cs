@@ -1,11 +1,11 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Model
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Model
 {
     using System;
     using System.Security;
     using System.Text.RegularExpressions;
 
-    using MusicBeePlugin.AndroidRemote.Entities;
-    using MusicBeePlugin.AndroidRemote.Events;
+    using MusicBeeRemoteCore.AndroidRemote.Entities;
+    using MusicBeeRemoteCore.AndroidRemote.Events;
 
     using NLog;
 

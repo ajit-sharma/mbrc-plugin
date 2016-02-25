@@ -1,6 +1,8 @@
-namespace MusicBeePlugin.Rest.ServiceModel.Type
+namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
 {
     using System.Collections.Generic;
+
+    using MusicBeeRemoteData.Entities;
 
     /// <summary>
     ///     The complete form of the <see cref="LibraryTrack" /> class.

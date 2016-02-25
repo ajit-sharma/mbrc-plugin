@@ -1,7 +1,9 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Type
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
+
+    using MusicBeeRemoteData.Entities;
 
     /// <summary>
     /// </summary>

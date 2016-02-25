@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.ApiAdapters
+﻿namespace MusicBeeRemoteCore.ApiAdapters
 {
     using MusicBeeRemoteCore.Interfaces;
 

@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Enumerations
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Enumerations
 {
     public enum QueueType
     {

@@ -1,9 +1,9 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel.Type
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
 {
     using System.Runtime.Serialization;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Rest.ServiceInterface;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Rest.ServiceInterface;
 
     [DataContract]
     public class ResponseBase

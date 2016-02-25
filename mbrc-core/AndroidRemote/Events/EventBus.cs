@@ -1,7 +1,7 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Events
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Events
 {
-    using MusicBeePlugin.AndroidRemote.Controller;
-    using MusicBeePlugin.AndroidRemote.Interfaces;
+    using MusicBeeRemoteCore.AndroidRemote.Controller;
+    using MusicBeeRemoteCore.AndroidRemote.Interfaces;
 
     public class EventBus
     {

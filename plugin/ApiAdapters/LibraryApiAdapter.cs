@@ -1,11 +1,13 @@
-﻿namespace MusicBeePlugin.ApiAdapters
+﻿namespace MusicBeeRemoteCore.ApiAdapters
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
 
-    using MusicBeePlugin.Model;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Model;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
 
     /// <summary>
     /// The library api adapter.

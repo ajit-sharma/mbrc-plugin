@@ -1,12 +1,12 @@
-﻿namespace MusicBeePlugin.Repository
+﻿namespace MusicBeeRemoteData.Repository
 {
     using System.Collections.Generic;
     using System.Linq;
 
     using Dapper;
-    
-    using MusicBeePlugin.AndroidRemote.Data;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData;
+    using MusicBeeRemoteData.Entities;
 
     public class GenreRepository : IGenreRepository
     {

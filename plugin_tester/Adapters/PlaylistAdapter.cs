@@ -3,8 +3,10 @@
     using System;
     using System.Collections.Generic;
 
-    using MusicBeePlugin.ApiAdapters;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.ApiAdapters;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
 
     internal class PlaylistAdapter : IPlaylistApiAdapter
     {

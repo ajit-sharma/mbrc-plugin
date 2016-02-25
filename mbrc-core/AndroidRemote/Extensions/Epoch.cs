@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Extensions
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Extensions
 {
     using System;
 

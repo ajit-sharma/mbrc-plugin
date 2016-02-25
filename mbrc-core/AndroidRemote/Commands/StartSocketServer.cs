@@ -1,7 +1,7 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Commands
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Commands
 {
-    using MusicBeePlugin.AndroidRemote.Interfaces;
-    using MusicBeePlugin.AndroidRemote.Networking;
+    using MusicBeeRemoteCore.AndroidRemote.Interfaces;
+    using MusicBeeRemoteCore.AndroidRemote.Networking;
 
     internal class StartSocketServer : ICommand
     {

@@ -1,8 +1,8 @@
-﻿namespace MusicBeePlugin
+﻿namespace MusicBeeRemoteCore
 {
     using System.Collections.Generic;
 
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     public interface INowPlayingApiAdapter
     {

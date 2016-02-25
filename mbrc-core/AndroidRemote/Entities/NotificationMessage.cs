@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Entities
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Entities
 {
     using System.Runtime.Serialization;
 

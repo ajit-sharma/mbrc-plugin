@@ -1,83 +1,126 @@
-﻿namespace MusicBeePlugin.Rest.ServiceInterface
+﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
     using System.Text;
 
-    using MusicBeePlugin.AndroidRemote.Model;
-    using MusicBeePlugin.Modules;
-    using MusicBeePlugin.Rest.ServiceModel;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.Modules;
+    using MusicBeeRemoteCore.Rest.ServiceModel;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     using Nancy;
     using Nancy.ModelBinding;
 
+    /// <summary>
+    /// The track API module provides the track endpoint functionality.
+    /// </summary>
     public class TrackApiModule : NancyModule
     {
-        private readonly LyricCoverModel _model;
+        /// <summary>
+        /// The model that store information about the playing tracks lyrics and cover.
+        /// </summary>
+        private readonly LyricCoverModel model;
 
-        private readonly TrackModule _module;
+        /// <summary>
+        /// The module that provides the track API functionality.
+        /// </summary>
+        private readonly TrackModule module;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TrackApiModule"/> class.
+        /// </summary>
+        /// <param name="module">
+        /// The module.
+        /// </param>
+        /// <param name="model">
+        /// The model.
+        /// </param>
         public TrackApiModule(TrackModule module, LyricCoverModel model)
+            : base("/track")
         {
-            this._module = module;
-            this._model = model;
+            this.module = module;
+            this.model = model;
 
-            this.Get["/track"] = _ => this.Response.AsJson(this._module.GetTrackInfo());
-            this.Get["/track/lyrics"] = _ => this.Response.AsJson(new LyricsResponse { Lyrics = this._model.Lyrics });
-            this.Get["/track/rating"] = _ => this.Response.AsJson(new RatingResponse { Rating = this._module.GetRating() });
+            this.Get["/"] = _ =>
+                {
+                    var trackInfo = this.module.GetTrackInfo();
+                    return this.Response.AsJson(trackInfo);
+                };
 
-            this.Put["/track/rating"] = _ =>
+            this.Get["/lyrics"] = _ =>
+                {
+                    var response = new LyricsResponse { Lyrics = this.model.Lyrics };
+                    return this.Response.AsJson(response);
+                };
+
+            this.Get["/rating"] = _ =>
+                {
+                    var response = new RatingResponse { Rating = this.module.GetRating() };
+                    return this.Response.AsJson(response);
+                };
+
+            this.Put["/rating"] = _ =>
                 {
                     var request = this.Bind<SetTrackRating>();
-                    return this.Response.AsJson(new RatingResponse { Rating = this._module.SetRating(request.Rating ?? -1) });
+                    var response = new RatingResponse { Rating = this.module.SetRating(request.Rating ?? -1) };
+                    return this.Response.AsJson(response);
                 };
 
-            this.Get["/track/position"] = _ => this.Response.AsJson(this._module.GetPosition());
+            this.Get["/position"] = _ =>
+                {
+                    var position = this.module.GetPosition();
+                    return this.Response.AsJson(position);
+                };
 
-            this.Put["/track/position"] = _ =>
+            this.Put["/position"] = _ =>
                 {
                     var request = this.Bind<SetTrackPosition>();
-                    return this.Response.AsJson(this._module.SetPosition(request.Position));
+                    var response = this.module.SetPosition(request.Position);
+                    return this.Response.AsJson(response);
                 };
 
-            this.Get["/track/lfmrating"] =
-                _ =>
-                this.Response.AsJson(new LfmRatingResponse
+            this.Get["/lfmrating"] = _ =>
                 {
-                    Status = this._module.RequestLoveStatus(string.Empty),
-                    Code = ApiCodes.Success
-                });
+                    var response = new LfmRatingResponse
+                                       {
+                                           Status = this.module.RequestLoveStatus(string.Empty), 
+                                           Code = ApiCodes.Success
+                                       };
+                    return this.Response.AsJson(response);
+                };
 
-            this.Put["/track/lfmrating"] = _ =>
+            this.Put["/lfmrating"] = _ =>
                 {
                     var request = this.Bind<PutLfmRating>();
-                    return this.Response.AsJson(new LfmRatingResponse
-                    {
-                        Status = this._module.RequestLoveStatus(request.Status),
-                        Code = ApiCodes.Success
-                    });
+                    var response = new LfmRatingResponse
+                                       {
+                                           Status = this.module.RequestLoveStatus(request.Status), 
+                                           Code = ApiCodes.Success
+                                       };
+                    return this.Response.AsJson(response);
                 };
 
-            this.Get["/track/cover"] =
-                _ =>
-                    {
-                        return new Response
-                                   {
-                                       ContentType = "image/jpeg", 
-                                       Contents = stream => this._module.GetBinaryCoverData()
-                                   };
-                    };
-
-            this.Get["/track/lyrics/raw"] = _ =>
+            this.Get["/cover"] = _ =>
                 {
-                    return new Response
-                               {
-                                   ContentType = "text/plain", 
-                                   Contents = stream =>
+                    var response = new Response
                                        {
-                                           var data = Encoding.UTF8.GetBytes(this._model.Lyrics);
-                                           stream.Write(data, 0, data.Length);
-                                       }
-                               };
+                                           ContentType = "image/jpeg", 
+                                           Contents = stream => this.module.GetBinaryCoverData()
+                                       };
+                    return response;
+                };
+
+            this.Get["/lyrics/raw"] = _ =>
+                {
+                    var response = new Response
+                                       {
+                                           ContentType = "text/plain", 
+                                           Contents = stream =>
+                                               {
+                                                   var data = Encoding.UTF8.GetBytes(this.model.Lyrics);
+                                                   stream.Write(data, 0, data.Length);
+                                               }
+                                       };
+                    return response;
                 };
         }
     }

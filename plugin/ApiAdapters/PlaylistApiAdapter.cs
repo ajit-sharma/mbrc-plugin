@@ -1,9 +1,11 @@
-﻿namespace MusicBeePlugin.ApiAdapters
+﻿namespace MusicBeeRemoteCore.ApiAdapters
 {
     using System.Collections.Generic;
     using System.Linq;
 
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
 
     class PlaylistApiAdapter : IPlaylistApiAdapter
     {

@@ -1,15 +1,18 @@
-namespace MusicBeePlugin.Modules
+namespace MusicBeeRemoteCore.Modules
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
 
-    using MusicBeePlugin.AndroidRemote.Extensions;
-    using MusicBeePlugin.AndroidRemote.Utilities;
-    using MusicBeePlugin.Comparers;
-    using MusicBeePlugin.Repository;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.AndroidRemote.Extensions;
+    using MusicBeeRemoteCore.AndroidRemote.Utilities;
+    using MusicBeeRemoteCore.Comparers;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository;
 
     using NLog;
 
@@ -620,6 +623,37 @@ namespace MusicBeePlugin.Modules
             // trans.Commit();
             Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
             Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
+        }
+
+        /// <summary>
+        /// Gets the track list based on the meta tag type provided and the id of the item.
+        /// </summary>
+        /// <param name="tag">The tag defining the type of the metadata, genre, artist etc <see cref="MetaTag"/></param>
+        /// <param name="id">The id of the item in the database</param>
+        /// <returns>A list of paths in the file system belonging to tracks matching the supplied parameters.</returns>
+        public string[] GetTracklist(MetaTag tag, long id)
+        {
+            string[] tracklist;
+            switch (tag)
+            {
+                case MetaTag.artist:
+                    tracklist = GetArtistTracksById(id);
+                    break;
+                case MetaTag.album:
+                    tracklist = GetAlbumTracksById(id);
+                    break;
+                case MetaTag.genre:
+                    tracklist = GetGenreTracksById(id);
+                    break;
+                case MetaTag.track:
+                    tracklist = GetTrackPathById(id);
+                    break;
+                default:
+                    tracklist = new string[] { };
+                    break;
+            }
+
+            return tracklist;
         }
     }
 }

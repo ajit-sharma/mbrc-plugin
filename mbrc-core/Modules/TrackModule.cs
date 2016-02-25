@@ -1,12 +1,12 @@
-﻿namespace MusicBeePlugin.Modules
+﻿namespace MusicBeeRemoteCore.Modules
 {
     using System.IO;
 
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.AndroidRemote.Model;
-    using MusicBeePlugin.AndroidRemote.Utilities;
-    using MusicBeePlugin.ApiAdapters;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.AndroidRemote.Utilities;
+    using MusicBeeRemoteCore.ApiAdapters;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     using NLog;
 

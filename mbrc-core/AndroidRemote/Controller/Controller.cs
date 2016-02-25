@@ -1,9 +1,9 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Controller
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Controller
 {
     using System;
     using System.Collections.Generic;
 
-    using MusicBeePlugin.AndroidRemote.Interfaces;
+    using MusicBeeRemoteCore.AndroidRemote.Interfaces;
 
     using Ninject;
 

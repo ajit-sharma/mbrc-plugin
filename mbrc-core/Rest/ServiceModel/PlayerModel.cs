@@ -1,15 +1,16 @@
-﻿namespace MusicBeePlugin.Rest.ServiceModel
+﻿namespace MusicBeeRemoteCore.Rest.ServiceModel
 {
+    using System;
     using System.Runtime.Serialization;
-
-    using MusicBeePlugin.Rest.ServiceModel.Enum;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     [DataContract]
     public class SetShuffleState
     {
         [DataMember(Name = "status", IsRequired = true)]
-        public AndroidRemote.Enumerations.ShuffleState? Status { get; set; }
+        public MusicBeeRemoteCore.AndroidRemote.Enumerations.Shuffle? Status { get; set; }
     }
 
     [DataContract]
@@ -61,7 +62,12 @@
     public class ShuffleState : ResponseBase
     {
         [DataMember(Name = "state")]
-        public AndroidRemote.Enumerations.ShuffleState State { get; set; }
+        public MusicBeeRemoteCore.AndroidRemote.Enumerations.Shuffle State { get; set; }
+
+        public static explicit operator ShuffleState(AndroidRemote.Enumerations.Shuffle? v)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -78,7 +84,7 @@
     public class ShuffleResponse : ResponseBase
     {
         [DataMember(Name = "state")]
-        public AndroidRemote.Enumerations.ShuffleState State { get; set; }
+        public MusicBeeRemoteCore.AndroidRemote.Enumerations.Shuffle State { get; set; }
     }
 
     [DataContract]

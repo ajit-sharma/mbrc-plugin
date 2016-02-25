@@ -1,8 +1,10 @@
-namespace MusicBeePlugin.Modules
+namespace MusicBeeRemoteCore.Modules
 {
-    using MusicBeePlugin.AndroidRemote.Enumerations;
-    using MusicBeePlugin.Rest.ServiceModel.Enum;
-    using MusicBeePlugin.Rest.ServiceModel.Type;
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
+    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
     public class PlayerModule
     {
@@ -53,7 +55,7 @@ namespace MusicBeePlugin.Modules
             return this.api.GetScrobbleState();
         }
 
-        public ShuffleState GetShuffleState()
+        public Shuffle GetShuffleState()
         {
             return this.api.GetShuffleState();
         }
@@ -108,7 +110,7 @@ namespace MusicBeePlugin.Modules
             return this.api.SetScrobbleState(enabled);
         }
 
-        public bool SetShuffleState(ShuffleState state)
+        public bool SetShuffleState(Shuffle state)
         {
             return this.api.SetShuffleState(state);
         }

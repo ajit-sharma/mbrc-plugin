@@ -1,4 +1,4 @@
-﻿namespace MusicBeePlugin.AndroidRemote.Persistence
+﻿namespace MusicBeeRemoteCore.AndroidRemote.Persistence
 {
     using System;
     using System.Diagnostics;
