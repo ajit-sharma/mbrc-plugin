@@ -1,16 +1,14 @@
-namespace MusicBeeRemoteCore
+namespace MusicBeePlugin.ApiAdapters
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
 
+    using MusicBeePlugin;
+
+    using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-    using MusicBeeRemoteCore.Model;
     using MusicBeeRemoteCore.Rest.ServiceInterface;
     using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
     class PlayerApiAdapter : IPlayerApiAdapter
     {

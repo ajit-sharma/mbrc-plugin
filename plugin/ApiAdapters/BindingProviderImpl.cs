@@ -1,5 +1,7 @@
-﻿namespace MusicBeeRemoteCore.ApiAdapters
+﻿namespace MusicBeePlugin.ApiAdapters
 {
+    using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.ApiAdapters;
     using MusicBeeRemoteCore.Interfaces;
 
     class BindingProviderImpl : IBindingProvider

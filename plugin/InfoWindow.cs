@@ -1,4 +1,4 @@
-namespace MusicBeeRemoteCore
+namespace MusicBeePlugin
 {
     using System;
     using System.Collections.Generic;
@@ -9,6 +9,7 @@ namespace MusicBeeRemoteCore
     using System.Text.RegularExpressions;
     using System.Windows.Forms;
 
+    using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.AndroidRemote.Persistence;
     using MusicBeeRemoteCore.Tools;
 

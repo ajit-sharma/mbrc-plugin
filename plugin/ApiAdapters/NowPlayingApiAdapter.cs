@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MusicBeeRemoteCore.ApiAdapters
+﻿namespace MusicBeePlugin.ApiAdapters
 {
+    using System.Collections.Generic;
+
+    using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     class NowPlayingApiAdapter : INowPlayingApiAdapter
@@ -46,13 +44,13 @@ namespace MusicBeeRemoteCore.ApiAdapters
                 }
 
                 var nowPlaying = new NowPlaying
-                {
-                    Artist = artist,
-                    Id = position,
-                    Path = playListTrack,
-                    Position = position,
-                    Title = title
-                };
+                                     {
+                                         Artist = artist, 
+                                         Id = position, 
+                                         Path = playListTrack, 
+                                         Position = position, 
+                                         Title = title
+                                     };
 
                 tracks.Add(nowPlaying);
                 position++;

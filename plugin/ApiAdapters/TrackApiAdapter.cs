@@ -1,14 +1,17 @@
-﻿namespace MusicBeeRemoteCore.ApiAdapters
+﻿namespace MusicBeePlugin.ApiAdapters
 {
     using System;
     using System.Diagnostics;
     using System.Globalization;
     using System.Windows.Forms;
 
+    using MusicBeePlugin;
+
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
     using MusicBeeRemoteCore.AndroidRemote.Model;
+    using MusicBeeRemoteCore.ApiAdapters;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-    
+
     class TrackApiAdapter : ITrackApiAdapter
     {
   

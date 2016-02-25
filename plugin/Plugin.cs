@@ -1,4 +1,4 @@
-namespace MusicBeeRemoteCore
+namespace MusicBeePlugin
 {
     using System;
     using System.Diagnostics;
@@ -7,11 +7,11 @@ namespace MusicBeeRemoteCore
     using System.Timers;
     using System.Windows.Forms;
 
-    using MusicBeeRemoteCore.AndroidRemote.Entities;
-    using MusicBeeRemoteCore.AndroidRemote.Events;
-    using MusicBeeRemoteCore.ApiAdapters;
+    using MusicBeePlugin.ApiAdapters;
 
     using MusicBeeRemoteCore;
+    using MusicBeeRemoteCore.AndroidRemote.Entities;
+    using MusicBeeRemoteCore.AndroidRemote.Events;
     using MusicBeeRemoteCore.Interfaces;
 
     using Timer = System.Timers.Timer;
@@ -21,11 +21,6 @@ namespace MusicBeeRemoteCore
     /// </summary>
     public partial class Plugin : IMessageHandler
     {
-        /// <summary>
-        ///     The about.
-        /// </summary>
-        private readonly PluginInfo about = new PluginInfo();
-
         /// <summary>
         ///     The mb api interface.
         /// </summary>
@@ -74,14 +69,16 @@ namespace MusicBeeRemoteCore
         }
 
         /// <summary>
-        ///     This function initialized the Plugin.
+        ///     This function initialized the plugin
         /// </summary>
-        /// <param name="apiInterfacePtr"></param>
-        /// <returns></returns>
+        /// <param name="apiInterfacePtr">
+        /// The MusicBee API interface pointer
+        /// </param>
+        /// <returns>
+        /// The basic information of the plugin.
+        /// </returns>
         public PluginInfo Initialise(IntPtr apiInterfacePtr)
         {
-            this.InitializeAbout();
-
             this.api = new MusicBeeApiInterface();
             this.api.Initialise(apiInterfacePtr);
             var supportedApi = this.api.ApiRevision >= MinApiRevision;
@@ -89,23 +86,26 @@ namespace MusicBeeRemoteCore
             this.storagePath = this.api.Setting_GetPersistentStoragePath() + "\\mb_remote";
 
             this.mbrc = new MusicBeeRemoteEntryPointImpl { StoragePath = this.storagePath };
+
             this.mbrc.setMessageHandler(this);
             try
             {
                 this.mbrc.init(
-            supportedApi,
-            new BindingProviderImpl(
-                new PlayerApiAdapter(this.api),
-                new PlaylistApiAdapter(this.api),
-                new TrackApiAdapter(this.api),
-                new LibraryApiAdapter(this.api),
-                new NowPlayingApiAdapter(this.api)));
+                    supportedApi, 
+                    new BindingProviderImpl(
+                        new PlayerApiAdapter(this.api), 
+                        new PlaylistApiAdapter(this.api), 
+                        new TrackApiAdapter(this.api), 
+                        new LibraryApiAdapter(this.api), 
+                        new NowPlayingApiAdapter(this.api)));
+
+                this.mbrc.setVersion(GetVersion().ToString());
             }
             catch (Exception ex)
             {
                 Debug.WriteLine(ex);
                 this.OnMessageAvailable("MBRC failed to initialize");
-                return this.about;
+                return InitializePluginInfo();
             }
 
             if (supportedApi)
@@ -118,8 +118,8 @@ namespace MusicBeeRemoteCore
                 this.UpdateCachedLyrics();
                 this.StartPlayerStatusMonitoring();
             }
-            
-            return this.about;
+
+            return InitializePluginInfo();
         }
 
         public void OnMessageAvailable(string message)
@@ -137,7 +137,7 @@ namespace MusicBeeRemoteCore
         }
 
         /// <summary>
-        ///     Receives event Notifications from MusicBee. It is only required if the about.ReceiveNotificationFlags =
+        ///     Receives event Notifications from MusicBee. It is only required if the pluginInfo.ReceiveNotificationFlags =
         ///     PlayerEvents.
         /// </summary>
         /// <param name="sourceFileUrl"></param>
@@ -221,8 +221,11 @@ namespace MusicBeeRemoteCore
         }
 
         /// <summary>
+        /// Updates the socket status on the information window, if the window is visible
         /// </summary>
-        /// <param name="status"></param>
+        /// <param name="status">
+        /// True if the socket is listening for incoming connections and false if not.
+        /// </param>
         public void UpdateWindowStatus(bool status)
         {
             if (this.window != null && this.window.Visible)
@@ -231,6 +234,49 @@ namespace MusicBeeRemoteCore
             }
         }
 
+        /// <summary>
+        /// Gets the plugin's version as provided by the Assembly 
+        /// </summary>
+        /// <returns>
+        /// The <see cref="Version"/>.
+        /// </returns>
+        private static Version GetVersion()
+        {
+            return Assembly.GetExecutingAssembly().GetName().Version;
+        }
+
+        /// <summary>
+        /// Initializes the pluginInfo information of the plugin.
+        /// </summary>
+        /// <returns>
+        /// The <see cref="PluginInfo"/>.
+        /// </returns>
+        private static PluginInfo InitializePluginInfo()
+        {
+            var version = GetVersion();
+            const string Description = "Remote Control for server to be used with android application.";
+
+            var pluginInfo = new PluginInfo
+                                 {
+                                     PluginInfoVersion = PluginInfoVersion, 
+                                     Name = "MusicBee Remote: Plugin", 
+                                     Description = Description, 
+                                     Author = "Konstantinos Paparas (aka Kelsos)", 
+                                     TargetApplication = "MusicBee Remote", 
+                                     Type = PluginType.General, 
+                                     VersionMajor = Convert.ToInt16(version.Major), 
+                                     VersionMinor = Convert.ToInt16(version.Minor), 
+                                     Revision = Convert.ToInt16(version.Revision), 
+                                     MinInterfaceVersion = MinInterfaceVersion, 
+                                     MinApiRevision = MinApiRevision, 
+                                     ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents
+                                 };
+            return pluginInfo;
+        }
+
+        /// <summary>
+        /// Creates and shows the plugin configuration and information window.
+        /// </summary>
         private void DisplayInfoWindow()
         {
             if (this.window == null || !this.window.Visible)
@@ -245,7 +291,7 @@ namespace MusicBeeRemoteCore
         }
 
         /// <summary>
-        ///     This function runs periodically every 1000 ms as the timer ticks and
+        ///     This function runs periodically every 1000 milliseconds as the timer ticks and
         ///     checks for changes on the player status. If a change is detected on
         ///     one of the monitored variables the function will fire an event with
         ///     the new status.
@@ -275,27 +321,6 @@ namespace MusicBeeRemoteCore
             this.repeat = this.api.Player_GetRepeat();
         }
 
-        private void InitializeAbout()
-        {
-            this.about.PluginInfoVersion = PluginInfoVersion;
-            this.about.Name = "MusicBee Remote: Plugin";
-            this.about.Description = "Remote Control for server to be used with android application.";
-            this.about.Author = "Konstantinos Paparas (aka Kelsos)";
-            this.about.TargetApplication = "MusicBee Remote";
-
-            var v = Assembly.GetExecutingAssembly().GetName().Version;
-            this.mbrc.setVersion(v.ToString());
-
-            // current only applies to artwork, lyrics or instant messenger name that appears in the provider drop down selector or target Instant Messenger
-            this.about.Type = PluginType.General;
-            this.about.VersionMajor = Convert.ToInt16(v.Major);
-            this.about.VersionMinor = Convert.ToInt16(v.Minor);
-            this.about.Revision = Convert.ToInt16(v.Revision);
-            this.about.MinInterfaceVersion = MinInterfaceVersion;
-            this.about.MinApiRevision = MinApiRevision;
-            this.about.ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents;
-        }
-
         /// <summary>
         ///     Menu Item click handler. It handles the Tools -> MusicBee Remote entry click and opens the respective info panel.
         /// </summary>
@@ -323,6 +348,9 @@ namespace MusicBeeRemoteCore
             this.timer.Enabled = true;
         }
 
+        /// <summary>
+        /// Updates the cache with the current track's cover.
+        /// </summary>
         private void UpdateCachedCover()
         {
             var cover = this.api.NowPlaying_GetDownloadedArtwork() ?? this.api.NowPlaying_GetArtwork();
@@ -330,6 +358,9 @@ namespace MusicBeeRemoteCore
             this.mbrc.CacheCover(cover);
         }
 
+        /// <summary>
+        /// Updates the cache with the current track's lyrics.
+        /// </summary>
         private void UpdateCachedLyrics()
         {
             var lyrics = this.api.NowPlaying_GetLyrics() ?? this.api.NowPlaying_GetDownloadedLyrics();
