@@ -1,13 +1,10 @@
-﻿namespace MusicBeeRemoteCore
+namespace MusicBeeRemoteCore
 {
     using System;
     using System.Diagnostics;
-    using System.Linq;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
-    using System.Threading.Tasks;
 
-    using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.AndroidRemote;
     using MusicBeeRemoteCore.AndroidRemote.Controller;
     using MusicBeeRemoteCore.AndroidRemote.Entities;
@@ -16,48 +13,18 @@
     using MusicBeeRemoteCore.AndroidRemote.Networking;
     using MusicBeeRemoteCore.AndroidRemote.Persistence;
     using MusicBeeRemoteCore.AndroidRemote.Utilities;
+    using MusicBeeRemoteCore.Interfaces;
     using MusicBeeRemoteCore.Modules;
 
-    using MusicBeeRemoteCore.Interfaces;
-
-    using Nancy;
     using Nancy.Hosting.Self;
 
     using Ninject;
-    using Ninject.Syntax;
 
     using NLog;
     using NLog.Config;
     using NLog.Targets;
 
-    public interface MusicBeeRemoteEntryPoint
-    {
-        string StoragePath { get; set; }
-
-        void CacheCover(string cover);
-
-        void CacheLyrics(string lyrics);
-
-        EventBus getBus();
-
-        IKernel GetKernel();
-
-        void init(bool supportedApi, IBindingProvider provider);
-
-        void notify(string eventType, bool debounce = false);
-
-        void setMessageHandler(IMessageHandler messageHandler);
-
-        void setVersion(string version);
-
-       PersistenceController Settings { get; }
-
-        int CachedTrackCount { get; }
-
-        int CachedCoverCount { get; }
-    }
-
-    public class MusicBeeRemoteEntryPointImpl : MusicBeeRemoteEntryPoint
+    public class MusicBeeRemoteEntryPointImpl : IMusicBeeRemoteEntryPoint
     {
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -67,17 +34,6 @@
 
         private IMessageHandler messageHandler;
 
-        public PersistenceController Settings { get; private set; }
-
-        public int CachedTrackCount
-        {
-            get
-            {
-                var module = this.kernel.Get<LibraryModule>();
-                return module.GetCachedTrackCount();
-            } 
-        }
-
         public int CachedCoverCount
         {
             get
@@ -86,6 +42,17 @@
                 return module.GetCachedCoverCount();
             }
         }
+
+        public int CachedTrackCount
+        {
+            get
+            {
+                var module = this.kernel.Get<LibraryModule>();
+                return module.GetCachedTrackCount();
+            }
+        }
+
+        public PersistenceController Settings { get; private set; }
 
         public string StoragePath { get; set; }
 
@@ -106,9 +73,9 @@
             model.Lyrics = lyrics;
         }
 
-        public EventBus getBus()
+        public EventBus GetBus()
         {
-            throw new NotImplementedException();
+            return this.kernel.Get<EventBus>();
         }
 
         public IKernel GetKernel()
@@ -116,13 +83,8 @@
             return this.kernel;
         }
 
-        public void init(bool supportedApi, IBindingProvider provider)
+        public void Init(IBindingProvider provider)
         {
-            if (!supportedApi)
-            {
-                return;
-            }
-
             this.InitializeLoggingConfiguration();
             Debug.WriteLine("OOOO");
 
@@ -151,10 +113,10 @@
             this.BuildCache(libraryModule, playlistModule);
 
             this.startHttp();
-            this.eventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(eventType => this.notify(eventType, false));
+            this.eventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(eventType => this.Notify(eventType, false));
         }
 
-        public void notify(string eventType, bool debounce)
+        public void Notify(string eventType, bool debounce)
         {
             if (debounce)
             {
@@ -168,37 +130,34 @@
             server.Send(notification.ToJsonString());
         }
 
-        public void setMessageHandler(IMessageHandler messageHandler)
+        public void SetMessageHandler(IMessageHandler messageHandler)
         {
             this.messageHandler = messageHandler;
         }
-
-        public void setVersion(string version)
+        
+        public void SetVersion(string version)
         {
             this.Settings.Settings.CurrentVersion = version;
         }
 
-        public void SetupModule(IBindingProvider bindingsProvider)
-        {
-            throw new NotImplementedException();
-        }
-
         private void BuildCache(LibraryModule libraryModule, PlaylistModule playlistModule)
         {
-            var observable = Observable.Create<string>(o =>
-                {
-                    if (!libraryModule.IsCacheEmpty())
+            var observable = Observable.Create<string>(
+                o =>
                     {
-                        o.OnNext("MBR: Currently building the metadata cache.");
-                        libraryModule.BuildCache();
-                        playlistModule.SyncPlaylistsWithCache();
-                        o.OnNext("MBRC: Currently processing the album covers.");
-                        libraryModule.BuildCoverCachePerAlbum();
-                        o.OnNext("MBRC: Cache Ready.");
-                    }
-                    o.OnCompleted();
-                    return () => { };
-                });
+                        if (!libraryModule.IsCacheEmpty())
+                        {
+                            o.OnNext("MBR: Currently building the metadata cache.");
+                            libraryModule.BuildCache();
+                            playlistModule.SyncPlaylistsWithCache();
+                            o.OnNext("MBRC: Currently processing the album covers.");
+                            libraryModule.BuildCoverCachePerAlbum();
+                            o.OnNext("MBRC: Cache Ready.");
+                        }
+
+                        o.OnCompleted();
+                        return () => { };
+                    });
 
             observable.Subscribe(s => this.messageHandler?.OnMessageAvailable(s), ex => Logger.Debug(ex, "Cache Build"));
         }
@@ -245,13 +204,12 @@
             try
             {
                 var bootstrapper = new Bootstrapper(this.kernel);
-                //bootstrapper.Initialise();
- 
-                var nancyHost = new NancyHost(new Uri($"http://localhost:{this.Settings.Settings.HttpPort}/"), bootstrapper);
+
+                // bootstrapper.Initialise();
+                var nancyHost = new NancyHost(
+                    new Uri($"http://localhost:{this.Settings.Settings.HttpPort}/"), 
+                    bootstrapper);
                 nancyHost.Start();
-                
-
-
             }
             catch (Exception ex)
             {

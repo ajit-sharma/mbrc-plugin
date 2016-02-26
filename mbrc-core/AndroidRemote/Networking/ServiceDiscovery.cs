@@ -98,7 +98,7 @@
 
                 var notify = new Dictionary<string, object>
                                  {
-                                     { "context", "notify" }, 
+                                     { "context", "Notify" }, 
                                      { "address", interfaceAddress }, 
                                      {
                                          "name", 
