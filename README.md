@@ -7,7 +7,7 @@ This is a plugin for [MusicBee](http://getmusicbee.com/) that is required for [M
 
 
 ### Current release
-If you want to access the code, or binary of the current releases check the [Releases Page](https://github.com/kelsos/mbrc-plugin/releases). The current stable version is [**v0.13.0**](releases/tag/v0.13.0)
+If you want to access the code, or binary of the current releases check the [Releases Page](https://github.com/kelsos/mbrc-plugin/releases). The current stable version is [**v0.13.0**](https://github.com/kelsos/mbrc-plugin/releases/tag/v0.13.0)
 
 ### ServiceStack based
 There is an experimental implementation based on [ServiceStack](https://github.com/kelsos/mbrc-plugin/tree/6d321749347a38c281d22baa9a928d14cd8eaab3).
