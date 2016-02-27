@@ -86,6 +86,14 @@ To build the plugin you have to open it with Visual Studio 2015. After opening t
 
     [Apache v2](https://github.com/ninject/Ninject/blob/master/LICENSE.txt)
 
+*   [NUnit](https://github.com/nunit/nunit)
+
+    [MIT](https://github.com/nunit/nunit/blob/master/LICENSE.txt)
+
+*   [AutoFixture](https://github.com/AutoFixture/AutoFixture)
+
+    [MIT](https://github.com/AutoFixture/AutoFixture/blob/master/LICENCE.txt)
+
 
 License
 ------
