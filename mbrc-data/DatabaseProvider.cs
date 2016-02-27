@@ -179,7 +179,7 @@
             }
         }
 
-        private void DeleteDatabase()
+        public void DeleteDatabase()
         {
             if (File.Exists(this._dbFilePath))
             {

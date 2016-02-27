@@ -7,62 +7,37 @@
     /// <summary>
     /// The TrackRepository interface.
     /// </summary>
-    public interface ITrackRepository
+    public interface ITrackRepository : IRepository<LibraryTrack>
     {
-        /// <summary>
-        /// Deletes a list of tracks from the database and returns the number of rows affected.
-        /// </summary>
-        /// <param name="tracks">The tracks to be removed from the database.</param>
-        /// <returns>The number of rows deleted.</returns>
-        int DeleteTracks(ICollection<LibraryTrack> tracks);
+        IList<LibraryTrack> GetTracksByAlbumId(long id);
+    }
 
-        ICollection<LibraryTrack> GetAllTracks();
+    /// <summary>
+    /// The interface provides a base for the basic actions of a repository.
+    /// </summary>
+    /// <typeparam name="T">The type of data the repository handles</typeparam>
+    public interface IRepository<T>
+    {
+        int Delete(IList<T> t);
+                
+        int SoftDelete(IList<T> t);
 
-        ICollection<LibraryTrack> GetCachedTracks();
+        IList<T> GetAll();
 
-        ICollection<LibraryTrack> GetDeletedTracks();
+        IList<T> GetCached();
 
-        LibraryTrack GetTrack(long id);
+        IList<T> GetDeleted();
 
-        int GetTrackCount();
+        T GetById(long id);
 
-        ICollection<LibraryTrack> GetTrackPage(int offset, int limit);
+        int GetCount();
 
-        ICollection<LibraryTrack> GetTracksByAlbumId(long id);
-
-        /// <summary>
-        /// Gets a page of the tracks that where updated after the epoch supplied.
-        /// </summary>
-        /// <param name="offset">
-        /// The offset of the data set.
-        /// </param>
-        /// <param name="limit">
-        /// The number of data contained in the data set.
-        /// </param>
-        /// <param name="epoch">
-        /// The epoch after when we want the data.
-        /// </param>
-        /// <returns>
-        /// The <see cref="ICollection"/> of updated <see cref="LibraryTrack"/>s.
-        /// </returns>
-        ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch);
-
-        /// <summary>
-        /// Saves a track to the backing database of the cache plugin.
-        /// </summary>
-        /// <param name="track">The track information</param>
-        /// <returns>The id of the newly inserted track</returns>
-        int SaveTrack(LibraryTrack track);
-
-        /// <summary>
-        /// Saves a list of tracks in the cache database of the plugin
-        /// </summary>
-        /// <param name="tracks">
-        /// The track list.
-        /// </param>
-        /// <returns>
-        /// The <see cref="int"/> number of rows affected
-        /// </returns>
-        int SaveTracks(ICollection<LibraryTrack> tracks);
+        IList<T> GetPage(int offset, int limit);
+        
+        IList<T> GetUpdatedPage(int offset, int limit, long epoch);
+        
+        int Save(T t);
+        
+        int Save(IList<T> t);
     }
 }

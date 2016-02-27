@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.Serialization;
 
-    using MusicBeeRemoteCore.AndroidRemote.Extensions;
+    using MusicBeeRemoteData.Extensions;
 
     /// <summary>
     ///     The <c>base</c> of all the POCOs stored in the database.

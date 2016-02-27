@@ -6,13 +6,13 @@ namespace MusicBeeRemoteCore.Modules
     using System.Linq;
     using System.Threading.Tasks;
 
-    using MusicBeeRemoteCore.AndroidRemote.Extensions;
     using MusicBeeRemoteCore.ApiAdapters;
     using MusicBeeRemoteCore.Comparers;
     using MusicBeeRemoteCore.Rest.ServiceInterface;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Extensions;
     using MusicBeeRemoteData.Repository;
 
     using NLog;

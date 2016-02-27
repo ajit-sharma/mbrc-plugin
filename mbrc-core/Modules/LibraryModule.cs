@@ -6,12 +6,12 @@ namespace MusicBeeRemoteCore.Modules
     using System.Linq;
 
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-    using MusicBeeRemoteCore.AndroidRemote.Extensions;
     using MusicBeeRemoteCore.AndroidRemote.Utilities;
     using MusicBeeRemoteCore.Comparers;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Extensions;
     using MusicBeeRemoteData.Repository;
 
     using NLog;
@@ -252,8 +252,8 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryTrack> GetAllTracks(int limit, int offset, long after)
         {
-            var tracks = this.trackRepository.GetUpdatedTracks(offset, limit, after);
-            var total = this.trackRepository.GetTrackCount();
+            var tracks = this.trackRepository.GetUpdatedPage(offset, limit, after);
+            var total = this.trackRepository.GetCount();
             var paginated = new PaginatedTrackResponse
                                 {
                                     Total = total, 
@@ -315,7 +315,7 @@ namespace MusicBeeRemoteCore.Modules
 
         public int GetCachedTrackCount()
         {
-            return this.trackRepository.GetTrackCount();
+            return this.trackRepository.GetCount();
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public LibraryTrack GetTrackById(int id)
         {
-            return this.trackRepository.GetTrack(id);
+            return this.trackRepository.GetById(id);
         }
 
         /// <summary>
@@ -427,7 +427,7 @@ namespace MusicBeeRemoteCore.Modules
         public string[] GetTrackPathById(long id)
         {
             var list = new List<string>();
-            var track = this.trackRepository.GetTrack(id);
+            var track = this.trackRepository.GetById(id);
             if (track != null)
             {
                 list.Add(track.Path);
@@ -442,7 +442,7 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         public bool IsCacheEmpty()
         {
-            return this.trackRepository.GetTrackCount() == 0;
+            return this.trackRepository.GetCount() == 0;
         }
 
         /// <summary>
@@ -595,8 +595,8 @@ namespace MusicBeeRemoteCore.Modules
             var genres = this.genreRepository.GetAllGenres();
             var albums = this.albumRepository.GetAllAlbums();
 
-            var cached = this.trackRepository.GetCachedTracks();
-            var deleted = this.trackRepository.GetDeletedTracks();
+            var cached = this.trackRepository.GetCached();
+            var deleted = this.trackRepository.GetDeleted();
             var cachedPaths = cached.Select(tr => tr.Path).ToList();
 
             var toInsert = files.Except(cachedPaths).ToList();

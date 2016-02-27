@@ -89,6 +89,7 @@
     <Compile Include="Entities\PlaylistTrack.cs" />
     <Compile Include="Entities\PlaylistTrackInfo.cs" />
     <Compile Include="Entities\TypeBase.cs" />
+    <Compile Include="Extensions\Epoch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\AlbumRepository.cs" />
     <Compile Include="Repository\ArtistRepository.cs" />
