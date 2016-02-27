@@ -15,7 +15,7 @@
     /// </summary>
     public class DatabaseProvider
     {
-        private const string DbName = @"\\cache.db";
+        private const string DbName = @"cache.db";
 
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -27,6 +27,13 @@
         /// <param name="storagePath">The storage path.</param>
         public DatabaseProvider(string storagePath)
         {
+            SimpleCRUD.SetDialect(SimpleCRUD.Dialect.SQLite);
+
+            if (!storagePath.EndsWith("\\"))
+            {
+                storagePath += "\\";
+            }
+
             this._dbFilePath = storagePath + DbName;
 
             try
@@ -48,16 +55,33 @@
             return new SQLiteConnection($"Data Source={this._dbFilePath}");
         }
 
+        private void DeleteDatabase()
+        {
+            if (File.Exists(this._dbFilePath))
+            {
+                File.Delete(this._dbFilePath);
+            }
+        }
+
+        public void ResetDatabase()
+        {
+            this.DeleteDatabase();
+            this.CreateDatabase();
+        }
+
         private void CreateDatabase()
         {
             if (File.Exists(this._dbFilePath))
             {
                 return;
             }
-
+            
+            SQLiteConnection.CreateFile(this._dbFilePath);
+            
             using (var connection = this.GetDbConnection())
             {
                 connection.Open();
+               
                 connection.Execute(@"create table LibraryGenre (
                       Id integer primary key AUTOINCREMENT,
                       Name varchar(255) not null,
@@ -109,11 +133,11 @@
                         Title varchar(255),
                         Position integer default 0,
                         Disc integer default 0,
-                        GenreId integer not null,
-                        ArtistId integer not null,
-                        AlbumArtistId integer not null,
-                        AlbumId integer not null,
-                        Year varchar(40),
+                        GenreId integer,
+                        ArtistId integer,
+                        AlbumArtistId integer,
+                        AlbumId integer,
+                        Year varchar(255),
                         Path varchar(255),
                         DateAdded integer default (strftime('%s', 'now')),
                         DateUpdated integer default 0,
@@ -124,7 +148,7 @@
                         foreign key (GenreId) references LibraryGenre (Id) DEFERRABLE INITIALLY DEFERRED
                     );");
 
-                connection.Execute(@"create unique index uidx_librarytrack_title on LibraryTrack (Title);");
+                connection.Execute(@"create unique index uidx_librarytrack_path on LibraryTrack (Path);");
 
                 connection.Execute(@"create table Playlist (
                         Id integer primary key AUTOINCREMENT,
@@ -158,6 +182,8 @@
                         foreign key (PlaylistId) references Playlist(Id) DEFERRABLE INITIALLY DEFERRED,
                         foreign key (TrackInfoId) references PlaylistTrackInfo (Id) DEFERRABLE INITIALLY DEFERRED
                     );");
+
+                connection.Close();
             }
         }
     }

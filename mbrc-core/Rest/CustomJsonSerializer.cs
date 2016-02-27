@@ -7,8 +7,8 @@
     {
         public CustomJsonSerializer()
         {
-            this.Formatting = Formatting.None; 
-            this.ContractResolver = new DefaultContractResolver();          
+            this.Formatting = Formatting.None;
+            this.ContractResolver = new DefaultContractResolver();
         }
     }
 }

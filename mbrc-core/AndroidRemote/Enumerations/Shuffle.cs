@@ -8,12 +8,12 @@
         /// <summary>
         /// The shuffle functionality is disabled.
         /// </summary>
-        off,
+        off, 
 
         /// <summary>
         /// The player has autodj functionality enabled.
         /// </summary>
-        autodj,
+        autodj, 
 
         /// <summary>
         /// The shuffle functionality is active.

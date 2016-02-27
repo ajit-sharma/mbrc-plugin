@@ -4,8 +4,6 @@ namespace MusicBeeRemoteCore.Modules
     using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-
     public class PlayerModule
     {
         private readonly IPlayerApiAdapter api;

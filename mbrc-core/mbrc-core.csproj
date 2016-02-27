@@ -159,7 +159,8 @@
     <Compile Include="Modules\PlayerModule.cs" />
     <Compile Include="Modules\PlaylistModule.cs" />
     <Compile Include="Modules\TrackModule.cs" />
-    <Compile Include="MusicBeeRemoteEntryPoint.cs" />
+    <Compile Include="IMusicBeeRemoteEntryPoint.cs" />
+    <Compile Include="MusicBeeRemoteEntryPointImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rest\CustomJsonSerializer.cs" />
     <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />

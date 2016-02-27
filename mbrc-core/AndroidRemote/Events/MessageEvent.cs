@@ -1,7 +1,5 @@
 ﻿namespace MusicBeeRemoteCore.AndroidRemote.Events
 {
-    using System;
-
     using MusicBeeRemoteCore.AndroidRemote.Interfaces;
 
     public class MessageEvent : IEvent

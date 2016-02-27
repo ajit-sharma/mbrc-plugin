@@ -398,7 +398,7 @@ namespace MusicBeeRemoteCore.Modules
 
         /// <summary>
         ///     Checks for unused <see cref="PlaylistTrackInfo" /> entries and sets
-        ///     the <see cref="TypeBase.DateDeleted" />property to the current UTC
+        ///     the <see cref="Rest.ServiceModel.Type.TypeBase.DateDeleted" />property to the current UTC
         ///     DateTime. />
         /// </summary>
         private void CleanUnusedTrackInfo()

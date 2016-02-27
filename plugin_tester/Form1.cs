@@ -24,7 +24,7 @@
                 new NowPlayingApiAdapter());
 
             entry.StoragePath = directory;
-            entry.init(true, provider);
+            entry.Init(provider);
         }
     }
 }

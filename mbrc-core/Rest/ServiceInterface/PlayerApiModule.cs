@@ -25,7 +25,8 @@
         /// <param name="module">
         /// The module.
         /// </param>
-        public PlayerApiModule(PlayerModule module) : base("/player")
+        public PlayerApiModule(PlayerModule module)
+            : base("/player")
         {
             this.module = module;
 
@@ -94,7 +95,7 @@
                     var code = this.module.SetVolume(request.Value) ? ApiCodes.Success : ApiCodes.Failure;
 
                     var response = new VolumeResponse() { Code = code, Value = this.module.GetVolume() };
-                
+
                     return this.Response.AsJson(response);
                 };
 
@@ -112,10 +113,10 @@
                                       : this.module.SetScrobbleState(!this.module.GetScrobbleState());
 
                     var response = new StatusResponse
-                                             {
-                                                 Code = success ? ApiCodes.Success : ApiCodes.Failure, 
-                                                 Enabled = this.module.GetScrobbleState()
-                                             };
+                                       {
+                                           Code = success ? ApiCodes.Success : ApiCodes.Failure, 
+                                           Enabled = this.module.GetScrobbleState()
+                                       };
 
                     return this.Response.AsJson(response);
                 };
@@ -134,10 +135,10 @@
                                       : this.module.SetMuteState(!this.module.GetMuteState());
 
                     var response = new StatusResponse
-                                             {
-                                                 Code = success ? ApiCodes.Success : ApiCodes.Failure, 
-                                                 Enabled = this.module.GetMuteState()
-                                             };
+                                       {
+                                           Code = success ? ApiCodes.Success : ApiCodes.Failure, 
+                                           Enabled = this.module.GetMuteState()
+                                       };
                     return this.Response.AsJson(response);
                 };
 
@@ -155,10 +156,10 @@
                                       : this.module.ChangeRepeatMode();
 
                     var response = new ValueResponse()
-                                            {
-                                                Code = success ? ApiCodes.Success : ApiCodes.Failure, 
-                                                Value = this.module.GetRepeatState()
-                                            };
+                                       {
+                                           Code = success ? ApiCodes.Success : ApiCodes.Failure, 
+                                           Value = this.module.GetRepeatState()
+                                       };
                     return this.Response.AsJson(response);
                 };
 
@@ -172,11 +173,11 @@
                 {
                     var outputDevices = this.module.GetOutputDevices();
                     var response = new OutputDeviceResponse
-                                                   {
-                                                       Active = outputDevices.Active, 
-                                                       Devices = outputDevices.Devices, 
-                                                       Code = ApiCodes.Success
-                                                   };
+                                       {
+                                           Active = outputDevices.Active, 
+                                           Devices = outputDevices.Devices, 
+                                           Code = ApiCodes.Success
+                                       };
                     return this.Response.AsJson(response);
                 };
 
@@ -186,11 +187,11 @@
                     var success = this.module.SetOutputDevice(request.Active);
                     var outputDevices = this.module.GetOutputDevices();
                     var response = new OutputDeviceResponse
-                                                   {
-                                                       Active = outputDevices.Active, 
-                                                       Devices = outputDevices.Devices, 
-                                                       Code = success ? ApiCodes.Success : ApiCodes.Failure
-                                                   };
+                                       {
+                                           Active = outputDevices.Active, 
+                                           Devices = outputDevices.Devices, 
+                                           Code = success ? ApiCodes.Success : ApiCodes.Failure
+                                       };
 
                     return this.Response.AsJson(response);
                 };

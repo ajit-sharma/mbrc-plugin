@@ -4,8 +4,6 @@
     using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-
     public interface IPlayerApiAdapter
     {
         bool ChangeAutoDj(bool enabled);

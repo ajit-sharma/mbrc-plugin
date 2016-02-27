@@ -24,8 +24,22 @@
 
         ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch);
 
-        void SaveTrack(LibraryTrack Track);
+        /// <summary>
+        /// Saves a track to the backing database of the cache plugin.
+        /// </summary>
+        /// <param name="track">The track information</param>
+        /// <returns>The id of the newly inserted track</returns>
+        int SaveTrack(LibraryTrack track);
 
-        void SaveTracks(ICollection<LibraryTrack> Tracks);
+        /// <summary>
+        /// Saves a list of tracks in the cache database of the plugin
+        /// </summary>
+        /// <param name="tracks">
+        /// The track list.
+        /// </param>
+        /// <returns>
+        /// The <see cref="int"/> number of rows affected
+        /// </returns>
+        int SaveTracks(ICollection<LibraryTrack> tracks);
     }
 }

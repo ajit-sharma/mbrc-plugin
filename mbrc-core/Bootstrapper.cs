@@ -1,9 +1,5 @@
 ﻿namespace MusicBeeRemoteCore
 {
-    using System.Diagnostics;
-
-    using MusicBeeRemoteCore.Rest.ServiceInterface;
-
     using Nancy;
     using Nancy.Bootstrapper;
     using Nancy.Bootstrappers.Ninject;
@@ -21,10 +17,8 @@
             this.container.Load<FactoryModule>();
         }
 
-        protected override IKernel GetApplicationContainer()
-        {
-            return this.container;
-        }
+        protected override DiagnosticsConfiguration DiagnosticsConfiguration
+            => new DiagnosticsConfiguration { Password = "12345" };
 
         protected override void ApplicationStartup(IKernel container, IPipelines pipelines)
         {
@@ -32,13 +26,11 @@
             StaticConfiguration.EnableRequestTracing = true;
 #endif
             base.ApplicationStartup(container, pipelines);
-            
         }
-       
- 
-        protected override DiagnosticsConfiguration DiagnosticsConfiguration => new DiagnosticsConfiguration
-                                                                                    {
-                                                                                        Password = "12345"
-                                                                                    };
+
+        protected override IKernel GetApplicationContainer()
+        {
+            return this.container;
+        }
     }
 }

@@ -26,7 +26,7 @@ namespace MusicBeePlugin
         /// </summary>
         private MusicBeeApiInterface api;
 
-        private MusicBeeRemoteEntryPoint mbrc;
+        private IMusicBeeRemoteEntryPoint mbrc;
 
         private Timer positionUpdateTimer;
 
@@ -50,7 +50,7 @@ namespace MusicBeePlugin
         /// </param>
         public void Close(PluginCloseReason reason)
         {
-            this.mbrc.getBus().Publish(new MessageEvent(MessageEvent.ActionSocketStop));
+            this.mbrc.GetBus().Publish(new MessageEvent(MessageEvent.ActionSocketStop));
         }
 
         /// <summary>
@@ -87,19 +87,17 @@ namespace MusicBeePlugin
 
             this.mbrc = new MusicBeeRemoteEntryPointImpl { StoragePath = this.storagePath };
 
-            this.mbrc.setMessageHandler(this);
+            this.mbrc.SetMessageHandler(this);
             try
             {
-                this.mbrc.init(
-                    supportedApi, 
-                    new BindingProviderImpl(
-                        new PlayerApiAdapter(this.api), 
-                        new PlaylistApiAdapter(this.api), 
-                        new TrackApiAdapter(this.api), 
-                        new LibraryApiAdapter(this.api), 
-                        new NowPlayingApiAdapter(this.api)));
+                this.mbrc.Init(new BindingProviderImpl(
+                    new PlayerApiAdapter(this.api), 
+                    new PlaylistApiAdapter(this.api), 
+                    new TrackApiAdapter(this.api), 
+                    new LibraryApiAdapter(this.api), 
+                    new NowPlayingApiAdapter(this.api)));
 
-                this.mbrc.setVersion(GetVersion().ToString());
+                this.mbrc.SetVersion(GetVersion().ToString());
             }
             catch (Exception ex)
             {
@@ -150,16 +148,16 @@ namespace MusicBeePlugin
                 case NotificationType.TrackChanged:
                     this.UpdateCachedCover();
                     this.UpdateCachedLyrics();
-                    this.mbrc.notify(NotificationMessage.TrackChanged);
+                    this.mbrc.Notify(NotificationMessage.TrackChanged);
                     break;
                 case NotificationType.VolumeLevelChanged:
-                    this.mbrc.notify(NotificationMessage.VolumeChanged, true);
+                    this.mbrc.Notify(NotificationMessage.VolumeChanged, true);
                     break;
                 case NotificationType.VolumeMuteChanged:
-                    this.mbrc.notify(NotificationMessage.MuteStatusChanged);
+                    this.mbrc.Notify(NotificationMessage.MuteStatusChanged);
                     break;
                 case NotificationType.PlayStateChanged:
-                    this.mbrc.notify(NotificationMessage.PlayStatusChanged);
+                    this.mbrc.Notify(NotificationMessage.PlayStatusChanged);
                     break;
                 case NotificationType.NowPlayingLyricsReady:
                     if (this.api.ApiRevision >= 17)
@@ -176,25 +174,25 @@ namespace MusicBeePlugin
 
                     break;
                 case NotificationType.NowPlayingListChanged:
-                    this.mbrc.notify(NotificationMessage.NowPlayingListChanged);
+                    this.mbrc.Notify(NotificationMessage.NowPlayingListChanged);
                     break;
                 case NotificationType.PlayerRepeatChanged:
-                    this.mbrc.notify(NotificationMessage.RepeatStatusChanged);
+                    this.mbrc.Notify(NotificationMessage.RepeatStatusChanged);
                     break;
                 case NotificationType.PlayerShuffleChanged:
-                    this.mbrc.notify(NotificationMessage.ShuffleStatusChanged);
+                    this.mbrc.Notify(NotificationMessage.ShuffleStatusChanged);
                     break;
                 case NotificationType.PlayerScrobbleChanged:
-                    this.mbrc.notify(NotificationMessage.ScrobbleStatusChanged);
+                    this.mbrc.Notify(NotificationMessage.ScrobbleStatusChanged);
                     break;
                 case NotificationType.AutoDjStarted:
-                    this.mbrc.notify(NotificationMessage.AutoDjStarted);
+                    this.mbrc.Notify(NotificationMessage.AutoDjStarted);
                     break;
                 case NotificationType.AutoDjStopped:
-                    this.mbrc.notify(NotificationMessage.AutoDjStopped);
+                    this.mbrc.Notify(NotificationMessage.AutoDjStopped);
                     break;
                 case NotificationType.RatingChanged:
-                    this.mbrc.notify(NotificationMessage.RatingChanged);
+                    this.mbrc.Notify(NotificationMessage.RatingChanged);
                     break;
             }
         }
@@ -302,13 +300,13 @@ namespace MusicBeePlugin
         {
             if (this.api.Player_GetShuffle() != this.shuffle)
             {
-                this.mbrc.notify(NotificationMessage.ShuffleStatusChanged);
+                this.mbrc.Notify(NotificationMessage.ShuffleStatusChanged);
                 this.shuffle = this.api.Player_GetShuffle();
             }
 
             if (this.api.Player_GetScrobbleEnabled() != this.scrobble)
             {
-                this.mbrc.notify(NotificationMessage.ScrobbleStatusChanged);
+                this.mbrc.Notify(NotificationMessage.ScrobbleStatusChanged);
                 this.scrobble = this.api.Player_GetScrobbleEnabled();
             }
 
@@ -317,7 +315,7 @@ namespace MusicBeePlugin
                 return;
             }
 
-            this.mbrc.notify(NotificationMessage.RepeatStatusChanged);
+            this.mbrc.Notify(NotificationMessage.RepeatStatusChanged);
             this.repeat = this.api.Player_GetRepeat();
         }
 

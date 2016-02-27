@@ -1,8 +1,6 @@
 ﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
     using MusicBeeRemoteCore.Modules;
-    using MusicBeeRemoteCore.Rest.ServiceInterface;
     using MusicBeeRemoteCore.Rest.ServiceModel;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
@@ -33,7 +31,8 @@
         /// <param name="libraryModule">
         /// The library module.
         /// </param>
-        public NowPlayingApiModule(NowPlayingModule module, LibraryModule libraryModule) : base("/nowplaying")
+        public NowPlayingApiModule(NowPlayingModule module, LibraryModule libraryModule)
+            : base("/nowplaying")
         {
             this.module = module;
             this.libraryModule = libraryModule;

@@ -5,8 +5,8 @@
     using MusicBeeRemoteCore.AndroidRemote.Networking;
     using MusicBeeRemoteCore.AndroidRemote.Persistence;
     using MusicBeeRemoteCore.ApiAdapters;
-    using MusicBeeRemoteCore.Modules;
     using MusicBeeRemoteCore.Interfaces;
+    using MusicBeeRemoteCore.Modules;
     using MusicBeeRemoteCore.Rest;
 
     using MusicBeeRemoteData;
@@ -34,7 +34,7 @@
             this.Bind<ITrackApiAdapter>().ToMethod(context => this.provider.TrackApi).InSingletonScope();
             this.Bind<ILibraryApiAdapter>().ToMethod(context => this.provider.LibraryApi).InSingletonScope();
             this.Bind<INowPlayingApiAdapter>().ToMethod(context => this.provider.NowPlayingApi).InSingletonScope();
-           
+
             this.Bind<DatabaseProvider>().ToSelf().WithConstructorArgument("storagePath", StoragePath);
             this.Bind<LibraryModule>().ToSelf().InSingletonScope();
             this.Bind<NowPlayingModule>().ToSelf().InSingletonScope();

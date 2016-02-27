@@ -387,6 +387,37 @@ namespace MusicBeeRemoteCore.Modules
         }
 
         /// <summary>
+        /// Gets the track list based on the meta tag type provided and the id of the item.
+        /// </summary>
+        /// <param name="tag">The tag defining the type of the metadata, genre, artist etc <see cref="MetaTag"/></param>
+        /// <param name="id">The id of the item in the database</param>
+        /// <returns>A list of paths in the file system belonging to tracks matching the supplied parameters.</returns>
+        public string[] GetTracklist(MetaTag tag, long id)
+        {
+            string[] tracklist;
+            switch (tag)
+            {
+                case MetaTag.artist:
+                    tracklist = this.GetArtistTracksById(id);
+                    break;
+                case MetaTag.album:
+                    tracklist = this.GetAlbumTracksById(id);
+                    break;
+                case MetaTag.genre:
+                    tracklist = this.GetGenreTracksById(id);
+                    break;
+                case MetaTag.track:
+                    tracklist = this.GetTrackPathById(id);
+                    break;
+                default:
+                    tracklist = new string[] { };
+                    break;
+            }
+
+            return tracklist;
+        }
+
+        /// <summary>
         ///     Given an id in the database it will retrieve the path of the track.
         ///     It returns an array instead of a single String to be in consistency
         ///     with the other group of methods. <see cref="GetAlbumTracksById" /> etc.
@@ -623,37 +654,6 @@ namespace MusicBeeRemoteCore.Modules
             // trans.Commit();
             Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
             Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
-        }
-
-        /// <summary>
-        /// Gets the track list based on the meta tag type provided and the id of the item.
-        /// </summary>
-        /// <param name="tag">The tag defining the type of the metadata, genre, artist etc <see cref="MetaTag"/></param>
-        /// <param name="id">The id of the item in the database</param>
-        /// <returns>A list of paths in the file system belonging to tracks matching the supplied parameters.</returns>
-        public string[] GetTracklist(MetaTag tag, long id)
-        {
-            string[] tracklist;
-            switch (tag)
-            {
-                case MetaTag.artist:
-                    tracklist = GetArtistTracksById(id);
-                    break;
-                case MetaTag.album:
-                    tracklist = GetAlbumTracksById(id);
-                    break;
-                case MetaTag.genre:
-                    tracklist = GetGenreTracksById(id);
-                    break;
-                case MetaTag.track:
-                    tracklist = GetTrackPathById(id);
-                    break;
-                default:
-                    tracklist = new string[] { };
-                    break;
-            }
-
-            return tracklist;
         }
     }
 }

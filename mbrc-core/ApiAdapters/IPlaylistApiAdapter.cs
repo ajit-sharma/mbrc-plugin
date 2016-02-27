@@ -2,8 +2,6 @@
 {
     using System.Collections.Generic;
 
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
     using MusicBeeRemoteData.Entities;
 
     public interface IPlaylistApiAdapter

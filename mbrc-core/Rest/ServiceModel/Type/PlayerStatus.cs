@@ -4,8 +4,6 @@
 
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
 
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-
     [DataContract]
     public class PlayerStatus : ResponseBase
     {
