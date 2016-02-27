@@ -6,52 +6,57 @@
 
     public class AlbumRepository : IAlbumRepository
     {
-        public void DeleteAlbums(ICollection<LibraryAlbum> Albums)
+        public int Delete(IList<LibraryAlbum> Albums)
         {
             throw new System.NotImplementedException();
         }
 
-        public LibraryAlbum GetAlbum(long id)
+        public int SoftDelete(IList<LibraryAlbum> t)
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetAlbumCount()
+        public LibraryAlbum GetById(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetAlbumPage(int offset, int limit)
+        public int GetCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetAllAlbums()
+        public IList<LibraryAlbum> GetPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetCachedAlbums()
+        public IList<LibraryAlbum> GetAll()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetDeletedAlbums()
+        public IList<LibraryAlbum> GetCached()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryAlbum> GetUpdatedAlbums(int offset, int limit, long epoch)
+        public IList<LibraryAlbum> GetDeleted()
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveAlbum(LibraryAlbum Album)
+        public IList<LibraryAlbum> GetUpdatedPage(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveAlbums(ICollection<LibraryAlbum> Albums)
+        public int Save(LibraryAlbum Album)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int Save(IList<LibraryAlbum> Albums)
         {
             throw new System.NotImplementedException();
         }

@@ -41,7 +41,6 @@
         /// <returns>A list of the cached, non deleted elements in the repository.</returns>
         IList<T> GetCached();
 
-
         /// <summary>
         /// Gets all the deleted items (Soft deleted). These items have the DateDeleted property with a 
         /// non zero value. 

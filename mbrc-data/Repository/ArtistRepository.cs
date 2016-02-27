@@ -6,52 +6,57 @@
 
     public class ArtistRepository : IArtistRepository
     {
-        public void DeleteArtists(ICollection<LibraryArtist> artists)
+        public int Delete(IList<LibraryArtist> artists)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetAllArtists()
+        public int SoftDelete(IList<LibraryArtist> t)
         {
             throw new System.NotImplementedException();
         }
 
-        public LibraryArtist GetArtist(long id)
+        public IList<LibraryArtist> GetAll()
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetArtistCount()
+        public LibraryArtist GetById(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetArtistPage(int offset, int limit)
+        public int GetCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetCachedArtists()
+        public IList<LibraryArtist> GetPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetDeletedArtists()
+        public IList<LibraryArtist> GetCached()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetUpdatedArtists(int offset, int limit, long epoch)
+        public IList<LibraryArtist> GetDeleted()
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveArtist(LibraryArtist artist)
+        public IList<LibraryArtist> GetUpdatedPage(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveArtists(ICollection<LibraryArtist> artists)
+        public int Save(LibraryArtist artist)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int Save(IList<LibraryArtist> artists)
         {
             throw new System.NotImplementedException();
         }

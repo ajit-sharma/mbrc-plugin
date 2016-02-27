@@ -102,7 +102,7 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         public void BuildCoverCachePerAlbum()
         {
-            var albums = this.albumRepository.GetAllAlbums();
+            var albums = this.albumRepository.GetAll();
 
             foreach (var album in albums)
             {
@@ -137,7 +137,7 @@ namespace MusicBeeRemoteCore.Modules
                 album.CoverId = this.coverRepository.SaveCover(cover);
             }
 
-            this.albumRepository.SaveAlbums(albums);
+            this.albumRepository.Save(albums);
         }
 
         /// <summary>
@@ -162,8 +162,8 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryAlbum> GetAllAlbums(int limit, int offset, long after)
         {
-            var albums = this.albumRepository.GetUpdatedAlbums(offset, limit, after);
-            var total = this.albumRepository.GetAlbumCount();
+            var albums = this.albumRepository.GetUpdatedPage(offset, limit, after);
+            var total = this.albumRepository.GetCount();
             var paginated = new PaginatedAlbumResponse
                                 {
                                     Total = total, 
@@ -184,8 +184,8 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryArtist> GetAllArtists(int limit, int offset, long after)
         {
-            var artists = this.artistRepository.GetUpdatedArtists(offset, limit, after);
-            var total = this.artistRepository.GetArtistCount();
+            var artists = this.artistRepository.GetUpdatedPage(offset, limit, after);
+            var total = this.artistRepository.GetCount();
             var paginated = new PaginatedArtistResponse
                                 {
                                     Total = total, 
@@ -272,7 +272,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns>The cached <see cref="LibraryArtist" /> for the provided id.</returns>
         public LibraryArtist GetArtistById(int id)
         {
-            return this.artistRepository.GetArtist(id);
+            return this.artistRepository.GetById(id);
         }
 
         /// <summary>
@@ -461,8 +461,8 @@ namespace MusicBeeRemoteCore.Modules
         public void UpdateAlbumTable()
         {
             var albums = this.api.GetAlbumList();
-            var cachedAlbums = this.albumRepository.GetCachedAlbums();
-            var deletedAlbums = this.albumRepository.GetDeletedAlbums();
+            var cachedAlbums = this.albumRepository.GetCached();
+            var deletedAlbums = this.albumRepository.GetDeleted();
             var comparer = new LibraryAlbumComparer();
 
             var albumsToInsert = albums.Except(cachedAlbums, comparer).ToList();
@@ -475,7 +475,7 @@ namespace MusicBeeRemoteCore.Modules
 
             if (albumsToRemove.Count > 0)
             {
-                this.albumRepository.DeleteAlbums(albumsToRemove);
+                this.albumRepository.Delete(albumsToRemove);
                 Logger.Debug("Albums: {0} entries removed", albumsToRemove.Count);
             }
 
@@ -492,7 +492,7 @@ namespace MusicBeeRemoteCore.Modules
 
             if (albumsToInsert.Count > 0)
             {
-                this.albumRepository.SaveAlbums(albumsToInsert);
+                this.albumRepository.Save(albumsToInsert);
                 Logger.Debug("Albums: {0} entries inserted", albumsToInsert.Count);
             }
         }
@@ -503,8 +503,8 @@ namespace MusicBeeRemoteCore.Modules
         public void UpdateArtistTable()
         {
             var artists = this.api.GetArtistList();
-            var cachedArtists = this.artistRepository.GetCachedArtists();
-            var deletedArtists = this.artistRepository.GetDeletedArtists();
+            var cachedArtists = this.artistRepository.GetCached();
+            var deletedArtists = this.artistRepository.GetDeleted();
 
             var comparer = new LibraryArtistComparer();
 
@@ -518,7 +518,7 @@ namespace MusicBeeRemoteCore.Modules
 
             if (artistsToDelete.Count > 0)
             {
-                this.artistRepository.DeleteArtists(artistsToDelete);
+                this.artistRepository.Delete(artistsToDelete);
                 Logger.Debug("Artists: {0} entries deleted.", artistsToDelete.Count);
             }
 
@@ -535,7 +535,7 @@ namespace MusicBeeRemoteCore.Modules
 
             if (artistsToInsert.Count > 0)
             {
-                this.artistRepository.SaveArtists(artistsToInsert);
+                this.artistRepository.Save(artistsToInsert);
                 Logger.Debug("Artists: {0} entries inserted", artistsToInsert.Count);
             }
         }
@@ -591,9 +591,9 @@ namespace MusicBeeRemoteCore.Modules
         {
             var files = this.api.GetLibraryFiles();
 
-            var artists = this.artistRepository.GetAllArtists();
+            var artists = this.artistRepository.GetAll();
             var genres = this.genreRepository.GetAllGenres();
-            var albums = this.albumRepository.GetAllAlbums();
+            var albums = this.albumRepository.GetAll();
 
             var cached = this.trackRepository.GetCached();
             var deleted = this.trackRepository.GetDeleted();
