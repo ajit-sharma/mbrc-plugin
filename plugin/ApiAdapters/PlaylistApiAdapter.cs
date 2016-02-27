@@ -3,8 +3,6 @@
     using System.Collections.Generic;
     using System.Linq;
 
-    using MusicBeePlugin;
-
     using MusicBeeRemoteCore.ApiAdapters;
 
     using MusicBeeRemoteData.Entities;

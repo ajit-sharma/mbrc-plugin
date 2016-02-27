@@ -10,11 +10,11 @@
 
     internal class TrackAdapter : ITrackApiAdapter
     {
-
         private const int DURATION = 200030303;
-        private float rating;
 
         private int position;
+
+        private float rating;
 
         public LastfmStatus GetLoveStatus(string action)
         {
@@ -23,12 +23,7 @@
 
         public PositionResponse GetPosition()
         {
-            return new PositionResponse
-                       {
-                           Code = ApiCodes.Success,
-                           Position = this.position,
-                           Duration = DURATION
-                       };
+            return new PositionResponse { Code = ApiCodes.Success, Position = this.position, Duration = DURATION };
         }
 
         public float GetRating()
@@ -57,12 +52,7 @@
         public PositionResponse SetPosition(int newPosition)
         {
             this.position = newPosition <= DURATION ? newPosition : DURATION;
-            return new PositionResponse
-                       {
-                           Code = ApiCodes.Success,
-                           Duration = DURATION,
-                           Position = this.position
-                       };
+            return new PositionResponse { Code = ApiCodes.Success, Duration = DURATION, Position = this.position };
         }
 
         public float SetRating(float rating)

@@ -2,8 +2,6 @@ namespace MusicBeePlugin.ApiAdapters
 {
     using System;
 
-    using MusicBeePlugin;
-
     using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
     using MusicBeeRemoteCore.Rest.ServiceInterface;
@@ -13,7 +11,7 @@ namespace MusicBeePlugin.ApiAdapters
     class PlayerApiAdapter : IPlayerApiAdapter
     {
         public Plugin.MusicBeeApiInterface api;
-        
+
         public PlayerApiAdapter(Plugin.MusicBeeApiInterface api)
         {
             this.api = api;
@@ -43,12 +41,12 @@ namespace MusicBeePlugin.ApiAdapters
 
             return this.api.Player_SetRepeat(newMode);
         }
-    
+
         public bool GetAutoDjState()
         {
             return this.api.Player_GetAutoDjEnabled();
         }
-    
+
         public bool GetMuteState()
         {
             return this.api.Player_GetMute();
@@ -108,7 +106,7 @@ namespace MusicBeePlugin.ApiAdapters
                            Code = ApiCodes.Success
                        };
         }
-        
+
         public int GetVolume()
         {
             return (int)Math.Round(this.api.Player_GetVolume() * 100, 1);

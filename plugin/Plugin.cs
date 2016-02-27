@@ -90,12 +90,13 @@ namespace MusicBeePlugin
             this.mbrc.SetMessageHandler(this);
             try
             {
-                this.mbrc.Init(new BindingProviderImpl(
-                    new PlayerApiAdapter(this.api), 
-                    new PlaylistApiAdapter(this.api), 
-                    new TrackApiAdapter(this.api), 
-                    new LibraryApiAdapter(this.api), 
-                    new NowPlayingApiAdapter(this.api)));
+                this.mbrc.Init(
+                    new BindingProviderImpl(
+                        new PlayerApiAdapter(this.api), 
+                        new PlaylistApiAdapter(this.api), 
+                        new TrackApiAdapter(this.api), 
+                        new LibraryApiAdapter(this.api), 
+                        new NowPlayingApiAdapter(this.api)));
 
                 this.mbrc.SetVersion(GetVersion().ToString());
             }

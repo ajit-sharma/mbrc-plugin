@@ -5,8 +5,6 @@
     using System.Globalization;
     using System.Windows.Forms;
 
-    using MusicBeePlugin;
-
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
     using MusicBeeRemoteCore.AndroidRemote.Model;
     using MusicBeeRemoteCore.ApiAdapters;
@@ -14,7 +12,6 @@
 
     class TrackApiAdapter : ITrackApiAdapter
     {
-  
         private readonly Plugin.MusicBeeApiInterface api;
 
         public TrackApiAdapter(Plugin.MusicBeeApiInterface api)

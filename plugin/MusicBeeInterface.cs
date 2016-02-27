@@ -85,14 +85,12 @@
 
         public delegate bool Library_SetFileTagDelegate(string sourceFileUrl, MetaDataType field, string value);
 
-        public delegate System.Windows.Forms.ToolStripItem MB_AddMenuItemDelegate(
+        public delegate ToolStripItem MB_AddMenuItemDelegate(
             string menuPath, 
             string hotkeyDescription, 
             EventHandler handler);
 
-        public delegate System.Windows.Forms.Control MB_AddPanelDelegate(
-            Control panel, 
-            PluginPanelDock dock);
+        public delegate Control MB_AddPanelDelegate(Control panel, PluginPanelDock dock);
 
         public delegate bool MB_AddTreeNodeDelegate(
             string treePath, 
@@ -101,9 +99,7 @@
             EventHandler openHandler, 
             EventHandler closeHandler);
 
-        public delegate void MB_CreateBackgroundTaskDelegate(
-            ThreadStart taskCallback, 
-            Form owner);
+        public delegate void MB_CreateBackgroundTaskDelegate(ThreadStart taskCallback, Form owner);
 
         public delegate void MB_CreateParameterisedBackgroundTaskDelegate(
             ParameterizedThreadStart taskCallback, 
@@ -118,7 +114,7 @@
 
         public delegate string MB_GetLocalisationDelegate(string id, string defaultText);
 
-        public delegate System.Drawing.Rectangle MB_GetPanelBoundsDelegate(PluginPanelDock dock);
+        public delegate Rectangle MB_GetPanelBoundsDelegate(PluginPanelDock dock);
 
         public delegate bool MB_GetPluginViewInformationDelegate(
             string pluginFilename, 
@@ -155,10 +151,7 @@
 
         public delegate void MB_SetBackgroundTaskMessageDelegate(string message);
 
-        public delegate bool MB_SetPanelScrollableAreaDelegate(
-            Control panel, 
-            Size scrollArea, 
-            bool alwaysShowScrollBar);
+        public delegate bool MB_SetPanelScrollableAreaDelegate(Control panel, Size scrollArea, bool alwaysShowScrollBar);
 
         public delegate bool MB_SetWindowSizeDelegate(int width, int height);
 
@@ -338,7 +331,7 @@
 
         public delegate DataType Setting_GetDataTypeDelegate(MetaDataType field);
 
-        public delegate System.Drawing.Font Setting_GetDefaultFontDelegate();
+        public delegate Font Setting_GetDefaultFontDelegate();
 
         public delegate string Setting_GetFieldNameDelegate(MetaDataType field);
 

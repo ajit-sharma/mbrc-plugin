@@ -38,6 +38,5 @@
         /// </summary>
         [DataMember(Name = "id")]
         public long Id { get; set; }
-        
     }
 }

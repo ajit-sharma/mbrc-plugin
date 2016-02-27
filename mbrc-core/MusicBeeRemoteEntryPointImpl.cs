@@ -134,7 +134,7 @@ namespace MusicBeeRemoteCore
         {
             this.messageHandler = messageHandler;
         }
-        
+
         public void SetVersion(string version)
         {
             this.Settings.Settings.CurrentVersion = version;

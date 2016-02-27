@@ -9,7 +9,7 @@
 
     using MusicBeeRemoteData.Entities;
 
-    internal class LibraryAdapter: ILibraryApiAdapter
+    internal class LibraryAdapter : ILibraryApiAdapter
     {
         public ICollection<LibraryAlbum> GetAlbumList()
         {

@@ -4,9 +4,17 @@
 
     using MusicBeeRemoteData.Entities;
 
+    /// <summary>
+    /// The TrackRepository interface.
+    /// </summary>
     public interface ITrackRepository
     {
-        void DeleteTracks(ICollection<LibraryTrack> Tracks);
+        /// <summary>
+        /// Deletes a list of tracks from the database and returns the number of rows affected.
+        /// </summary>
+        /// <param name="tracks">The tracks to be removed from the database.</param>
+        /// <returns>The number of rows deleted.</returns>
+        int DeleteTracks(ICollection<LibraryTrack> tracks);
 
         ICollection<LibraryTrack> GetAllTracks();
 
@@ -22,6 +30,21 @@
 
         ICollection<LibraryTrack> GetTracksByAlbumId(long id);
 
+        /// <summary>
+        /// Gets a page of the tracks that where updated after the epoch supplied.
+        /// </summary>
+        /// <param name="offset">
+        /// The offset of the data set.
+        /// </param>
+        /// <param name="limit">
+        /// The number of data contained in the data set.
+        /// </param>
+        /// <param name="epoch">
+        /// The epoch after when we want the data.
+        /// </param>
+        /// <returns>
+        /// The <see cref="ICollection"/> of updated <see cref="LibraryTrack"/>s.
+        /// </returns>
         ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch);
 
         /// <summary>

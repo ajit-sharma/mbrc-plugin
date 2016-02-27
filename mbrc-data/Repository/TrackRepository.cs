@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Reactive.Linq;
 
     using Dapper;
@@ -20,21 +21,47 @@
         /// </summary>
         public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        private readonly DatabaseProvider helper;
+        private readonly DatabaseProvider provider;
 
-        public TrackRepository(DatabaseProvider helper)
+        public TrackRepository(DatabaseProvider provider)
         {
-            this.helper = helper;
+            this.provider = provider;
         }
 
-        public void DeleteTracks(ICollection<LibraryTrack> Tracks)
+        public int DeleteTracks(ICollection<LibraryTrack> tracks)
         {
-            throw new NotImplementedException();
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var rowsAffected = 0;
+                using (var transaction = connection.BeginTransaction())
+                {
+                    tracks.ToObservable().ForEach(
+                        track =>
+                            {
+                                var result = connection.Delete<LibraryTrack>(track.Id);
+                                if (result > 0)
+                                {
+                                    rowsAffected++;
+                                }
+                                
+                            });
+                    transaction.Commit();
+                }
+                connection.Close();
+                return rowsAffected;
+            }
         }
 
         public ICollection<LibraryTrack> GetAllTracks()
         {
-            throw new NotImplementedException();
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var tracks = connection.GetList<LibraryTrack>();
+                connection.Close();
+                return tracks.ToList();
+            }
         }
 
         public ICollection<LibraryTrack> GetCachedTracks()
@@ -49,12 +76,18 @@
 
         public LibraryTrack GetTrack(long id)
         {
-            throw new NotImplementedException();
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var track = connection.Get<LibraryTrack>(id);
+                connection.Close();
+                return track;
+            }
         }
 
         public int GetTrackCount()
         {
-            using (var connection = this.helper.GetDbConnection())
+            using (var connection = this.provider.GetDbConnection())
             {
                 var count = connection.RecordCount<LibraryTrack>(string.Empty);
                 connection.Close();
@@ -69,17 +102,30 @@
 
         public ICollection<LibraryTrack> GetTracksByAlbumId(long id)
         {
-            throw new NotImplementedException();
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var tracks = connection.GetList<LibraryTrack>($"where AlbumId = {id}");
+                connection.Close();
+                return tracks.ToList();
+            }
         }
 
         public ICollection<LibraryTrack> GetUpdatedTracks(int offset, int limit, long epoch)
         {
-            throw new NotImplementedException();
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var page = (limit == 0 || offset < limit) ? 1 : offset / limit;
+                var paged = connection.GetListPaged<LibraryTrack>(page, limit, $"where DateUpdated > {epoch}", "Id asc");
+                connection.Close();
+                return paged.ToList();
+            }
         }
 
         public int SaveTrack(LibraryTrack track)
         {
-            using (var connection = this.helper.GetDbConnection())
+            using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
                 var id = connection.Insert(track);
@@ -90,7 +136,7 @@
 
         public int SaveTracks(ICollection<LibraryTrack> tracks)
         {
-            using (var connection = this.helper.GetDbConnection())
+            using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
                 var rowsAffected = 0;

@@ -55,14 +55,6 @@
             return new SQLiteConnection($"Data Source={this._dbFilePath}");
         }
 
-        private void DeleteDatabase()
-        {
-            if (File.Exists(this._dbFilePath))
-            {
-                File.Delete(this._dbFilePath);
-            }
-        }
-
         public void ResetDatabase()
         {
             this.DeleteDatabase();
@@ -75,13 +67,13 @@
             {
                 return;
             }
-            
+
             SQLiteConnection.CreateFile(this._dbFilePath);
-            
+
             using (var connection = this.GetDbConnection())
             {
                 connection.Open();
-               
+
                 connection.Execute(@"create table LibraryGenre (
                       Id integer primary key AUTOINCREMENT,
                       Name varchar(255) not null,
@@ -184,6 +176,14 @@
                     );");
 
                 connection.Close();
+            }
+        }
+
+        private void DeleteDatabase()
+        {
+            if (File.Exists(this._dbFilePath))
+            {
+                File.Delete(this._dbFilePath);
             }
         }
     }

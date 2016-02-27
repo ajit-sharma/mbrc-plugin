@@ -5,7 +5,6 @@
 
     using Dapper;
 
-    using MusicBeeRemoteData;
     using MusicBeeRemoteData.Entities;
 
     public class GenreRepository : IGenreRepository
@@ -67,9 +66,9 @@
                 var page = limit == 0 ? 0 : offset / limit;
 
                 var libraryGenres = connection.GetListPaged<LibraryGenre>(
-                    page,
-                    limit,
-                    "where DateAdded > 0 or DateUpdated > 0 or DateDeleted > 0",
+                    page, 
+                    limit, 
+                    "where DateAdded > 0 or DateUpdated > 0 or DateDeleted > 0", 
                     string.Empty);
                 return libraryGenres.ToList();
             }
