@@ -15,9 +15,12 @@ ServiceStack provides a REST API and websockets (Fleck) are used to push message
 
 For the ServiceStack version there is no public documentation of the API Available but it is planned as soon as the version 1.x features are finalized, however there is a metadata page available when the plugin running that has information on most of the calls. The API is somewhat documented and build with ServiceStack.Api.Swagger, so if you put the *swagger-ui* folder in the MusicBee Plugins folder you should be able to access the documentation through *http://localhost:port/swagger-ui/index.html* (where port is the port marked as http at the plugin settings page). Please keep in mind that the resource list should be available under *http://localhost:port/resources*, and you will probably need to insert it manually if you downloaded and extracted the swagger-ui zip file.
 
-### NancyFx rewrite.
+### NancyFx rewrite (should be v1.0.0)
 
-At the moment the project reworked and it is broken down to a number of sub projects.
+At the moment the project rewritten and it is separated to a number of sub projects.
+The final **v1.0.0** REST api will be pretty close to the current ServiceStack API.
+
+The api documentation is currently work in progress and it should reside under the [documentation](documentation) folder
 
 The **mbrc-data** module provides access to the embedded database that is used for caching the player's data.
 
@@ -28,6 +31,10 @@ The **mbrc-plugin** module is the plugin that runs in MusicBee. The plugin inter
 The **firewall-utility** is used to make it easier for the plugin to open the required for communication firewall ports.
 
 I am currently in the process of adding Unit Tests to the plugin code using **NUnit**.
+
+### After version 1.0.0
+
+At some point after the rewrite of the client I plan on implementing an embedded single page web client based on *AngularJS*.
 
 ### Building
 
@@ -46,6 +53,26 @@ To build the plugin you have to open it with Visual Studio 2015. After opening t
 *   [Reactive Extensions](https://rx.codeplex.com/)
 
     [Apache v2](http://www.apache.org/licenses/LICENSE-2.0)
+
+*   [Fleck](https://github.com/statianzo/Fleck)
+
+    [MIT](https://github.com/statianzo/Fleck#license)
+
+*   [Nancy](https://github.com/NancyFx/Nancy)
+
+    [MIT](https://raw.githubusercontent.com/NancyFx/Nancy/master/license.txt)
+
+*   [Nancy.Bootstrappers.Ninject](https://raw.githubusercontent.com/NancyFx/Nancy.Bootstrappers.Ninject)
+
+    [MIT](https://raw.githubusercontent.com/NancyFx/Nancy.Bootstrappers.Ninject/master/license.txt)
+
+*   [Nancy.Serialization.JsonNet](https://github.com/NancyFx/Nancy.Serialization.JsonNet)
+
+    [MIT](https://raw.githubusercontent.com/NancyFx/Nancy.Serialization.JsonNet/master/license.txt)
+
+*   [Newtonsoft.Json](https://github.com/JamesNK/Newtonsoft.Json)
+
+    [MIT](https://raw.githubusercontent.com/JamesNK/Newtonsoft.Json/master/LICENSE.md)
 
 *   [SQLite](https://www.sqlite.org/)
 
