@@ -6,22 +6,28 @@
     using Dapper;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     public class GenreRepository : IGenreRepository
     {
         private DatabaseProvider cHelper;
 
-        public void DeleteGenres(ICollection<LibraryGenre> genres)
+        public int Delete(IList<LibraryGenre> genres)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryGenre> GetAllGenres()
+        public int SoftDelete(IList<LibraryGenre> t)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryGenre> GetCachedGenres()
+        public IList<LibraryGenre> GetAll()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IList<LibraryGenre> GetCached()
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
@@ -30,7 +36,7 @@
             }
         }
 
-        public ICollection<LibraryGenre> GetDeletedGenres()
+        public IList<LibraryGenre> GetDeleted()
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
@@ -39,17 +45,17 @@
             }
         }
 
-        public LibraryGenre GetGenre(long id)
+        public LibraryGenre GetById(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetGenreCount()
+        public int GetCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<LibraryGenre> GetGenrePage(int offset, int limit)
+        public IList<LibraryGenre> GetPage(int offset, int limit)
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
@@ -59,7 +65,7 @@
             }
         }
 
-        public ICollection<LibraryGenre> GetUpdatedGenres(int offset, int limit, long epoch)
+        public IList<LibraryGenre> GetUpdatedPage(int offset, int limit, long epoch)
         {
             using (var connection = this.cHelper.GetDbConnection())
             {
@@ -74,12 +80,12 @@
             }
         }
 
-        public void SaveGenre(LibraryGenre genre)
+        public int Save(LibraryGenre genre)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SaveGenres(ICollection<LibraryGenre> genres)
+        public int Save(IList<LibraryGenre> genres)
         {
             throw new System.NotImplementedException();
         }

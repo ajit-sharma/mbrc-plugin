@@ -13,6 +13,7 @@ namespace MusicBeeRemoteCore.Modules
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
     using MusicBeeRemoteData.Repository;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     using NLog;
 
@@ -134,7 +135,7 @@ namespace MusicBeeRemoteCore.Modules
                 }
 
                 var cover = new LibraryCover { Hash = hash };
-                album.CoverId = this.coverRepository.SaveCover(cover);
+                album.CoverId = this.coverRepository.Save(cover);
             }
 
             this.albumRepository.Save(albums);
@@ -205,8 +206,8 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryCover> GetAllCovers(int offset, int limit, long after)
         {
-            var updatedCovers = this.coverRepository.GetUpdatedCovers(offset, limit, after);
-            var total = this.coverRepository.GetCoverCount();
+            var updatedCovers = this.coverRepository.GetUpdatedPage(offset, limit, after);
+            var total = this.coverRepository.GetCount();
             var paginatedResponse = new PaginatedCoverResponse
                                         {
                                             Total = total, 
@@ -226,8 +227,8 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryGenre> GetAllGenres(int limit, int offset, long after)
         {
-            var genres = this.genreRepository.GetUpdatedGenres(limit, offset, after);
-            var total = this.genreRepository.GetGenreCount();
+            var genres = this.genreRepository.GetUpdatedPage(limit, offset, after);
+            var total = this.genreRepository.GetCount();
             var paginated = new PaginatedGenreResponse
                                 {
                                     Total = total, 
@@ -310,7 +311,7 @@ namespace MusicBeeRemoteCore.Modules
 
         public int GetCachedCoverCount()
         {
-            return this.coverRepository.GetCoverCount();
+            return this.coverRepository.GetCount();
         }
 
         public int GetCachedTrackCount()
@@ -373,7 +374,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>       
         public LibraryCover GetLibraryCover(int id, bool includeImage = false)
         {
-            return this.coverRepository.GetCover(id);
+            return this.coverRepository.GetById(id);
         }
 
         /// <summary>
@@ -546,8 +547,8 @@ namespace MusicBeeRemoteCore.Modules
         public void UpdateGenreTable()
         {
             var genres = this.api.GetGenreList();
-            var cachedGenres = this.genreRepository.GetCachedGenres();
-            var deletedGenres = this.genreRepository.GetDeletedGenres();
+            var cachedGenres = this.genreRepository.GetCached();
+            var deletedGenres = this.genreRepository.GetDeleted();
             var comparer = new LibraryGenreComparer();
 
             var genresToInsert = genres.Except(cachedGenres, comparer).ToList();
@@ -560,7 +561,7 @@ namespace MusicBeeRemoteCore.Modules
 
             if (genresToRemove.Count > 0)
             {
-                this.genreRepository.DeleteGenres(genresToRemove);
+                this.genreRepository.Delete(genresToRemove);
                 Logger.Debug("Genres: {0} entries removed", genresToRemove.Count);
             }
 
@@ -580,7 +581,7 @@ namespace MusicBeeRemoteCore.Modules
                 return;
             }
 
-            this.genreRepository.SaveGenres(genresToInsert);
+            this.genreRepository.Save(genresToInsert);
             Logger.Debug("Genres: {0} entries inserted", genresToInsert.Count);
         }
 
@@ -592,7 +593,7 @@ namespace MusicBeeRemoteCore.Modules
             var files = this.api.GetLibraryFiles();
 
             var artists = this.artistRepository.GetAll();
-            var genres = this.genreRepository.GetAllGenres();
+            var genres = this.genreRepository.GetAll();
             var albums = this.albumRepository.GetAll();
 
             var cached = this.trackRepository.GetCached();

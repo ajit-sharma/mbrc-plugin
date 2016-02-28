@@ -3,55 +3,61 @@ namespace MusicBeeRemoteData.Repository
     using System.Collections.Generic;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     public class PlaylistRepository : IPlaylistRepository
     {
-        public void DeletePlaylists(ICollection<Playlist> Playlists)
+        public int Delete(IList<Playlist> Playlists)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<Playlist> GetAllPlaylists()
+        public int SoftDelete(IList<Playlist> t)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<Playlist> GetCachedPlaylists()
+        public IList<Playlist> GetAll()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<Playlist> GetDeletedPlaylists()
+        public IList<Playlist> GetCached()
         {
             throw new System.NotImplementedException();
         }
 
-        public Playlist GetPlaylist(long id)
+        public IList<Playlist> GetDeleted()
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetPlaylistCount()
+        public Playlist GetById(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<Playlist> GetPlaylistPage(int offset, int limit)
+        public int GetCount()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<Playlist> GetUpdatedPlaylists(int offset, int limit, long epoch)
+        public IList<Playlist> GetPage(int offset, int limit)
         {
             throw new System.NotImplementedException();
         }
 
-        public int SavePlaylist(Playlist Playlist)
+        public IList<Playlist> GetUpdatedPage(int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SavePlaylists(ICollection<Playlist> Playlists)
+        public int Save(Playlist Playlist)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int Save(IList<Playlist> Playlists)
         {
             throw new System.NotImplementedException();
         }

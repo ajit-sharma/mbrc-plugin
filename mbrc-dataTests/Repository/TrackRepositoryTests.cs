@@ -8,6 +8,7 @@
 
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     using NUnit.Framework;
 

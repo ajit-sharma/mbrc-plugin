@@ -3,40 +3,61 @@ namespace MusicBeeRemoteData.Repository
     using System.Collections.Generic;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     public class PlaylistTrackRepository : IPlaylistTrackRepository
     {
-        public void DeletePlaylistTracks(ICollection<PlaylistTrack> tracks)
+        public int Delete(IList<PlaylistTrack> t)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetAllPlaylistTracks()
+        public int SoftDelete(IList<PlaylistTrack> t)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetCachedPlaylistTrackss()
+        public IList<PlaylistTrack> GetAll()
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetDeletedPlaylistTracks()
+        public IList<PlaylistTrack> GetCached()
         {
             throw new System.NotImplementedException();
         }
 
-        public PlaylistTrack GetPlaylistTrack(long id)
+        public IList<PlaylistTrack> GetDeleted()
         {
             throw new System.NotImplementedException();
         }
 
-        public int GetPlaylistTrackCount()
+        public PlaylistTrack GetById(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetPlaylistTrackPage(int offset, int limit)
+        public int GetCount()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IList<PlaylistTrack> GetPage(int offset, int limit)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public IList<PlaylistTrack> GetUpdatedPage(int offset, int limit, long epoch)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int Save(PlaylistTrack t)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public int Save(IList<PlaylistTrack> t)
         {
             throw new System.NotImplementedException();
         }
@@ -46,22 +67,12 @@ namespace MusicBeeRemoteData.Repository
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetTracksForPlaylist(long id)
+        public IList<PlaylistTrack> GetTracksForPlaylist(long id)
         {
             throw new System.NotImplementedException();
         }
 
-        public ICollection<PlaylistTrack> GetUpdatedPlaylistTracks(int id, int offset, int limit, long epoch)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SavePlaylistTrack(PlaylistTrack track)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void SavePlaylistTracks(ICollection<PlaylistTrack> tracks)
+        public IList<PlaylistTrack> GetUpdatedTracksForPlaylist(int id, int offset, int limit, long epoch)
         {
             throw new System.NotImplementedException();
         }

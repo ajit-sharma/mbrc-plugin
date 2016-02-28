@@ -1,5 +1,5 @@
-﻿namespace MusicBeeRemoteData.Repository
-{    
+﻿namespace MusicBeeRemoteData.Repository.Interfaces
+{
     using MusicBeeRemoteData.Entities;
 
     /// <summary>

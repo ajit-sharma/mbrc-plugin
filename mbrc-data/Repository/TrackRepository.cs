@@ -10,6 +10,7 @@
 
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     using NLog;
 
@@ -141,7 +142,7 @@
                 var paged = connection.GetListPaged<LibraryTrack>(
                     page, 
                     limit, 
-                    $"where DateUpdated >= {epoch}", 
+                    $"where DateUpdated>={epoch} or DateAdded>={epoch} or DateDeleted>={epoch}", 
                     "Id asc");
                 connection.Close();
                 return paged.ToList();

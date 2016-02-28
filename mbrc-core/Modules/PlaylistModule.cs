@@ -14,6 +14,7 @@ namespace MusicBeeRemoteCore.Modules
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
     using MusicBeeRemoteData.Repository;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     using NLog;
 
@@ -71,7 +72,7 @@ namespace MusicBeeRemoteCore.Modules
 
             var path = this.api.CreatePlaylist(name, list);
             var playlist = new Playlist { Path = path, Name = name, Tracks = list.Count() };
-            var id = this.playlistRepository.SavePlaylist(playlist);
+            var id = this.playlistRepository.Save(playlist);
             playlist.Id = id;
 
             // List has elements that have to be synced with the cache.
@@ -116,8 +117,8 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns>A PaginatedResponse containing playlists</returns>
         public PaginatedResponse<Playlist> GetAvailablePlaylists(int limit = 50, int offset = 0, long after = 0)
         {
-            var playlists = this.playlistRepository.GetUpdatedPlaylists(offset, limit, after);
-            var total = this.playlistRepository.GetPlaylistCount();
+            var playlists = this.playlistRepository.GetUpdatedPage(offset, limit, after);
+            var total = this.playlistRepository.GetCount();
             var paginated = new PaginatedPlaylistResponse
                                 {
                                     Total = total, 
@@ -173,7 +174,7 @@ namespace MusicBeeRemoteCore.Modules
             int offset = 0, 
             long after = 0)
         {
-            var playlistTracks = this.trackRepository.GetUpdatedPlaylistTracks(id, offset, limit, after);
+            var playlistTracks = this.trackRepository.GetUpdatedTracksForPlaylist(id, offset, limit, after);
             var total = this.trackRepository.GetTrackCountForPlaylist(id);
             var paginated = new PaginatedPlaylistTrackResponse
                                 {
@@ -211,8 +212,8 @@ namespace MusicBeeRemoteCore.Modules
             int offset = 0, 
             long after = 0)
         {
-            var trackInfo = this.trackInfoRepository.GetUpdatedPlaylistTrackInfo(offset, limit, after);
-            var total = this.trackInfoRepository.GetPlaylistTrackInfoCount();
+            var trackInfo = this.trackInfoRepository.GetUpdatedPage(offset, limit, after);
+            var total = this.trackInfoRepository.GetCount();
             var paginated = new PaginatedPlaylistTrackInfoResponse
                                 {
                                     Total = total, 
@@ -272,7 +273,7 @@ namespace MusicBeeRemoteCore.Modules
             if (success)
             {
                 playlist.DateDeleted = DateTime.UtcNow.ToUnixTime();
-                this.playlistRepository.SavePlaylist(playlist);
+                this.playlistRepository.Save(playlist);
             }
 
             return success;
@@ -433,7 +434,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns>A list of <see cref="Playlist" /> objects.</returns>
         private List<Playlist> GetCachedPlaylists()
         {
-            return this.playlistRepository.GetCachedPlaylists().ToList();
+            return this.playlistRepository.GetCached().ToList();
         }
 
         /// <summary>
@@ -443,7 +444,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns>A <see cref="Playlist" /> object.</returns>
         private Playlist GetPlaylistById(int id)
         {
-            return this.playlistRepository.GetPlaylist(id);
+            return this.playlistRepository.GetById(id);
         }
 
         /// <summary>
@@ -558,7 +559,7 @@ namespace MusicBeeRemoteCore.Modules
                 cachedPlaylistTracks.Remove(track);
             }
 
-            var tiCache = this.trackInfoRepository.GetAllPlaylistTrackInfo();
+            var tiCache = this.trackInfoRepository.GetAll();
 
             foreach (var track in tracksToInsert)
             {

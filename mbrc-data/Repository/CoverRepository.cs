@@ -4,55 +4,61 @@
     using System.Collections.Generic;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     public class CoverRepository : ICoverRepository
     {
-        public void DeleteCovers(ICollection<LibraryCover> Covers)
+        public int Delete(IList<LibraryCover> Covers)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryCover> GetAllCovers()
+        public int SoftDelete(IList<LibraryCover> t)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryCover> GetCachedCovers()
+        public IList<LibraryCover> GetAll()
         {
             throw new NotImplementedException();
         }
 
-        public LibraryCover GetCover(long id)
+        public IList<LibraryCover> GetCached()
         {
             throw new NotImplementedException();
         }
 
-        public int GetCoverCount()
+        public LibraryCover GetById(long id)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryCover> GetCoverPage(int offset, int limit)
+        public int GetCount()
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryCover> GetDeletedCovers()
+        public IList<LibraryCover> GetPage(int offset, int limit)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryCover> GetUpdatedCovers(int offset, int limit, long epoch)
+        public IList<LibraryCover> GetDeleted()
         {
             throw new NotImplementedException();
         }
 
-        public int SaveCover(LibraryCover Cover)
+        public IList<LibraryCover> GetUpdatedPage(int offset, int limit, long epoch)
         {
             throw new NotImplementedException();
         }
 
-        public void SaveCovers(ICollection<LibraryCover> Covers)
+        public int Save(LibraryCover Cover)
+        {
+            throw new NotImplementedException();
+        }
+
+        public int Save(IList<LibraryCover> t)
         {
             throw new NotImplementedException();
         }

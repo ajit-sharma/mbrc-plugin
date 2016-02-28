@@ -1,4 +1,4 @@
-﻿namespace MusicBeeRemoteData.Repository
+﻿namespace MusicBeeRemoteData.Repository.Interfaces
 {
     using System.Collections.Generic;
 

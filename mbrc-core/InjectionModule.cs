@@ -11,6 +11,7 @@
 
     using MusicBeeRemoteData;
     using MusicBeeRemoteData.Repository;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     using Newtonsoft.Json;
 

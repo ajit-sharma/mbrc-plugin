@@ -3,6 +3,7 @@
     using System.Collections.Generic;
 
     using MusicBeeRemoteData.Entities;
+    using MusicBeeRemoteData.Repository.Interfaces;
 
     public class ArtistRepository : IArtistRepository
     {
