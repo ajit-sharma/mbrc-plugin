@@ -4,6 +4,7 @@ namespace MusicBeeRemoteCore.Modules
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Reactive.Linq;
 
     using MusicBeeRemoteCore.AndroidRemote.Enumerations;
     using MusicBeeRemoteCore.AndroidRemote.Utilities;
@@ -12,7 +13,6 @@ namespace MusicBeeRemoteCore.Modules
 
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
-    using MusicBeeRemoteData.Repository;
     using MusicBeeRemoteData.Repository.Interfaces;
 
     using NLog;
@@ -523,16 +523,20 @@ namespace MusicBeeRemoteCore.Modules
                 Logger.Debug("Artists: {0} entries deleted.", artistsToDelete.Count);
             }
 
-            foreach (var libraryArtist in artistsToInsert)
+            if (deletedArtists.Count > 0)
             {
-                var artist =
-                    deletedArtists.First(
-                        art => art.Name.Equals(libraryArtist.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (artist != null)
+                foreach (var libraryArtist in artistsToInsert)
                 {
-                    libraryArtist.Id = artist.Id;
+                    var artist =
+                        deletedArtists.First(
+                            art => art.Name.Equals(libraryArtist.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (artist != null)
+                    {
+                        libraryArtist.Id = artist.Id;
+                    }
                 }
             }
+            
 
             if (artistsToInsert.Count > 0)
             {
@@ -603,12 +607,21 @@ namespace MusicBeeRemoteCore.Modules
             var toInsert = files.Except(cachedPaths).ToList();
             var toDelete = cachedPaths.Except(files).ToList();
 
-            foreach (var file in toDelete)
-            {
-                // db.UpdateOnly(new LibraryTrack { DateDeleted = DateTime.UtcNow.ToUnixTime() },
-                // o => o.Update(p => p.DateDeleted)
-                // .Where(p => p.Path.Equals(file)));
-            }
+            cached.ToObservable()
+                .Where(s => toDelete.Contains(s.Path))
+                .ToList()
+                .DefaultIfEmpty(new List<LibraryTrack>())
+                .Subscribe(
+                    list =>
+                        {
+                            if (list.Count == 0)
+                            {
+                                return;
+                            }
+                            this.trackRepository.SoftDelete(list);
+                        }, exception => Logger.Debug(exception));
+
+            Logger.Debug($"data to insert: {toInsert.Count}, data to delete: {toDelete.Count} ");
 
             foreach (var file in toInsert)
             {
@@ -648,11 +661,11 @@ namespace MusicBeeRemoteCore.Modules
                     track.DateDeleted = 0;
                 }
 
-                // db.Save(track);
+                this.trackRepository.Save(track);
             }
 
-            // db.UpdateAll(albums);
-            // trans.Commit();
+            this.albumRepository.Save(albums);
+
             Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
             Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
         }

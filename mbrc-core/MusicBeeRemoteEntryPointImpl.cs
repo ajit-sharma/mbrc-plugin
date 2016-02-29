@@ -2,8 +2,10 @@ namespace MusicBeeRemoteCore
 {
     using System;
     using System.Diagnostics;
+    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
+    using System.Threading.Tasks;
 
     using MusicBeeRemoteCore.AndroidRemote;
     using MusicBeeRemoteCore.AndroidRemote.Controller;
@@ -86,7 +88,8 @@ namespace MusicBeeRemoteCore
         public void Init(IBindingProvider provider)
         {
             this.InitializeLoggingConfiguration();
-            Debug.WriteLine("OOOO");
+            Debug.WriteLine("MusicBee Remote initializing");
+            Logger.Debug("MusicBee Remote initializing");
 
             InjectionModule.StoragePath = this.StoragePath;
 
@@ -112,7 +115,7 @@ namespace MusicBeeRemoteCore
 
             this.BuildCache(libraryModule, playlistModule);
 
-            this.startHttp();
+            this.StartHttp();
             this.eventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(eventType => this.Notify(eventType, false));
         }
 
@@ -145,21 +148,27 @@ namespace MusicBeeRemoteCore
             var observable = Observable.Create<string>(
                 o =>
                     {
-                        if (!libraryModule.IsCacheEmpty())
+                        if (libraryModule.IsCacheEmpty())
                         {
-                            o.OnNext("MBR: Currently building the metadata cache.");
+                            o.OnNext(@"MBR: Currently building the metadata cache.");
                             libraryModule.BuildCache();
                             playlistModule.SyncPlaylistsWithCache();
-                            o.OnNext("MBRC: Currently processing the album covers.");
+                            o.OnNext(@"MBRC: Currently processing the album covers.");
                             libraryModule.BuildCoverCachePerAlbum();
-                            o.OnNext("MBRC: Cache Ready.");
+                            o.OnNext(@"MBRC: Cache Ready.");
                         }
 
                         o.OnCompleted();
                         return () => { };
                     });
 
-            observable.Subscribe(s => this.messageHandler?.OnMessageAvailable(s), ex => Logger.Debug(ex, "Cache Build"));
+            observable.SubscribeOn(Scheduler.Default).Subscribe(
+                s =>
+                    {
+                        this.messageHandler?.OnMessageAvailable(s);
+                        Logger.Debug(s);
+                    }, 
+                ex => Logger.Debug(ex));
         }
 
         /// <summary>
@@ -199,13 +208,12 @@ namespace MusicBeeRemoteCore
             LogManager.Configuration = config;
         }
 
-        private void startHttp()
+        private void StartHttp()
         {
             try
             {
                 var bootstrapper = new Bootstrapper(this.kernel);
 
-                // bootstrapper.Initialise();
                 var nancyHost = new NancyHost(
                     new Uri($"http://localhost:{this.Settings.Settings.HttpPort}/"), 
                     bootstrapper);
@@ -213,9 +221,7 @@ namespace MusicBeeRemoteCore
             }
             catch (Exception ex)
             {
-#if DEBUG
-                Debug.WriteLine(ex);
-#endif
+                Logger.Debug(ex);
             }
         }
     }

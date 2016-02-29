@@ -5,61 +5,11 @@ namespace MusicBeeRemoteData.Repository
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Repository.Interfaces;
 
-    public class PlaylistTrackRepository : IPlaylistTrackRepository
+    public class PlaylistTrackRepository : GenericRepository<PlaylistTrack>, IPlaylistTrackRepository
     {
-        public int Delete(IList<PlaylistTrack> t)
+        public PlaylistTrackRepository(DatabaseProvider provider)
+            : base(provider)
         {
-            throw new System.NotImplementedException();
-        }
-
-        public int SoftDelete(IList<PlaylistTrack> t)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IList<PlaylistTrack> GetAll()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IList<PlaylistTrack> GetCached()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IList<PlaylistTrack> GetDeleted()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public PlaylistTrack GetById(long id)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int GetCount()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IList<PlaylistTrack> GetPage(int offset, int limit)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IList<PlaylistTrack> GetUpdatedPage(int offset, int limit, long epoch)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int Save(PlaylistTrack t)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int Save(IList<PlaylistTrack> t)
-        {
-            throw new System.NotImplementedException();
         }
 
         public int GetTrackCountForPlaylist(int id)
