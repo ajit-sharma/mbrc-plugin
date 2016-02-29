@@ -30,6 +30,7 @@
 
         public override void Load()
         {
+            
             this.Bind<IPlayerApiAdapter>().ToMethod(context => this.provider.PlayerApi).InSingletonScope();
             this.Bind<IPlaylistApiAdapter>().ToMethod(context => this.provider.PlaylistApi).InSingletonScope();
             this.Bind<ITrackApiAdapter>().ToMethod(context => this.provider.TrackApi).InSingletonScope();

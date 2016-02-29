@@ -88,6 +88,7 @@ namespace MusicBeePlugin
             this.mbrc = new MusicBeeRemoteEntryPointImpl { StoragePath = this.storagePath };
 
             this.mbrc.SetMessageHandler(this);
+
             try
             {
                 this.mbrc.Init(

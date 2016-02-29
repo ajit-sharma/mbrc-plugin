@@ -182,6 +182,8 @@
         {
             const int Tracks = 222;
             var repository = this.TrackRepository();
+            var startCount = repository.GetCount();
+            Assert.AreEqual(0, startCount);
             var tracks = this.GenerateTracks(Tracks);
             repository.Save(tracks);
             var count = repository.GetCount();

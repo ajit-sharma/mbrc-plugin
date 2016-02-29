@@ -1,4 +1,4 @@
-﻿namespace MusicBeeRemoteData.Repository
+﻿namespace MusicBeeRemoteData.Repository.Interfaces
 {
     using System;
     using System.Collections.Generic;
@@ -10,28 +10,29 @@
 
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
-    using MusicBeeRemoteData.Repository.Interfaces;
 
     using NLog;
 
     /// <summary>
-    /// The track repository, gives access to all the track data in the plugin's cache.
+    /// The generic repository.
     /// </summary>
-    public class TrackRepository : ITrackRepository
+    /// <typeparam name="T">
+    /// </typeparam>
+    public class GenericRepository<T> : IRepository<T> where T : TypeBase
     {
+
         /// <summary>
         /// The Logger instance for the current class.
         /// </summary>
         public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        private DatabaseProvider provider;
 
-        private readonly DatabaseProvider provider;
-
-        public TrackRepository(DatabaseProvider provider)
+        public GenericRepository(DatabaseProvider provider)
         {
             this.provider = provider;
-        }
+        } 
 
-        public int Delete(IList<LibraryTrack> tracks)
+        public int Delete(IList<T> t)
         {
             using (var connection = this.provider.GetDbConnection())
             {
@@ -39,15 +40,15 @@
                 var rowsAffected = 0;
                 using (var transaction = connection.BeginTransaction())
                 {
-                    tracks.ToObservable().ForEach(
+                    t.ToObservable().ForEach(
                         track =>
+                        {
+                            var result = connection.Delete<T>(track.Id);
+                            if (result > 0)
                             {
-                                var result = connection.Delete<LibraryTrack>(track.Id);
-                                if (result > 0)
-                                {
-                                    rowsAffected++;
-                                }
-                            });
+                                rowsAffected++;
+                            }
+                        });
                     transaction.Commit();
                 }
 
@@ -56,34 +57,34 @@
             }
         }
 
-        public IList<LibraryTrack> GetAll()
+        public IList<T> GetAll()
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
-                var tracks = connection.GetList<LibraryTrack>();
+                var tracks = connection.GetList<T>();
                 connection.Close();
                 return tracks.ToList();
             }
         }
 
-        public LibraryTrack GetById(long id)
+        public T GetById(long id)
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
-                var track = connection.Get<LibraryTrack>(id);
+                var track = connection.Get<T>(id);
                 connection.Close();
                 return track;
             }
         }
 
-        public IList<LibraryTrack> GetCached()
+        public IList<T> GetCached()
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
-                var tracks = connection.GetList<LibraryTrack>("where DateDeleted = 0");
+                var tracks = connection.GetList<T>("where DateDeleted = 0");
                 connection.Close();
                 return tracks.ToList();
             }
@@ -93,89 +94,80 @@
         {
             using (var connection = this.provider.GetDbConnection())
             {
-                var count = connection.RecordCount<LibraryTrack>();
+                var count = connection.RecordCount<T>(string.Empty);
                 connection.Close();
                 return count;
             }
         }
 
-        public IList<LibraryTrack> GetDeleted()
+        public IList<T> GetDeleted()
         {
-            using (var connection = this.provider.GetDbConnection())
             {
-                connection.Open();
-                var tracks = connection.GetList<LibraryTrack>("where DateDeleted > 0");
-                connection.Close();
-                return tracks.ToList();
+                using (var connection = this.provider.GetDbConnection())
+                {
+                    connection.Open();
+                    var tracks = connection.GetList<T>("where DateDeleted > 0");
+                    connection.Close();
+                    return tracks.ToList();
+                }
             }
         }
 
-        public IList<LibraryTrack> GetPage(int offset, int limit)
+        public IList<T> GetPage(int offset, int limit)
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
-                var data = connection.GetListPaged<LibraryTrack>(page, limit, null, null);
+                var data = connection.GetListPaged<T>(page, limit, null, null);
                 connection.Close();
                 return data.ToList();
             }
         }
 
-        public IList<LibraryTrack> GetTracksByAlbumId(long id)
-        {
-            using (var connection = this.provider.GetDbConnection())
-            {
-                connection.Open();
-                var tracks = connection.GetList<LibraryTrack>($"where AlbumId = {id}");
-                connection.Close();
-                return tracks.ToList();
-            }
-        }
-
-        public IList<LibraryTrack> GetUpdatedPage(int offset, int limit, long epoch)
+        public IList<T> GetUpdatedPage(int offset, int limit, long epoch)
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
-                var paged = connection.GetListPaged<LibraryTrack>(
-                    page, 
-                    limit, 
-                    $"where DateUpdated>={epoch} or DateAdded>={epoch} or DateDeleted>={epoch}", 
+                var paged = connection.GetListPaged<T>(
+                    page,
+                    limit,
+                    $"where DateUpdated>={epoch} or DateAdded>={epoch} or DateDeleted>={epoch}",
                     "Id asc");
                 connection.Close();
                 return paged.ToList();
             }
         }
 
-        public int Save(LibraryTrack track)
+        public int Save(T t)
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
-                var id = UpdateOrInsert(track, connection);       
+                var id = UpdateOrInsert(t, connection);
                 connection.Close();
                 return id ?? 0;
             }
         }
 
-        public int Save(IList<LibraryTrack> tracks)
+        public int Save(IList<T> t)
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
                 var rowsAffected = 0;
-                tracks.ToObservable()
+                t.ToObservable()
                     .Select(track => UpdateOrInsert(track, connection))
                     .Subscribe(
                         id =>
+                        {
+                            if (id > 0)
                             {
-                                if (id > 0)
-                                {
-                                    rowsAffected++;
-                                }
-                            }, 
+                                rowsAffected++;
+                            }
+                        },
                         exception => { Logger.Debug(exception, "failed to insert the tracks"); });
 
                 connection.Close();
@@ -183,38 +175,38 @@
             }
         }
 
-        private static int? UpdateOrInsert(LibraryTrack track, IDbConnection connection)
-        {
-            if (track.Id <= 0)
-            {
-                return connection.Insert(track);
-            }
-
-            var epoch = DateTime.UtcNow.ToUnixTime();
-            track.DateUpdated = epoch;
-            var result = connection.Update(track);
-            return (int?)(result > 0 ? track.Id : 0);
-        }
-
-        public int SoftDelete(IList<LibraryTrack> tracks)
+        public int SoftDelete(IList<T> elements)
         {
             using (var connection = this.provider.GetDbConnection())
             {
                 var epoch = DateTime.UtcNow.ToUnixTime();
                 var rowsAffected = 0;
-                tracks.ToObservable().ForEach(
+                elements.ToObservable().ForEach(
                     t =>
+                    {
+                        t.DateDeleted = epoch;
+                        var update = connection.Update(t);
+                        if (update > 0)
                         {
-                            t.DateDeleted = epoch;
-                            var update = connection.Update(t);
-                            if (update > 0)
-                            {
-                                rowsAffected++;
-                            }
-                        });
+                            rowsAffected++;
+                        }
+                    });
 
                 return rowsAffected;
             }
+        }
+
+        private static int? UpdateOrInsert(T t, IDbConnection connection)
+        {
+            if (t.Id <= 0)
+            {
+                return connection.Insert(t);
+            }
+
+            var epoch = DateTime.UtcNow.ToUnixTime();
+            t.DateUpdated = epoch;
+            var result = connection.Update(t);
+            return (int?)(result > 0 ? t.Id : 0);
         }
     }
 }

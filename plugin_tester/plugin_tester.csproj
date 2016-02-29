@@ -61,6 +61,7 @@
     <Compile Include="Adapters\PlaylistAdapter.cs" />
     <Compile Include="Adapters\LibraryAdapter.cs" />
     <Compile Include="Adapters\NowPlayingApiAdapter.cs" />
+    <Compile Include="IpcServer.cs" />
     <Compile Include="MyProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
