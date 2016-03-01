@@ -569,17 +569,20 @@ namespace MusicBeeRemoteCore.Modules
                 Logger.Debug("Genres: {0} entries removed", genresToRemove.Count);
             }
 
-            foreach (var libraryGenre in genresToInsert)
+            if (deletedGenres.Count != 0)
             {
-                var genre =
-                    deletedGenres.First(
-                        gen => gen.Name.Equals(libraryGenre.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (genre != null)
+                foreach (var libraryGenre in genresToInsert)
                 {
-                    libraryGenre.Id = genre.Id;
+                    var genre =
+                        deletedGenres.First(
+                            gen => gen.Name.Equals(libraryGenre.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (genre != null)
+                    {
+                        libraryGenre.Id = genre.Id;
+                    }
                 }
             }
-
+            
             if (genresToInsert.Count <= 0)
             {
                 return;

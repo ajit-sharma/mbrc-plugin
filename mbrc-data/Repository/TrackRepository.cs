@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Data;
+    using System.Diagnostics;
     using System.Linq;
     using System.Reactive.Linq;
 
@@ -187,12 +188,14 @@
         {
             if (track.Id <= 0)
             {
+                Debug.WriteLine($"{track.Path} is inserted");
                 return connection.Insert(track);
             }
 
             var epoch = DateTime.UtcNow.ToUnixTime();
             track.DateUpdated = epoch;
             var result = connection.Update(track);
+            Debug.WriteLine($"{track.Path} {track.Id} is updated with {result}");
             return (int?)(result > 0 ? track.Id : 0);
         }
 

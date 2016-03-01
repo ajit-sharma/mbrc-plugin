@@ -4,7 +4,9 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Reactive.Concurrency;
     using System.Reactive.Linq;
+    using System.Threading;
 
     using Dapper;
 
@@ -160,6 +162,8 @@
                 var rowsAffected = 0;
                 t.ToObservable()
                     .Select(track => UpdateOrInsert(track, connection))
+                    .SubscribeOn(Scheduler.Immediate)
+                    .ObserveOn(Scheduler.Immediate)
                     .Subscribe(
                         id =>
                         {

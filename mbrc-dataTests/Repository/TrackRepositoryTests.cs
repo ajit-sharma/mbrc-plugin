@@ -233,13 +233,18 @@
             const int TrackNum = 162;
             const int Updated = 54;
             var tracks = this.GenerateTracks(TrackNum);
+            var saved = repository.Save(tracks);
+            Assert.AreEqual(TrackNum, saved);
             var epoch = DateTime.UtcNow.ToUnixTime();
-            tracks.Take(Updated).ToList().ForEach(t => t.DateUpdated = epoch);
+            var storedTracks = repository.GetAll();
+            var update = storedTracks.Take(Updated).ToList();
+            update.ForEach(t => t.AlbumArtistId = 5);
 
-            repository.Save(tracks);
+            var updated = repository.Save(update);
+            Assert.AreEqual(Updated, updated);
             var updatedTracks = repository.GetUpdatedPage(0, TrackNum, epoch);
-
             Assert.AreEqual(Updated, updatedTracks.Count);
+            Assert.That(updatedTracks.Count(x => x.AlbumArtistId == 5), Is.EqualTo(Updated));
         }
 
         /// <summary>
@@ -293,7 +298,7 @@
             var repository = this.TrackRepository();
             var generated = this.GenerateTracks(TrackNum);
             var saved = repository.Save(generated);
-
+        
             Assert.AreEqual(TrackNum, saved);
 
             var epoch = DateTime.UtcNow.ToUnixTime();
@@ -307,7 +312,7 @@
             var update = repository.Save(toUpdate);
             Assert.AreEqual(Updated, update);
             var updated = repository.GetUpdatedPage(0, TrackNum, epoch);
-            Assert.AreEqual(Updated, updated.Count);
+            Assert.AreEqual(Updated + Deleted, updated.Count);
             var count = updated.Count(t => t.Year == "2014");
             Assert.AreEqual(Updated, count);
         }
@@ -324,9 +329,10 @@
             var all = repository.GetAll();
             var toUpdate = all.Take(Updated).ToList();
             toUpdate.ForEach(track => track.Title = "It's ame Mario");
+            var epoch = DateTime.UtcNow.ToUnixTime();
             var updated = repository.Save(toUpdate);
             Assert.AreEqual(Updated, updated);
-            var page = repository.GetUpdatedPage(0, TrackNum, 10);
+            var page = repository.GetUpdatedPage(0, TrackNum, epoch);
             Assert.AreEqual(Updated, page.Count);
         }
 

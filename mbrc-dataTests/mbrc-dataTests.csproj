@@ -58,6 +58,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Repository\ArtistRepositoryTests.cs" />
     <Compile Include="Repository\TrackRepositoryTests.cs" />
   </ItemGroup>
   <ItemGroup>
