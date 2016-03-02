@@ -160,51 +160,33 @@
 
     public int Save(IList<LibraryTrack> tracks)
     {
-      Logger.Debug($"Beginning operation (save) of {tracks.Count} files");
-      var connection = this.provider.GetDbConnection();
-      connection.Open();
-      var rowsAffected = 0;
-      var transaction = connection.BeginTransaction();
-      tracks.ToObservable()
-        .Select(track => UpdateOrInsert(track, connection))
-        .Finally(() =>
-        {
-          connection.Close();
-          connection.Dispose();
-        })
-        .Subscribe(
-          id =>
-          {
-            if (id > 0)
+            var rowsAffected = 0;
+            using (var connection = this.provider.GetDbConnection())
             {
-              rowsAffected++;
-            }
-          },
-          exception =>
-          {
-            transaction.Rollback();
-            transaction.Dispose();
-            Logger.Debug(exception, "Transaction failed rolling back");
-          }, () =>
-          {
-            Logger.Debug($"operation (save) complete");
-            transaction.Commit();
-            transaction.Dispose();
-          });
+                connection.Open();
 
-      return rowsAffected;
+                using (var transaction = connection.BeginTransaction())
+                {
+                    rowsAffected += tracks.Select(a => UpdateOrInsert(a, connection, transaction)).Count(result => result > 0);
+                    transaction.Commit();
+                }
+
+                connection.Close();
+            }
+
+            return rowsAffected;
     }
 
-    private static int? UpdateOrInsert(LibraryTrack track, IDbConnection connection)
+    private static int? UpdateOrInsert(LibraryTrack track, IDbConnection connection, IDbTransaction transaction = null)
     {
       if (track.Id <= 0)
       {
-        return connection.Insert(track);
+        return connection.Insert(track, transaction);
       }
 
       var epoch = DateTime.UtcNow.ToUnixTime();
       track.DateUpdated = epoch;
-      var result = connection.Update(track);
+      var result = connection.Update(track, transaction);
       return (int?) (result > 0 ? track.Id : 0);
     }
 

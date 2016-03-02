@@ -162,7 +162,7 @@ namespace MusicBeeRemoteData.Repository.Interfaces
 
         using (var transaction = connection.BeginTransaction())
         {
-          rowsAffected += t.Select(a => UpdateOrInsert(a, connection)).Count(result => result > 0);
+          rowsAffected += t.Select(a => UpdateOrInsert(a, connection, transaction)).Count(result => result > 0);
           transaction.Commit();
         }
 
@@ -193,16 +193,16 @@ namespace MusicBeeRemoteData.Repository.Interfaces
       }
     }
 
-    private static int? UpdateOrInsert(T t, IDbConnection connection)
+    private static int? UpdateOrInsert(T t, IDbConnection connection, IDbTransaction transaction = null)
     {
       if (t.Id <= 0)
       {
-        return connection.Insert(t);
+        return connection.Insert(t, transaction);
       }
 
       var epoch = DateTime.UtcNow.ToUnixTime();
       t.DateUpdated = epoch;
-      var result = connection.Update(t);
+      var result = connection.Update(t, transaction);
       return (int?) (result > 0 ? t.Id : 0);
     }
   }
