@@ -13,7 +13,6 @@ namespace MusicBeeRemoteCore.Modules
 
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
-    using MusicBeeRemoteData.Repository;
     using MusicBeeRemoteData.Repository.Interfaces;
 
     using NLog;
@@ -561,10 +560,7 @@ namespace MusicBeeRemoteCore.Modules
 
             var tiCache = this.trackInfoRepository.GetAll();
 
-            foreach (var track in tracksToInsert)
-            {
-                // StorePlaylistTrack(playlist, db, track, tiCache);
-            }
+            this.trackInfoRepository.Save(tracksToInsert);
 
             cachedPlaylistTracks.Sort();
 
@@ -574,12 +570,10 @@ namespace MusicBeeRemoteCore.Modules
 
             if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)
             {
-                playlist.DateUpdated = DateTime.UtcNow.ToUnixTime();
-
-                // db.Save(playlist);
+                this.playlistRepository.Save(playlist);
             }
 
-            // db.SaveAll(cachedTracks);
+            this.trackRepository.Save(cachedTracks);
         }
     }
 }

@@ -3,6 +3,8 @@
     using System;
     using System.Runtime.Serialization;
 
+    using MusicBeeRemoteData.Extensions;
+
     /// <summary>
     ///     The <c>base</c> of all the POCOs stored in the database.
     /// </summary>
@@ -15,7 +17,7 @@
         ///     the newer additions.
         /// </summary>
         [DataMember(Name = "date_added")]
-        public long DateAdded { get; set; }
+        public long DateAdded { get; set; } = DateTime.UtcNow.ToUnixTime();
 
         /// <summary>
         ///     The Date the entry was deleted. As it is expected for an entry that is
