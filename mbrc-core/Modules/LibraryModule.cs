@@ -480,6 +480,8 @@ namespace MusicBeeRemoteCore.Modules
                 Logger.Debug("Albums: {0} entries removed", albumsToRemove.Count);
             }
 
+          if (deletedAlbums.Count != 0) {
+
             foreach (var albumEntry in albumsToInsert)
             {
                 var album =
@@ -489,6 +491,7 @@ namespace MusicBeeRemoteCore.Modules
                 {
                     albumEntry.Id = album.Id;
                 }
+            }
             }
 
             if (albumsToInsert.Count > 0)
