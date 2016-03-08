@@ -176,6 +176,11 @@
 
         public int SoftDelete(IList<T> elements)
         {
+            if (elements.Count == 0)
+            {
+                return 0;
+            }
+
             using (var connection = this.provider.GetDbConnection())
             {
                 var epoch = DateTime.UtcNow.ToUnixTime();

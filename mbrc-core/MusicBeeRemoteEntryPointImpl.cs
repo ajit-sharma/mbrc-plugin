@@ -5,7 +5,6 @@ namespace MusicBeeRemoteCore
     using System.Reactive.Concurrency;
     using System.Reactive.Linq;
     using System.Reactive.Subjects;
-    using System.Threading.Tasks;
 
     using MusicBeeRemoteCore.AndroidRemote;
     using MusicBeeRemoteCore.AndroidRemote.Controller;
@@ -148,15 +147,12 @@ namespace MusicBeeRemoteCore
             var observable = Observable.Create<string>(
                 o =>
                     {
-                        if (libraryModule.IsCacheEmpty())
-                        {
-                            o.OnNext(@"MBR: Currently building the metadata cache.");
-                            libraryModule.BuildCache();
-                            playlistModule.SyncPlaylistsWithCache();
-                            o.OnNext(@"MBRC: Currently processing the album covers.");
-                            libraryModule.BuildCoverCachePerAlbum();
-                            o.OnNext(@"MBRC: Cache Ready.");
-                        }
+                        o.OnNext(@"MBR: Currently building the metadata cache.");
+                        libraryModule.BuildCache();
+                        playlistModule.SyncPlaylistsWithCache();
+                        o.OnNext(@"MBRC: Currently processing the album covers.");
+                        libraryModule.BuildCoverCachePerAlbum();
+                        o.OnNext(@"MBRC: Cache Ready.");
 
                         o.OnCompleted();
                         return () => { };
@@ -168,7 +164,7 @@ namespace MusicBeeRemoteCore
                         this.messageHandler?.OnMessageAvailable(s);
                         Logger.Debug(s);
                     }, 
-                ex => Logger.Debug(ex));
+                ex => { Logger.Debug(ex, "Library sync failed"); });
         }
 
         /// <summary>

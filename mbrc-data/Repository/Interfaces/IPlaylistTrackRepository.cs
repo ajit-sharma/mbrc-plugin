@@ -38,6 +38,12 @@
         /// <param name="limit">The number of data rows in the data set</param>
         /// <param name="epoch">The unix epoch threshold. Data updated after this point should be in the data set</param>
         /// <returns>A page (list) of playlist tracks.</returns>
-        IList<PlaylistTrack> GetUpdatedTracksForPlaylist(int id, int offset, int limit, long epoch);   
+        IList<PlaylistTrack> GetUpdatedTracksForPlaylist(int id, int offset, int limit, long epoch);
+
+        /// <summary>
+        /// Soft deletes the playlist track entries that match the provided playlist ids.
+        /// </summary>
+        /// <param name="deletedIds">The ids of the tracks to soft delete.</param>
+        void DeleteTracksForPlaylists(IList<long> deletedIds);
     }
 }

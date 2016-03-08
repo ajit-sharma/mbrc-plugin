@@ -3,6 +3,8 @@
     using System;
     using System.Runtime.Serialization;
 
+    using Dapper;
+
     /// <summary>
     ///     The info of a <see cref="PlaylistTrack" />.
     ///     The info are stored seperately to avoid duplication since a track can appear to multiple playlists
@@ -26,6 +28,9 @@
         ///     Used internally for sorting
         /// </summary>
         [IgnoreDataMember]
+        [IgnoreInsert]
+        [IgnoreSelect]
+        [IgnoreUpdate]      
         public int Position { get; set; }
 
         /// <summary>

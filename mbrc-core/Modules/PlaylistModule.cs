@@ -2,7 +2,6 @@ namespace MusicBeeRemoteCore.Modules
 {
     using System;
     using System.Collections.Generic;
-    using System.Data;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -137,25 +136,6 @@ namespace MusicBeeRemoteCore.Modules
         {
             var list = new List<PlaylistTrackInfo>();
 
-            // using (var db = _cHelper.GetDbConnection())
-            // {
-            // var join = new JoinSqlBuilder<PlaylistTrackInfo, PlaylistTrack>();
-            // join = join.Join<PlaylistTrackInfo, PlaylistTrack>(pti => pti.Id, pt => pt.TrackInfoId,
-            // trackInfo => new
-            // {
-            // trackInfo.Path,
-            // trackInfo.Title,
-            // trackInfo.Id,
-            // trackInfo.Artist,
-            // trackInfo.DateAdded,
-            // trackInfo.DateUpdated
-            // }, playlistTrack => new {playlistTrack.Position})
-            // .Where<PlaylistTrack>(p => p.PlaylistId == playlist.Id && p.DateDeleted == 0)
-            // .OrderBy<PlaylistTrack>(pt => pt.Position);
-            // var sql = join.ToSql();
-            // var result = db.Query<PlaylistTrackInfo>(sql);
-            // list.AddRange(result);
-            // }
             return list;
         }
 
@@ -294,6 +274,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public void SyncPlaylistsWithCache()
         {
+            Logger.Debug("Starting playlist sync");
             var playlists = this.GetPlaylistsFromApi();
             var cachedPlaylists = this.GetCachedPlaylists();
 
@@ -301,99 +282,23 @@ namespace MusicBeeRemoteCore.Modules
             var playlistsToInsert = playlists.Except(cachedPlaylists, playlistComparer).ToList();
             var playlistsToRemove = cachedPlaylists.Except(playlists, playlistComparer).ToList();
 
-            foreach (var playlist in playlistsToRemove)
-            {
-                playlist.DateDeleted = DateTime.UtcNow.ToUnixTime();
-                cachedPlaylists.Remove(playlist);
+            this.playlistRepository.SoftDelete(playlistsToRemove);
 
-                // db.UpdateOnly(new PlaylistTrack {DateDeleted = DateTime.UtcNow.ToUnixTime()},
-                // o => o.Update(p => p.DateDeleted)
-                // .Where(pl => pl.PlaylistId == playlist.Id));
-            }
+            var deletedIds = playlistsToRemove.Select(playlist => playlist.Id).ToList();
 
-            foreach (var playlist in playlistsToInsert)
-            {
-                // db.Save(playlist);
-                // playlist.Id = db.GetLastInsertId();
-            }
+            this.trackRepository.DeleteTracksForPlaylists(deletedIds);
+            cachedPlaylists = cachedPlaylists.Except(playlistsToRemove).ToList();
 
-            // We have new inserts so update.
-            if (playlistsToInsert.Count > 0)
-            {
-                // SetPlaylistUpdated(db);
-            }
-
+            this.playlistRepository.Save(playlistsToInsert);
             cachedPlaylists.AddRange(playlistsToInsert);
 
-            if (playlistsToRemove.Count > 0)
-            {
-                // db.SaveAll(playlistsToRemove);
-                // // Entries deleted so update
-                // SetPlaylistUpdated(db);
-            }
-
-            Logger.Debug("Playlists: {0} entries inserted.", playlistsToInsert.Count);
-            Logger.Debug("Playlists: {0} entries removed.", playlistsToRemove.Count);
+            Logger.Debug($"Playlists: {playlistsToInsert.Count} entries inserted.");
+            Logger.Debug($"Playlists: {playlistsToRemove.Count} entries removed.");
 
             foreach (var cachedPlaylist in cachedPlaylists)
             {
                 this.SyncPlaylistDataWithCache(cachedPlaylist);
             }
-        }
-
-        /// <summary>
-        ///     Updates the Date of the Playlists last update.
-        ///     This date should change if any change happens to any of the playlists.
-        /// </summary>
-        /// <param name="db"></param>
-        private static void SetPlaylistUpdated(IDbConnection db)
-        {
-            // var dateCache = db.Select<LastUpdated>(lu => lu.Id == 1);
-            // var cached = dateCache.Count > 0 ? dateCache[0] : new LastUpdated();
-            // cached.PlaylistsUpdated = DateTime.UtcNow;
-            // db.Save(cached);
-        }
-
-        /// <summary>
-        ///     Caches a <see cref="PlaylistTrack" /> in the database along with the
-        ///     related <see cref="PlaylistTrackInfo" />. In case the information already
-        ///     exist in the cache it will use the existing entry.
-        /// </summary>
-        /// <param name="playlist">The playlist that contains the tracks.</param>
-        /// <param name="db">A database connection.</param>
-        /// <param name="track">The track that will be added to the database.</param>
-        /// <param name="tiCache">A List containing the cached Playlist track metadata.</param>
-        private static void StorePlaylistTrack(
-            Playlist playlist, 
-            IDbConnection db, 
-            PlaylistTrackInfo track, 
-            List<PlaylistTrackInfo> tiCache)
-        {
-            // long id;
-            // if (tiCache.Contains(track))
-            // {
-            // var info = tiCache.Find(p => p.Path.Equals(track.Path));
-            // id = info.Id;
-            // // If the entry was previously soft deleted now the entry will be
-            // // reused so we are remove the DateDeleted.
-            // if (info.DateDeleted != 0)
-            // {
-            // info.DateDeleted = 0;
-            // db.Save(info);
-            // }
-            // }
-            // else
-            // {
-            // db.Save(track);
-            // id = db.GetLastInsertId();
-            // }
-            // var trackPlay = new PlaylistTrack
-            // {
-            // PlaylistId = playlist.Id,
-            // TrackInfoId = id,
-            // Position = track.Position
-            // };
-            // db.Save(trackPlay);
         }
 
         /// <summary>
@@ -403,28 +308,28 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         private void CleanUnusedTrackInfo()
         {
-            // using (var db = _cHelper.GetDbConnection())
-            // {
-            // var usedTrackInfoIds = db.Select<PlaylistTrack>()
-            // .Select(track => track.TrackInfoId)
-            // .ToList();
-            // var storedTrackInfoIds = db.Select<PlaylistTrackInfo>()
-            // .Select(track => track.Id)
-            // .ToList();
-            // var unused = storedTrackInfoIds.Except(usedTrackInfoIds);
-            // using (var transaction = db.OpenTransaction())
-            // {
-            // foreach (var id in unused)
-            // {
-            // db.UpdateOnly(new PlaylistTrackInfo
-            // {
-            // DateDeleted = DateTime.UtcNow.ToUnixTime()
-            // }, o => o.Update(p => p.DateDeleted)
-            // .Where(p => p.Id == id));
-            // }
-            // transaction.Commit();
-            // }
-            // }
+//             using (var db = _cHelper.GetDbConnection())
+//             {
+//             var usedTrackInfoIds = db.Select<PlaylistTrack>()
+//             .Select(track => track.TrackInfoId)
+//             .ToList();
+//             var storedTrackInfoIds = db.Select<PlaylistTrackInfo>()
+//             .Select(track => track.Id)
+//             .ToList();
+//             var unused = storedTrackInfoIds.Except(usedTrackInfoIds);
+//             using (var transaction = db.OpenTransaction())
+//             {
+//             foreach (var id in unused)
+//             {
+//             db.UpdateOnly(new PlaylistTrackInfo
+//             {
+//             DateDeleted = DateTime.UtcNow.ToUnixTime()
+//             }, o => o.Update(p => p.DateDeleted)
+//             .Where(p => p.Id == id));
+//             }
+//             transaction.Commit();
+//             }
+//             }
         }
 
         /// <summary>
@@ -456,18 +361,52 @@ namespace MusicBeeRemoteCore.Modules
         }
 
         /// <summary>
+        ///     Caches a <see cref="PlaylistTrack" /> in the database along with the
+        ///     related <see cref="PlaylistTrackInfo" />. In case the information already
+        ///     exist in the cache it will use the existing entry.
+        /// </summary>
+        /// <param name="playlist">The playlist that contains the tracks.</param>
+        /// <param name="track">The track that will be added to the database.</param>
+        /// <param name="cachedInfo">The cached playlist information.</param>
+        private void StorePlaylistTrack(Playlist playlist, PlaylistTrackInfo track, IList<PlaylistTrackInfo> cachedInfo)
+        {
+            long id;
+            if (cachedInfo.Contains(track))
+            {
+                var info = cachedInfo.ToList().Find(p => p.Path.Equals(track.Path));
+                id = info.Id;
+
+                // If the entry was previously soft deleted now the entry will be
+                // reused so we are remove the DateDeleted.
+                if (info.DateDeleted != 0)
+                {
+                    info.DateDeleted = 0;
+                    this.trackInfoRepository.Save(info);
+                }
+            }
+            else
+            {
+                id = this.trackInfoRepository.Save(track);                
+            }
+
+            var playlistTrack = new PlaylistTrack { PlaylistId = playlist.Id, TrackInfoId = id, Position = track.Position };
+            this.trackRepository.Save(playlistTrack);
+
+        }
+
+        /// <summary>
         ///     Syncs the <see cref="PlaylistTrack" /> cache with the data available
         ///     from the MusicBee API.
         /// </summary>
         /// <param name="playlist">The playlist for which the sync happens</param>
         private void SyncPlaylistDataWithCache(Playlist playlist)
         {
-            Logger.Debug("Checking changes for playlist: {0}", playlist.Path);
+            Logger.Debug($"Checking changes for playlist: {playlist.Path}");
             var tracksUpdated = 0;
             var cachedTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
 
             var playlistTracks = this.GetPlaylistTracksFromApi(playlist);
-            var cachedPlaylistTracks = this.GetCachedPlaylistTracks(playlist);
+            var cachedPlaylistTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
 
             var comparer = new PlaylistTrackInfoComparer();
 
@@ -494,10 +433,11 @@ namespace MusicBeeRemoteCore.Modules
 
                     tracksToDelete.Remove(deleted);
                     tracksToInsert.Remove(inserted);
-                    var cached = cachedPlaylistTracks.Find(track => track.GetHashCode() == deleted.GetHashCode());
+                    var cached =
+                        cachedPlaylistTracks.ToList().Find(track => track.GetHashCode() == deleted.GetHashCode());
                     cached.Position = inserted.Position;
 
-                    var updated = cachedTracks.First(track => track.Id == cached.Id);
+                    var updated = cachedTracks.FirstOrDefault(track => track.Id == cached.Id);
 
                     if (updated == null)
                     {
@@ -524,7 +464,7 @@ namespace MusicBeeRemoteCore.Modules
                 tracksToDelete.Remove(trackInfo);
                 tracksToInsert.Remove(track);
 
-                var updated = cachedTracks.First(cTrack => cTrack.Id == trackInfo.Id);
+                var updated = cachedTracks.FirstOrDefault(cTrack => cTrack.Id == trackInfo.Id);
 
                 if (updated == null)
                 {
@@ -548,7 +488,7 @@ namespace MusicBeeRemoteCore.Modules
 
             foreach (var track in tracksToDelete)
             {
-                var cachedTrack = cachedTracks.First(t => t.PlaylistId == playlist.Id && t.TrackInfoId == track.Id);
+                var cachedTrack = cachedTracks.FirstOrDefault(t => t.PlaylistId == playlist.Id && t.TrackInfoId == track.Id);
                 if (cachedTrack == null)
                 {
                     continue;
@@ -560,9 +500,14 @@ namespace MusicBeeRemoteCore.Modules
 
             var tiCache = this.trackInfoRepository.GetAll();
 
+            foreach (var track in tracksToInsert)
+            {
+                this.StorePlaylistTrack(playlist, track, tiCache);
+            }
+
             this.trackInfoRepository.Save(tracksToInsert);
 
-            cachedPlaylistTracks.Sort();
+            cachedPlaylistTracks.ToList().Sort();
 
             Logger.Debug(
                 "The playlists should be equal now: {0}", 

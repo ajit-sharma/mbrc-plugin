@@ -1,6 +1,7 @@
 namespace MusicBeeRemoteData.Repository
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Linq;
 
     using Dapper;
@@ -39,6 +40,20 @@ namespace MusicBeeRemoteData.Repository
                 var select =
                     $"where PlaylistId={id} and (DateUpdated > {epoch} or DateDeleted > {epoch} or DateAdded > {epoch}";
                 return connection.GetListPaged<PlaylistTrack>(page, limit, select, "Id asc").ToList();
+            }
+        }
+
+        public void DeleteTracksForPlaylists(IList<long> deletedIds)
+        {
+            if (deletedIds.Count == 0)
+            {
+                return;
+            }
+
+            using (var connection = this.provider.GetDbConnection())
+            {
+                Debug.WriteLine(string.Join(",", deletedIds));
+                connection.DeleteList<PlaylistTrack>($"where PlaylistId in ({string.Join(",", deletedIds)})");
             }
         }
     }

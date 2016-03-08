@@ -1,4 +1,7 @@
-﻿namespace MusicBeeRemoteData.Repository.Interfaces
+﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+
+namespace MusicBeeRemoteData.Repository.Interfaces
 {
     using MusicBeeRemoteData.Entities;
 
@@ -9,5 +12,6 @@
     /// </summary>
     public interface IPlaylistTrackInfoRepository : IRepository<PlaylistTrackInfo>
     {
+      IList<PlaylistTrackInfo> GetTrackForPlaylist(int id);
     }
 }
