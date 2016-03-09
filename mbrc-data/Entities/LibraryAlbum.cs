@@ -3,6 +3,8 @@
     using System.Collections.Generic;
     using System.Runtime.Serialization;
 
+    using Newtonsoft.Json;
+
     /// <summary>
     /// Represents an album entry stored in the library.
     /// </summary>
@@ -13,21 +15,7 @@
         /// Backing field of the property <see cref="Name"/>
         /// </summary>
         private string _name;
-
-        /// <summary>
-        /// Creates a new LibraryAlbum with an empty <see cref="TrackList"/> 
-        /// </summary>
-        public LibraryAlbum()
-        {
-            this.TrackList = new List<LibraryTrack>();
-        }
-
-        /// <summary>
-        /// Unique album identifier retrieved from MusicBee.
-        /// </summary>
-        [DataMember(Name = "album_id")]
-        public string AlbumId { get; set; }
-
+        
         /// <summary>
         /// The id of the album artist.
         /// </summary>
@@ -56,11 +44,5 @@
                 this._name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
             }
         }
-
-        /// <summary>
-        /// A list with the tracks contained in the album.
-        /// </summary>
-        [IgnoreDataMember]
-        public List<LibraryTrack> TrackList { get; set; }
     }
 }

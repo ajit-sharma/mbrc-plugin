@@ -18,6 +18,24 @@
         {
         }
 
+        public string GetFirstAlbumTrackPathById(long id)
+        {
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var path =
+                    connection.Query<string>(
+                        $@"select LibraryTrack.Path
+                            from LibraryTrack
+                            where LibraryTrack.AlbumId = {id}
+                            order by LibraryTrack.Disc, LibraryTrack.Position asc
+                            limit 1");
+
+                connection.Close();
+                return path.FirstOrDefault();
+            }
+        }
+
         public string[] GetTrackPathsByArtistId(long id)
         {
             using (var connection = this.provider.GetDbConnection())

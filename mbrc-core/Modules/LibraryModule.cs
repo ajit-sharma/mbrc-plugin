@@ -110,21 +110,19 @@ namespace MusicBeeRemoteCore.Modules
 
             foreach (var album in albums)
             {
-                var trackList = this.trackRepository.GetTracksByAlbumId(album.Id);
+                var firstAlbumTrack = this.trackRepository.GetFirstAlbumTrackPathById(album.Id);
 
-                if (!trackList.Any())
+                if (firstAlbumTrack == null)
                 {
                     continue;
                 }
-
-                var track = trackList.First();
-
-                var coverUrl = this.api.GetCoverUrl(track.Path);
+                
+                var coverUrl = this.api.GetCoverUrl(firstAlbumTrack);
                 string hash;
 
                 if (string.IsNullOrEmpty(coverUrl))
                 {
-                    var data = this.api.GetCoverData(track.Path);
+                    var data = this.api.GetCoverData(firstAlbumTrack);
                     hash = Utilities.StoreCoverToCache(data);
                 }
                 else

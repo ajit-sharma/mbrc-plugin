@@ -20,6 +20,8 @@
         /// </returns>
         IList<LibraryTrack> GetTracksByAlbumId(long id);
 
+        string GetFirstAlbumTrackPathById(long id);
+
         string[] GetTrackPathsByArtistId(long id);
 
         string[] GetTrackPathsByGenreId(long id);
