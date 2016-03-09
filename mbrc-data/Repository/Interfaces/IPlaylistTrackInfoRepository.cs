@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Security.Cryptography.X509Certificates;
-
-namespace MusicBeeRemoteData.Repository.Interfaces
+﻿namespace MusicBeeRemoteData.Repository.Interfaces
 {
+    using System.Collections.Generic;
+
     using MusicBeeRemoteData.Entities;
 
     /// <summary>
@@ -12,6 +11,25 @@ namespace MusicBeeRemoteData.Repository.Interfaces
     /// </summary>
     public interface IPlaylistTrackInfoRepository : IRepository<PlaylistTrackInfo>
     {
-      IList<PlaylistTrackInfo> GetTrackForPlaylist(int id);
+        /// <summary>
+        /// Gets all the available
+        /// </summary>
+        /// <returns>A list of the available TrackInfo ids</returns>
+        IList<int> GetAllIds();
+
+        /// <summary>
+        /// Gets a list of track info objects with position from the Playlist track table for the specified 
+        /// Playlist tracks.
+        /// </summary>
+        /// <param name="id">The id of the playlist</param>
+        /// <returns>A list of PlaylistTrackInfo</returns>
+        IList<PlaylistTrackInfo> GetTrackForPlaylist(int id);
+
+        /// <summary>
+        /// Soft deletes the entries matching the supplied ids.
+        /// </summary>
+        /// <param name="unused">The ids that are not currently in use</param>
+        /// <returns>The number of the rows affected.</returns>
+        int SoftDeleteUnused(IList<int> unused);
     }
 }

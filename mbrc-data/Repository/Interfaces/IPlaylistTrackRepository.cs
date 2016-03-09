@@ -45,5 +45,11 @@
         /// </summary>
         /// <param name="deletedIds">The ids of the tracks to soft delete.</param>
         void DeleteTracksForPlaylists(IList<long> deletedIds);
+
+
+        /// <summary>
+        /// Gets all the track info ids used in tracks
+        /// </summary>
+        IList<int> GetUsedTrackInfoIds();
     }
 }

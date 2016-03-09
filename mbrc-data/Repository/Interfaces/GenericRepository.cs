@@ -26,6 +26,12 @@
         /// </summary>
         public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
+        /// <summary>
+        /// This constant defines the default limit of rows in a page in the case
+        /// the received value is equal to zero.
+        /// </summary>
+        public const int DefaultLimit = 50;
+
         protected DatabaseProvider provider;
 
         public GenericRepository(DatabaseProvider provider)
@@ -117,8 +123,9 @@
         public IList<T> GetPage(int offset, int limit)
         {
             using (var connection = this.provider.GetDbConnection())
-            {
+            {                
                 connection.Open();
+                limit = limit > 0 ? limit : DefaultLimit;
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
                 var data = connection.GetListPaged<T>(page, limit, null, null);
                 connection.Close();
@@ -131,6 +138,7 @@
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
+                limit = limit > 0 ? limit : DefaultLimit;
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
                 var paged = connection.GetListPaged<T>(
                     page, 

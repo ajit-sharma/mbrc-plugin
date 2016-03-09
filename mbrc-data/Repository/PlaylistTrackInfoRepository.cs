@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Dapper;
-
-namespace MusicBeeRemoteData.Repository
+﻿namespace MusicBeeRemoteData.Repository
 {
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+
+    using Dapper;
+
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Repository.Interfaces;
 
@@ -14,18 +16,38 @@ namespace MusicBeeRemoteData.Repository
         {
         }
 
-      public IList<PlaylistTrackInfo> GetTrackForPlaylist(int id)
-      {
-        using (var connection = base.provider.GetDbConnection())
+        public IList<int> GetAllIds()
         {
-          connection.Open();
-          var tracks = connection.Query<PlaylistTrackInfo>(@"select * from PlaylistTrackInfo as pi 
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var ids = connection.Query<int>(@"select Id from PlaylistTrackInfo");
+                connection.Close();
+                return ids.ToList();
+            }
+        }
+
+        public IList<PlaylistTrackInfo> GetTrackForPlaylist(int id)
+        {
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var tracks = connection.Query<PlaylistTrackInfo>(@"select * from PlaylistTrackInfo as pi 
                                                                       inner join PlaylistTrack as tr 
                                                                       on pi.Id = tr.TrackInfoId
                                                                       order by tr.Position asc");
-          connection.Close();
-          return tracks.ToList();
+                connection.Close();
+                return tracks.ToList();
+            }
         }
-      }
+
+        public int SoftDeleteUnused(IList<int> unused)
+        {
+            using (var connection = this.provider.GetDbConnection())
+            {
+                Debug.WriteLine(string.Join(",", unused));
+                return connection.DeleteList<PlaylistTrack>($"where PlaylistId in ({string.Join(",", unused)})");
+            }
+        }
     }
 }

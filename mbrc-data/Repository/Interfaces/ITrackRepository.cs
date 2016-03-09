@@ -19,5 +19,9 @@
         /// The <see cref="IList"/> of tracks with the specified album id.
         /// </returns>
         IList<LibraryTrack> GetTracksByAlbumId(long id);
+
+        string[] GetTrackPathsByArtistId(long id);
+
+        string[] GetTrackPathsByGenreId(long id);
     }
 }

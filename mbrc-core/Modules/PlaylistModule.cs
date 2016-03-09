@@ -18,7 +18,7 @@ namespace MusicBeeRemoteCore.Modules
 
     /// <summary>
     ///     This module is responsible for the playlist functionality.
-    ///     It implements all the playlist operation with the MusicBee API and the
+    ///     It implements the playlist operation with the MusicBee API and the
     ///     plugin cache.
     /// </summary>
     public class PlaylistModule
@@ -39,7 +39,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <summary>
         ///     Creates a new <see cref="PlaylistModule" />.
         /// </summary>
-        /// <param name="api"></param>       
+        /// <param name="api"></param>
         public PlaylistModule(
             IPlaylistApiAdapter api, 
             IPlaylistRepository playlistRepository, 
@@ -299,6 +299,8 @@ namespace MusicBeeRemoteCore.Modules
             {
                 this.SyncPlaylistDataWithCache(cachedPlaylist);
             }
+
+            this.CleanUnusedTrackInfo();
         }
 
         /// <summary>
@@ -308,28 +310,13 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         private void CleanUnusedTrackInfo()
         {
-//             using (var db = _cHelper.GetDbConnection())
-//             {
-//             var usedTrackInfoIds = db.Select<PlaylistTrack>()
-//             .Select(track => track.TrackInfoId)
-//             .ToList();
-//             var storedTrackInfoIds = db.Select<PlaylistTrackInfo>()
-//             .Select(track => track.Id)
-//             .ToList();
-//             var unused = storedTrackInfoIds.Except(usedTrackInfoIds);
-//             using (var transaction = db.OpenTransaction())
-//             {
-//             foreach (var id in unused)
-//             {
-//             db.UpdateOnly(new PlaylistTrackInfo
-//             {
-//             DateDeleted = DateTime.UtcNow.ToUnixTime()
-//             }, o => o.Update(p => p.DateDeleted)
-//             .Where(p => p.Id == id));
-//             }
-//             transaction.Commit();
-//             }
-//             }
+            var usedIds = this.trackRepository.GetUsedTrackInfoIds();
+            var allIds = this.trackInfoRepository.GetAllIds();
+            var unused = allIds.Except(usedIds).ToList();
+            var deletedUnused = this.trackInfoRepository.SoftDeleteUnused(unused);
+
+            Logger.Debug($"Out of {allIds.Count} total track info entries {usedIds.Count} ids used, {unused.Count} unused");
+            Logger.Debug($"Soft deleted a total of {deletedUnused} unused entries");
         }
 
         /// <summary>
@@ -386,12 +373,16 @@ namespace MusicBeeRemoteCore.Modules
             }
             else
             {
-                id = this.trackInfoRepository.Save(track);                
+                id = this.trackInfoRepository.Save(track);
             }
 
-            var playlistTrack = new PlaylistTrack { PlaylistId = playlist.Id, TrackInfoId = id, Position = track.Position };
+            var playlistTrack = new PlaylistTrack
+                                    {
+                                        PlaylistId = playlist.Id, 
+                                        TrackInfoId = id, 
+                                        Position = track.Position
+                                    };
             this.trackRepository.Save(playlistTrack);
-
         }
 
         /// <summary>
@@ -488,7 +479,8 @@ namespace MusicBeeRemoteCore.Modules
 
             foreach (var track in tracksToDelete)
             {
-                var cachedTrack = cachedTracks.FirstOrDefault(t => t.PlaylistId == playlist.Id && t.TrackInfoId == track.Id);
+                var cachedTrack =
+                    cachedTracks.FirstOrDefault(t => t.PlaylistId == playlist.Id && t.TrackInfoId == track.Id);
                 if (cachedTrack == null)
                 {
                     continue;

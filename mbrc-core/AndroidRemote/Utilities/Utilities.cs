@@ -175,7 +175,7 @@
         /// <returns>System.String. The SHA1 hash value of the string</returns>
         public static string Sha1Hash(string value)
         {
-            var mHash = new String('0', 40);
+            var mHash = new string('0', 40);
             if (string.IsNullOrEmpty(value))
             {
                 return mHash;

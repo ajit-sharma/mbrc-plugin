@@ -104,6 +104,9 @@ namespace MusicBeeRemoteCore.Modules
         public void BuildCoverCachePerAlbum()
         {
             var albums = this.albumRepository.GetAll();
+            var cachedCovers = this.coverRepository.GetAll();
+            var updatedCovers = 0;
+            var updatedAlbums = new List<LibraryAlbum>();
 
             foreach (var album in albums)
             {
@@ -134,11 +137,28 @@ namespace MusicBeeRemoteCore.Modules
                     continue;
                 }
 
+                var cached = cachedCovers.Select(libraryCover => libraryCover.Hash = hash).FirstOrDefault();
+
+                if (cached != null)
+                {
+                    continue;
+                }
+
                 var cover = new LibraryCover { Hash = hash };
-                album.CoverId = this.coverRepository.Save(cover);
+                var id = this.coverRepository.Save(cover);
+                updatedCovers++;
+
+                if (album.CoverId == id)
+                {
+                    continue;
+                }
+
+                album.CoverId = id;
+                updatedAlbums.Add(album);
             }
 
-            this.albumRepository.Save(albums);
+            var updated = this.albumRepository.Save(updatedAlbums);
+            Logger.Debug($"Albums updated {updated}, covers updated {updatedCovers}");
         }
 
         /// <summary>
@@ -276,39 +296,6 @@ namespace MusicBeeRemoteCore.Modules
             return this.artistRepository.GetById(id);
         }
 
-        /// <summary>
-        ///     Given a long id of a an artist in the database
-        ///     it will return a String array of the paths of the Artist's
-        ///     album tracks ordered by album name and track position
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public string[] GetArtistTracksById(long id)
-        {
-            var trackList = new List<string>();
-
-            // try
-            // {
-            // using (var db = _cHelper.GetDbConnection())
-            // {
-            // var albumList = db.Select<LibraryAlbum>(q => q.ArtistId == id)
-            // .OrderBy(x => x.Name).ToList();
-            // var albums = this.albumRepository.getAlbumsByArtist(id);
-            // foreach (
-            // var albumTrackList in
-            // albumList.Select(album => this.trackRepository.GetTracksByAlbumId(album.Id))) ;
-            // {
-            // trackList.AddRange(albumTrackList.Select(t => t.Path).ToList());
-            // }
-            // }
-            // }
-            // catch (Exception e)
-            // {
-            // Logger.Debug(e);
-            // }
-            return trackList.ToArray();
-        }
-
         public int GetCachedCoverCount()
         {
             return this.coverRepository.GetCount();
@@ -328,45 +315,7 @@ namespace MusicBeeRemoteCore.Modules
             var cover = this.GetLibraryCover(id);
             return Utilities.GetCoverStreamFromCache(cover.Hash);
         }
-
-        /// <summary>
-        ///     Given a genre <paramref name="id" /> in the database it will return a
-        ///     <see cref="string" />array of the paths in the file system
-        ///     representing the tracks, ordered by artist, album  and position in
-        ///     the album.
-        /// </summary>
-        /// <param name="id">The id of the genre</param>
-        /// <returns></returns>
-        public string[] GetGenreTracksById(long id)
-        {
-            var tracklist = new List<string>();
-
-            // try
-            // {
-            // using (var db = _cHelper.GetDbConnection())
-            // {
-            // var sql = "SELECT LibraryTrack.Id AS Id, " + "LibraryTrack.Title AS Title, "
-            // + "LibraryTrack.Path AS Path, " + "LibraryTrack.Year AS Year, "
-            // + "LibraryTrack.Position AS Position, " + "LibraryGenre.Name AS Genre, "
-            // + "artist.Name AS Artist, " + "albumArtist.Name AS AlbumArtist, "
-            // + "LibraryAlbum.Name AS Album " + "FROM LibraryTrack "
-            // + "INNER JOIN  LibraryGenre ON LibraryTrack.GenreId = LibraryGenre.Id "
-            // + "LEFT OUTER JOIN  LibraryArtist artist ON LibraryTrack.ArtistId = artist.Id "
-            // + "LEFT OUTER JOIN  LibraryArtist albumArtist ON LibraryTrack.AlbumArtistId = albumArtist.Id "
-            // + "LEFT OUTER JOIN  LibraryAlbum ON LibraryTrack.AlbumId = LibraryAlbum.Id  "
-            // + "WHERE LibraryGenre.Id = " + id + " "
-            // + "ORDER BY albumArtist.Name ASC , LibraryAlbum.Name ASC ,LibraryTrack.Position ASC";
-            // var result = db.Query<LibraryTrackEx>(sql);
-            // tracklist.AddRange(result.Select(track => track.Path));
-            // }
-            // }
-            // catch (Exception e)
-            // {
-            // Logger.Debug(e);
-            // }
-            return tracklist.ToArray();
-        }
-
+        
         /// <summary>
         /// </summary>
         /// <param name="id"></param>
@@ -399,13 +348,13 @@ namespace MusicBeeRemoteCore.Modules
             switch (tag)
             {
                 case MetaTag.artist:
-                    tracklist = this.GetArtistTracksById(id);
+                    tracklist = this.trackRepository.GetTrackPathsByArtistId(id);
                     break;
                 case MetaTag.album:
                     tracklist = this.GetAlbumTracksById(id);
                     break;
                 case MetaTag.genre:
-                    tracklist = this.GetGenreTracksById(id);
+                    tracklist = this.trackRepository.GetTrackPathsByGenreId(id);
                     break;
                 case MetaTag.track:
                     tracklist = this.GetTrackPathById(id);
@@ -436,16 +385,7 @@ namespace MusicBeeRemoteCore.Modules
 
             return list.ToArray();
         }
-
-        /// <summary>
-        ///     This method checks the state of the cache and is responsible for either
-        ///     building the cache when empty of updating on start.
-        /// </summary>
-        public bool IsCacheEmpty()
-        {
-            return this.trackRepository.GetCount() == 0;
-        }
-
+        
         /// <summary>
         ///     Checks for changes in the library and updates the cache.
         /// </summary>
@@ -629,6 +569,8 @@ namespace MusicBeeRemoteCore.Modules
 
             Logger.Debug($"data to insert: {toInsert.Count}, data to delete: {toDelete.Count} ");
 
+            var updatedAlbums = new List<LibraryAlbum>();
+
             foreach (var file in toInsert)
             {
                 var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file));
@@ -640,9 +582,10 @@ namespace MusicBeeRemoteCore.Modules
                 var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
                 var album = albums.SingleOrDefault(q => q.Name == meta.Album);
 
-                if (album != null && albumArtist != null)
+                if (album != null && albumArtist != null && album.ArtistId != albumArtist.Id)
                 {
                     album.ArtistId = albumArtist.Id;
+                    updatedAlbums.Add(album);
                 }
 
                 var track = new LibraryTrack
@@ -670,10 +613,11 @@ namespace MusicBeeRemoteCore.Modules
                 this.trackRepository.Save(track);
             }
 
-            this.albumRepository.Save(albums);
+            this.albumRepository.Save(updatedAlbums);
 
             Logger.Debug("Tracks: {0} entries inserted.", toInsert.Count());
             Logger.Debug("Tracks: {0} entries deleted.", toDelete.Count());
+            Logger.Debug($"Updated {updatedAlbums.Count} album entries");
         }
     }
 }

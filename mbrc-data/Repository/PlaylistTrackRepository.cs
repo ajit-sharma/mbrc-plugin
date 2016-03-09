@@ -36,6 +36,7 @@ namespace MusicBeeRemoteData.Repository
         {
             using (var connection = this.provider.GetDbConnection())
             {
+                limit = limit > 0 ? limit : DefaultLimit;
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
                 var select =
                     $"where PlaylistId={id} and (DateUpdated > {epoch} or DateDeleted > {epoch} or DateAdded > {epoch}";
@@ -56,5 +57,14 @@ namespace MusicBeeRemoteData.Repository
                 connection.DeleteList<PlaylistTrack>($"where PlaylistId in ({string.Join(",", deletedIds)})");
             }
         }
+
+      public IList<int> GetUsedTrackInfoIds()
+      {
+        using (var connection = this.provider.GetDbConnection())
+        {
+          var ids = connection.Query<int>("select TrackInfoId from PlaylistTrack");
+          return ids.ToList();
+        }
+      }
     }
 }
