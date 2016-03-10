@@ -8,7 +8,6 @@
         public CustomJsonSerializer()
         {
             this.Formatting = Formatting.None;
-            this.ContractResolver = new DefaultContractResolver();
             this.NullValueHandling = NullValueHandling.Ignore;
         }
     }

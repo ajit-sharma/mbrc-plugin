@@ -1,9 +1,6 @@
 ﻿namespace MusicBeeRemoteData.Entities
 {
-    using System.Collections.Generic;
     using System.Runtime.Serialization;
-
-    using Newtonsoft.Json;
 
     /// <summary>
     /// Represents an album entry stored in the library.
@@ -25,8 +22,7 @@
         /// <summary>
         /// The id of the album cover.
         /// </summary>
-        [DataMember(Name = "cover_id")]
-        [JsonProperty(PropertyName = "cover_id")]
+        [DataMember(Name = "cover_id")]       
         public long CoverId { get; set; }
 
         /// <summary>

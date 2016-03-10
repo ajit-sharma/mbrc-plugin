@@ -1,9 +1,13 @@
 ﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
+    using System.Runtime.Serialization;
+
     using MusicBeeRemoteCore.Modules;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     using Nancy;
+
+    using Newtonsoft.Json;
 
     /// <summary>
     ///     Service Responsible for Debug
@@ -21,17 +25,17 @@
         /// <param name="module">
         /// The library module
         /// </param>
-        public DebugApiModule(LibraryModule module)
+        public DebugApiModule(LibraryModule module) :base("/debug")
         {
             this.module = module;
-            this.Get["/debug"] = _ => this.Response.AsJson(new ResponseBase { Code = ApiCodes.Success });
+            this.Get["/"] = _ => this.Response.AsJson(new ResponseBase { Code = ApiCodes.Success });
 
-            this.Get["/test"] = _ =>
+            this.Get["/update"] = _ =>
                 {
                     this.module.UpdateArtistTable();
                     this.module.UpdateGenreTable();
                     this.module.UpdateAlbumTable();
-
+                  
                     return this.Response.AsJson(new ResponseBase { Code = ApiCodes.Success });
                 };
         }

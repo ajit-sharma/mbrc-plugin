@@ -13,6 +13,9 @@
     using MusicBeeRemoteData.Repository;
     using MusicBeeRemoteData.Repository.Interfaces;
 
+    using Nancy;
+    using Nancy.Serialization.JsonNet;
+
     using Newtonsoft.Json;
 
     using Ninject.Modules;
@@ -60,6 +63,7 @@
             this.Bind<IPlaylistTrackRepository>().To<PlaylistTrackRepository>().InSingletonScope();
             this.Bind<IPlaylistTrackInfoRepository>().To<PlaylistTrackInfoRepository>().InSingletonScope();
             this.Bind<JsonSerializer>().To<CustomJsonSerializer>().InSingletonScope();
+            this.Bind<ISerializer>().To<JsonNetSerializer>();
         }
     }
 }
