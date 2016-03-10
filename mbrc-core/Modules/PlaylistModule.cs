@@ -509,8 +509,6 @@ namespace MusicBeeRemoteCore.Modules
             {
                 this.playlistRepository.Save(playlist);
             }
-
-            this.trackRepository.Save(cachedTracks);
         }
     }
 }

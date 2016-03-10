@@ -32,9 +32,10 @@
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
-                var tracks = connection.Query<PlaylistTrackInfo>(@"select * from PlaylistTrackInfo as pi 
+                var tracks = connection.Query<PlaylistTrackInfo>($@"select * from PlaylistTrackInfo as pi 
                                                                       inner join PlaylistTrack as tr 
                                                                       on pi.Id = tr.TrackInfoId
+                                                                      where tr.PlaylistId = {id}   
                                                                       order by tr.Position asc");
                 connection.Close();
                 return tracks.ToList();
