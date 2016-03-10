@@ -26,6 +26,7 @@
         /// The id of the album cover.
         /// </summary>
         [DataMember(Name = "cover_id")]
+        [JsonProperty(PropertyName = "cover_id")]
         public long CoverId { get; set; }
 
         /// <summary>

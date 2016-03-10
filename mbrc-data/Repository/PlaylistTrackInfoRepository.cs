@@ -46,8 +46,7 @@
         {
             using (var connection = this.provider.GetDbConnection())
             {
-                Debug.WriteLine(string.Join(",", unused));
-                return connection.DeleteList<PlaylistTrack>($"where PlaylistId in ({string.Join(",", unused)})");
+                return connection.DeleteList<PlaylistTrackInfo>($"where Id in ({string.Join(",", unused)})");
             }
         }
     }

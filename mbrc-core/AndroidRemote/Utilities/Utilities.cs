@@ -368,12 +368,12 @@
                 graph.DrawImage(image, 0, 0, width, height);
                 graph.Dispose();
 
-                var mInfo = GetEncoder(ImageFormat.Jpeg);
-                var mEncoder = Encoder.Quality;
-                var mParams = new EncoderParameters(1);
-                var mParam = new EncoderParameter(mEncoder, 80L);
-                mParams.Param[0] = mParam;
-                bmp.Save(filepath, mInfo, mParams);
+                var info = GetEncoder(ImageFormat.Jpeg);
+                var encoder = Encoder.Quality;
+                var @params = new EncoderParameters(1);
+                var param = new EncoderParameter(encoder, 80L);
+                @params.Param[0] = param;
+                bmp.Save(filepath, info, @params);
             }
         }
 
@@ -398,7 +398,7 @@
             }
             catch (Exception ex)
             {
-                Logger.Debug(ex);
+                Logger.Debug($"{filepath} failed due to {ex.Message}");
                 success = false;
             }
 
