@@ -19,9 +19,9 @@ paths:
         - Track
       responses:
         200:
-          description: An array of products
+          description: The information of a track
           schema:
-            $ref: '#/definitions/TrackInfo'
+            $ref: '#/definitions/TrackInfoResponse'
   /track/cover:
     get:
       summary: The cover of the playing track
@@ -34,9 +34,81 @@ paths:
       responses:
         200:
           description: The cover image
+  /library/albums:
+    get:
+      parameters:
+        - name: limit
+          in: query
+          description: The max number of elements in the page
+          type: integer
+        - name: offset
+          in: query
+          description: The position of the first element in the page
+          type: integer
+        - name: after
+          in: query
+          description: The unix epoch after which all the added/mofidied/deleted elements should be returned
+          type: integer
+      summary: Retrieves the cached albums from the plugin
+      description: |
+        The endpoints returns album tracks paginated
+      tags:
+        - Library
+        - Albums
+      responses:
+        200:
+          description: A successful response
+          schema:
+            $ref: '#/definitions/PageResponse'
+        500:
+          description: Server Error
 
 definitions:
-  TrackInfo:
+  PageResponse: 
+    type: object
+    properties:
+      data: 
+        type: array
+        description: An array of data objects that are included in the page returned
+      limit: 
+        type: integer
+        description: The max number of elements contained in the page (depends on the dataset)
+      offset:
+        type: integer
+        description: The position of the first element contained in the page
+      total:
+        type: integer
+        description: The total number of elements available on the server
+      code:
+        type: integer
+        minimum: 100
+        maximum: 600
+        description: A response code from the plugin API, it should be 200 for success
+  Album:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: The id of the album in the database (primary key)
+      name: 
+        type: string
+        description: The title of the album
+      artist_id:
+        type: integer
+        description: The id of the album artist in the database (foreign key)
+      cover_id:
+        type: integer
+        description: the id of the album cover in the database (foreign key)
+      date_added:
+        type: long
+        description: The exact time that the entry was added to the database unix epoch (seconds)
+      date_deleted:
+        type: integer
+        description: The date (unix epoch in seconds) that the entry was deleted
+      date_updated:
+        type: integer
+        description: The date (unix epoch in seconds) that the entry was updated
+  TrackInfoResponse:
     type: object
     properties:
       code:
