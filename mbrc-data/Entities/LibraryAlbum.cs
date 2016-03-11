@@ -12,7 +12,7 @@
         /// Backing field of the property <see cref="Name"/>
         /// </summary>
         private string _name;
-        
+
         /// <summary>
         /// The id of the album artist.
         /// </summary>
@@ -22,7 +22,7 @@
         /// <summary>
         /// The id of the album cover.
         /// </summary>
-        [DataMember(Name = "cover_id")]       
+        [DataMember(Name = "cover_id")]
         public long CoverId { get; set; }
 
         /// <summary>
