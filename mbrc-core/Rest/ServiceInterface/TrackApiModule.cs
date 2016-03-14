@@ -99,15 +99,7 @@
                     return this.Response.AsJson(response);
                 };
 
-            this.Get["/cover"] = _ =>
-                {
-                    var response = new Response
-                                       {
-                                           ContentType = "image/jpeg", 
-                                           Contents = stream => this.module.GetBinaryCoverData()
-                                       };
-                    return response;
-                };
+            this.Get["/cover"] = _ => this.Response.FromStream(this.module.GetBinaryCoverData(), "image/jpeg");
 
             this.Get["/lyrics/raw"] = _ =>
                 {

@@ -95,27 +95,9 @@
         /// <returns></returns>
         public static Stream GetCoverStreamFromCache(string hash)
         {
-            var ms = new MemoryStream();
-            try
-            {
-                var directory = StoragePath + CacheCover;
-                var filepath = directory + hash;
-                using (var fs = new FileStream(filepath, FileMode.Open, FileAccess.Read))
-                {
-                    var buffer = new byte[fs.Length];
-                    fs.Read(buffer, 0, (int)fs.Length);
-                    using (var image = Image.FromStream(fs))
-                    {
-                        image.Save(ms, ImageFormat.Jpeg);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                Logger.Debug(ex);
-            }
-
-            return ms;
+            var directory = StoragePath + CacheCover;
+            var filepath = directory + hash;
+            return new FileStream(filepath, FileMode.Open, FileAccess.Read);
         }
 
         /// <summary>

@@ -1,8 +1,13 @@
 ﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
+    using System.IO;
+
     using MusicBeeRemoteCore.Modules;
 
     using Nancy;
+    using System.Diagnostics;
+
+    using Nancy.Responses;
 
     /// <summary>
     /// The library API module, provides the endpoints related with the library URLs.
@@ -87,15 +92,7 @@
                     return this.Response.AsJson(this.module.GetLibraryCover(id, true));
                 };
 
-            this.Get["/covers/{id}/raw"] = parameters =>
-                {
-                    var response = new Response
-                                       {
-                                           ContentType = "image/jpeg", 
-                                           Contents = stream => this.module.GetCoverData(parameters.id)
-                                       };
-                    return response;
-                };
+            this.Get["/covers/{id}/raw"] = parameters => this.Response.FromStream(this.module.GetCoverData((int)parameters.id), "image/jpeg");
         }
     }
 }
