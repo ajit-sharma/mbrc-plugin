@@ -1,5 +1,6 @@
 ﻿namespace MusicBeeRemoteCore
 {
+    using MusicBeeRemoteCore.AndroidRemote.Controller;
     using MusicBeeRemoteCore.AndroidRemote.Events;
     using MusicBeeRemoteCore.AndroidRemote.Model;
     using MusicBeeRemoteCore.AndroidRemote.Networking;
@@ -33,7 +34,7 @@
 
         public override void Load()
         {
-            
+            this.Bind<Controller>().ToSelf().InSingletonScope();
             this.Bind<IPlayerApiAdapter>().ToMethod(context => this.provider.PlayerApi).InSingletonScope();
             this.Bind<IPlaylistApiAdapter>().ToMethod(context => this.provider.PlaylistApi).InSingletonScope();
             this.Bind<ITrackApiAdapter>().ToMethod(context => this.provider.TrackApi).InSingletonScope();

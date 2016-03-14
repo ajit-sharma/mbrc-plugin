@@ -100,9 +100,9 @@ namespace MusicBeeRemoteCore
             this.Settings.LoadSettings();
 
             var controller = this.kernel.Get<Controller>();
-            controller.InjectKernel(this.kernel);
             Configuration.Register(controller);
-
+            controller.InjectKernel(this.kernel);
+                    
             var libraryModule = this.kernel.Get<LibraryModule>();
             var playlistModule = this.kernel.Get<PlaylistModule>();
 
