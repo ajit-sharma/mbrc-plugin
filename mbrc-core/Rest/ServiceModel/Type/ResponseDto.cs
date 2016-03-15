@@ -13,6 +13,16 @@
     }
 
     [DataContract]
+    public class ErrorResponse : ResponseBase
+    {
+        [DataMember(Name = "message")]
+        public string Message { get; set; }
+
+        [DataMember(Name = "description")]
+        public string Description { get; set; }
+    }
+
+    [DataContract]
     public class LyricsResponse : ResponseBase
     {
         [DataMember(Name = "lyrics")]

@@ -181,7 +181,7 @@
                     return this.Response.AsJson(response);
                 };
 
-            this.Put["/repeat"] = _ =>
+            this.Put["/output"] = _ =>
                 {
                     var request = this.Bind<PutOutputDevice>();
                     var success = this.module.SetOutputDevice(request.Active);

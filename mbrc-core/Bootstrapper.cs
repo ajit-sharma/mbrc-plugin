@@ -1,5 +1,7 @@
 ﻿namespace MusicBeeRemoteCore
 {
+    using MusicBeeRemoteCore.Rest.StatusCodeHandlers;
+
     using Nancy;
     using Nancy.Bootstrapper;
     using Nancy.Bootstrappers.Ninject;
@@ -19,6 +21,16 @@
 
         protected override DiagnosticsConfiguration DiagnosticsConfiguration
             => new DiagnosticsConfiguration { Password = "12345" };
+
+        protected override NancyInternalConfiguration InternalConfiguration
+        {
+            get
+            {
+                return
+                    NancyInternalConfiguration.WithOverrides(
+                        configuration => { configuration.StatusCodeHandlers = new[] { typeof(JsonStatusHandler) }; });
+            }
+        }
 
         protected override void ApplicationStartup(IKernel container, IPipelines pipelines)
         {
