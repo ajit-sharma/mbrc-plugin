@@ -1,7 +1,10 @@
 ﻿namespace MusicBeeRemoteCore.Rest.Compression
 {
     using System.Collections.Generic;
-
+    /// <summary>
+    /// Gzip Compression settings from
+    /// https://github.com/dcomartin/Nancy.Gzip
+    /// </summary>
     public class GzipCompressionSettings
     {
         public IList<string> MimeTypes { get; set; } = new List<string>

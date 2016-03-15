@@ -5,7 +5,10 @@
 
     using Nancy;
     using Nancy.Bootstrapper;
-
+    /// <summary>
+    /// Gzip Compression extension from
+    /// https://github.com/dcomartin/Nancy.Gzip
+    /// </summary>
     public static class GzipCompression
     {
         private static GzipCompressionSettings _settings;

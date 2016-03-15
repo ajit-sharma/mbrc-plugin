@@ -245,7 +245,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public PaginatedResponse<LibraryGenre> GetAllGenres(int limit, int offset, long after)
         {
-            var genres = this.genreRepository.GetUpdatedPage(limit, offset, after);
+            var genres = this.genreRepository.GetUpdatedPage(offset, limit, after);
             var total = this.genreRepository.GetCount();
             var paginated = new PaginatedGenreResponse
                                 {
