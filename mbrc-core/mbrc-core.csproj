@@ -167,6 +167,8 @@
     <Compile Include="IMusicBeeRemoteEntryPoint.cs" />
     <Compile Include="MusicBeeRemoteEntryPointImpl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rest\Compression\GzipCompression.cs" />
+    <Compile Include="Rest\Compression\GzipCompressionSettings.cs" />
     <Compile Include="Rest\CustomJsonSerializer.cs" />
     <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />
     <Compile Include="Rest\ServiceInterface\DebugApiModule.cs" />

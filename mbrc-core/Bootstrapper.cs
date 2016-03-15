@@ -1,5 +1,6 @@
 ﻿namespace MusicBeeRemoteCore
 {
+    using MusicBeeRemoteCore.Rest.Compression;
     using MusicBeeRemoteCore.Rest.StatusCodeHandlers;
 
     using Nancy;
@@ -37,6 +38,7 @@
 #if DEBUG
             StaticConfiguration.EnableRequestTracing = true;
 #endif
+            pipelines.EnableGzipCompression();
             base.ApplicationStartup(container, pipelines);
         }
 
