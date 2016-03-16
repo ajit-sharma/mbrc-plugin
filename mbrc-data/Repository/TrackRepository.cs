@@ -27,7 +27,9 @@
                     connection.Query<string>(
                         $@"select LibraryTrack.Path
                             from LibraryTrack
-                            where LibraryTrack.AlbumId = {id}
+                            where LibraryTrack.AlbumId = {
+                            id
+                            }
                             order by LibraryTrack.Disc, LibraryTrack.Position asc
                             limit 1");
 
@@ -41,12 +43,17 @@
             using (var connection = this.provider.GetDbConnection())
             {
                 connection.Open();
-                var paths = connection.Query<string>($@"select LibraryTrack.Path
+                var paths =
+                    connection.Query<string>(
+                        $@"select LibraryTrack.Path
                                                     from LibraryTrack 
                                                     inner join LibraryAlbum
                                                     on LibraryAlbum.Id = LibraryTrack.AlbumId
-                                                    where LibraryTrack.ArtistId = {id}
-                                                    order By LibraryAlbum.Name, LibraryTrack.Disc, LibraryTrack.Position asc").ToArray();
+                                                    where LibraryTrack.ArtistId = {
+                            id
+                            }
+                                                    order By LibraryAlbum.Name, LibraryTrack.Disc, LibraryTrack.Position asc")
+                        .ToArray();
                 connection.Close();
                 return paths;
             }
@@ -54,17 +61,24 @@
 
         public string[] GetTrackPathsByGenreId(long id)
         {
-            var sql = $@"select LibraryTrack.Path
-                        from LibraryTrack
-                        inner join LibraryArtist
-                        on LibraryArtist.Id = LibraryTrack.AlbumArtistId
-                        inner join LibraryAlbum 
-                        on LibraryAlbum.Id = LibraryTrack.AlbumId
-                        where LibraryTrack.GenreId = {id}
-                        order by LibraryArtist.Name, LibraryAlbum.Name, LibraryTrack.Disc, LibraryTrack.Position asc";
+            using (var connection = this.provider.GetDbConnection())
+            {
+                connection.Open();
+                var sql = $@"select track.Path 
+                            from LibraryTrack as track
+                            inner join LibraryAlbum album
+                            on album.Id = track.AlbumId
+                            inner join LibraryArtist as artist
+                            on artist.Id = track.ArtistId
+                            left join LibraryArtist as albumArtist
+                            on albumArtist.Id = track.AlbumArtistId
+                            where track.GenreId = {id}
+                            order by albumArtist.Name, album.Name, track.Disc, track.Position";
 
-            throw new System.NotImplementedException();
-
+                var paths = connection.Query<string>(sql);
+                connection.Close();
+                return paths.ToArray();
+            }
         }
 
         public IList<LibraryTrack> GetTracksByAlbumId(long id)

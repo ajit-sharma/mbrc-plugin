@@ -4,8 +4,8 @@
     using System.Security;
     using System.Text.RegularExpressions;
 
-    using MusicBeeRemoteCore.AndroidRemote.Entities;
-    using MusicBeeRemoteCore.AndroidRemote.Events;
+    using Entities;
+    using Events;
 
     using NLog;
 
@@ -74,6 +74,7 @@
 
             if (this._previousCoverHash != null && this._previousCoverHash.Equals(hash))
             {
+                Logger.Debug($"{hash} was the same cover didn't change");
                 return;
             }
 
@@ -83,6 +84,7 @@
             var notification = new NotificationMessage(NotificationMessage.CoverChanged);
             var @event = new MessageEvent(MessageEvent.Notify, notification.ToJsonString());
             this.bus.Publish(@event);
+            Logger.Debug("Cover changed, event dispatched");
         }
     }
 }
