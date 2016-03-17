@@ -39,7 +39,7 @@ namespace MusicBeeRemoteData.Repository
                 limit = limit > 0 ? limit : DefaultLimit;
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
                 var select =
-                    $"where PlaylistId={id} and (DateUpdated > {epoch} or DateDeleted > {epoch} or DateAdded > {epoch}";
+                    $"where PlaylistId={id} and (DateUpdated > {epoch} or DateDeleted > {epoch} or DateAdded > {epoch})";
                 return connection.GetListPaged<PlaylistTrack>(page, limit, select, "Id asc").ToList();
             }
         }
