@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Dynamic;
     using System.Linq;
     using System.Net;
     using System.Net.Sockets;
@@ -13,6 +14,8 @@
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
 
+    using NLog;
+
     /// <summary>
     ///     UDP Multicast Server class responsible used to provide easy connectivity
     ///     info to the clients in the local network. Used for the automatic detection
@@ -20,6 +23,9 @@
     /// </summary>
     internal class ServiceDiscovery
     {
+
+        private ILogger Logger = LogManager.GetCurrentClassLogger();
+
         /// <summary>
         ///     The IP address for the UDP multicast. The client has to connect to the
         ///     specified IP address.
@@ -63,6 +69,7 @@
         /// </summary>
         public void Start()
         {
+            this.Logger.Debug("Starting Multicast listener");
             this._mListener = new UdpClient(Port, AddressFamily.InterNetwork) { EnableBroadcast = true };
             this._mListener.JoinMulticastGroup(MulticastAddress);
             this._mListener.BeginReceive(this.OnDataReceived, null);
@@ -74,12 +81,15 @@
         /// <param name="ar"></param>
         private void OnDataReceived(IAsyncResult ar)
         {
-            var mEndPoint = new IPEndPoint(IPAddress.Any, Port);
-            var request = this._mListener.EndReceive(ar, ref mEndPoint);
-            var mRequest = Encoding.UTF8.GetString(request);
-            var incoming = JObject.Parse(mRequest);
+            var endPoint = new IPEndPoint(IPAddress.Any, Port);
+            var request = this._mListener.EndReceive(ar, ref endPoint);
+            var requestPayload = Encoding.UTF8.GetString(request);
+            var incoming = JObject.Parse(requestPayload);
 
-            if (incoming["context"].Contains("discovery"))
+            this.Logger.Debug($"Incoming multicast message {requestPayload}");
+
+            var token = incoming["context"];
+            if (token.ToString().Contains("discovery"))
             {
                 var addresses = NetworkTools.GetPrivateAddressList();
                 var clientAddress = IPAddress.Parse((string)incoming["address"]);
@@ -96,19 +106,17 @@
                     break;
                 }
 
-                var notify = new Dictionary<string, object>
-                                 {
-                                     { "context", "Notify" }, 
-                                     { "address", interfaceAddress }, 
-                                     {
-                                         "name", 
-                                         Environment.GetEnvironmentVariable("COMPUTERNAME")
-                                     }, 
-                                     { "port", this._controller.Settings.WebSocketPort }, 
-                                     { "http", this._controller.Settings.HttpPort }
-                                 };
-                var response = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(notify));
-                this._mListener.Send(response, response.Length, mEndPoint);
+                dynamic notify = new ExpandoObject();
+                notify.context = "notify";
+                notify.address = interfaceAddress;
+                notify.name = Environment.GetEnvironmentVariable("COMPUTERNAME");
+                notify.port = this._controller.Settings.WebSocketPort;
+                notify.http = this._controller.Settings.HttpPort;
+
+                var serialized = JsonConvert.SerializeObject(notify);
+                var response = Encoding.UTF8.GetBytes(serialized);
+                this.Logger.Debug($"Sending multicast response {serialized}");
+                this._mListener.Send(response, response.Length, endPoint);
             }
 
             this._mListener.BeginReceive(this.OnDataReceived, null);
