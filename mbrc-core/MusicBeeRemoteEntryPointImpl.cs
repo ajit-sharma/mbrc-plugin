@@ -142,6 +142,21 @@ namespace MusicBeeRemoteCore
             this.Settings.Settings.CurrentVersion = version;
         }
 
+        public void FileAdded(string sourceUrl)
+        {
+            Logger.Debug($"new file added {sourceUrl}");
+        }
+
+        public void FileDeleted(string sourceUrl)
+        {
+			Logger.Debug($"new file deleted {sourceUrl}");
+        }
+
+        public void TagsChanged(string sourceUrl)
+        {
+            Logger.Debug($"tags changed {sourceUrl}");
+        }
+
         private void BuildCache(LibraryModule libraryModule, PlaylistModule playlistModule)
         {
             var observable = Observable.Create<string>(

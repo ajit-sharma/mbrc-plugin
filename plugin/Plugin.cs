@@ -6,14 +6,11 @@ namespace MusicBeePlugin
     using System.Reflection;
     using System.Timers;
     using System.Windows.Forms;
-
     using MusicBeePlugin.ApiAdapters;
-
     using MusicBeeRemoteCore;
     using MusicBeeRemoteCore.AndroidRemote.Entities;
     using MusicBeeRemoteCore.AndroidRemote.Events;
     using MusicBeeRemoteCore.Interfaces;
-
     using Timer = System.Timers.Timer;
 
     /// <summary>
@@ -85,7 +82,7 @@ namespace MusicBeePlugin
 
             this.storagePath = this.api.Setting_GetPersistentStoragePath() + "\\mb_remote";
 
-            this.mbrc = new MusicBeeRemoteEntryPointImpl { StoragePath = this.storagePath };
+            this.mbrc = new MusicBeeRemoteEntryPointImpl {StoragePath = this.storagePath};
 
             this.mbrc.SetMessageHandler(this);
 
@@ -93,10 +90,10 @@ namespace MusicBeePlugin
             {
                 this.mbrc.Init(
                     new BindingProviderImpl(
-                        new PlayerApiAdapter(this.api), 
-                        new PlaylistApiAdapter(this.api), 
-                        new TrackApiAdapter(this.api), 
-                        new LibraryApiAdapter(this.api), 
+                        new PlayerApiAdapter(this.api),
+                        new PlaylistApiAdapter(this.api),
+                        new TrackApiAdapter(this.api),
+                        new LibraryApiAdapter(this.api),
                         new NowPlayingApiAdapter(this.api)));
 
                 this.mbrc.SetVersion(GetVersion().ToString());
@@ -111,8 +108,8 @@ namespace MusicBeePlugin
             if (supportedApi)
             {
                 this.api.MB_AddMenuItem(
-                    "mnuTools/MusicBee Remote", 
-                    "Information Panel of the MusicBee Remote", 
+                    "mnuTools/MusicBee Remote",
+                    "Information Panel of the MusicBee Remote",
                     this.MenuItemClicked);
                 this.UpdateCachedCover();
                 this.UpdateCachedLyrics();
@@ -132,7 +129,7 @@ namespace MusicBeePlugin
         public void OpenInfoWindow()
         {
             var hwnd = this.api.MB_GetWindowHandle();
-            var mb = (Form)Control.FromHandle(hwnd);
+            var mb = (Form) Control.FromHandle(hwnd);
             mb.Invoke(new MethodInvoker(this.DisplayInfoWindow));
         }
 
@@ -196,6 +193,15 @@ namespace MusicBeePlugin
                 case NotificationType.RatingChanged:
                     this.mbrc.Notify(NotificationMessage.RatingChanged);
                     break;
+                case NotificationType.FileAddedToLibrary:
+                    this.mbrc.FileAdded(sourceFileUrl);
+                    break;
+                case NotificationType.FileDeleted:
+                    this.mbrc.FileDeleted(sourceFileUrl);
+                    break;
+                case NotificationType.TagsChanged:
+                    this.mbrc.TagsChanged(sourceFileUrl);
+                    break;
             }
         }
 
@@ -235,7 +241,7 @@ namespace MusicBeePlugin
         }
 
         /// <summary>
-        /// Gets the plugin's version as provided by the Assembly 
+        /// Gets the plugin's version as provided by the Assembly
         /// </summary>
         /// <returns>
         /// The <see cref="Version"/>.
@@ -257,20 +263,20 @@ namespace MusicBeePlugin
             const string Description = "Remote Control for server to be used with android application.";
 
             var pluginInfo = new PluginInfo
-                                 {
-                                     PluginInfoVersion = PluginInfoVersion, 
-                                     Name = "MusicBee Remote: Plugin", 
-                                     Description = Description, 
-                                     Author = "Konstantinos Paparas (aka Kelsos)", 
-                                     TargetApplication = "MusicBee Remote", 
-                                     Type = PluginType.General, 
-                                     VersionMajor = Convert.ToInt16(version.Major), 
-                                     VersionMinor = Convert.ToInt16(version.Minor), 
-                                     Revision = Convert.ToInt16(version.Revision), 
-                                     MinInterfaceVersion = MinInterfaceVersion, 
-                                     MinApiRevision = MinApiRevision, 
-                                     ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents
-                                 };
+            {
+                PluginInfoVersion = PluginInfoVersion,
+                Name = "MusicBee Remote: Plugin",
+                Description = Description,
+                Author = "Konstantinos Paparas (aka Kelsos)",
+                TargetApplication = "MusicBee Remote",
+                Type = PluginType.General,
+                VersionMajor = Convert.ToInt16(version.Major),
+                VersionMinor = Convert.ToInt16(version.Minor),
+                Revision = Convert.ToInt16(version.Revision),
+                MinInterfaceVersion = MinInterfaceVersion,
+                MinApiRevision = MinApiRevision,
+                ReceiveNotifications = ReceiveNotificationFlags.PlayerEvents
+            };
             return pluginInfo;
         }
 
@@ -343,7 +349,7 @@ namespace MusicBeePlugin
             this.scrobble = this.api.Player_GetScrobbleEnabled();
             this.repeat = this.api.Player_GetRepeat();
             this.shuffle = this.api.Player_GetShuffle();
-            this.timer = new Timer { Interval = 1000 };
+            this.timer = new Timer {Interval = 1000};
             this.timer.Elapsed += this.HandleTimerElapsed;
             this.timer.Enabled = true;
         }

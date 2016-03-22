@@ -3,7 +3,6 @@
     using MusicBeeRemoteCore.AndroidRemote.Events;
     using MusicBeeRemoteCore.AndroidRemote.Persistence;
     using MusicBeeRemoteCore.Interfaces;
-
     using Ninject;
 
     /// <summary>
@@ -83,5 +82,29 @@
         /// </summary>
         /// <param name="version">The version of the plugin</param>
         void SetVersion(string version);
+
+        /// <summary>
+        /// Handles the addition of a file in the library
+        /// </summary>
+        /// <param name="sourceUrl">
+        /// The source url of the file.
+        /// </param>
+        void FileAdded(string sourceUrl);
+
+        /// <summary>
+        /// Handles the delete of a file from the library
+        /// </summary>
+        /// <param name="sourceUrl">
+        /// The source url of the file.
+        /// </param>
+        void FileDeleted(string sourceUrl);
+
+        /// <summary>
+        /// Handles the change of tags on a file from the library
+        /// </summary>
+        /// <param name="sourceUrl">
+        /// The source url of the file.
+        /// </param>
+        void TagsChanged(string sourceUrl);
     }
 }

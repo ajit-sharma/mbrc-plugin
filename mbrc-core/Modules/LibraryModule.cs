@@ -105,7 +105,9 @@ namespace MusicBeeRemoteCore.Modules
         {
             var albums = this.albumRepository.GetAll();
             var cachedCovers = this.coverRepository.GetAll();
+          	Logger.Debug($"Start cover processing, currently cached {cachedCovers.Count} entrie");
             var updatedCovers = 0;
+          	var existingCovers = 0;
             var updatedAlbums = new List<LibraryAlbum>();
 
             foreach (var album in albums)
@@ -139,6 +141,8 @@ namespace MusicBeeRemoteCore.Modules
 
                 if (cached != null)
                 {
+                  	existingCovers ++;
+                  	Logger.Debug($"Cached entry detected for {hash}");
                     continue;
                 }
 
@@ -415,7 +419,7 @@ namespace MusicBeeRemoteCore.Modules
             if (albumsToRemove.Count > 0)
             {
                 this.albumRepository.Delete(albumsToRemove);
-                Logger.Debug("Albums: {0} entries removed", albumsToRemove.Count);
+              Logger.Debug($"Albums: {albumsToRemove.Count} entries removed");
             }
 
           if (deletedAlbums.Count != 0) {
@@ -432,11 +436,10 @@ namespace MusicBeeRemoteCore.Modules
             }
             }
 
-            if (albumsToInsert.Count > 0)
-            {
-                this.albumRepository.Save(albumsToInsert);
-                Logger.Debug("Albums: {0} entries inserted", albumsToInsert.Count);
-            }
+          if (albumsToInsert.Count <= 0) return;
+
+          this.albumRepository.Save(albumsToInsert);
+          Logger.Debug($"Albums: {albumsToInsert.Count} entries inserted");
         }
 
         /// <summary>
@@ -461,7 +464,7 @@ namespace MusicBeeRemoteCore.Modules
             if (artistsToDelete.Count > 0)
             {
                 this.artistRepository.Delete(artistsToDelete);
-                Logger.Debug("Artists: {0} entries deleted.", artistsToDelete.Count);
+              Logger.Debug($"Artists: {artistsToDelete.Count} entries deleted.");
             }
 
             if (deletedArtists.Count > 0)
@@ -477,13 +480,12 @@ namespace MusicBeeRemoteCore.Modules
                     }
                 }
             }
-            
 
-            if (artistsToInsert.Count > 0)
-            {
-                this.artistRepository.Save(artistsToInsert);
-                Logger.Debug("Artists: {0} entries inserted", artistsToInsert.Count);
-            }
+
+          if (artistsToInsert.Count <= 0) return;
+
+          this.artistRepository.Save(artistsToInsert);
+          Logger.Debug($"Artists: {artistsToInsert.Count} entries inserted");
         }
 
         /// <summary>
