@@ -83,7 +83,7 @@
                     var limit = (int)this.Request.Query["limit"];
                     var offset = (int)this.Request.Query["offset"];
                     var after = (int)this.Request.Query["after"];
-                    return this.Response.AsJson(this.module.GetAllCovers(limit, offset, after));
+                    return this.Response.AsJson(this.module.GetAllCovers(offset, limit, after));
                 };
 
             this.Get["/covers/{id}"] = parameters =>
