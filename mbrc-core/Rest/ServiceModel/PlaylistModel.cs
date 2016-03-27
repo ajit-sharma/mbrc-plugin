@@ -1,4 +1,6 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceModel
+﻿using MusicBeeRemoteCore.AndroidRemote.Enumerations;
+
+namespace MusicBeeRemoteCore.Rest.ServiceModel
 {
     using System.Runtime.Serialization;
 
@@ -10,6 +12,12 @@
 
         [DataMember(Name = "name", IsRequired = true)]
         public string Name { get; set; }
+
+        [DataMember(Name = "id", IsRequired = false)]
+        public long Id { get; set; }
+
+        [DataMember(Name = "type", IsRequired = false)]
+        public MetaTag Type { get; set; }
     }
 
     [DataContract]
@@ -22,7 +30,13 @@
     [DataContract]
     public class AddPlaylistTracks
     {
-        [DataMember(Name = "list", IsRequired = true)]
+        [DataMember(Name = "list", IsRequired = false)]
         public string[] List { get; set; }
+
+        [DataMember(Name = "id", IsRequired = false)]
+        public long Id { get; set; }
+
+        [DataMember(Name = "type", IsRequired = false)]
+        public MetaTag Type { get; set; }
     }
 }

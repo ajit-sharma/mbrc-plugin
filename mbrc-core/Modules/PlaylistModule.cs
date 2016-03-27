@@ -1,3 +1,6 @@
+using System.Reactive.Concurrency;
+using System.Reactive.Linq;
+
 namespace MusicBeeRemoteCore.Modules
 {
     using System;
@@ -60,8 +63,8 @@ namespace MusicBeeRemoteCore.Modules
         ///     A string list containing the full paths of the tracks
         ///     that will be added to the playlist. If left empty an empty playlist will be created.
         /// </param>
-        /// <returns>A <see cref="ResponseBase" /> is returned.</returns>
-        public ResponseBase CreateNewPlaylist(string name, string[] list)
+        /// <returns>True if successfully completed and false otherwise.</returns>
+        public bool CreateNewPlaylist(string name, string[] list)
         {
             if (list == null)
             {
@@ -76,10 +79,18 @@ namespace MusicBeeRemoteCore.Modules
             // List has elements that have to be synced with the cache.
             if (list.Length > 0)
             {
-                Task.Factory.StartNew(() => { this.SyncPlaylistDataWithCache(playlist); });
+                Observable.Create<string>(
+                    o =>
+                    {
+                        this.SyncPlaylistDataWithCache(playlist);
+                        o.OnCompleted();
+                        return () => { };
+                    }).SubscribeOn(TaskPoolScheduler.Default)
+                    .Subscribe(s => { });
+
             }
 
-            return new ResponseBase { Code = id > 0 ? ApiCodes.Success : ApiCodes.Failure };
+            return id > 0;
         }
 
         /// <summary>

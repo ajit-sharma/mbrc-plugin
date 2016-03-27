@@ -1,9 +1,10 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
-{
-    using MusicBeeRemoteCore.Modules;
-    using MusicBeeRemoteCore.Rest.ServiceModel;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+﻿using System.Linq;
 
+namespace MusicBeeRemoteCore.Rest.ServiceInterface
+{
+    using Modules;
+    using ServiceModel;
+    using ServiceModel.Type;
     using Nancy;
     using Nancy.ModelBinding;
 
@@ -17,16 +18,19 @@
         /// </summary>
         private readonly PlaylistModule module;
 
+        private readonly LibraryModule libraryModule;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PlaylistApiModule"/> class.
         /// </summary>
         /// <param name="module">
         /// The module.
         /// </param>
-        public PlaylistApiModule(PlaylistModule module)
+        public PlaylistApiModule(PlaylistModule module, LibraryModule libraryModule)
             : base("/playlists")
         {
             this.module = module;
+            this.libraryModule = libraryModule;
 
             this.Get["/"] = _ =>
                 {
@@ -57,10 +61,27 @@
                     return this.Response.AsJson(page);
                 };
 
-            this.Put["/playlists"] = _ =>
+            this.Put["/"] = _ =>
                 {
                     var request = this.Bind<CreatePlaylist>();
-                    var response = this.module.CreateNewPlaylist(request.Name, request.List);
+
+                    var code = ApiCodes.MissingParameters;
+
+                    if (request.Id > 0)
+                    {
+                        var tracks = libraryModule.GetTracklist(request.Type, request.Id);
+                        code = this.module.CreateNewPlaylist(request.Name, tracks)
+                            ? ApiCodes.Success
+                            : ApiCodes.Failure;
+                    }
+                    else if (request.List.Length > 0)
+                    {
+                        code = this.module.CreateNewPlaylist(request.Name, request.List)
+                            ? ApiCodes.Success
+                            : ApiCodes.Failure;
+                    }
+                    
+                    var response = new ResponseBase { Code = code };
                     return this.Response.AsJson(response);
                 };
 
@@ -74,10 +95,21 @@
             this.Put["/{id}/tracks"] = parameters =>
                 {
                     var request = this.Bind<AddPlaylistTracks>();
+                    var code = ApiCodes.MissingParameters;
 
-                    var code = this.module.PlaylistAddTracks((int)parameters.id, request.List)
-                                   ? ApiCodes.Success
-                                   : ApiCodes.Failure;
+                    if (request.Id > 0)
+                    {
+                        var tracks = libraryModule.GetTracklist(request.Type, request.Id);
+                        code = this.module.PlaylistAddTracks((int) parameters.id, request.List)
+                            ? ApiCodes.Success
+                            : ApiCodes.Failure;
+                    }
+                    else if (request.List.Length > 0)
+                    {
+                        code = this.module.PlaylistAddTracks((int) parameters.id, request.List)
+                            ? ApiCodes.Success
+                            : ApiCodes.Failure;
+                    }
 
                     var response = new ResponseBase { Code = code };
                     return this.Response.AsJson(response);
