@@ -1,13 +1,15 @@
-﻿namespace MusicBeeRemoteCore
+﻿using MusicBeeRemoteCore.Rest.ServiceInterface;
+using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+using Nancy.Responses;
+
+namespace MusicBeeRemoteCore
 {
     using MusicBeeRemoteCore.Rest.Compression;
     using MusicBeeRemoteCore.Rest.StatusCodeHandlers;
-
     using Nancy;
     using Nancy.Bootstrapper;
     using Nancy.Bootstrappers.Ninject;
     using Nancy.Diagnostics;
-
     using Ninject;
 
     class Bootstrapper : NinjectNancyBootstrapper
@@ -21,7 +23,7 @@
         }
 
         protected override DiagnosticsConfiguration DiagnosticsConfiguration
-            => new DiagnosticsConfiguration { Password = "12345" };
+            => new DiagnosticsConfiguration {Password = "12345"};
 
         protected override NancyInternalConfiguration InternalConfiguration
         {
@@ -29,7 +31,7 @@
             {
                 return
                     NancyInternalConfiguration.WithOverrides(
-                        configuration => { configuration.StatusCodeHandlers = new[] { typeof(JsonStatusHandler) }; });
+                        configuration => { configuration.StatusCodeHandlers = new[] {typeof(JsonStatusHandler)}; });
             }
         }
 
@@ -38,6 +40,23 @@
 #if DEBUG
             StaticConfiguration.EnableRequestTracing = true;
 #endif
+            pipelines.OnError += (ctx, ex) =>
+            {
+                if (ex is Nancy.ModelBinding.ModelBindingException)
+                {
+                    var serializer = new DefaultJsonSerializer();
+                    var error = new ErrorResponse
+                    {
+                        Code = ApiCodes.MissingParameters,
+                        Description = "Invalid Request Parameters",
+                        Message = "Bad Request"
+                    };
+                    return new JsonResponse(error, serializer);
+                }
+
+                return ctx.Response;
+            };
+
             pipelines.EnableGzipCompression();
             base.ApplicationStartup(container, pipelines);
         }
