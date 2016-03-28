@@ -162,10 +162,11 @@ namespace MusicBeeRemoteCore
             var observable = Observable.Create<string>(
                 o =>
                     {
-                        o.OnNext(@"MBR: Currently building the metadata cache.");
+                        o.OnNext(@"MBRC: building library cache.");
                         libraryModule.BuildCache();
+                        o.OnNext(@"MBRC: Synchronizing playlists.");
                         playlistModule.SyncPlaylistsWithCache();
-                        o.OnNext(@"MBRC: Currently processing the album covers.");
+                        o.OnNext(@"MBRC: Processing album covers.");
                         libraryModule.BuildCoverCachePerAlbum();
                         o.OnNext(@"MBRC: Cache Ready.");
 
@@ -173,13 +174,15 @@ namespace MusicBeeRemoteCore
                         return () => { };
                     });
 
-            observable.SubscribeOn(Scheduler.Default).Subscribe(
-                s =>
+            observable.SubscribeOn(ThreadPoolScheduler.Instance)
+            .ObserveOn(ThreadPoolScheduler.Instance)
+                .Subscribe(
+                    s =>
                     {
                         this.messageHandler?.OnMessageAvailable(s);
                         Logger.Debug(s);
-                    }, 
-                ex => { Logger.Debug(ex, "Library sync failed"); });
+                    },
+                    ex => { Logger.Debug(ex, "Library sync failed"); });
         }
 
         /// <summary>

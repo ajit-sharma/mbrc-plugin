@@ -7,16 +7,13 @@ namespace MusicBeeRemoteCore.Modules
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-
     using MusicBeeRemoteCore.ApiAdapters;
     using MusicBeeRemoteCore.Comparers;
     using MusicBeeRemoteCore.Rest.ServiceInterface;
     using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
     using MusicBeeRemoteData.Repository.Interfaces;
-
     using NLog;
 
     /// <summary>
@@ -44,9 +41,9 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         /// <param name="api"></param>
         public PlaylistModule(
-            IPlaylistApiAdapter api, 
-            IPlaylistRepository playlistRepository, 
-            IPlaylistTrackRepository trackRepository, 
+            IPlaylistApiAdapter api,
+            IPlaylistRepository playlistRepository,
+            IPlaylistTrackRepository trackRepository,
             IPlaylistTrackInfoRepository trackInfoRepository)
         {
             this.playlistRepository = playlistRepository;
@@ -68,29 +65,48 @@ namespace MusicBeeRemoteCore.Modules
         {
             if (list == null)
             {
-                list = new string[] { };
+                list = new string[] {};
             }
 
             var path = this.api.CreatePlaylist(name, list);
-            var playlist = new Playlist { Path = path, Name = name, Tracks = list.Count() };
-            var id = this.playlistRepository.Save(playlist);
-            playlist.Id = id;
 
-            // List has elements that have to be synced with the cache.
-            if (list.Length > 0)
+            var created = !string.IsNullOrEmpty(path);
+
+            if (!created)
             {
-                Observable.Create<string>(
-                    o =>
-                    {
-                        this.SyncPlaylistDataWithCache(playlist);
-                        o.OnCompleted();
-                        return () => { };
-                    }).SubscribeOn(TaskPoolScheduler.Default)
-                    .Subscribe(s => { });
-
+                return false;
             }
 
-            return id > 0;
+            Observable.Create<Playlist>(observer =>
+            {
+                var playlist = new Playlist {Path = path, Name = name, Tracks = list.Count()};
+                var id = this.playlistRepository.Save(playlist);
+                playlist.Id = id;
+                observer.OnNext(playlist);
+                observer.OnCompleted();
+                return () => { };
+            }).SelectMany(playlist =>
+            {
+                // List has elements that have to be synced with the cache.
+                if (list.Length > 0)
+                {
+                    return Observable.Create<string>(
+                        o =>
+                        {
+                            this.SyncPlaylistDataWithCache(playlist);
+                            o.OnCompleted();
+                            return () => { };
+                        });
+                }
+                else
+                {
+                    return Observable.Empty<string>();
+                }
+            }).SubscribeOn(ThreadPoolScheduler.Instance)
+                .ObserveOn(ThreadPoolScheduler.Instance)
+                .Subscribe(s => { }, exception => Logger.Debug(exception, "During playlist sync"));
+
+            return true;
         }
 
         /// <summary>
@@ -107,11 +123,11 @@ namespace MusicBeeRemoteCore.Modules
             {
                 Task.Factory.StartNew(
                     () =>
-                        {
-                            // Playlist was Changed and cache is out of sync.
-                            // So we start a task to update the cache.
-                            this.SyncPlaylistDataWithCache(playlist);
-                        });
+                    {
+                        // Playlist was Changed and cache is out of sync.
+                        // So we start a task to update the cache.
+                        this.SyncPlaylistDataWithCache(playlist);
+                    });
             }
 
             return success;
@@ -129,12 +145,12 @@ namespace MusicBeeRemoteCore.Modules
             var playlists = this.playlistRepository.GetUpdatedPage(offset, limit, after);
             var total = this.playlistRepository.GetCount();
             var paginated = new PaginatedPlaylistResponse
-                                {
-                                    Total = total, 
-                                    Limit = limit, 
-                                    Offset = offset, 
-                                    Data = playlists.ToList()
-                                };
+            {
+                Total = total,
+                Limit = limit,
+                Offset = offset,
+                Data = playlists.ToList()
+            };
             return paginated;
         }
 
@@ -159,20 +175,20 @@ namespace MusicBeeRemoteCore.Modules
         /// <param name="after"></param>
         /// <returns></returns>
         public PaginatedResponse<PlaylistTrack> GetPlaylistTracks(
-            int id, 
-            int limit = 50, 
-            int offset = 0, 
+            int id,
+            int limit = 50,
+            int offset = 0,
             long after = 0)
         {
             var playlistTracks = this.trackRepository.GetUpdatedTracksForPlaylist(id, offset, limit, after);
             var total = this.trackRepository.GetTrackCountForPlaylist(id);
             var paginated = new PaginatedPlaylistTrackResponse
-                                {
-                                    Total = total, 
-                                    Limit = limit, 
-                                    Offset = offset, 
-                                    Data = playlistTracks.ToList()
-                                };
+            {
+                Total = total,
+                Limit = limit,
+                Offset = offset,
+                Data = playlistTracks.ToList()
+            };
             return paginated;
         }
 
@@ -198,19 +214,19 @@ namespace MusicBeeRemoteCore.Modules
         /// <param name="after"></param>
         /// <returns></returns>
         public PaginatedResponse<PlaylistTrackInfo> GetPlaylistTracksInfo(
-            int limit = 50, 
-            int offset = 0, 
+            int limit = 50,
+            int offset = 0,
             long after = 0)
         {
             var trackInfo = this.trackInfoRepository.GetUpdatedPage(offset, limit, after);
             var total = this.trackInfoRepository.GetCount();
             var paginated = new PaginatedPlaylistTrackInfoResponse
-                                {
-                                    Total = total, 
-                                    Limit = limit, 
-                                    Offset = offset, 
-                                    Data = trackInfo.ToList()
-                                };
+            {
+                Total = total,
+                Limit = limit,
+                Offset = offset,
+                Data = trackInfo.ToList()
+            };
             return paginated;
         }
 
@@ -275,7 +291,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <param name="path">The playlist path</param>
         public ResponseBase PlaylistPlayNow(string path)
         {
-            return new ResponseBase { Code = this.api.PlayNow(path) ? ApiCodes.Success : ApiCodes.Failure };
+            return new ResponseBase {Code = this.api.PlayNow(path) ? ApiCodes.Success : ApiCodes.Failure};
         }
 
         /// <summary>
@@ -326,7 +342,8 @@ namespace MusicBeeRemoteCore.Modules
             var unused = allIds.Except(usedIds).ToList();
             var deletedUnused = this.trackInfoRepository.SoftDeleteUnused(unused);
 
-            Logger.Debug($"Out of {allIds.Count} total track info entries {usedIds.Count} ids used, {unused.Count} unused");
+            Logger.Debug(
+                $"Out of {allIds.Count} total track info entries {usedIds.Count} ids used, {unused.Count} unused");
             Logger.Debug($"Soft deleted a total of {deletedUnused} unused entries");
         }
 
@@ -388,11 +405,11 @@ namespace MusicBeeRemoteCore.Modules
             }
 
             var playlistTrack = new PlaylistTrack
-                                    {
-                                        PlaylistId = playlist.Id, 
-                                        TrackInfoId = id, 
-                                        Position = track.Position
-                                    };
+            {
+                PlaylistId = playlist.Id,
+                TrackInfoId = id,
+                Position = track.Position
+            };
             this.trackRepository.Save(playlistTrack);
         }
 
@@ -408,7 +425,7 @@ namespace MusicBeeRemoteCore.Modules
             var cachedTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
 
             var playlistTracks = this.GetPlaylistTracksFromApi(playlist);
-            var cachedPlaylistTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
+            var cachedPlaylistTracks = this.trackInfoRepository.GetTrackForPlaylist((int) playlist.Id);
 
             var comparer = new PlaylistTrackInfoComparer();
 
@@ -483,9 +500,9 @@ namespace MusicBeeRemoteCore.Modules
             // Reactivating
             comparer.IncludePosition = true;
             Logger.Debug(
-                "{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.", 
-                tracksToInsert.Count(), 
-                tracksToDelete.Count(), 
+                "{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.",
+                tracksToInsert.Count(),
+                tracksToDelete.Count(),
                 tracksUpdated);
 
             foreach (var track in tracksToDelete)
@@ -513,7 +530,7 @@ namespace MusicBeeRemoteCore.Modules
             cachedPlaylistTracks.ToList().Sort();
 
             Logger.Debug(
-                "The playlists should be equal now: {0}", 
+                "The playlists should be equal now: {0}",
                 playlistTracks.SequenceEqual(cachedPlaylistTracks, comparer));
 
             if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)

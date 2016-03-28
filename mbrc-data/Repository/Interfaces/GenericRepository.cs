@@ -47,15 +47,7 @@
                 var rowsAffected = 0;
                 using (var transaction = connection.BeginTransaction())
                 {
-                    t.ToObservable().ForEach(
-                        track =>
-                            {
-                                var result = connection.Delete<T>(track.Id);
-                                if (result > 0)
-                                {
-                                    rowsAffected++;
-                                }
-                            });
+                    rowsAffected += t.Select(item => connection.Delete<T>(item.Id)).Count(result => result > 0);
                     transaction.Commit();
                 }
 
@@ -193,16 +185,15 @@
             {
                 var epoch = DateTime.UtcNow.ToUnixTime();
                 var rowsAffected = 0;
-                elements.ToObservable().ForEach(
-                    t =>
-                        {
-                            t.DateDeleted = epoch;
-                            var update = connection.Update(t);
-                            if (update > 0)
-                            {
-                                rowsAffected++;
-                            }
-                        });
+                foreach (var element in elements)
+                {
+                    element.DateDeleted = epoch;
+                    var update = connection.Update(element);
+                    if (update > 0)
+                    {
+                        rowsAffected++;
+                    }
+                }
 
                 return rowsAffected;
             }
