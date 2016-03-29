@@ -203,7 +203,9 @@
         {
             if (t.Id <= 0)
             {
-                return connection.Insert(t, transaction);
+                var id = connection.Insert(t, transaction);
+                t.Id = id ?? 0;
+                return id;
             }
 
             var epoch = DateTime.UtcNow.ToUnixTime();
