@@ -442,6 +442,26 @@ namespace MusicBeeRemoteCore.Modules
             this.trackRepository.Save(tracks);
 
             var existing = storedTracks.Except(tracksToDelete);
+            var updated = new List<PlaylistTrack>();
+
+            foreach (var info in existing)
+            {
+                var first = currentTracks.FirstOrDefault(trackInfo => trackInfo.Path.Equals(info.Path));
+                if (first != null && first.Position != info.Position)
+                {
+                    Logger.Debug($"Position missmatch should be at {first.Position} but found at {info.Position} instead");
+                    
+                    var playlistTrack = playlistTracks.FirstOrDefault(track => track.Id == info.Id);
+                    if (playlistTrack != null)
+                    {
+                        playlistTrack.Position = first.Position;
+                        updated.Add(playlistTrack);
+                    }
+                    currentTracks.Remove(first);
+                }
+            }
+
+            this.trackRepository.Save(updated);
 
             comparer.IncludePosition = true;
 
@@ -449,7 +469,7 @@ namespace MusicBeeRemoteCore.Modules
             this.CheckIfSynced(playlist);
 #endif
 
-            if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)
+            if (tracksToInsert.Count + tracksToDelete.Count + updated.Count > 0)
             {
                 this.playlistRepository.Save(playlist);
             }
@@ -485,6 +505,12 @@ namespace MusicBeeRemoteCore.Modules
 
         public void SyncDebugLastPlaylist()
         {
+            if (this.playlistRepository.GetCount() == 0)
+            {
+                this.SyncPlaylistsWithCache();
+                return;
+            }
+
             var pl = this.GetCachedPlaylists().Last();
             this.SyncPlaylistDataWithCache(pl);
         }
