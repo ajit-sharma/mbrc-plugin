@@ -1,17 +1,17 @@
-# MusicBee Remote API
+= MusicBee Remote API
 
-## Overview
+== Overview
 MusicBeeRemote
 
-### Version information
+=== Version information
 Version: 1.0.0
 
-### URI scheme
+=== URI scheme
 Host: vmwin:8188
 BasePath: /
 Schemes: HTTP
 
-### Produces
+=== Produces
 
 * application/json
 

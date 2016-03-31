@@ -1,0 +1,79 @@
+== Paths
+=== Retrieves the cached albums from the plugin
+----
+GET /library/albums
+----
+
+==== Description
+:hardbreaks:
+The endpoints returns album tracks paginated
+
+
+==== Parameters
+[options="header"]
+|===
+|Type|Name|Description|Required|Schema|Default
+|QueryParameter|limit|The max number of elements in the page|false|integer|
+|QueryParameter|offset|The position of the first element in the page|false|integer|
+|QueryParameter|after|The unix epoch after which all the added/mofidied/deleted elements should be returned|false|integer|
+|===
+
+==== Responses
+[options="header"]
+|===
+|HTTP Code|Description|Schema
+|200|A successful response|<<PageResponse>>
+|500|Server Error|No Content
+|===
+
+==== Tags
+
+* Library
+* Albums
+
+=== The currently playing track info
+----
+GET /track
+----
+
+==== Description
+:hardbreaks:
+The endpoint returns information about the now playing track
+
+
+==== Responses
+[options="header"]
+|===
+|HTTP Code|Description|Schema
+|200|The information of a track|<<TrackInfoResponse>>
+|===
+
+==== Tags
+
+* Track
+
+=== The cover of the playing track
+----
+GET /track/cover
+----
+
+==== Description
+:hardbreaks:
+The endpoint returns the cover of the currently playing track
+
+
+==== Responses
+[options="header"]
+|===
+|HTTP Code|Description|Schema
+|200|The cover image|No Content
+|===
+
+==== Produces
+
+* image/jpeg
+
+==== Tags
+
+* Track
+
