@@ -41,11 +41,11 @@ namespace MusicBeeRemoteCore.Modules
         ///     Initializes a new instance of the <see cref="LibraryModule" /> class.
         /// </summary>
         public LibraryModule(
-            ILibraryApiAdapter api, 
-            IGenreRepository genreRepository, 
-            IArtistRepository artistRepository, 
-            IAlbumRepository albumRepository, 
-            ITrackRepository trackRepository, 
+            ILibraryApiAdapter api,
+            IGenreRepository genreRepository,
+            IArtistRepository artistRepository,
+            IAlbumRepository albumRepository,
+            ITrackRepository trackRepository,
             ICoverRepository coverRepository)
         {
             this.albumRepository = albumRepository;
@@ -102,7 +102,9 @@ namespace MusicBeeRemoteCore.Modules
         {
             var albums = this.albumRepository.GetAll();
             var cachedCovers = this.coverRepository.GetAll();
-          	Logger.Debug($"Start cover processing, currently cached {cachedCovers.Count} entrie");
+            Logger.Debug($"Start cover processing, currently cached {cachedCovers.Count} entrie");
+
+            var updatedAlbums = new List<LibraryAlbum>();
 
             var albumCovers = new Dictionary<LibraryAlbum, LibraryCover>();
 
@@ -114,7 +116,7 @@ namespace MusicBeeRemoteCore.Modules
                 {
                     continue;
                 }
-                
+
                 var coverUrl = this.api.GetCoverUrl(firstAlbumTrack);
                 string hash;
 
@@ -137,7 +139,7 @@ namespace MusicBeeRemoteCore.Modules
 
                 if (cached != null)
                 {
-                  	Logger.Debug($"Cached entry detected for {hash}");
+                    Logger.Debug($"Cached entry detected for {hash}");
                     continue;
                 }
 
@@ -149,9 +151,9 @@ namespace MusicBeeRemoteCore.Modules
             this.coverRepository.Save(libraryCovers);
 
             foreach (var pair in albumCovers)
-                {
+            {
                 pair.Key.CoverId = pair.Value.Id;
-                }
+            }
 
             var updated = this.albumRepository.Save(albumCovers.Keys.ToList());
             Logger.Debug($"Albums updated {updated}, covers updated {updated}");
@@ -182,12 +184,12 @@ namespace MusicBeeRemoteCore.Modules
             var albums = this.albumRepository.GetUpdatedPage(offset, limit, after);
             var total = this.albumRepository.GetCount();
             var paginated = new PaginatedAlbumResponse
-                                {
-                                    Total = total, 
-                                    Offset = offset, 
-                                    Limit = limit, 
-                                    Data = albums.ToList()
-                                };
+            {
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = albums.ToList()
+            };
 
             return paginated;
         }
@@ -204,12 +206,12 @@ namespace MusicBeeRemoteCore.Modules
             var artists = this.artistRepository.GetUpdatedPage(offset, limit, after);
             var total = this.artistRepository.GetCount();
             var paginated = new PaginatedArtistResponse
-                                {
-                                    Total = total, 
-                                    Offset = offset, 
-                                    Limit = limit, 
-                                    Data = artists.ToList()
-                                };
+            {
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = artists.ToList()
+            };
 
             return paginated;
         }
@@ -225,12 +227,12 @@ namespace MusicBeeRemoteCore.Modules
             var updatedCovers = this.coverRepository.GetUpdatedPage(offset, limit, after);
             var total = this.coverRepository.GetCount();
             var paginatedResponse = new PaginatedCoverResponse
-                                        {
-                                            Total = total, 
-                                            Limit = limit, 
-                                            Offset = offset, 
-                                            Data = updatedCovers.ToList()
-                                        };
+            {
+                Total = total,
+                Limit = limit,
+                Offset = offset,
+                Data = updatedCovers.ToList()
+            };
 
             return paginatedResponse;
         }
@@ -246,12 +248,12 @@ namespace MusicBeeRemoteCore.Modules
             var genres = this.genreRepository.GetUpdatedPage(offset, limit, after);
             var total = this.genreRepository.GetCount();
             var paginated = new PaginatedGenreResponse
-                                {
-                                    Total = total, 
-                                    Offset = offset, 
-                                    Limit = limit, 
-                                    Data = genres.ToList()
-                                };
+            {
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = genres.ToList()
+            };
 
             return paginated;
         }
@@ -272,12 +274,12 @@ namespace MusicBeeRemoteCore.Modules
             var tracks = this.trackRepository.GetUpdatedPage(offset, limit, after);
             var total = this.trackRepository.GetCount();
             var paginated = new PaginatedTrackResponse
-                                {
-                                    Total = total, 
-                                    Offset = offset, 
-                                    Limit = limit, 
-                                    Data = tracks.ToList()
-                                };
+            {
+                Total = total,
+                Offset = offset,
+                Limit = limit,
+                Data = tracks.ToList()
+            };
 
             return paginated;
         }
@@ -311,12 +313,12 @@ namespace MusicBeeRemoteCore.Modules
             var cover = this.GetLibraryCover(id);
             return Utilities.GetCoverStreamFromCache(cover.Hash);
         }
-        
+
         /// <summary>
         /// </summary>
         /// <param name="id"></param>
         /// <param name="includeImage"></param>
-        /// <returns></returns>       
+        /// <returns></returns>
         public LibraryCover GetLibraryCover(int id, bool includeImage = false)
         {
             return this.coverRepository.GetById(id);
@@ -381,7 +383,7 @@ namespace MusicBeeRemoteCore.Modules
 
             return list.ToArray();
         }
-        
+
         /// <summary>
         ///     Checks for changes in the library and updates the cache.
         /// </summary>
@@ -413,27 +415,27 @@ namespace MusicBeeRemoteCore.Modules
             if (albumsToRemove.Count > 0)
             {
                 this.albumRepository.Delete(albumsToRemove);
-              Logger.Debug($"Albums: {albumsToRemove.Count} entries removed");
+                Logger.Debug($"Albums: {albumsToRemove.Count} entries removed");
             }
 
             if (deletedAlbums.Count != 0)
             {
-            foreach (var albumEntry in albumsToInsert)
-            {
-                var album =
-                    deletedAlbums.First(
-                        gen => gen.Name.Equals(albumEntry.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (album != null)
+                foreach (var albumEntry in albumsToInsert)
                 {
-                    albumEntry.Id = album.Id;
+                    var album =
+                        deletedAlbums.First(
+                            gen => gen.Name.Equals(albumEntry.Name, StringComparison.InvariantCultureIgnoreCase));
+                    if (album != null)
+                    {
+                        albumEntry.Id = album.Id;
+                    }
                 }
             }
-            }
 
-          if (albumsToInsert.Count <= 0) return;
+            if (albumsToInsert.Count <= 0) return;
 
-          this.albumRepository.Save(albumsToInsert);
-          Logger.Debug($"Albums: {albumsToInsert.Count} entries inserted");
+            this.albumRepository.Save(albumsToInsert);
+            Logger.Debug($"Albums: {albumsToInsert.Count} entries inserted");
         }
 
         /// <summary>
@@ -458,7 +460,7 @@ namespace MusicBeeRemoteCore.Modules
             if (artistsToDelete.Count > 0)
             {
                 this.artistRepository.Delete(artistsToDelete);
-              Logger.Debug($"Artists: {artistsToDelete.Count} entries deleted.");
+                Logger.Debug($"Artists: {artistsToDelete.Count} entries deleted.");
             }
 
             if (deletedArtists.Count > 0)
@@ -476,10 +478,10 @@ namespace MusicBeeRemoteCore.Modules
             }
 
 
-          if (artistsToInsert.Count <= 0) return;
+            if (artistsToInsert.Count <= 0) return;
 
-          this.artistRepository.Save(artistsToInsert);
-          Logger.Debug($"Artists: {artistsToInsert.Count} entries inserted");
+            this.artistRepository.Save(artistsToInsert);
+            Logger.Debug($"Artists: {artistsToInsert.Count} entries inserted");
         }
 
         /// <summary>
@@ -519,7 +521,7 @@ namespace MusicBeeRemoteCore.Modules
                     }
                 }
             }
-            
+
             if (genresToInsert.Count <= 0)
             {
                 return;
@@ -553,13 +555,13 @@ namespace MusicBeeRemoteCore.Modules
                 .DefaultIfEmpty(new List<LibraryTrack>())
                 .Subscribe(
                     list =>
+                    {
+                        if (list.Count == 0)
                         {
-                            if (list.Count == 0)
-                            {
-                                return;
-                            }
-                            this.trackRepository.SoftDelete(list);
-                        }, exception => Logger.Debug(exception));
+                            return;
+                        }
+                        this.trackRepository.SoftDelete(list);
+                    }, exception => Logger.Debug(exception));
 
             Logger.Debug($"data to insert: {toInsert.Count}, data to delete: {toDelete.Count} ");
 
@@ -567,43 +569,43 @@ namespace MusicBeeRemoteCore.Modules
 
             var tracks = toInsert
                 .Select(file =>
-            {
-                var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file));
-
-                var meta = this.api.GetTags(file);
-
-                var genre = genres.SingleOrDefault(q => q.Name == meta.Genre);
-                var artist = artists.SingleOrDefault(q => q.Name == meta.Artist);
-                var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
-                var album = albums.SingleOrDefault(q => q.Name == meta.Album);
-
-                if (album != null && albumArtist != null && album.ArtistId != albumArtist.Id)
                 {
-                    album.ArtistId = albumArtist.Id;
-                    updatedAlbums.Add(album);
-                }
+                    var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file));
 
-                var track = new LibraryTrack
-                                {
-                                    Title = meta.Title, 
-                                    Year = meta.Year, 
-                                    Position = meta.Position, 
-                                    Disc = meta.Disc, 
-                                    GenreId = genre?.Id ?? 0, 
-                                    AlbumArtistId = albumArtist?.Id ?? 0, 
-                                    ArtistId = artist?.Id ?? 0, 
-                                    AlbumId = album?.Id ?? 0, 
-                                    Path = file
-                                };
+                    var meta = this.api.GetTags(file);
 
-                // Current track was detected in the list of deleted tracks.
-                // So we are going to update the existing entry.
-                if (deletedTrack != null)
-                {
-                    track.Id = deletedTrack.Id;
-                    track.DateUpdated = DateTime.UtcNow.ToUnixTime();
-                    track.DateDeleted = 0;
-                }
+                    var genre = genres.SingleOrDefault(q => q.Name == meta.Genre);
+                    var artist = artists.SingleOrDefault(q => q.Name == meta.Artist);
+                    var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
+                    var album = albums.SingleOrDefault(q => q.Name == meta.Album);
+
+                    if (album != null && albumArtist != null && album.ArtistId != albumArtist.Id)
+                    {
+                        album.ArtistId = albumArtist.Id;
+                        updatedAlbums.Add(album);
+                    }
+
+                    var track = new LibraryTrack
+                    {
+                        Title = meta.Title,
+                        Year = meta.Year,
+                        Position = meta.Position,
+                        Disc = meta.Disc,
+                        GenreId = genre?.Id ?? 0,
+                        AlbumArtistId = albumArtist?.Id ?? 0,
+                        ArtistId = artist?.Id ?? 0,
+                        AlbumId = album?.Id ?? 0,
+                        Path = file
+                    };
+
+                    // Current track was detected in the list of deleted tracks.
+                    // So we are going to update the existing entry.
+                    if (deletedTrack != null)
+                    {
+                        track.Id = deletedTrack.Id;
+                        track.DateUpdated = DateTime.UtcNow.ToUnixTime();
+                        track.DateDeleted = 0;
+                    }
                     return track;
                 }).ToList();
 

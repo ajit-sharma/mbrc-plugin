@@ -158,8 +158,19 @@ namespace MusicBeeRemoteCore.Modules
                                 };
             return paginated;
         }
-        
-    
+
+        /// <summary>
+        ///     Gets the cached <c>playlist</c> tracks ordered by the position in the <c>playlist</c>.
+        /// </summary>
+        /// <param name="playlist"></param>
+        /// <returns></returns>
+        public List<PlaylistTrackInfo> GetCachedPlaylistTracks(Playlist playlist)
+        {
+            var list = new List<PlaylistTrackInfo>();
+
+            return list;
+        }
+
         /// <summary>
         ///     Retrieves a page of <see cref="PlaylistTrack" /> results.
         /// </summary>
@@ -185,7 +196,21 @@ namespace MusicBeeRemoteCore.Modules
                                 };
             return paginated;
         }
-        
+
+        /// <summary>
+        ///     Gets the PlaylistTracks from the MusicBee API for a specified
+        ///     <paramref name="playlist" />.
+        /// </summary>
+        /// <param name="playlist">
+        ///     A <c>playlist</c> for which we want to get the
+        ///     tracks from the api.
+        /// </param>
+        /// <returns>The List of tracks for the <paramref name="playlist" />.</returns>
+        public List<PlaylistTrackInfo> GetPlaylistTracksFromApi(Playlist playlist)
+        {
+            return this.api.GetPlaylistTracks(playlist.Path);
+        }
+
         /// <summary>
         ///     Retrieves a page of <see cref="PlaylistTrackInfo" /> results.
         /// </summary>
@@ -364,147 +389,107 @@ namespace MusicBeeRemoteCore.Modules
         {
             Logger.Debug($"Checking changes for playlist: {playlist.Path}");
             var tracksUpdated = 0;
-            var cachedTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
 
-            var playlistTracks = this.api.GetPlaylistTracks(playlist.Path);
-            var cachedPlaylistTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
+            var playlistTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
+            var currentTracks = this.GetPlaylistTracksFromApi(playlist);
+            var storedTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
+            var cachedInfo = this.trackInfoRepository.GetAll();
 
-            var comparer = new PlaylistTrackInfoComparer();
+            var comparer = new PlaylistTrackInfoComparer { IncludePosition = false };
 
-            var tracksToInsert = playlistTracks.Except(cachedPlaylistTracks, comparer).ToList();
-            var tracksToDelete = cachedPlaylistTracks.Except(playlistTracks, comparer).ToList();
+            var tracksToInsert = currentTracks.Except(storedTracks, comparer).ToList();
 
-            var duplicatesPaths =
-                tracksToDelete.GroupBy(x => x.Path)
-                    .Where(group => group.Count() > 1)
-                    .Select(group => group.Key)
-                    .ToList();
-
-            foreach (var path in duplicatesPaths)
-            {
-                var duplicatesDeleted = tracksToDelete.FindAll(track => track.Path.Equals(path));
-
-                foreach (var deleted in duplicatesDeleted)
-                {
-                    var inserted = tracksToInsert.Find(track => track.Path.Equals(path));
-                    if (inserted == null)
+            var duplicates = currentTracks.GroupBy(track => track.Path).SelectMany(group => group.Skip(1)).ToList();
+            duplicates.ForEach(
+                info =>
                     {
-                        continue;
-                    }
-
-                    tracksToDelete.Remove(deleted);
-                    tracksToInsert.Remove(inserted);
-                    var cached =
-                        cachedPlaylistTracks.ToList().Find(track => track.GetHashCode() == deleted.GetHashCode());
-                    cached.Position = inserted.Position;
-
-                    var updated = cachedTracks.FirstOrDefault(track => track.Id == cached.Id);
-
-                    if (updated == null)
-                    {
-                        continue;
-                    }
-
-                    updated.Position = cached.Position;
-                    updated.DateUpdated = DateTime.UtcNow.ToUnixTime();
-
-                    // Track has been updated so increment
-                    tracksUpdated++;
-                }
-            }
-
-            // Important! Deactivating the Position inclusion from the comparer.
-            // This will help us find the tracks that have been moved.
-            comparer.IncludePosition = false;
-            var commonElements = tracksToDelete.Intersect(tracksToInsert, comparer).ToList();
-
-            foreach (var trackInfo in commonElements)
-            {
-                var track = tracksToInsert.Find(p => p.Path.Equals(trackInfo.Path));
-                trackInfo.Position = track.Position;
-                tracksToDelete.Remove(trackInfo);
-                tracksToInsert.Remove(track);
-
-                var updated = cachedTracks.FirstOrDefault(cTrack => cTrack.Id == trackInfo.Id);
-
-                if (updated == null)
-                {
-                    continue;
-                }
-
-                updated.Position = trackInfo.Position;
-                updated.DateUpdated = DateTime.UtcNow.ToUnixTime();
-
-                // Track has been updated so increment.
-                tracksUpdated++;
-            }
-
-            // Reactivating
-            comparer.IncludePosition = true;
-            Logger.Debug(
-                "{0} tracks inserted.\t {1} tracks deleted.\t {2} tracks updated.", 
-                tracksToInsert.Count(), 
-                tracksToDelete.Count(), 
-                tracksUpdated);
-
-            foreach (var track in tracksToDelete)
-            {
-                var cachedTrack =
-                    cachedTracks.FirstOrDefault(t => t.PlaylistId == playlist.Id && t.TrackInfoId == track.Id);
-                if (cachedTrack == null)
-                {
-                    continue;
-                }
-
-                cachedTrack.DateDeleted = DateTime.UtcNow.ToUnixTime();
-                cachedPlaylistTracks.Remove(track);
-            }
-
-            var tiCache = this.trackInfoRepository.GetAll();
-
-            var previouslyDeleted =
-                tracksToInsert.Where(info => tiCache.Contains(info) && info.DateDeleted > 0).Select(
-                    info =>
+                        if (tracksToInsert.Contains(info))
                         {
-                            info.DateDeleted = 0;
-                            return info;
+                            tracksToInsert.Add(info);
+                        }
+                    });
+                    
+            var tracksToDelete = storedTracks.Except(currentTracks, comparer).ToList();
+
+            var missing = tracksToInsert.Where(info => !cachedInfo.Contains(info, comparer)).ToList();
+            this.trackInfoRepository.Save(missing);
+
+            var removedIds = tracksToDelete.Select(track => track.Id).ToList();
+            var toRemove = playlistTracks.Where(track => removedIds.Contains(track.Id)).ToList();
+
+            if (missing.Count > 0)
+            {
+                Logger.Debug($"Had {missing.Count} entries refreshing cached info.");
+                cachedInfo.Clear();
+                cachedInfo = this.trackInfoRepository.GetAll();
+            }
+
+            this.trackRepository.Delete(toRemove);
+
+            var tracks =
+                tracksToInsert.Select(
+                    info =>
+                    new PlaylistTrack()
+                        {
+                            PlaylistId = playlist.Id, 
+                            TrackInfoId =
+                                cachedInfo.Where(trackInfo => trackInfo.Path.Equals(info.Path))
+                                .Select(trackInfo => trackInfo.Id)
+                                .FirstOrDefault(), 
+                            Position = info.Position
                         }).ToList();
-
-            Logger.Debug($"Found {previouslyDeleted.Count} Previously deleted tracks");
-            this.trackInfoRepository.Save(previouslyDeleted);
-
-            var missingTrackInfo = tracksToInsert.Except(previouslyDeleted).ToList();
-            Logger.Debug($"Found {missingTrackInfo.Count} non saved tracks");
-            this.trackInfoRepository.Save(missingTrackInfo);
-
-            tiCache = this.trackInfoRepository.GetCached();
-            Logger.Debug($"Found {tiCache.Count} cached playlist tracks");
-
-            var tracks = tracksToInsert.Select(
-                track =>
-                    {
-                        var info = tiCache.ToList().Find(p => p.Path.Equals(track.Path));
-                        var playlistTrack = new PlaylistTrack
-                                                {
-                                                    PlaylistId = playlist.Id, 
-                                                    TrackInfoId = info.Id, 
-                                                    Position = track.Position
-                                                };
-                        return playlistTrack;
-                    }).ToList();
 
             this.trackRepository.Save(tracks);
 
-            cachedPlaylistTracks.ToList().Sort();
+            var existing = storedTracks.Except(tracksToDelete);
 
-            Logger.Debug(
-                "The playlists should be equal now: {0}", 
-                playlistTracks.SequenceEqual(cachedPlaylistTracks, comparer));
+            comparer.IncludePosition = true;
+
+#if DEBUG
+            this.CheckIfSynced(playlist);
+#endif
 
             if (tracksToInsert.Count + tracksToDelete.Count + tracksUpdated > 0)
             {
                 this.playlistRepository.Save(playlist);
             }
         }
+
+#if DEBUG
+
+        /// <summary>
+        /// Checks if a playlist's stored data is in sync with the actual playlist data.
+        /// </summary>
+        /// <param name="playlist">The playlist</param>
+        public void CheckIfSynced(Playlist playlist)
+        {
+            var comparer = new PlaylistTrackInfoComparer { IncludePosition = true };
+            var currentTracks = this.GetPlaylistTracksFromApi(playlist);
+            var storedTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
+            Logger.Debug($"The playlists should be equal now: {currentTracks.SequenceEqual(storedTracks, comparer)}");
+            Logger.Debug(currentTracks);
+            Logger.Debug(storedTracks);
+        }
+
+        public object GetDebugPlaylistData()
+        {
+            var pl = this.GetCachedPlaylists().Last();
+            return
+                new
+                    {
+                        currentTracks = this.GetPlaylistTracksFromApi(pl), 
+                        storedTracks = this.trackInfoRepository.GetTrackForPlaylist((int)pl.Id)
+                    };
+        }
+
+
+        public void SyncDebugLastPlaylist()
+        {
+            var pl = this.GetCachedPlaylists().Last();
+            this.SyncPlaylistDataWithCache(pl);
+        }
+
+#endif
+
     }
 }

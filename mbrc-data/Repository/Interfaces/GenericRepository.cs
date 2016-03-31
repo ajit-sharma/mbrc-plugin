@@ -4,6 +4,7 @@
     using System.Collections.Generic;
     using System.Data;
     using System.Linq;
+    using System.Reactive.Linq;
 
     using Dapper;
 
@@ -21,15 +22,15 @@
         where T : TypeBase
     {
         /// <summary>
+        /// The Logger instance for the current class.
+        /// </summary>
+        public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
         /// This constant defines the default limit of rows in a page in the case
         /// the received value is equal to zero.
         /// </summary>
         public const int DefaultLimit = 50;
-
-        /// <summary>
-        /// The Logger instance for the current class.
-        /// </summary>
-        public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         protected DatabaseProvider provider;
 
@@ -114,7 +115,7 @@
         public IList<T> GetPage(int offset, int limit)
         {
             using (var connection = this.provider.GetDbConnection())
-            {
+            {                
                 connection.Open();
                 limit = limit > 0 ? limit : DefaultLimit;
                 var page = (limit == 0) ? 1 : (offset / limit) + 1;
@@ -154,7 +155,7 @@
 
         public int Save(IList<T> t)
         {
-            Logger.Debug($"Saving {t.Count} {typeof(T)}");
+            Logger.Debug($"Saving {t.Count} {typeof(T)} entries");
             var rowsAffected = 0;
             using (var connection = this.provider.GetDbConnection())
             {
