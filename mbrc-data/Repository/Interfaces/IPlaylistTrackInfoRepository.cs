@@ -23,7 +23,7 @@
         /// </summary>
         /// <param name="id">The id of the playlist</param>
         /// <returns>A list of PlaylistTrackInfo</returns>
-        IList<PlaylistTrackInfo> GetTrackForPlaylist(int id);
+        IList<PlaylistTrackInfo> GetTracksForPlaylist(long id);
 
         /// <summary>
         /// Soft deletes the entries matching the supplied ids.

@@ -388,28 +388,52 @@ namespace MusicBeeRemoteCore.Modules
         private void SyncPlaylistDataWithCache(Playlist playlist)
         {
             Logger.Debug($"Checking changes for playlist: {playlist.Path}");
-            var tracksUpdated = 0;
+           
 
             var playlistTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
             var currentTracks = this.GetPlaylistTracksFromApi(playlist);
-            var storedTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
+            var storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)playlist.Id);
             var cachedInfo = this.trackInfoRepository.GetAll();
 
             var comparer = new PlaylistTrackInfoComparer { IncludePosition = false };
 
             var tracksToInsert = currentTracks.Except(storedTracks, comparer).ToList();
+            var tracksToDelete = storedTracks.Except(currentTracks, comparer).ToList();
 
-            var duplicates = currentTracks.GroupBy(track => track.Path).SelectMany(group => group.Skip(1)).ToList();
+            var duplicates = currentTracks.GroupBy(track => track.Path).SelectMany(group => group.Skip(1)).Distinct().ToList();
             duplicates.ForEach(
                 info =>
+                {
+                    var actualCount = currentTracks.Count(trackInfo => trackInfo.Path.Equals(info.Path));
+                    var storedCount = storedTracks.Count(trackInfo => trackInfo.Path.Equals(info.Path));
+                    var toInsertCount = tracksToInsert.Count(trackInfo => trackInfo.Path.Equals(info.Path));
+
+                    Logger.Debug($"stored instances {storedCount} and actual instances {actualCount}");
+
+                    var times = actualCount - storedCount - toInsertCount;
+
+                    if (times > 0)
                     {
-                        if (tracksToInsert.Contains(info))
+                        for (var i = 0; i < times; i++)
                         {
                             tracksToInsert.Add(info);
                         }
-                    });
+                    }
+                    else
+                    {
+                        times = Math.Abs(times);
+                        for (var i = 0; i < times; i++)
+                        {
+                            var track = storedTracks.FirstOrDefault(trackInfo => trackInfo.Path.Equals(info.Path));
+                            if (track != null)
+                            {
+                                tracksToDelete.Add(track);
+                            }                            
+                        }
+                    }
+                });
                     
-            var tracksToDelete = storedTracks.Except(currentTracks, comparer).ToList();
+            
 
             var missing = tracksToInsert.Where(info => !cachedInfo.Contains(info, comparer)).ToList();
             this.trackInfoRepository.Save(missing);
@@ -441,13 +465,18 @@ namespace MusicBeeRemoteCore.Modules
 
             this.trackRepository.Save(tracks);
 
-            var existing = storedTracks.Except(tracksToDelete);
+            var stored = this.trackInfoRepository.GetTracksForPlaylist(playlist.Id);
             var updated = new List<PlaylistTrack>();
 
-            foreach (var info in existing)
+            foreach (var info in stored)
             {
                 var first = currentTracks.FirstOrDefault(trackInfo => trackInfo.Path.Equals(info.Path));
-                if (first != null && first.Position != info.Position)
+                if (first == null)
+                {
+                    continue;
+                }
+
+                if (first.Position != info.Position)
                 {
                     Logger.Debug($"Position missmatch should be at {first.Position} but found at {info.Position} instead");
                     
@@ -457,8 +486,9 @@ namespace MusicBeeRemoteCore.Modules
                         playlistTrack.Position = first.Position;
                         updated.Add(playlistTrack);
                     }
-                    currentTracks.Remove(first);
+                    
                 }
+                currentTracks.Remove(first);
             }
 
             this.trackRepository.Save(updated);
@@ -485,7 +515,7 @@ namespace MusicBeeRemoteCore.Modules
         {
             var comparer = new PlaylistTrackInfoComparer { IncludePosition = true };
             var currentTracks = this.GetPlaylistTracksFromApi(playlist);
-            var storedTracks = this.trackInfoRepository.GetTrackForPlaylist((int)playlist.Id);
+            var storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)playlist.Id);
             Logger.Debug($"The playlists should be equal now: {currentTracks.SequenceEqual(storedTracks, comparer)}");
             Logger.Debug(currentTracks);
             Logger.Debug(storedTracks);
@@ -498,7 +528,7 @@ namespace MusicBeeRemoteCore.Modules
                 new
                     {
                         currentTracks = this.GetPlaylistTracksFromApi(pl), 
-                        storedTracks = this.trackInfoRepository.GetTrackForPlaylist((int)pl.Id)
+                        storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)pl.Id)
                     };
         }
 

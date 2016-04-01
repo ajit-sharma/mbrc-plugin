@@ -27,7 +27,7 @@
             }
         }
 
-        public IList<PlaylistTrackInfo> GetTrackForPlaylist(int id)
+        public IList<PlaylistTrackInfo> GetTracksForPlaylist(long id)
         {
             using (var connection = this.provider.GetDbConnection())
             {
