@@ -1,3 +1,5 @@
+using Ninject;
+
 namespace MusicBeeRemoteCore.Modules
 {
     using System;
@@ -36,6 +38,9 @@ namespace MusicBeeRemoteCore.Modules
 
         private readonly IPlaylistTrackRepository trackRepository;
 
+        [Named("ThreadPool")]
+        private readonly IScheduler scheduler;
+
         /// <summary>
         ///     Creates a new <see cref="PlaylistModule" />.
         /// </summary>
@@ -44,11 +49,12 @@ namespace MusicBeeRemoteCore.Modules
             IPlaylistApiAdapter api, 
             IPlaylistRepository playlistRepository, 
             IPlaylistTrackRepository trackRepository, 
-            IPlaylistTrackInfoRepository trackInfoRepository)
+            IPlaylistTrackInfoRepository trackInfoRepository, IScheduler scheduler)
         {
             this.playlistRepository = playlistRepository;
             this.trackRepository = trackRepository;
             this.trackInfoRepository = trackInfoRepository;
+            this.scheduler = scheduler;
             this.api = api;
         }
 
@@ -87,8 +93,8 @@ namespace MusicBeeRemoteCore.Modules
                     observer.OnCompleted();
                     return () => { };
                 }).SelectMany(playlist => list.Count > 0 ? SyncPlaylistObservable(playlist) : Observable.Empty<string>())
-                .SubscribeOn(ThreadPoolScheduler.Instance)
-                .ObserveOn(ThreadPoolScheduler.Instance)
+                .SubscribeOn(scheduler)
+                .ObserveOn(scheduler)
                 .Subscribe(s => { }, exception => Logger.Debug(exception, "During playlist sync"));
         }
 
@@ -100,8 +106,8 @@ namespace MusicBeeRemoteCore.Modules
                     this.SyncPlaylistDataWithCache(playlist);
                     o.OnCompleted();
                     return () => { };
-                }).SubscribeOn(ThreadPoolScheduler.Instance)
-                .ObserveOn(ThreadPoolScheduler.Instance);
+                }).SubscribeOn(scheduler)
+                .ObserveOn(scheduler);
         }
 
         /// <summary>

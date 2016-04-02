@@ -1,4 +1,6 @@
-﻿namespace MusicBeeRemoteCore
+﻿using System.Reactive.Concurrency;
+
+namespace MusicBeeRemoteCore
 {
     using MusicBeeRemoteCore.AndroidRemote.Controller;
     using MusicBeeRemoteCore.AndroidRemote.Events;
@@ -66,6 +68,7 @@
             this.Bind<JsonSerializer>().To<CustomJsonSerializer>().InSingletonScope();
             this.Bind<ISerializer>().To<JsonNetSerializer>();
             this.Bind<NLog.ILogger>().ToMethod(context => NLog.LogManager.GetCurrentClassLogger());
+            this.Bind<IScheduler>().ToMethod(context => ThreadPoolScheduler.Instance).Named("ThreadPool");
         }
     }
 }
