@@ -45,7 +45,7 @@
             this.Bind<LibraryModule>().ToSelf().InSingletonScope();
             this.Bind<NowPlayingModule>().ToSelf().InSingletonScope();
             this.Bind<PlayerModule>().ToSelf().InSingletonScope();
-            this.Bind<PlaylistModule>().ToSelf().InSingletonScope();
+            this.Bind<IPlaylistModule>().To<PlaylistModule>().InSingletonScope();
             this.Bind<TrackModule>().ToSelf().InSingletonScope();
             this.Bind<LyricCoverModel>().ToSelf().InSingletonScope();
             this.Bind<EventBus>().ToSelf().InSingletonScope();
@@ -65,6 +65,7 @@
             this.Bind<IPlaylistTrackInfoRepository>().To<PlaylistTrackInfoRepository>().InSingletonScope();
             this.Bind<JsonSerializer>().To<CustomJsonSerializer>().InSingletonScope();
             this.Bind<ISerializer>().To<JsonNetSerializer>();
+            this.Bind<NLog.ILogger>().ToMethod(context => NLog.LogManager.GetCurrentClassLogger());
         }
     }
 }

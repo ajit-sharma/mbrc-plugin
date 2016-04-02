@@ -104,7 +104,7 @@ namespace MusicBeeRemoteCore
             controller.InjectKernel(this.kernel);
                     
             var libraryModule = this.kernel.Get<LibraryModule>();
-            var playlistModule = this.kernel.Get<PlaylistModule>();
+            var playlistModule = this.kernel.Get<IPlaylistModule>();
 
             var bus = this.kernel.Get<EventBus>();
 
@@ -157,7 +157,7 @@ namespace MusicBeeRemoteCore
             Logger.Debug($"tags changed {sourceUrl}");
         }
 
-        private void BuildCache(LibraryModule libraryModule, PlaylistModule playlistModule)
+        private void BuildCache(LibraryModule libraryModule, IPlaylistModule playlistModule)
         {
             var observable = Observable.Create<string>(
                 o =>
@@ -195,6 +195,20 @@ namespace MusicBeeRemoteCore
             var consoleTarget = new ColoredConsoleTarget();
             var fileTarget = new FileTarget();
             var debugger = new DebuggerTarget();
+
+#if DEBUG
+            var sentinalTarget = new NLogViewerTarget()
+            {
+                Name = "sentinel",
+                Address = "udp://127.0.0.1:9999",
+                IncludeNLogData = true,
+                IncludeSourceInfo = true
+            };
+
+            var sentinelRule = new LoggingRule("*", LogLevel.Trace, sentinalTarget);
+            config.AddTarget("sentinEl", sentinalTarget);
+            config.LoggingRules.Add(sentinelRule);
+#endif
 
             config.AddTarget("console", consoleTarget);
             config.AddTarget("file", fileTarget);

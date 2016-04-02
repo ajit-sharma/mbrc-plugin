@@ -5,12 +5,10 @@ namespace MusicBeeRemoteCore.Modules
     using System.Linq;
     using System.Reactive.Concurrency;
     using System.Reactive.Linq;
-    using System.Threading.Tasks;
-
-    using MusicBeeRemoteCore.ApiAdapters;
-    using MusicBeeRemoteCore.Comparers;
-    using MusicBeeRemoteCore.Rest.ServiceInterface;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+    using ApiAdapters;
+    using Comparers;
+    using Rest.ServiceInterface;
+    using Rest.ServiceModel.Type;
 
     using MusicBeeRemoteData.Entities;
     using MusicBeeRemoteData.Extensions;
@@ -23,7 +21,7 @@ namespace MusicBeeRemoteCore.Modules
     ///     It implements the playlist operation with the MusicBee API and the
     ///     plugin cache.
     /// </summary>
-    public class PlaylistModule
+    public class PlaylistModule : IPlaylistModule
     {
         /// <summary>
         ///     The logger is used to log errors.
@@ -65,53 +63,45 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns>True if successfully completed and false otherwise.</returns>
         public bool CreateNewPlaylist(string name, string[] list)
         {
-            if (list == null)
-            {
-                list = new string[] { };
-            }
-
-            var path = this.api.CreatePlaylist(name, list);
-
-            var created = !string.IsNullOrEmpty(path);
-
-            if (!created)
+            var path = this.api.CreatePlaylist(name, list ?? new string[] {});
+            
+            if (string.IsNullOrEmpty(path))
             {
                 return false;
             }
 
+            SyncPlaylistWithRepository(name, list, path);
+
+            return true;
+        }
+
+        private void SyncPlaylistWithRepository(string name, ICollection<string> list, string path)
+        {
             Observable.Create<Playlist>(
                 observer =>
-                    {
-                        var playlist = new Playlist { Path = path, Name = name, Tracks = list.Count() };
-                        var id = this.playlistRepository.Save(playlist);
-                        playlist.Id = id;
-                        observer.OnNext(playlist);
-                        observer.OnCompleted();
-                        return () => { };
-                    }).SelectMany(
-                        playlist =>
-                            {
-                                // List has elements that have to be synced with the cache.
-                                if (list.Length > 0)
-                                {
-                                    return Observable.Create<string>(
-                                        o =>
-                                            {
-                                                this.SyncPlaylistDataWithCache(playlist);
-                                                o.OnCompleted();
-                                                return () => { };
-                                            });
-                                }
-                                else
-                                {
-                                    return Observable.Empty<string>();
-                                }
-                            })
+                {
+                    var playlist = new Playlist {Path = path, Name = name, Tracks = list.Count()};
+                    var id = this.playlistRepository.Save(playlist);
+                    playlist.Id = id;
+                    observer.OnNext(playlist);
+                    observer.OnCompleted();
+                    return () => { };
+                }).SelectMany(playlist => list.Count > 0 ? SyncPlaylistObservable(playlist) : Observable.Empty<string>())
                 .SubscribeOn(ThreadPoolScheduler.Instance)
                 .ObserveOn(ThreadPoolScheduler.Instance)
                 .Subscribe(s => { }, exception => Logger.Debug(exception, "During playlist sync"));
+        }
 
-            return true;
+        private IObservable<string> SyncPlaylistObservable(Playlist playlist)
+        {
+            return Observable.Create<string>(
+                o =>
+                {
+                    this.SyncPlaylistDataWithCache(playlist);
+                    o.OnCompleted();
+                    return () => { };
+                }).SubscribeOn(ThreadPoolScheduler.Instance)
+                .ObserveOn(ThreadPoolScheduler.Instance);
         }
 
         /// <summary>
@@ -122,20 +112,20 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public bool DeleteTrackFromPlaylist(int id, int position)
         {
-            var playlist = this.GetPlaylistById(id);
+            var playlist = this.playlistRepository.GetById(id);
             var success = this.api.RemoveTrack(playlist.Path, position);
             if (success)
             {
-                Task.Factory.StartNew(
-                    () =>
-                        {
-                            // Playlist was Changed and cache is out of sync.
-                            // So we start a task to update the cache.
-                            this.SyncPlaylistDataWithCache(playlist);
-                        });
+                ExecuteSyncTask(playlist);
             }
 
             return success;
+        }
+
+        private void ExecuteSyncTask(Playlist playlist)
+        {
+            SyncPlaylistObservable(playlist)
+                .Subscribe(s => { }, exception => { Logger.Debug(exception, "While deleting playlist"); });
         }
 
         /// <summary>
@@ -157,18 +147,6 @@ namespace MusicBeeRemoteCore.Modules
                                     Data = playlists.ToList()
                                 };
             return paginated;
-        }
-
-        /// <summary>
-        ///     Gets the cached <c>playlist</c> tracks ordered by the position in the <c>playlist</c>.
-        /// </summary>
-        /// <param name="playlist"></param>
-        /// <returns></returns>
-        public List<PlaylistTrackInfo> GetCachedPlaylistTracks(Playlist playlist)
-        {
-            var list = new List<PlaylistTrackInfo>();
-
-            return list;
         }
 
         /// <summary>
@@ -195,20 +173,6 @@ namespace MusicBeeRemoteCore.Modules
                                     Data = playlistTracks.ToList()
                                 };
             return paginated;
-        }
-
-        /// <summary>
-        ///     Gets the PlaylistTracks from the MusicBee API for a specified
-        ///     <paramref name="playlist" />.
-        /// </summary>
-        /// <param name="playlist">
-        ///     A <c>playlist</c> for which we want to get the
-        ///     tracks from the api.
-        /// </param>
-        /// <returns>The List of tracks for the <paramref name="playlist" />.</returns>
-        public List<PlaylistTrackInfo> GetPlaylistTracksFromApi(Playlist playlist)
-        {
-            return this.api.GetPlaylistTracks(playlist.Path);
         }
 
         /// <summary>
@@ -244,11 +208,11 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public bool MovePlaylistTrack(int id, int from, int to)
         {
-            var playlist = this.GetPlaylistById(id);
+            var playlist = this.playlistRepository.GetById(id);
             var success = this.api.MoveTrack(playlist.Path, from, to);
             if (success)
             {
-                Task.Factory.StartNew(() => { this.SyncPlaylistDataWithCache(playlist); });
+                ExecuteSyncTask(playlist);
             }
 
             return success;
@@ -262,11 +226,11 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public bool PlaylistAddTracks(int id, string[] list)
         {
-            var playlist = this.GetPlaylistById(id);
+            var playlist = this.playlistRepository.GetById(id);
             var success = this.api.AddTracks(playlist.Path, list);
             if (success)
             {
-                Task.Factory.StartNew(() => { this.SyncPlaylistDataWithCache(playlist); });
+                ExecuteSyncTask(playlist);
             }
 
             return success;
@@ -279,7 +243,7 @@ namespace MusicBeeRemoteCore.Modules
         /// <returns></returns>
         public bool PlaylistDelete(int id)
         {
-            var playlist = this.GetPlaylistById(id);
+            var playlist = this.playlistRepository.GetById(id);
             var success = this.api.DeletePlaylist(playlist.Path);
             if (success)
             {
@@ -307,8 +271,8 @@ namespace MusicBeeRemoteCore.Modules
         public void SyncPlaylistsWithCache()
         {
             Logger.Debug("Starting playlist sync");
-            var playlists = this.GetPlaylistsFromApi();
-            var cachedPlaylists = this.GetCachedPlaylists();
+            var playlists = this.api.GetPlaylists();
+            var cachedPlaylists = this.playlistRepository.GetCached().ToList();
 
             var playlistComparer = new PlaylistComparer();
             var playlistsToInsert = playlists.Except(cachedPlaylists, playlistComparer).ToList();
@@ -353,34 +317,6 @@ namespace MusicBeeRemoteCore.Modules
         }
 
         /// <summary>
-        ///     Retrieves the playlists stored in the MusicBee Remote cache.
-        /// </summary>
-        /// <returns>A list of <see cref="Playlist" /> objects.</returns>
-        private List<Playlist> GetCachedPlaylists()
-        {
-            return this.playlistRepository.GetCached().ToList();
-        }
-
-        /// <summary>
-        ///     Retrieves a cached playlist by it's id.
-        /// </summary>
-        /// <param name="id">The id of a playlist</param>
-        /// <returns>A <see cref="Playlist" /> object.</returns>
-        private Playlist GetPlaylistById(int id)
-        {
-            return this.playlistRepository.GetById(id);
-        }
-
-        /// <summary>
-        ///     Retrieves the playlists from the MusicBee API.
-        /// </summary>
-        /// <returns>A list of <see cref="Playlist" /> objects.</returns>
-        private List<Playlist> GetPlaylistsFromApi()
-        {
-            return this.api.GetPlaylists();
-        }
-
-        /// <summary>
         ///     Syncs the <see cref="PlaylistTrack" /> cache with the data available
         ///     from the MusicBee API.
         /// </summary>
@@ -391,7 +327,7 @@ namespace MusicBeeRemoteCore.Modules
            
 
             var playlistTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
-            var currentTracks = this.GetPlaylistTracksFromApi(playlist);
+            var currentTracks = this.api.GetPlaylistTracks(playlist.Path);
             var storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)playlist.Id);
             var cachedInfo = this.trackInfoRepository.GetAll();
 
@@ -511,28 +447,17 @@ namespace MusicBeeRemoteCore.Modules
         /// Checks if a playlist's stored data is in sync with the actual playlist data.
         /// </summary>
         /// <param name="playlist">The playlist</param>
-        public void CheckIfSynced(Playlist playlist)
+        private void CheckIfSynced(Playlist playlist)
         {
             var comparer = new PlaylistTrackInfoComparer { IncludePosition = true };
-            var currentTracks = this.GetPlaylistTracksFromApi(playlist);
-            var storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)playlist.Id);
+            var currentTracks = this.api.GetPlaylistTracks(playlist.Path);
+            var storedTracks = this.trackInfoRepository.GetTracksForPlaylist(playlist.Id);
             Logger.Debug($"The playlists should be equal now: {currentTracks.SequenceEqual(storedTracks, comparer)}");
             Logger.Debug(currentTracks);
             Logger.Debug(storedTracks);
         }
-
-        public object GetDebugPlaylistData()
-        {
-            var pl = this.GetCachedPlaylists().Last();
-            return
-                new
-                    {
-                        currentTracks = this.GetPlaylistTracksFromApi(pl), 
-                        storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)pl.Id)
-                    };
-        }
-
-
+        
+    
         public void SyncDebugLastPlaylist()
         {
             if (this.playlistRepository.GetCount() == 0)
@@ -541,7 +466,7 @@ namespace MusicBeeRemoteCore.Modules
                 return;
             }
 
-            var pl = this.GetCachedPlaylists().Last();
+            var pl = this.playlistRepository.GetCached().Last();
             this.SyncPlaylistDataWithCache(pl);
         }
 

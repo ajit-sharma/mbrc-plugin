@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace MusicBeeRemoteCore.Rest.ServiceInterface
+﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
     using Modules;
     using ServiceModel;
@@ -16,7 +14,7 @@ namespace MusicBeeRemoteCore.Rest.ServiceInterface
         /// <summary>
         /// The module responsible for communication with the playlist API
         /// </summary>
-        private readonly PlaylistModule module;
+        private readonly IPlaylistModule module;
 
         private readonly LibraryModule libraryModule;
 
@@ -26,7 +24,7 @@ namespace MusicBeeRemoteCore.Rest.ServiceInterface
         /// <param name="module">
         /// The module.
         /// </param>
-        public PlaylistApiModule(PlaylistModule module, LibraryModule libraryModule)
+        public PlaylistApiModule(IPlaylistModule module, LibraryModule libraryModule)
             : base("/playlists")
         {
             this.module = module;
@@ -100,7 +98,7 @@ namespace MusicBeeRemoteCore.Rest.ServiceInterface
                     if (request.Id > 0)
                     {
                         var tracks = libraryModule.GetTracklist(request.Type, request.Id);
-                        code = this.module.PlaylistAddTracks((int) parameters.id, request.List)
+                        code = this.module.PlaylistAddTracks((int) parameters.id, tracks)
                             ? ApiCodes.Success
                             : ApiCodes.Failure;
                     }

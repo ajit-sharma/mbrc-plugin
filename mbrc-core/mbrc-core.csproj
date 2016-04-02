@@ -63,10 +63,9 @@
     <Reference Include="Nancy.Serialization.JsonNet, Version=1.4.1.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\Nancy.Serialization.JsonNet.1.4.1\lib\net40\Nancy.Serialization.JsonNet.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
-      <HintPath>..\packages\Newtonsoft.Json.8.0.2\lib\net40\Newtonsoft.Json.dll</HintPath>
-      <Private>False</Private>
-      <EmbedAssembly>true</EmbedAssembly>
+    <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.8.0.3\lib\net40\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Ninject, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7">
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net40\Ninject.dll</HintPath>
@@ -159,6 +158,7 @@
     <Compile Include="Interfaces\IBindingProvider.cs" />
     <Compile Include="Interfaces\IMessageHandler.cs" />
     <Compile Include="Model\Modifications.cs" />
+    <Compile Include="Modules\IPlaylistModule.cs" />
     <Compile Include="Modules\LibraryModule.cs" />
     <Compile Include="Modules\NowPlayingModule.cs" />
     <Compile Include="Modules\PlayerModule.cs" />
