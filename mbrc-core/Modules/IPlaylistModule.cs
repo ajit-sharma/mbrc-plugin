@@ -95,5 +95,12 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         /// <returns></returns>
         void SyncPlaylistsWithCache();
+
+        /// <summary>
+        ///     Syncs the <see cref="PlaylistTrack" /> cache with the data available
+        ///     from the MusicBee API.
+        /// </summary>
+        /// <param name="playlist">The playlist for which the sync happens</param>
+        void SyncPlaylistDataWithCache(Playlist playlist);
     }
 }

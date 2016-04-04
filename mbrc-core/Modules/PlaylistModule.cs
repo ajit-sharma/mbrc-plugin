@@ -327,11 +327,10 @@ namespace MusicBeeRemoteCore.Modules
         ///     from the MusicBee API.
         /// </summary>
         /// <param name="playlist">The playlist for which the sync happens</param>
-        private void SyncPlaylistDataWithCache(Playlist playlist)
+        public void SyncPlaylistDataWithCache(Playlist playlist)
         {
             Logger.Debug($"Checking changes for playlist: {playlist.Path}");
            
-
             var playlistTracks = this.trackRepository.GetTracksForPlaylist(playlist.Id);
             var currentTracks = this.api.GetPlaylistTracks(playlist.Path);
             var storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)playlist.Id);
@@ -462,20 +461,6 @@ namespace MusicBeeRemoteCore.Modules
             Logger.Debug(currentTracks);
             Logger.Debug(storedTracks);
         }
-        
-    
-        public void SyncDebugLastPlaylist()
-        {
-            if (this.playlistRepository.GetCount() == 0)
-            {
-                this.SyncPlaylistsWithCache();
-                return;
-            }
-
-            var pl = this.playlistRepository.GetCached().Last();
-            this.SyncPlaylistDataWithCache(pl);
-        }
-
 #endif
 
     }
