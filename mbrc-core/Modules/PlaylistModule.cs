@@ -327,7 +327,7 @@ namespace MusicBeeRemoteCore.Modules
         ///     from the MusicBee API.
         /// </summary>
         /// <param name="playlist">The playlist for which the sync happens</param>
-        public void SyncPlaylistDataWithCache(Playlist playlist)
+        public bool SyncPlaylistDataWithCache(Playlist playlist)
         {
             Logger.Debug($"Checking changes for playlist: {playlist.Path}");
            
@@ -391,22 +391,42 @@ namespace MusicBeeRemoteCore.Modules
 
             this.trackRepository.Delete(toRemove);
 
-            var tracks =
-                tracksToInsert.Select(
-                    info =>
+            var matched = MatchWithExistingTrackInfo(playlist.Id, tracksToInsert, cachedInfo);
+
+            this.trackRepository.Save(matched);
+
+            var moved = FindMovedTracks(playlist.Id, currentTracks, playlistTracks);
+
+            this.trackRepository.Save(moved);
+
+            comparer.IncludePosition = true;
+            
+            if (tracksToInsert.Count + tracksToDelete.Count + moved.Count > 0)
+            {
+                this.playlistRepository.Save(playlist);
+            }
+
+            return this.CheckIfSynced(playlist);
+        }
+
+        private static List<PlaylistTrack> MatchWithExistingTrackInfo(long playlistId, IList<PlaylistTrackInfo> tracksToInsert, IList<PlaylistTrackInfo> cachedInfo)
+        {
+            return tracksToInsert.Select(
+                info =>
                     new PlaylistTrack()
-                        {
-                            PlaylistId = playlist.Id, 
-                            TrackInfoId =
-                                cachedInfo.Where(trackInfo => trackInfo.Path.Equals(info.Path))
+                    {
+                        PlaylistId = playlistId, 
+                        TrackInfoId =
+                            cachedInfo.Where(trackInfo => trackInfo.Path.Equals(info.Path))
                                 .Select(trackInfo => trackInfo.Id)
                                 .FirstOrDefault(), 
-                            Position = info.Position
-                        }).ToList();
+                        Position = info.Position
+                    }).ToList();
+        }
 
-            this.trackRepository.Save(tracks);
-
-            var stored = this.trackInfoRepository.GetTracksForPlaylist(playlist.Id);
+        private List<PlaylistTrack> FindMovedTracks(long playlistId, IList<PlaylistTrackInfo> currentTracks, IList<PlaylistTrack> playlistTracks)
+        {           
+            var stored = this.trackInfoRepository.GetTracksForPlaylist(playlistId);
             var updated = new List<PlaylistTrack>();
 
             foreach (var info in stored)
@@ -420,48 +440,35 @@ namespace MusicBeeRemoteCore.Modules
                 if (first.Position != info.Position)
                 {
                     Logger.Debug($"Position missmatch should be at {first.Position} but found at {info.Position} instead");
-                    
+
                     var playlistTrack = playlistTracks.FirstOrDefault(track => track.Id == info.Id);
                     if (playlistTrack != null)
                     {
                         playlistTrack.Position = first.Position;
                         updated.Add(playlistTrack);
                     }
-                    
                 }
                 currentTracks.Remove(first);
             }
-
-            this.trackRepository.Save(updated);
-
-            comparer.IncludePosition = true;
-
-#if DEBUG
-            this.CheckIfSynced(playlist);
-#endif
-
-            if (tracksToInsert.Count + tracksToDelete.Count + updated.Count > 0)
-            {
-                this.playlistRepository.Save(playlist);
-            }
+            return updated;
         }
 
-#if DEBUG
 
         /// <summary>
         /// Checks if a playlist's stored data is in sync with the actual playlist data.
         /// </summary>
         /// <param name="playlist">The playlist</param>
-        private void CheckIfSynced(Playlist playlist)
+        private bool CheckIfSynced(Playlist playlist)
         {
             var comparer = new PlaylistTrackInfoComparer { IncludePosition = true };
             var currentTracks = this.api.GetPlaylistTracks(playlist.Path);
             var storedTracks = this.trackInfoRepository.GetTracksForPlaylist(playlist.Id);
-            Logger.Debug($"The playlists should be equal now: {currentTracks.SequenceEqual(storedTracks, comparer)}");
+            var sequenceEqual = currentTracks.SequenceEqual(storedTracks, comparer);
+            Logger.Debug($"The playlists should be equal now: {sequenceEqual}");
             Logger.Debug(currentTracks);
             Logger.Debug(storedTracks);
+            return sequenceEqual;
+            
         }
-#endif
-
     }
 }

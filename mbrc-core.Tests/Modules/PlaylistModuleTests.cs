@@ -158,24 +158,27 @@ namespace MusicBeeRemoteCore.Modules.Tests
             kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
             kernel.Bind<IScheduler>().ToMethod(context => scheduler);
 
-            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();
-
+            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();        
             var trackRepository = kernel.GetMock<IPlaylistTrackRepository>();
             var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
+            var playlistRepository = kernel.GetMock<IPlaylistRepository>();
             
             var inMemoryRepository = new List<PlaylistTrackInfo>(_playlistTrackInfos.ToList());
             var inMemoryTrackRepository = new List<PlaylistTrack>(_playlistTracks.ToList());
 
-            var matches = inMemoryRepository.Select(info =>
+            var matches = _playlistTracks.Select(track =>
             {
-                var playlistTrack = inMemoryTrackRepository.FirstOrDefault(track => track.TrackInfoId == info.Id);
-                info.Position = playlistTrack?.Position ?? 0;
-                return info;
+                var first = inMemoryRepository.FirstOrDefault(info => info.Id == track.TrackInfoId);
+                if (first != null)
+                {
+                    first.Position = track.Position;
+                }                
+                return first;
             }).ToList();
-
-            apiAdapter.Setup(adapter => adapter.GetPlaylistTracks(It.IsAny<string>())).Returns(matches);
+            
+            apiAdapter.Setup(adapter => adapter.GetPlaylistTracks(It.IsAny<string>())).Returns(matches.ToList());
             trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(_playlistTracks.ToList());
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(matches);
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(matches.ToList());
             trackInfoRepository.Setup(repository => repository.GetAll()).Returns(inMemoryRepository);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
                 .Callback<IList<PlaylistTrackInfo>>(list => inMemoryRepository.AddRange(list));
@@ -185,12 +188,17 @@ namespace MusicBeeRemoteCore.Modules.Tests
             trackRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrack>>()))
                 .Callback<IList<PlaylistTrack>>(track => inMemoryTrackRepository.AddRange(track));
 
+            playlistRepository.Setup(repository => repository.Save(It.IsAny<Playlist>())).Callback<Playlist>(playlist1 => playlist = playlist1).Returns(1);
+
 
             var module = kernel.Get<IPlaylistModule>();
 
-            module.SyncPlaylistDataWithCache(playlist);
-
-            Assert.AreEqual(inMemoryRepository.Count, inMemoryTrackRepository.Count);
+            var equal = module.SyncPlaylistDataWithCache(playlist);
+           
+            Assert.AreEqual(0, playlist.DateUpdated);
+            Assert.AreEqual(_playlistTrackInfos.Count, inMemoryRepository.Count);
+            Assert.AreEqual(_playlistTracks.Count, inMemoryTrackRepository.Count);
+            Assert.IsTrue(equal);
         }
     }
 }

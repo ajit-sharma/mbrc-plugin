@@ -101,6 +101,6 @@ namespace MusicBeeRemoteCore.Modules
         ///     from the MusicBee API.
         /// </summary>
         /// <param name="playlist">The playlist for which the sync happens</param>
-        void SyncPlaylistDataWithCache(Playlist playlist);
+        bool SyncPlaylistDataWithCache(Playlist playlist);
     }
 }
