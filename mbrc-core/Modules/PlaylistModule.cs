@@ -327,6 +327,7 @@ namespace MusicBeeRemoteCore.Modules
         ///     from the MusicBee API.
         /// </summary>
         /// <param name="playlist">The playlist for which the sync happens</param>
+        /// <returns>Should return if the resulting playlists are the same sequencially</returns>
         public bool SyncPlaylistDataWithCache(Playlist playlist)
         {
             Logger.Debug($"Checking changes for playlist: {playlist.Path}");
@@ -416,12 +417,16 @@ namespace MusicBeeRemoteCore.Modules
                     new PlaylistTrack()
                     {
                         PlaylistId = playlistId, 
-                        TrackInfoId =
-                            cachedInfo.Where(trackInfo => trackInfo.Path.Equals(info.Path))
-                                .Select(trackInfo => trackInfo.Id)
-                                .FirstOrDefault(), 
+                        TrackInfoId = FindTrackInfoId(cachedInfo, info), 
                         Position = info.Position
                     }).ToList();
+        }
+
+        private static long FindTrackInfoId(IList<PlaylistTrackInfo> cachedInfo, PlaylistTrackInfo info)
+        {
+            return cachedInfo.Where(trackInfo => trackInfo.Path.Equals(info.Path))
+                .Select(trackInfo => trackInfo.Id)
+                .FirstOrDefault();
         }
 
         private List<PlaylistTrack> FindMovedTracks(long playlistId, IList<PlaylistTrackInfo> currentTracks, IList<PlaylistTrack> playlistTracks)
