@@ -60,16 +60,23 @@ namespace MusicBeeRemoteCore.Modules.Tests
         private MoqMockingKernel kernel;
         private MockRepository mockRepo;
 
-        private List<PlaylistTrackInfo> GetPlaylistTracksJoin()
+        private List<PlaylistTrackInfo> GetPlaylistTracksJoin(bool fromApi)
         {
             var data = mockRepo.Track.Select(track =>
             {
                 var first = mockRepo.Info.FirstOrDefault(info => info.Id == track.TrackInfoId);
                 if (first != null)
                 {
-                    first.Position = track.Position;
+                    return new PlaylistTrackInfo
+                    {
+                        Position = track.Position,
+                        Artist = first.Artist,
+                        Title = first.Title,
+                        Path = first.Path,
+                        Id =  fromApi ? 0 : track.Id
+                    };
                 }
-                return first;
+                return null;
             }).ToList();
             data.Sort((info, trackInfo) => info.Position.CompareTo(trackInfo.Position));
             return data;
@@ -182,14 +189,14 @@ namespace MusicBeeRemoteCore.Modules.Tests
             var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
             var playlistRepository = kernel.GetMock<IPlaylistRepository>();
 
-            var matches = GetPlaylistTracksJoin();
+            var matches = GetPlaylistTracksJoin(true);
             
             apiAdapter.SetupSequence(adapter => adapter.GetPlaylistTracks(It.IsAny<string>()))
                 .Returns(matches.ToList())
                 .Returns(matches);
             trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
                 .Returns(_tracks.ToList());
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(GetPlaylistTracksJoin());
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(GetPlaylistTracksJoin(false));
             trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
                 .Callback<IList<PlaylistTrackInfo>>(list => mockRepo.Info.AddRange(list));
@@ -237,15 +244,17 @@ namespace MusicBeeRemoteCore.Modules.Tests
             var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
             var playlistRepository = kernel.GetMock<IPlaylistRepository>();
 
-            var matches = GetPlaylistTracksJoin();
+            var matches = GetPlaylistTracksJoin(true);
+            
 
-            var position = matches.Last().Position;
+            var position = matches.Select(lt => lt.Position).OrderBy(i => i).LastOrDefault();
             var item = matches[5];
 
-            for (var i = 0; i < 3; i++)
+            for (var i = 0; i < 4; i++)
             {
                 var info = new PlaylistTrackInfo
                 {
+                    Id =  0,
                     Artist = item.Artist,
                     Title = item.Title,
                     Path = item.Path,
@@ -262,27 +271,15 @@ namespace MusicBeeRemoteCore.Modules.Tests
                 .Returns(matches);
             trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
                 .Returns(_tracks.ToList());
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(GetPlaylistTracksJoin);
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(() => GetPlaylistTracksJoin(false));
             trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
-                .Callback<IList<PlaylistTrackInfo>>(list => mockRepo.Info.AddRange(list));
+                .Callback<IList<PlaylistTrackInfo>>(list => MockRepository.Save(list, mockRepo.Info));
             trackRepository.Setup(repository => repository.Delete(It.IsAny<IList<PlaylistTrack>>()))
                 .Callback<IList<PlaylistTrack>>(
                     list => list.ToList().ForEach(track => mockRepo.Track.Remove(track)));
             trackRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrack>>()))
-                .Callback<IList<PlaylistTrack>>(track =>
-                {
-                    track.ToList().ForEach(playlistTrack =>
-                    {
-                        var match = mockRepo.Track.FirstOrDefault(track1 => track1.Id == playlistTrack.Id);
-                        if (match != null)
-                        {
-                            mockRepo.Track.Remove(match);
-                        }
-                        mockRepo.Track.Add(playlistTrack);
-                    });
-                    
-                });
+                .Callback<IList<PlaylistTrack>>(track => MockRepository.Save(track, mockRepo.Track));
 
             playlistRepository.Setup(repository => repository.Save(It.IsAny<Playlist>()))
                 .Callback<Playlist>(playlist1 =>
@@ -311,5 +308,28 @@ namespace MusicBeeRemoteCore.Modules.Tests
     {
         public List<PlaylistTrackInfo> Info { get; } = new List<PlaylistTrackInfo>();
         public List<PlaylistTrack> Track { get; } = new List<PlaylistTrack>();
+
+        public static void Save<T>(IList<T> items, IList<T> repo) where T: TypeBase
+        {
+            items.ToList().ForEach(item =>
+            {
+                if (item.Id > 0)
+                {
+                    var match = repo.FirstOrDefault(stored => stored.Id == item.Id);
+                    if (match != null)
+                    {
+                        var indexOf = repo.IndexOf(match);
+                        repo.Remove(match);
+                        repo.Insert(indexOf, item);
+                        return;
+                    }
+                }
+
+                var id = repo.Select(lt => lt.Id).OrderBy(l => l).LastOrDefault();
+                item.Id = ++id;
+                repo.Add(item);
+            });
+        }
     }
+    
 }

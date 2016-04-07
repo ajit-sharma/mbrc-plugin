@@ -337,12 +337,15 @@ namespace MusicBeeRemoteCore.Modules
             var storedTracks = this.trackInfoRepository.GetTracksForPlaylist((int)playlist.Id);
             var cachedInfo = this.trackInfoRepository.GetAll();
 
-            var comparer = new PlaylistTrackInfoComparer { IncludePosition = false };
+            var basicComparer = new PlaylistTrackInfoComparer { IncludePosition = false };
+            var positionComparer = new PlaylistTrackInfoComparer { IncludePosition = true };
 
-            var tracksToInsert = currentTracks.Except(storedTracks, comparer).ToList();
-            var tracksToDelete = storedTracks.Except(currentTracks, comparer).ToList();
+            var tracksToInsert = currentTracks.Except(storedTracks, basicComparer).ToList();
+            var tracksToDelete = storedTracks.Except(currentTracks, basicComparer).ToList();
 
             var duplicates = currentTracks.GroupBy(track => track.Path).SelectMany(group => group.Skip(1)).Distinct().ToList();
+            var previouslyMatched = new List<PlaylistTrackInfo>();
+            
             duplicates.ForEach(
                 info =>
                 {
@@ -358,7 +361,14 @@ namespace MusicBeeRemoteCore.Modules
                     {
                         for (var i = 0; i < times; i++)
                         {
-                            tracksToInsert.Add(info);
+                            var match = currentTracks.Where(trackInfo => !previouslyMatched.Contains(trackInfo, positionComparer))
+                            .FirstOrDefault(trackInfo => trackInfo.Path.Equals(info.Path));
+                            if (match != null)
+                            {
+                                previouslyMatched.Add(match);
+                            }
+                            
+                            tracksToInsert.Add(match);
                         }
                     }
                     else
@@ -375,9 +385,8 @@ namespace MusicBeeRemoteCore.Modules
                     }
                 });
                     
-            
-
-            var missing = tracksToInsert.Where(info => !cachedInfo.Contains(info, comparer)).ToList();
+                   
+            var missing = tracksToInsert.Where(info => !cachedInfo.Contains(info, basicComparer)).ToList();
             this.trackInfoRepository.Save(missing);
 
             var removedIds = tracksToDelete.Select(track => track.Id).ToList();
@@ -396,11 +405,9 @@ namespace MusicBeeRemoteCore.Modules
 
             this.trackRepository.Save(matched);
 
-            var moved = FindMovedTracks(playlist.Id, currentTracks, playlistTracks);
+            var moved = FindMovedTracks(playlist.Id, currentTracks);
 
             this.trackRepository.Save(moved);
-
-            comparer.IncludePosition = true;
             
             if (tracksToInsert.Count + tracksToDelete.Count + moved.Count > 0)
             {
@@ -429,14 +436,18 @@ namespace MusicBeeRemoteCore.Modules
                 .FirstOrDefault();
         }
 
-        private List<PlaylistTrack> FindMovedTracks(long playlistId, IList<PlaylistTrackInfo> currentTracks, IList<PlaylistTrack> playlistTracks)
+        private List<PlaylistTrack> FindMovedTracks(long playlistId, IList<PlaylistTrackInfo> currentTracks)
         {           
             var stored = this.trackInfoRepository.GetTracksForPlaylist(playlistId);
-            var updated = new List<PlaylistTrack>();
-
+            
+            var playlistTracks = this.trackRepository.GetTracksForPlaylist(playlistId);
+            var tracks = currentTracks.ToList();
+           
+            var moved = new List<PlaylistTrack>();
+        
             foreach (var info in stored)
-            {
-                var first = currentTracks.FirstOrDefault(trackInfo => trackInfo.Path.Equals(info.Path));
+            {              
+                var first = tracks.FirstOrDefault(trackInfo => trackInfo.Path.Equals(info.Path));
                 if (first == null)
                 {
                     continue;
@@ -446,16 +457,17 @@ namespace MusicBeeRemoteCore.Modules
                 {
                     Logger.Debug($"Position missmatch should be at {first.Position} but found at {info.Position} instead");
 
-                    var playlistTrack = playlistTracks.FirstOrDefault(track => track.Id == info.Id);
-                    if (playlistTrack != null)
+                    var existing = playlistTracks.FirstOrDefault(track => track.Id == info.Id);
+                    if (existing != null)
                     {
-                        playlistTrack.Position = first.Position;
-                        updated.Add(playlistTrack);
+                        existing.Position = first.Position;
+                        moved.Add(existing);
+                        playlistTracks.Remove(existing);
                     }
                 }
-                currentTracks.Remove(first);
+                tracks.Remove(first);
             }
-            return updated;
+            return moved;
         }
 
 
