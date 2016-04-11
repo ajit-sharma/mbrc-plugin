@@ -64,5 +64,10 @@
 
             return ReferenceEquals(this, other) || this.Path.Equals(other.Path);
         }
+
+        public override string ToString()
+        {
+            return $"{Position}: {Artist}-{Title}";
+        }
     }
 }

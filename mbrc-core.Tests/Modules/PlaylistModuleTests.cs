@@ -24,6 +24,7 @@ namespace MusicBeeRemoteCore.Modules.Tests
         [SetUp]
         public void Setup()
         {
+            MusicBeeRemoteEntryPointImpl.InitializeLoggingConfiguration("");
             kernel = new MoqMockingKernel();
             fixture = new Fixture();
             var assembly = Assembly.GetExecutingAssembly();
@@ -270,7 +271,7 @@ namespace MusicBeeRemoteCore.Modules.Tests
                 .Returns(matches.ToList())
                 .Returns(matches);
             trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
-                .Returns(_tracks.ToList());
+                .Returns(mockRepo.Track);
             trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(() => GetPlaylistTracksJoin(false));
             trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))

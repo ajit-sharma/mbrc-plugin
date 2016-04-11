@@ -204,3 +204,6 @@ crashlytics-build.properties
 fabric.properties
 .idea/modules.xml
 *.iml
+
+#vs directgory
+.vs/

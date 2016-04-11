@@ -40,5 +40,10 @@
             return this.TrackInfoId == other.TrackInfoId && this.PlaylistId == other.PlaylistId
                    && this.Position == other.Position;
         }
+
+        public override string ToString()
+        {
+            return $"{Position}: id: {Id} track {TrackInfoId}";
+        }
     }
 }

@@ -467,6 +467,8 @@ namespace MusicBeeRemoteCore.Modules
                 }
                 tracks.Remove(first);
             }
+
+            Logger.Debug("moved: " + string.Join("\n", moved));
             return moved;
         }
 
@@ -482,8 +484,8 @@ namespace MusicBeeRemoteCore.Modules
             var storedTracks = this.trackInfoRepository.GetTracksForPlaylist(playlist.Id);
             var sequenceEqual = currentTracks.SequenceEqual(storedTracks, comparer);
             Logger.Debug($"The playlists should be equal now: {sequenceEqual}");
-            Logger.Debug(currentTracks);
-            Logger.Debug(storedTracks);
+            Logger.Debug(string.Join("\n", currentTracks));
+            Logger.Debug(string.Join("\n", storedTracks));
             return sequenceEqual;
             
         }

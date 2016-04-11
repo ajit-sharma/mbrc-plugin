@@ -86,7 +86,7 @@ namespace MusicBeeRemoteCore
 
         public void Init(IBindingProvider provider)
         {
-            this.InitializeLoggingConfiguration();
+            InitializeLoggingConfiguration(this.StoragePath);
             Debug.WriteLine("MusicBee Remote initializing");
             Logger.Debug("MusicBee Remote initializing");
 
@@ -188,7 +188,8 @@ namespace MusicBeeRemoteCore
         /// <summary>
         ///     Initializes the logging configuration.
         /// </summary>
-        private void InitializeLoggingConfiguration()
+        /// <param name="storagePath"></param>
+        public static void InitializeLoggingConfiguration(string storagePath)
         {
             var config = new LoggingConfiguration();
 
@@ -206,7 +207,7 @@ namespace MusicBeeRemoteCore
             };
 
             var sentinelRule = new LoggingRule("*", LogLevel.Trace, sentinalTarget);
-            config.AddTarget("sentinEl", sentinalTarget);
+            config.AddTarget("sentinel", sentinalTarget);
             config.LoggingRules.Add(sentinelRule);
 #endif
 
@@ -215,7 +216,7 @@ namespace MusicBeeRemoteCore
             config.AddTarget("debugger", debugger);
 
             consoleTarget.Layout = @"${date:format=HH\\:MM\\:ss} ${logger} ${message} ${exception}";
-            fileTarget.FileName = $"{this.StoragePath}\\error.log";
+            fileTarget.FileName = $"{storagePath}\\error.log";
             fileTarget.Layout = "${longdate}|${level:uppercase=true}|${logger}|${message}||${exception}";
 
             debugger.Layout = fileTarget.Layout;
