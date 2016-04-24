@@ -61,28 +61,6 @@ namespace MusicBeeRemoteCore.Modules.Tests
         private MoqMockingKernel kernel;
         private MockRepository mockRepo;
 
-        private List<PlaylistTrackInfo> GetPlaylistTracksJoin(bool fromApi)
-        {
-            var data = mockRepo.Track.Select(track =>
-            {
-                var first = mockRepo.Info.FirstOrDefault(info => info.Id == track.TrackInfoId);
-                if (first != null)
-                {
-                    return new PlaylistTrackInfo
-                    {
-                        Position = track.Position,
-                        Artist = first.Artist,
-                        Title = first.Title,
-                        Path = first.Path,
-                        Id =  fromApi ? 0 : track.Id
-                    };
-                }
-                return null;
-            }).ToList();
-            data.Sort((info, trackInfo) => info.Position.CompareTo(trackInfo.Position));
-            return data;
-        }
-
         [Test]
         public void CreateNewPlaylistTest()
         {
@@ -163,7 +141,13 @@ namespace MusicBeeRemoteCore.Modules.Tests
         [Test]
         public void PlaylistPlayNowTest()
         {
-            Assert.Fail();
+            kernel.Reset();
+            kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
+            var module = kernel.Get<IPlaylistModule>();
+            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();
+            apiAdapter.Setup(adapter => adapter.PlayNow(It.IsAny<string>())).Returns(() => true);
+            var playNow = module.PlaylistPlayNow(Path);
+            Assert.AreEqual(true, playNow);
         }
 
         [Test]
@@ -190,14 +174,14 @@ namespace MusicBeeRemoteCore.Modules.Tests
             var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
             var playlistRepository = kernel.GetMock<IPlaylistRepository>();
 
-            var matches = GetPlaylistTracksJoin(true);
+            var matches = mockRepo.GetPlaylistTracksJoin(true);
             
             apiAdapter.SetupSequence(adapter => adapter.GetPlaylistTracks(It.IsAny<string>()))
                 .Returns(matches.ToList())
                 .Returns(matches);
             trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
                 .Returns(_tracks.ToList());
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(GetPlaylistTracksJoin(false));
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(mockRepo.GetPlaylistTracksJoin(false));
             trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
                 .Callback<IList<PlaylistTrackInfo>>(list => mockRepo.Info.AddRange(list));
@@ -245,7 +229,7 @@ namespace MusicBeeRemoteCore.Modules.Tests
             var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
             var playlistRepository = kernel.GetMock<IPlaylistRepository>();
 
-            var matches = GetPlaylistTracksJoin(true);
+            var matches = mockRepo.GetPlaylistTracksJoin(true);
             
 
             var position = matches.Select(lt => lt.Position).OrderBy(i => i).LastOrDefault();
@@ -270,9 +254,13 @@ namespace MusicBeeRemoteCore.Modules.Tests
             apiAdapter.SetupSequence(adapter => adapter.GetPlaylistTracks(It.IsAny<string>()))
                 .Returns(matches.ToList())
                 .Returns(matches);
+
             trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
                 .Returns(mockRepo.Track);
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(() => GetPlaylistTracksJoin(false));
+
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
+                .Returns(() => mockRepo.GetPlaylistTracksJoin(false));
+
             trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
                 .Callback<IList<PlaylistTrackInfo>>(list => MockRepository.Save(list, mockRepo.Info));
@@ -330,6 +318,28 @@ namespace MusicBeeRemoteCore.Modules.Tests
                 item.Id = ++id;
                 repo.Add(item);
             });
+        }
+
+        public List<PlaylistTrackInfo> GetPlaylistTracksJoin(bool fromApi)
+        {
+            var data = Track.Select(track =>
+            {
+                var first = Info.FirstOrDefault(info => info.Id == track.TrackInfoId);
+                if (first != null)
+                {
+                    return new PlaylistTrackInfo
+                    {
+                        Position = track.Position,
+                        Artist = first.Artist,
+                        Title = first.Title,
+                        Path = first.Path,
+                        Id =  fromApi ? 0 : track.Id
+                    };
+                }
+                return null;
+            }).ToList();
+            data.Sort((info, trackInfo) => info.Position.CompareTo(trackInfo.Position));
+            return data;
         }
     }
     

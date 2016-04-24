@@ -86,7 +86,11 @@
             this.Put["/play"] = _ =>
                 {
                     var request = this.Bind<PlaylistPlay>();
-                    var response = this.module.PlaylistPlayNow(request.Path);
+                    var response = new ResponseBase
+                    {
+                        Code = this.module.PlaylistPlayNow(request.Path) ? ApiCodes.Success : ApiCodes.Failure
+                    };
+
                     return this.Response.AsJson(response);
                 };
 

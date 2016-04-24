@@ -264,9 +264,9 @@ namespace MusicBeeRemoteCore.Modules
         ///     Given the hash representing of a playlist it plays the specified playlist.
         /// </summary>
         /// <param name="path">The playlist path</param>
-        public ResponseBase PlaylistPlayNow(string path)
+        public bool PlaylistPlayNow(string path)
         {
-            return new ResponseBase { Code = this.api.PlayNow(path) ? ApiCodes.Success : ApiCodes.Failure };
+            return this.api.PlayNow(path);
         }
 
         /// <summary>

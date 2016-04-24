@@ -87,7 +87,7 @@ namespace MusicBeeRemoteCore.Modules
         ///     Given the hash representing of a playlist it plays the specified playlist.
         /// </summary>
         /// <param name="path">The playlist path</param>
-        ResponseBase PlaylistPlayNow(string path);
+        bool PlaylistPlayNow(string path);
 
         /// <summary>
         ///     Syncs the playlist information in the cache with the information available
