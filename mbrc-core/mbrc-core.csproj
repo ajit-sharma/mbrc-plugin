@@ -172,6 +172,7 @@
     <Compile Include="Rest\Compression\GzipCompressionSettings.cs" />
     <Compile Include="Rest\CustomJsonSerializer.cs" />
     <Compile Include="Rest\ServiceInterface\ApiCodes.cs" />
+    <Compile Include="Rest\ServiceInterface\AppApiModule.cs" />
     <Compile Include="Rest\ServiceInterface\DebugApiModule.cs" />
     <Compile Include="Rest\ServiceInterface\LibraryApiModule.cs" />
     <Compile Include="Rest\ServiceInterface\NowPlayingApiModule.cs" />

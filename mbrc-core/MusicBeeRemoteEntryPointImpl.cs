@@ -149,7 +149,7 @@ namespace MusicBeeRemoteCore
 
         public void FileDeleted(string sourceUrl)
         {
-			Logger.Debug($"new file deleted {sourceUrl}");
+            Logger.Debug($"new file deleted {sourceUrl}");
         }
 
         public void TagsChanged(string sourceUrl)
@@ -227,7 +227,7 @@ namespace MusicBeeRemoteCore
 #if DEBUG
             var fileRule = new LoggingRule("*", LogLevel.Debug, fileTarget);
 #else
-			var fileRule = new LoggingRule("*", LogLevel.Error, fileTarget);
+            var fileRule = new LoggingRule("*", LogLevel.Error, fileTarget);
 #endif
             config.LoggingRules.Add(fileRule);
 
@@ -242,10 +242,15 @@ namespace MusicBeeRemoteCore
             try
             {
                 var bootstrapper = new Bootstrapper(this.kernel);
-
+                var configuration = new HostConfiguration
+                {
+                    RewriteLocalhost = true,
+                    UrlReservations = {CreateAutomatically = true}
+                };
                 var nancyHost = new NancyHost(
                     new Uri($"http://localhost:{this.Settings.Settings.HttpPort}/"), 
-                    bootstrapper);
+                    bootstrapper, configuration);
+                
                 nancyHost.Start();
             }
             catch (Exception ex)
