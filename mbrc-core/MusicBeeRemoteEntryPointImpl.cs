@@ -276,7 +276,7 @@ namespace MusicBeeRemoteCore
                 },
                 PublicHost = new Host
                 {
-                    Port = 8080,
+                    Port = (int) this.Settings.Settings.ProxyPort,
                     IpAddress = IPAddress.Parse("0.0.0.0")
                 },
                 WebSocketHost = new Host

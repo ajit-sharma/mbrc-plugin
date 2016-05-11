@@ -443,7 +443,7 @@ namespace MusicBeePlugin
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(609, 438);
+            this.ClientSize = new System.Drawing.Size(609, 483);
             this.Controls.Add(this.qrCodeControl);
             this.Controls.Add(this.updateFirewallRules);
             this.Controls.Add(this.httpPortInput);

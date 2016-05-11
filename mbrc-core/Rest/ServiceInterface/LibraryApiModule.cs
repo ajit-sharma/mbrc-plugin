@@ -1,4 +1,7 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
+﻿using System;
+using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+
+namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
     using System.IO;
 
@@ -92,7 +95,25 @@
                     return this.Response.AsJson(this.module.GetLibraryCover(id, true));
                 };
 
-            this.Get["/covers/{id}/raw"] = parameters => this.Response.FromStream(this.module.GetCoverData((int)parameters.id), "image/jpeg");
+            this.Get["/covers/{id}/raw"] = parameters =>
+            {
+
+                Response response;
+                try
+                {
+                    response = this.Response.FromStream(this.module.GetCoverData((int)parameters.id), "image/jpeg");
+                }
+                catch (FileNotFoundException)
+                {
+                    response = this.Response.AsJson(new ResponseBase
+                    {
+                        Code = ApiCodes.NotFound
+                    });
+                    response.StatusCode = HttpStatusCode.NotFound;
+                }
+                
+                return response;
+            };
         }
     }
 }

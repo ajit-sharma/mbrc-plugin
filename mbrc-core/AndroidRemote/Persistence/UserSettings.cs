@@ -16,12 +16,20 @@ namespace MusicBeeRemoteCore.AndroidRemote.Persistence
         {
             this.HttpPort = 8188;
             this.WebSocketPort = 8187;
+            this.ProxyPort = 8180;
             this.AllowedAddresses = new List<string>();
             this.Allowed = MusicBeeRemoteCore.AllowedAddresses.All;
             this.BaseIp = string.Empty;
             this.LastOctetMax = 254;
             this.UpdateFirewallEnabled = true;
         }
+
+        /// <summary>
+        /// The port of the proxy that serves both the http and websocket connection.
+        /// The proxy is used to avoid having the client to handle two distinct ports.
+        /// </summary>
+        [DataMember(Name = "proxy_port")]
+        public uint ProxyPort { get; set; }
 
         /// <summary>
         /// The type of address filtering active. <see cref="AllowedAddresses"/>.

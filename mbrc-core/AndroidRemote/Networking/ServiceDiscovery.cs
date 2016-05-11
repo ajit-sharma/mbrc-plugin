@@ -110,9 +110,8 @@
                 notify.context = "notify";
                 notify.address = interfaceAddress;
                 notify.name = Environment.GetEnvironmentVariable("COMPUTERNAME");
-                notify.port = this._controller.Settings.WebSocketPort;
-                notify.http = this._controller.Settings.HttpPort;
-
+                notify.port = this._controller.Settings.ProxyPort;
+               
                 var serialized = JsonConvert.SerializeObject(notify);
                 var response = Encoding.UTF8.GetBytes(serialized);
                 this.Logger.Debug($"Sending multicast response {serialized}");

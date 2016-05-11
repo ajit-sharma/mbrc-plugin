@@ -7,5 +7,7 @@
         public static int Success = 200;
 
         public static int MissingParameters = 400;
+
+        public static int NotFound = 404;
     }
 }
