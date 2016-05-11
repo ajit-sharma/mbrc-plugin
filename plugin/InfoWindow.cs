@@ -1,3 +1,5 @@
+using MusicBeeRemoteCore.AndroidRemote.Data;
+
 namespace MusicBeePlugin
 {
     using System;
@@ -128,6 +130,15 @@ namespace MusicBeePlugin
             // UpdateSocketStatus(SocketServer.Instance.IsRunning);
             this.allowedAddressesComboBox.DataSource = this._ipAddressBinding;
             this.updateFirewallRules.Checked = this._controller.Settings.UpdateFirewallEnabled;
+            var qrPaylod = new Configuration()
+            {
+                Addresses = NetworkTools.GetPrivateAddressList(),
+                HttpPort = this._controller.Settings.HttpPort,
+                WebSocket = this._controller.Settings.WebSocketPort
+            };
+
+            var qrData = JsonAdapter.Serialize(qrPaylod);
+            qrCodeControl.Text = qrData;
         }
 
         private bool IsAddressValid()

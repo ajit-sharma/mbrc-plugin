@@ -3,11 +3,12 @@ using Nancy;
 
 namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
-    internal class AppApiModule : NancyModule
+    public class AppApiModule : NancyModule
     {
         public AppApiModule()
         {
             Get["/"] = _ => Response.AsJson(new ResponseBase {Code = ApiCodes.Success});
+            Get["/status"] = _ => Response.AsJson(new ResponseBase { Code = ApiCodes.Success });
         }
     }
 }
