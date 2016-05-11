@@ -207,3 +207,4 @@ fabric.properties
 
 #vs directgory
 .vs/
+libs/WebSocketProxy.dll

@@ -1,3 +1,6 @@
+using System.Net;
+using WebSocketProxy;
+
 namespace MusicBeeRemoteCore
 {
     using System;
@@ -115,6 +118,8 @@ namespace MusicBeeRemoteCore
             this.BuildCache(libraryModule, playlistModule);
 
             this.StartHttp();
+            this.StartProxy();
+
             this.eventDebouncer.Throttle(TimeSpan.FromSeconds(1)).Subscribe(eventType => this.Notify(eventType, false));
         }
 
@@ -257,6 +262,32 @@ namespace MusicBeeRemoteCore
             {
                 Logger.Debug(ex);
             }
+        }
+
+
+        private void StartProxy()
+        {
+            var configuration = new TcpProxyConfiguration
+            {
+                HttpHost = new Host
+                {
+                    Port = (int) this.Settings.Settings.HttpPort,
+                    IpAddress = IPAddress.Loopback
+                },
+                PublicHost = new Host
+                {
+                    Port = 8080,
+                    IpAddress = IPAddress.Parse("0.0.0.0")
+                },
+                WebSocketHost = new Host
+                {
+                    Port = (int)this.Settings.Settings.WebSocketPort,
+                    IpAddress = IPAddress.Loopback
+                }
+            };
+            
+            var tcpProxy = new TcpProxyServer(configuration);
+            tcpProxy.Start();
         }
     }
 }
