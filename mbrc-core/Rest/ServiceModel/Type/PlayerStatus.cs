@@ -1,4 +1,7 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace MusicBeeRemoteCore.Rest.ServiceModel.Type
 {
     using System.Runtime.Serialization;
 
@@ -20,6 +23,7 @@
         public bool Scrobble { get; set; }
 
         [DataMember(Name = "shuffle")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public Shuffle Shuffle { get; set; }
 
         [DataMember(Name = "volume")]

@@ -1,4 +1,7 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceModel
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+
+namespace MusicBeeRemoteCore.Rest.ServiceModel
 {
     using System;
     using System.Runtime.Serialization;
@@ -63,12 +66,8 @@
     public class ShuffleState : ResponseBase
     {
         [DataMember(Name = "state")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public Shuffle State { get; set; }
-
-        public static explicit operator ShuffleState(Shuffle? v)
-        {
-            throw new NotImplementedException();
-        }
     }
 
     /// <summary>
