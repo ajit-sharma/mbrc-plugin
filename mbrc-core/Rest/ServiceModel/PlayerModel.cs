@@ -84,6 +84,7 @@ namespace MusicBeeRemoteCore.Rest.ServiceModel
     public class ShuffleResponse : ResponseBase
     {
         [DataMember(Name = "state")]
+        [JsonConverter(typeof(StringEnumConverter))]
         public Shuffle State { get; set; }
     }
 
