@@ -118,9 +118,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="WebSocketProxy">
-      <HintPath>..\libs\WebSocketProxy.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllowedAddresses.cs" />
@@ -222,6 +219,10 @@
     <ProjectReference Include="..\mbrc-data\mbrc-data.csproj">
       <Project>{097ffcd1-5d60-42f9-b621-3d8dc016780e}</Project>
       <Name>mbrc-data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WebSocketProxy\WebSocketProxy.csproj">
+      <Project>{bda44986-b4d2-43e2-9486-cac4f62eeb4f}</Project>
+      <Name>WebSocketProxy</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

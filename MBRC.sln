@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-data.Tests", "mbrc-dat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-core.Tests", "mbrc-core.Tests\mbrc-core.Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocketProxy", "WebSocketProxy\WebSocketProxy.csproj", "{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,17 +160,35 @@ Global
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Test|Mixed Platforms.Build.0 = Test|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Test|Win32.ActiveCfg = Test|Any CPU
 		{8EDF4429-251A-416D-BB68-93F227191BCF}.Test|Win32.Build.0 = Test|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Debug|Win32.Build.0 = Debug|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Release|Win32.ActiveCfg = Release|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Release|Win32.Build.0 = Release|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Test|Any CPU.ActiveCfg = Test|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Test|Any CPU.Build.0 = Test|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Test|Mixed Platforms.ActiveCfg = Test|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Test|Mixed Platforms.Build.0 = Test|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Test|Win32.ActiveCfg = Test|Any CPU
+		{BDA44986-B4D2-43E2-9486-CAC4F62EEB4F}.Test|Win32.Build.0 = Test|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		BuildVersion_UseUniversalClock = True
-		BuildVersion_UseGlobalSettings = False
-		BuildVersion_UpdateFileVersion = True
-		BuildVersion_UpdateAssemblyVersion = True
-		BuildVersion_ConfigurationName = Release
-		BuildVersion_BuildVersioningStyle = None.None.Increment.None
 		BuildVersion_AssemblyInfoFilename = Properties\AssemblyInfo.cs
+		BuildVersion_BuildVersioningStyle = None.None.Increment.None
+		BuildVersion_ConfigurationName = Release
+		BuildVersion_UpdateAssemblyVersion = True
+		BuildVersion_UpdateFileVersion = True
+		BuildVersion_UseGlobalSettings = False
+		BuildVersion_UseUniversalClock = True
 	EndGlobalSection
 EndGlobal

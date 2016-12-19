@@ -46,9 +46,6 @@ At some point after the rewrite of the client I plan on implementing an embedded
 
 To build the plugin you have to open it with Visual Studio 2015. After opening the project you will probably have to restore the required packages with NuGet.
 
-For the latest development branch there is also an extra project that has to be build separately [websocketproxy](https://github.com/kelsos/websocketproxy).
-The dll should be placed in the libs folder. The project has been forked since the original doesn't support .NET 4.0 that the plugin uses.
-
 ### Credits
 
 *   [Dapper](https://github.com/StackExchange/dapper-dot-net)
@@ -102,6 +99,9 @@ The dll should be placed in the libs folder. The project has been forked since t
 *   [AutoFixture](https://github.com/AutoFixture/AutoFixture)
 
     [MIT](https://github.com/AutoFixture/AutoFixture/blob/master/LICENCE.txt)
+
+*   [WebSocketProxy](https://github.com/lifeemotions/websocketproxy)
+    [MIT](https://raw.githubusercontent.com/lifeemotions/websocketproxy/master/LICENSE)
 
 
 License
