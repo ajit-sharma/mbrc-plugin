@@ -4,8 +4,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Runtime.InteropServices;
+#if __MonoCS__
 
+#else
     using NetFwTypeLib;
+#endif
 
     /// <summary>
     ///     Firewall Utility
@@ -39,6 +42,9 @@
         /// <param name="ruleName">The name of the newly created rule</param>
         private static void CreateFirewallRuleForPort(int portNumber, string ruleName)
         {
+#if __MonoCS__
+
+#else
             try
             {
                 var fwManagerType = Type.GetTypeFromProgID("HNetCfg.FwMgr", false);
@@ -73,6 +79,7 @@
                 {
                     existingRule.LocalPorts = portSt;
                 }
+#endif
             }
             catch (COMException ex)
             {
