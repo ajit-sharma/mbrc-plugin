@@ -43,7 +43,7 @@
         private static void CreateFirewallRuleForPort(int portNumber, string ruleName)
         {
 #if __MonoCS__
-
+             Console.WriteLine("works only on .NET");
 #else
             try
             {
@@ -79,7 +79,7 @@
                 {
                     existingRule.LocalPorts = portSt;
                 }
-#endif
+
             }
             catch (COMException ex)
             {
@@ -98,6 +98,7 @@
                 Console.ReadLine();
 #endif
             }
+#endif
         }
 
         /// <summary>
