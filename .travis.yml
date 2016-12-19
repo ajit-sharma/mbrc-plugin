@@ -6,5 +6,5 @@ before_install:
 before_script:
   - nuget restore MBRC.sln
 after_script:
-  - nunit-console build\bin\mbrc-data.Tests\Test\mbrc-data.Tests.dll
-  - nunit-console build\bin\mbrc-core.Tests\Test\mbrc-core.Tests.dll
+  - nunit-console build/bin/mbrc-data.Tests/Test/mbrc-data.Tests.dll
+  - nunit-console build/bin/mbrc-core.Tests/Test/mbrc-core.Tests.dll
