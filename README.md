@@ -5,9 +5,15 @@ MusicBee Remote (Plugin)
 -------
 This is a plugin for [MusicBee](http://getmusicbee.com/) that is required for [MusicBee Remote](https://github.com/kelsos/mbrc) android application to function.
 
-
 ### Current release
-If you want to access the code, or binary of the current releases check the [Releases Page](https://github.com/kelsos/mbrc-plugin/releases). The current stable version is [**v0.13.0**](https://github.com/kelsos/mbrc-plugin/releases/tag/v0.13.0)
+If you want to access the code, or binary of the current releases check the [Releases Page](https://github.com/kelsos/mbrc-plugin/releases). The current stable version is [**v1.0.0**](https://github.com/kelsos/mbrc-plugin/releases/tag/v1.0.0)
+
+### Legacy socket implementation
+The version 1.0.0 released is based on the old plugin codebase that uses plain old TCP sockets in order to communicate.
+The plugin has been partially improved to support some extra functionality.
+
+There are a couple of previous protocol implementations available with the very first ones using an XML based protocol over TCP.
+The protocol has been changed to use JSON formatted messages in the later versions (up to 1.x.x).
 
 ### ServiceStack based
 There is an experimental implementation based on [ServiceStack](https://github.com/kelsos/mbrc-plugin/tree/6d321749347a38c281d22baa9a928d14cd8eaab3).
@@ -15,16 +21,16 @@ ServiceStack provides a REST API and websockets (Fleck) are used to push message
 
 For the ServiceStack version there is no public documentation of the API Available but it is planned as soon as the version 1.x features are finalized, however there is a metadata page available when the plugin running that has information on most of the calls. The API is somewhat documented and build with ServiceStack.Api.Swagger, so if you put the *swagger-ui* folder in the MusicBee Plugins folder you should be able to access the documentation through *http://localhost:port/swagger-ui/index.html* (where port is the port marked as http at the plugin settings page). Please keep in mind that the resource list should be available under *http://localhost:port/resources*, and you will probably need to insert it manually if you downloaded and extracted the swagger-ui zip file.
 
-### NancyFx rewrite (should be v1.0.0)
+### NancyFx rewrite (should be v2.0.0)
 
 At the moment the project rewritten and it is separated to a number of sub projects.
-The final **v1.0.0** REST api will be pretty close to the current ServiceStack API.
+The final **v2.0.0** REST API will be pretty close to the current ServiceStack API.
 
-The api documentation is currently work in progress and it should reside under the [documentation](documentation) folder
+The API documentation is currently work in progress and it should reside under the [documentation](documentation) folder
 
 The **mbrc-data** module provides access to the embedded database that is used for caching the player's data.
 
-The **mbrc-core** module implements the basic plugin functionality and hosts the nancyfx based REST server. It also includes the proper abstraction layer (ApiAdapter Interfaces) that the host must implement.
+The **mbrc-core** module implements the basic plugin functionality and hosts the NancyFX based REST server. It also includes the proper abstraction layer (ApiAdapter Interfaces) that the host must implement.
 
 The **mbrc-plugin** module is the plugin that runs in MusicBee. The plugin interfaces with **mbrc-core**, provides implementations for the ApiAdapter abstraction.
 
@@ -32,13 +38,16 @@ The **firewall-utility** is used to make it easier for the plugin to open the re
 
 I am currently in the process of adding Unit Tests to the plugin code using **NUnit**.
 
-### After version 1.0.0
+### After version 2.0.0
 
 At some point after the rewrite of the client I plan on implementing an embedded single page web client based on *AngularJS*.
 
 ### Building
 
 To build the plugin you have to open it with Visual Studio 2015. After opening the project you will probably have to restore the required packages with NuGet.
+
+For the latest development branch there is also an extra project that has to be build separately [websocketproxy](https://github.com/kelsos/websocketproxy).
+The dll should be placed in the libs folder. The project has been forked since the original doesn't support .NET 4.0 that the plugin uses
 
 ### Credits
 
@@ -100,7 +109,7 @@ License
 
 
     MusicBee Remote (Plugin for MusicBee)
-    Copyright (C) 2011-2016  Konstantinos Paparas
+    Copyright (C) 2011-2017  Konstantinos Paparas
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
