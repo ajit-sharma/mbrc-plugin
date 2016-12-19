@@ -1,4 +1,4 @@
-MusicBee Remote (Plugin)
+MusicBee Remote (Plugin) [![Build Status](https://travis-ci.org/kelsos/mbrc-plugin.svg?branch=development)](https://travis-ci.org/kelsos/mbrc-plugin)
 ====================
 
 ## About
