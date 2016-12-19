@@ -208,3 +208,6 @@ fabric.properties
 #vs directgory
 .vs/
 libs/WebSocketProxy.dll
+
+#Rider project file
+.idea
