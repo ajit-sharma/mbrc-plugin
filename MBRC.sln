@@ -20,7 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "plugin_tester", "plugin_tes
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-data", "mbrc-data\mbrc-data.csproj", "{097FFCD1-5D60-42F9-B621-3D8DC016780E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-data.Tests", "mbrc-dataTests\mbrc-data.Tests.csproj", "{683A7B61-6643-4C5F-953B-6EC325DF1747}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-data.Tests", "mbrc-data.Tests\mbrc-data.Tests.csproj", "{683A7B61-6643-4C5F-953B-6EC325DF1747}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "mbrc-core.Tests", "mbrc-core.Tests\mbrc-core.Tests.csproj", "{8EDF4429-251A-416D-BB68-93F227191BCF}"
 EndProject
