@@ -1,10 +1,10 @@
 language: csharp
 script:
-  - xbuild /p:Configuration=Debug MBRC.sln
+  - xbuild /p:Configuration=Test MBRC.sln
 before_install:
   - sudo apt-get install nunit-console
 before_script:
   - nuget restore MBRC.sln
 after_script:
-  - nunit-console build\bin\mbrc-dataTests\Debug\mbrc-data.Tests.dll
-  - nunit-console build\bin\mbrc-core.Tests\Debug\mbrc-core.Tests.dll
+  - nunit-console build\bin\mbrc-data.Tests\Test\mbrc-data.Tests.dll
+  - nunit-console build\bin\mbrc-core.Tests\Test\mbrc-core.Tests.dll

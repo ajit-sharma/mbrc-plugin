@@ -22,8 +22,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\build\bin\mbrc-dataTests\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\build\obj\mbrc-dataTests\Debug\</BaseIntermediateOutputPath>
+    <OutputPath>..\build\bin\mbrc-data.Tests\Debug\</OutputPath>
+    <BaseIntermediateOutputPath>..\build\obj\mbrc-data.Tests\Debug\</BaseIntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,11 +31,21 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\build\bin\mbrc-dataTests\Release\</OutputPath>
-    <BaseIntermediateOutputPath>..\build\obj\mbrc-dataTests\Release\</BaseIntermediateOutputPath>
+    <OutputPath>..\build\bin\mbrc-data.Tests\Release\</OutputPath>
+    <BaseIntermediateOutputPath>..\build\obj\mbrc-data.Tests\Release\</BaseIntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Test|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\build\bin\mbrc-data.Tests\Test\</OutputPath>
+    <BaseIntermediateOutputPath>..\build\obj\mbrc-data.Tests\Test\</BaseIntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="nunit.framework, Version=3.5.0.0, Culture=neutral, PublicKeyToken=2638cd05610744eb, processorArchitecture=MSIL">
