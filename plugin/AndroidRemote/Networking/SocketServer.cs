@@ -211,6 +211,12 @@ namespace MusicBeePlugin.AndroidRemote.Networking
                         isAllowed = true;
                         break;
                 }
+
+                if (IPAddress.IsLoopback(ipAddress))
+                {
+                    isAllowed = true;
+                }
+                
                 if (!isAllowed)
                 {
                     workerSocket.Send(
