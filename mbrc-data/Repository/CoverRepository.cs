@@ -5,8 +5,7 @@
 
     public class CoverRepository : GenericRepository<LibraryCover>, ICoverRepository
     {
-        public CoverRepository(DatabaseProvider provider)
-            : base(provider)
+        public CoverRepository(DatabaseProvider provider) : base(provider)
         {
         }
     }

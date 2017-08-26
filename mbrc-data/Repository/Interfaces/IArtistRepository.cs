@@ -1,6 +1,6 @@
 ﻿namespace MusicBeeRemoteData.Repository.Interfaces
 {
-    using MusicBeeRemoteData.Entities;
+    using Entities;
 
     /// <summary>
     /// The ArtistRepository interface.

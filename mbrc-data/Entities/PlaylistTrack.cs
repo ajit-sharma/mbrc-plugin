@@ -1,8 +1,8 @@
-﻿namespace MusicBeeRemoteData.Entities
-{
-    using System;
-    using System.Runtime.Serialization;
+﻿using System;
+using System.Runtime.Serialization;
 
+namespace MusicBeeRemoteData.Entities
+{
     /// <summary>
     ///     A PlaylistTrack is a many to many relationship between
     ///     <see cref="PlaylistTrackInfo" /> and <see cref="Playlist" />.
@@ -37,8 +37,8 @@
         /// <returns></returns>
         public bool Equals(PlaylistTrack other)
         {
-            return this.TrackInfoId == other.TrackInfoId && this.PlaylistId == other.PlaylistId
-                   && this.Position == other.Position;
+            return TrackInfoId == other.TrackInfoId && PlaylistId == other.PlaylistId
+                   && Position == other.Position;
         }
 
         public override string ToString()

@@ -5,8 +5,7 @@ namespace MusicBeeRemoteData.Repository
 
     public class PlaylistRepository : GenericRepository<Playlist>, IPlaylistRepository
     {
-        public PlaylistRepository(DatabaseProvider provider)
-            : base(provider)
+        public PlaylistRepository(DatabaseProvider provider) : base(provider)
         {
         }
     }

@@ -5,10 +5,9 @@
 
     public class GenreRepository : GenericRepository<LibraryGenre>, IGenreRepository
     {
-        public GenreRepository(DatabaseProvider provider)
-            : base(provider)
+        public GenreRepository(DatabaseProvider provider) : base(provider)
         {
-    
+
         }
     }
 }

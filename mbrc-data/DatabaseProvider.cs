@@ -1,14 +1,9 @@
-﻿namespace MusicBeeRemoteData
+﻿using System;
+using System.IO;
+using NLog;
+
+namespace MusicBeeRemoteData
 {
-    using System;
-    using System.Data;
-    using System.Data.SQLite;
-    using System.IO;
-
-    using Dapper;
-
-    using NLog;
-
     /// <summary>
     ///     Class DatabaseProvider.
     ///     Is used to handle the library data and cover cache
@@ -27,18 +22,16 @@
         /// <param name="storagePath">The storage path.</param>
         public DatabaseProvider(string storagePath)
         {
-            SimpleCRUD.SetDialect(SimpleCRUD.Dialect.SQLite);
-
+            
             if (!storagePath.EndsWith("\\"))
             {
                 storagePath += "\\";
             }
 
-            this._dbFilePath = storagePath + DbName;
+            _dbFilePath = storagePath + DbName;
 
             try
             {
-                this.CreateDatabase();
             }
             catch (Exception e)
             {
@@ -50,140 +43,21 @@
         ///     Gets a connection to the database.
         /// </summary>
         /// <returns></returns>
-        public IDbConnection GetDbConnection()
+        public string GetDatabaseFile()
         {
-            return new SQLiteConnection($"Data Source={this._dbFilePath}");
+            return _dbFilePath;
         }
 
         public void ResetDatabase()
         {
-            this.DeleteDatabase();
-            this.CreateDatabase();
-        }
-
-        private void CreateDatabase()
-        {
-            if (File.Exists(this._dbFilePath))
-            {
-                return;
-            }
-
-            SQLiteConnection.CreateFile(this._dbFilePath);
-
-            using (var connection = this.GetDbConnection())
-            {
-                connection.Open();
-
-                connection.Execute(@"create table LibraryGenre (
-                      Id integer primary key AUTOINCREMENT,
-                      Name varchar(255) not null,
-                      DateAdded integer default (strftime('%s', 'now')),
-                      DateUpdated integer default 0,
-                      DateDeleted integer default 0
-                    );");
-
-                connection.Execute(@"create unique index uidx_librarygenre_name on LibraryGenre (Name);");
-
-                connection.Execute(@"create table LibraryArtist (
-                        Id integer primary key AUTOINCREMENT,
-                        Name varchar(255) not null,
-                        GenreId integer not null,
-                        ImageUrl varchar(255),
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0,
-                        foreign key (GenreId) references LibraryGenre (Id) DEFERRABLE INITIALLY DEFERRED
-                        );");
-
-                connection.Execute(@"create unique index uidx_libraryartist_name on LibraryArtist (Name);");
-                connection.Execute(@"create table LibraryAlbum
-                    (
-                        Id integer primary key AUTOINCREMENT,
-                        Name varchar(255),
-                        ArtistId  integer not null,
-                        CoverId  integer not null,
-                        AlbumId varchar(255),
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0,
-                        foreign key (ArtistId) references LibraryArtist (Id) DEFERRABLE INITIALLY DEFERRED,
-                        foreign key (CoverId) references LibraryCover (Id) DEFERRABLE INITIALLY DEFERRED
-                    );");
-
-                connection.Execute(@"create unique index uidx_libraryalbum_name on LibraryAlbum (Name);");
-
-                connection.Execute(@"create table LibraryCover (
-                        Id integer primary key AUTOINCREMENT,
-                        Hash varchar(40),
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0
-                    );");
-
-                connection.Execute(@"create table LibraryTrack (
-                        Id integer primary key AUTOINCREMENT,
-                        Title varchar(255),
-                        Position integer default 0,
-                        Disc integer default 0,
-                        GenreId integer,
-                        ArtistId integer,
-                        AlbumArtistId integer,
-                        AlbumId integer,
-                        Year varchar(255),
-                        Path varchar(255),
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0,
-                        foreign key (AlbumId) references LibraryAlbum (Id) DEFERRABLE INITIALLY DEFERRED,
-                        foreign key (AlbumArtistId) references LibraryArtist (Id) DEFERRABLE INITIALLY DEFERRED,
-                        foreign key (ArtistId) references LibraryArtist (Id) DEFERRABLE INITIALLY DEFERRED,
-                        foreign key (GenreId) references LibraryGenre (Id) DEFERRABLE INITIALLY DEFERRED
-                    );");
-
-                connection.Execute(@"create unique index uidx_librarytrack_path on LibraryTrack (Path);");
-
-                connection.Execute(@"create table Playlist (
-                        Id integer primary key AUTOINCREMENT,
-                        Name varchar(255),
-                        Tracks integer default 0,
-                        ReadOnly integer default 1,
-                        Path varchar(255),
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0
-                    );");
-
-                connection.Execute(@"create table PlaylistTrackInfo (
-                        Id integer primary key AUTOINCREMENT,
-                        Path varchar (255),
-                        Artist varchar (255),
-                        Title varchar(255),
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0
-                    );");
-
-                connection.Execute(@"create table PlaylistTrack (
-                        Id integer primary key AUTOINCREMENT,
-                        TrackInfoId integer not null,
-                        PlaylistId integer not null,
-                        Position integer not null,
-                        DateAdded integer default (strftime('%s', 'now')),
-                        DateUpdated integer default 0,
-                        DateDeleted integer default 0,
-                        foreign key (PlaylistId) references Playlist(Id) DEFERRABLE INITIALLY DEFERRED,
-                        foreign key (TrackInfoId) references PlaylistTrackInfo (Id) DEFERRABLE INITIALLY DEFERRED
-                    );");
-
-                connection.Close();
-            }
+            DeleteDatabase();
         }
 
         public void DeleteDatabase()
         {
-            if (File.Exists(this._dbFilePath))
+            if (File.Exists(_dbFilePath))
             {
-                File.Delete(this._dbFilePath);
+                File.Delete(_dbFilePath);
             }
         }
     }

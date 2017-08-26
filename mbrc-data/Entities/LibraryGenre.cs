@@ -20,7 +20,7 @@
         /// <param name="name">The name of the new genre.</param>
         public LibraryGenre(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -36,15 +36,9 @@
         [DataMember(Name = "name")]
         public string Name
         {
-            get
-            {
-                return this._name;
-            }
+            get => _name;
 
-            set
-            {
-                this._name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
-            }
+            set => _name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
         }
     }
 }

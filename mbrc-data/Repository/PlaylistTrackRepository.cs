@@ -1,47 +1,41 @@
 namespace MusicBeeRemoteData.Repository
 {
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-
-    using Dapper;
-
-    using MusicBeeRemoteData.Entities;
-    using MusicBeeRemoteData.Repository.Interfaces;
+    using Entities;
+    using Interfaces;
 
     public class PlaylistTrackRepository : GenericRepository<PlaylistTrack>, IPlaylistTrackRepository
     {
-        public PlaylistTrackRepository(DatabaseProvider provider)
-            : base(provider)
+        public PlaylistTrackRepository(DatabaseProvider provider) : base(provider)
         {
         }
 
         public int GetTrackCountForPlaylist(int id)
         {
-            using (var connection = this.provider.GetDbConnection())
-            {
-                return connection.RecordCount<PlaylistTrack>($"where PlaylistId={id}");
-            }
+            return Execute(collection => collection.Count(track => track.PlaylistId == id));
         }
 
         public IList<PlaylistTrack> GetTracksForPlaylist(long id)
         {
-            using (var connection = this.provider.GetDbConnection())
-            {
-                return connection.GetList<PlaylistTrack>($"where PlaylistId={id}").ToList();
-            }
+            return Execute(collection => collection.Find(track => track.PlaylistId == id).ToList());
         }
 
         public IList<PlaylistTrack> GetUpdatedTracksForPlaylist(int id, int offset, int limit, long epoch)
         {
-            using (var connection = this.provider.GetDbConnection())
+            return Execute(collection =>
             {
-                limit = limit > 0 ? limit : DefaultLimit;
-                var page = (limit == 0) ? 1 : (offset / limit) + 1;
-                var select =
-                    $"where PlaylistId={id} and (DateUpdated > {epoch} or DateDeleted > {epoch} or DateAdded > {epoch})";
-                return connection.GetListPaged<PlaylistTrack>(page, limit, select, "Id asc").ToList();
-            }
+                limit = Limit(limit);
+
+                return collection.Find(track =>
+                        track.PlaylistId == id &&
+                        track.DateAdded > epoch &&
+                        track.DateDeleted > epoch &&
+                        track.DateUpdated > epoch)
+                    .Skip(offset)
+                    .Take(limit)
+                    .ToList();
+            });
         }
 
         public void DeleteTracksForPlaylists(IList<long> deletedIds)
@@ -51,20 +45,14 @@ namespace MusicBeeRemoteData.Repository
                 return;
             }
 
-            using (var connection = this.provider.GetDbConnection())
-            {
-                Debug.WriteLine(string.Join(",", deletedIds));
-                connection.DeleteList<PlaylistTrack>($"where PlaylistId in ({string.Join(",", deletedIds)})");
-            }
+            Execute(collection => collection.Delete(track => deletedIds.Contains(track.PlaylistId)));
         }
 
-      public IList<int> GetUsedTrackInfoIds()
-      {
-        using (var connection = this.provider.GetDbConnection())
+        public IList<int> GetUsedTrackInfoIds()
         {
-          var ids = connection.Query<int>("select TrackInfoId from PlaylistTrack");
-          return ids.ToList();
+            return Execute(collection => collection.FindAll().ToList()).Select(track => (int) track.TrackInfoId)
+                .Where(id => id > 0)
+                .ToList();
         }
-      }
     }
 }

@@ -1,11 +1,11 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
-{
-    using Modules;
-    using ServiceModel;
-    using ServiceModel.Type;
-    using Nancy;
-    using Nancy.ModelBinding;
+﻿using MusicBeeRemoteCore.Modules;
+using MusicBeeRemoteCore.Rest.ServiceModel;
+using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+using Nancy;
+using Nancy.ModelBinding;
 
+namespace MusicBeeRemoteCore.Rest.ServiceInterface
+{
     /// <summary>
     /// The playlist API module provides the playlist endpoint paths.
     /// </summary>
@@ -30,36 +30,36 @@
             this.module = module;
             this.libraryModule = libraryModule;
 
-            this.Get["/"] = _ =>
+            Get["/"] = _ =>
                 {
-                    var limit = (int)this.Request.Query["limit"];
-                    var offset = (int)this.Request.Query["offset"];
-                    var after = (int)this.Request.Query["after"];
+                    var limit = (int)Request.Query["limit"];
+                    var offset = (int)Request.Query["offset"];
+                    var after = (int)Request.Query["after"];
 
                     var page = this.module.GetAvailablePlaylists(limit, offset, after);
-                    return this.Response.AsJson(page);
+                    return Response.AsJson(page);
                 };
 
-            this.Get["/{id}/tracks"] = parameters =>
+            Get["/{id}/tracks"] = parameters =>
                 {
-                    var limit = (int)this.Request.Query["limit"];
-                    var offset = (int)this.Request.Query["offset"];
-                    var after = (int)this.Request.Query["after"];
+                    var limit = (int)Request.Query["limit"];
+                    var offset = (int)Request.Query["offset"];
+                    var after = (int)Request.Query["after"];
 
                     var page = this.module.GetPlaylistTracks((int)parameters.id, limit, offset, after);
-                    return this.Response.AsJson(page);
+                    return Response.AsJson(page);
                 };
 
-            this.Get["/trackinfo"] = _ =>
+            Get["/trackinfo"] = _ =>
                 {
-                    var limit = (int)this.Request.Query["limit"];
-                    var offset = (int)this.Request.Query["offset"];
-                    var after = (int)this.Request.Query["after"];
+                    var limit = (int)Request.Query["limit"];
+                    var offset = (int)Request.Query["offset"];
+                    var after = (int)Request.Query["after"];
                     var page = this.module.GetPlaylistTracksInfo(limit, offset, after);
-                    return this.Response.AsJson(page);
+                    return Response.AsJson(page);
                 };
 
-            this.Put["/"] = _ =>
+            Put["/"] = _ =>
                 {
                     var request = this.Bind<CreatePlaylist>();
 
@@ -67,7 +67,7 @@
 
                     if (request.Id > 0)
                     {
-                        var tracks = libraryModule.GetTracklist(request.Type, request.Id);
+                        var tracks = new[] {""};
                         code = this.module.CreateNewPlaylist(request.Name, tracks)
                             ? ApiCodes.Success
                             : ApiCodes.Failure;
@@ -80,10 +80,10 @@
                     }
                     
                     var response = new ResponseBase { Code = code };
-                    return this.Response.AsJson(response);
+                    return Response.AsJson(response);
                 };
 
-            this.Put["/play"] = _ =>
+            Put["/play"] = _ =>
                 {
                     var request = this.Bind<PlaylistPlay>();
                     var response = new ResponseBase
@@ -91,17 +91,17 @@
                         Code = this.module.PlaylistPlayNow(request.Path) ? ApiCodes.Success : ApiCodes.Failure
                     };
 
-                    return this.Response.AsJson(response);
+                    return Response.AsJson(response);
                 };
 
-            this.Put["/{id}/tracks"] = parameters =>
+            Put["/{id}/tracks"] = parameters =>
                 {
                     var request = this.Bind<AddPlaylistTracks>();
                     var code = ApiCodes.MissingParameters;
 
                     if (request.Id > 0)
                     {
-                        var tracks = libraryModule.GetTracklist(request.Type, request.Id);
+                        var tracks = new[] {""};
                         code = this.module.PlaylistAddTracks((int) parameters.id, tracks)
                             ? ApiCodes.Success
                             : ApiCodes.Failure;
@@ -114,32 +114,32 @@
                     }
 
                     var response = new ResponseBase { Code = code };
-                    return this.Response.AsJson(response);
+                    return Response.AsJson(response);
                 };
 
-            this.Delete["/{id}"] = parameters =>
+            Delete["/{id}"] = parameters =>
                 {
                     var code = this.module.PlaylistDelete((int)parameters.id) ? ApiCodes.Success : ApiCodes.Failure;
                     var response = new ResponseBase { Code = code };
-                    return this.Response.AsJson(response);
+                    return Response.AsJson(response);
                 };
 
-            this.Delete["/{id}/tracks/{position}"] = parameters =>
+            Delete["/{id}/tracks/{position}"] = parameters =>
                 {
                     var code = this.module.DeleteTrackFromPlaylist(parameters.id, parameters.position)
                                    ? ApiCodes.Success
                                    : ApiCodes.Failure;
                     var response = new ResponseBase { Code = code };
-                    return this.Response.AsJson(response);
+                    return Response.AsJson(response);
                 };
 
-            this.Put["/{id}/tracks/{from}/{to}"] = parameters =>
+            Put["/{id}/tracks/{from}/{to}"] = parameters =>
                 {
-                    var code = this.module.MovePlaylistTrack(parameters.id, parameters.@from, parameters.to)
+                    var code = this.module.MovePlaylistTrack(parameters.id, parameters.from, parameters.to)
                                    ? ApiCodes.Success
                                    : ApiCodes.Failure;
                     var response = new ResponseBase { Code = code };
-                    return this.Response.AsJson(response);
+                    return Response.AsJson(response);
                 };
         }
     }

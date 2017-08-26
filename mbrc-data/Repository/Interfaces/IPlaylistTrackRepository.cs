@@ -3,7 +3,7 @@
 {
     using System.Collections.Generic;
 
-    using MusicBeeRemoteData.Entities;
+    using Entities;
 
     /// <summary>
     /// The PlaylistTrackRepository interface.

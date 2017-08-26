@@ -1,7 +1,7 @@
-﻿namespace MusicBeeRemoteData.Entities
-{
-    using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
+namespace MusicBeeRemoteData.Entities
+{
     /// <summary>
     ///     This class represents an Artist with the information used in the
     ///     cache and API.
@@ -12,7 +12,7 @@
         /// <summary>
         /// Backing field for the <see cref="Name"/> property
         /// </summary>
-        private string name;
+        private string _name;
 
         /// <summary>
         ///     Parametrized constructor of the LibraryArtist class. It creates a
@@ -21,7 +21,7 @@
         /// <param name="name">The name of the artist created.</param>
         public LibraryArtist(string name)
         {
-            this.Name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -49,15 +49,9 @@
         [DataMember(Name = "name")]
         public string Name
         {
-            get
-            {
-                return this.name;
-            }
+            get => _name;
 
-            set
-            {
-                this.name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
-            }
+            set => _name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
         }
     }
 }

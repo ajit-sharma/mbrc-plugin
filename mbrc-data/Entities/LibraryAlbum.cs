@@ -31,15 +31,9 @@
         [DataMember(Name = "name")]
         public string Name
         {
-            get
-            {
-                return this._name;
-            }
+            get => _name;
 
-            set
-            {
-                this._name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
-            }
+            set => _name = string.IsNullOrEmpty(value) ? "[Empty]" : value;
         }
     }
 }

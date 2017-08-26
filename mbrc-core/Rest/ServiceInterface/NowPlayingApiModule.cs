@@ -1,12 +1,11 @@
-﻿namespace MusicBeeRemoteCore.Rest.ServiceInterface
+﻿using MusicBeeRemoteCore.Modules;
+using MusicBeeRemoteCore.Rest.ServiceModel;
+using MusicBeeRemoteCore.Rest.ServiceModel.Type;
+using Nancy;
+using Nancy.ModelBinding;
+
+namespace MusicBeeRemoteCore.Rest.ServiceInterface
 {
-    using MusicBeeRemoteCore.Modules;
-    using MusicBeeRemoteCore.Rest.ServiceModel;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
-    using Nancy;
-    using Nancy.ModelBinding;
-
     /// <summary>
     /// The now playing API module provides the endpoints related to the now playing URLs.
     /// </summary>
@@ -37,54 +36,52 @@
             this.module = module;
             this.libraryModule = libraryModule;
 
-            this.Get["/"] = o =>
-                {
-                    var offset = (int)this.Request.Query["offset"];
-                    var limit = (int)this.Request.Query["limit"];
-                    return this.Response.AsJson(this.module.GetCurrentQueue(offset, limit));
-                };
+            Get["/"] = o =>
+            {
+                var offset = (int) Request.Query["offset"];
+                var limit = (int) Request.Query["limit"];
+                return Response.AsJson(this.module.GetCurrentQueue(offset, limit));
+            };
 
-            this.Put["/play"] = _ =>
-                {
-                    var data = this.Bind<NowPlayingPlay>();
-                    var code = (!string.IsNullOrEmpty(data.Path) && this.module.NowplayingPlayNow(data.Path))
-                                   ? ApiCodes.Success
-                                   : ApiCodes.Failure;
+            Put["/play"] = _ =>
+            {
+                var data = this.Bind<NowPlayingPlay>();
+                var code = (!string.IsNullOrEmpty(data.Path) && this.module.NowplayingPlayNow(data.Path))
+                    ? ApiCodes.Success
+                    : ApiCodes.Failure;
 
-                    return this.Response.AsJson(new ResponseBase { Code = code });
-                };
+                return Response.AsJson(new ResponseBase {Code = code});
+            };
 
-            this.Delete["/"] = _ =>
-                {
-                    var request = this.Bind<NowPlayingRemove>();
-                    var code = this.module.CurrentQueueRemoveTrack(request.Id) ? ApiCodes.Success : ApiCodes.Failure;
+            Delete["/"] = _ =>
+            {
+                var request = this.Bind<NowPlayingRemove>();
+                var code = this.module.CurrentQueueRemoveTrack(request.Id) ? ApiCodes.Success : ApiCodes.Failure;
 
-                    return this.Response.AsJson(new ResponseBase { Code = code });
-                };
+                return Response.AsJson(new ResponseBase {Code = code});
+            };
 
-            this.Put["/move"] = _ =>
-                {
-                    var request = this.Bind<NowPlayingMove>();
-                    var code = this.module.CurrentQueueMoveTrack(request.From, request.To)
-                                   ? ApiCodes.Success
-                                   : ApiCodes.Failure;
+            Put["/move"] = _ =>
+            {
+                var request = this.Bind<NowPlayingMove>();
+                var code = this.module.CurrentQueueMoveTrack(request.From, request.To)
+                    ? ApiCodes.Success
+                    : ApiCodes.Failure;
 
-                    return this.Response.AsJson(new ResponseBase { Code = code });
-                };
+                return Response.AsJson(new ResponseBase {Code = code});
+            };
 
-            this.Put["/queue"] = _ =>
-                {
-                    var request = this.Bind<NowPlayingQueue>();
-                    var tracklist = string.IsNullOrEmpty(request.Path)
-                                        ? this.libraryModule.GetTracklist(request.Type, request.Id)
-                                        : new[] { request.Path };
+            Put["/queue"] = _ =>
+            {
+                var request = this.Bind<NowPlayingQueue>();
+                var tracklist = new[] {""};
 
-                    var code = this.module.EnqueueTracks(request.Action, tracklist)
-                                   ? ApiCodes.Success
-                                   : ApiCodes.Failure;
+                var code = this.module.EnqueueTracks(request.Action, tracklist)
+                    ? ApiCodes.Success
+                    : ApiCodes.Failure;
 
-                    return this.Response.AsJson(new ResponseBase { Code = code });
-                };
+                return Response.AsJson(new ResponseBase {Code = code});
+            };
         }
     }
 }

@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.Serialization;
 
-    using MusicBeeRemoteData.Extensions;
+    using Extensions;
 
     /// <summary>
     ///     The <c>base</c> of all the POCOs stored in the database.
@@ -37,8 +37,8 @@
 
         /// <summary>
         ///     The identity of the entry stored in the database.
-        /// </summary>
+        /// </summary>       
         [DataMember(Name = "id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
     }
 }

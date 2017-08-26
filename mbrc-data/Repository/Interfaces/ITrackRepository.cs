@@ -2,7 +2,7 @@
 {
     using System.Collections.Generic;
 
-    using MusicBeeRemoteData.Entities;
+    using Entities;
 
     /// <summary>
     /// The TrackRepository interface.
@@ -21,9 +21,5 @@
         IList<LibraryTrack> GetTracksByAlbumId(long id);
 
         string GetFirstAlbumTrackPathById(long id);
-
-        string[] GetTrackPathsByArtistId(long id);
-
-        string[] GetTrackPathsByGenreId(long id);
     }
 }

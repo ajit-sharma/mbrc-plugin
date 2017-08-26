@@ -14,8 +14,7 @@
         /// <param name="provider">
         /// The provider.
         /// </param>
-        public ArtistRepository(DatabaseProvider provider)
-            : base(provider)
+        public ArtistRepository(DatabaseProvider provider) : base(provider)
         {
         }
     }

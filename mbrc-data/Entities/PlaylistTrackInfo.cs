@@ -1,10 +1,8 @@
-﻿namespace MusicBeeRemoteData.Entities
+﻿using System;
+using System.Runtime.Serialization;
+
+namespace MusicBeeRemoteData.Entities
 {
-    using System;
-    using System.Runtime.Serialization;
-
-    using Dapper;
-
     /// <summary>
     ///     The info of a <see cref="PlaylistTrack" />.
     ///     The info are stored seperately to avoid duplication since a track can appear to multiple playlists
@@ -27,10 +25,7 @@
         /// <summary>
         ///     Used internally for sorting
         /// </summary>
-        [IgnoreDataMember]
-        [IgnoreInsert]
-        [IgnoreSelect]
-        [IgnoreUpdate]      
+        [IgnoreDataMember]             
         public int Position { get; set; }
 
         /// <summary>
@@ -46,7 +41,7 @@
         /// <returns></returns>
         public int CompareTo(PlaylistTrackInfo other)
         {
-            return this.Position.CompareTo(other.Position);
+            return Position.CompareTo(other.Position);
         }
 
         /// <summary>
@@ -62,7 +57,7 @@
                 return false;
             }
 
-            return ReferenceEquals(this, other) || this.Path.Equals(other.Path);
+            return ReferenceEquals(this, other) || Path.Equals(other.Path);
         }
 
         public override string ToString()

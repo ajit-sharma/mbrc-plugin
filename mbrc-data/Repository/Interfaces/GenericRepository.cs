@@ -1,18 +1,14 @@
-﻿namespace MusicBeeRemoteData.Repository.Interfaces
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using LiteDB;
+using MusicBeeRemoteData.Entities;
+using MusicBeeRemoteData.Extensions;
+using NLog;
+using Logger = NLog.Logger;
+
+namespace MusicBeeRemoteData.Repository.Interfaces
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Data;
-    using System.Linq;
-    using System.Reactive.Linq;
-
-    using Dapper;
-
-    using MusicBeeRemoteData.Entities;
-    using MusicBeeRemoteData.Extensions;
-
-    using NLog;
-
     /// <summary>
     /// The generic repository.
     /// </summary>
@@ -24,7 +20,7 @@
         /// <summary>
         /// The Logger instance for the current class.
         /// </summary>
-        public static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// This constant defines the default limit of rows in a page in the case
@@ -32,146 +28,155 @@
         /// </summary>
         public const int DefaultLimit = 50;
 
-        protected DatabaseProvider provider;
+        protected DatabaseProvider Provider;
+
+        protected static string Table() => typeof(T).Name.ToLower();
 
         public GenericRepository(DatabaseProvider provider)
         {
-            this.provider = provider;
+            Provider = provider;
         }
 
         public int Delete(IList<T> t)
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                connection.Open();
+                var collection = db.GetCollection<T>(Table());
                 var rowsAffected = 0;
-                using (var transaction = connection.BeginTransaction())
+                using (var transaction = db.BeginTrans())
                 {
-                    rowsAffected += t.Select(item => connection.Delete<T>(item.Id)).Count(result => result > 0);
+                    rowsAffected += t.Select(item => collection.Delete(item.Id)).Count(deleted => deleted);
                     transaction.Commit();
                 }
-
-                connection.Close();
                 return rowsAffected;
             }
         }
 
         public IList<T> GetAll()
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                connection.Open();
-                var tracks = connection.GetList<T>();
-                connection.Close();
-                return tracks.ToList();
+                var collection = db.GetCollection<T>(Table());
+                return collection.FindAll().ToList();
             }
         }
 
         public T GetById(long id)
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                connection.Open();
-                var track = connection.Get<T>(id);
-                connection.Close();
-                return track;
+                var collection = db.GetCollection<T>(Table());
+                return collection.FindById(id);
             }
         }
 
         public IList<T> GetCached()
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                connection.Open();
-                var tracks = connection.GetList<T>("where DateDeleted = 0");
-                connection.Close();
-                return tracks.ToList();
+                var collection = db.GetCollection<T>(Table());
+                return collection.Find(Query.EQ("DateDeleted", 0)).ToList();
             }
         }
 
         public int GetCount()
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                var count = connection.RecordCount<T>(string.Empty);
-                connection.Close();
-                return count;
+                var collection = db.GetCollection<T>(Table());
+                return collection.Count();
             }
         }
 
         public IList<T> GetDeleted()
         {
             {
-                using (var connection = this.provider.GetDbConnection())
+                using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
                 {
-                    connection.Open();
-                    var tracks = connection.GetList<T>("where DateDeleted > 0");
-                    connection.Close();
-                    return tracks.ToList();
+                    var collection = db.GetCollection<T>(Table());
+                    return collection.Find(Query.GT("DateDeleted", 0)).ToList();
                 }
             }
         }
 
         public IList<T> GetPage(int offset, int limit)
         {
-            using (var connection = this.provider.GetDbConnection())
-            {                
-                connection.Open();
-                limit = limit > 0 ? limit : DefaultLimit;
-                var page = (limit == 0) ? 1 : (offset / limit) + 1;
-                var data = connection.GetListPaged<T>(page, limit, null, null);
-                connection.Close();
-                return data.ToList();
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
+            {
+                var collection = db.GetCollection<T>(Table());
+                limit = Limit(limit);
+                return collection.FindAll().Skip(offset).Take(limit).ToList();
             }
         }
 
+
         public IList<T> GetUpdatedPage(int offset, int limit, long epoch)
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                connection.Open();
+                var collection = db.GetCollection<T>(Table());
                 limit = limit > 0 ? limit : DefaultLimit;
-                var page = (limit == 0) ? 1 : (offset / limit) + 1;
-                var paged = connection.GetListPaged<T>(
-                    page, 
-                    limit, 
-                    $"where DateUpdated>={epoch} or DateAdded>={epoch} or DateDeleted>={epoch}", 
-                    "Id asc");
-                connection.Close();
-                return paged.ToList();
+                var firstQuery = Query.Or(Query.GTE("DateUpdated", epoch), Query.GTE("DateAdded", epoch));
+                var query = Query.Or(firstQuery, Query.GTE("DateDeleted", epoch));
+                var updatedPage = collection.Find(query)
+                    .Skip(offset)
+                    .Take(limit)
+                    .ToList();
+                return updatedPage;
             }
         }
 
         public int Save(T t)
         {
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                connection.Open();
-                var id = UpdateOrInsert(t, connection);
-                connection.Close();
-                return id ?? 0;
+                var collection = db.GetCollection<T>(Table());
+                if (t.Id <= 0)
+                {
+                    return collection.Insert(t);
+                }
+                t.DateUpdated = DateTime.Now.ToUnixTime();
+                var updated = collection.Update(t);
+                return updated ? t.Id : 0;
             }
         }
 
         public int Save(IList<T> t)
         {
             Logger.Debug($"Saving {t.Count} {typeof(T)} entries");
-            var rowsAffected = 0;
-            using (var connection = this.provider.GetDbConnection())
-            {
-                connection.Open();
 
-                using (var transaction = connection.BeginTransaction())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
+            {
+                var collection = db.GetCollection<T>(Table());
+                var epoch = DateTime.UtcNow.ToUnixTime();
+                var rowsAffected = 0;
+
+                using (var transaction = db.BeginTrans())
                 {
-                    rowsAffected += t.Select(a => UpdateOrInsert(a, connection, transaction))
-                        .Count(result => result > 0);
+                    foreach (var item in t)
+                    {
+                        if (item.Id <= 0)
+                        {
+                            var id = collection.Insert(item);
+                            if (id > 0)
+                            {
+                                rowsAffected++;
+                            }
+                        }
+                        else
+                        {
+                            item.DateUpdated = epoch;
+                            var updated = collection.Update(item);
+                            if (updated)
+                            {
+                                rowsAffected++;
+                            }
+                        }
+                    }
                     transaction.Commit();
                 }
-
-                connection.Close();
+                return rowsAffected;
             }
-
-            return rowsAffected;
         }
 
         public int SoftDelete(IList<T> elements)
@@ -181,37 +186,69 @@
                 return 0;
             }
 
-            using (var connection = this.provider.GetDbConnection())
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
+                var collection = db.GetCollection<T>(Table());
                 var epoch = DateTime.UtcNow.ToUnixTime();
                 var rowsAffected = 0;
-                foreach (var element in elements)
+                using (var transaction = db.BeginTrans())
                 {
-                    element.DateDeleted = epoch;
-                    var update = connection.Update(element);
-                    if (update > 0)
+                    foreach (var element in elements)
                     {
-                        rowsAffected++;
+                        element.DateDeleted = epoch;
+                        var updated = collection.Update(element);
+                        if (updated)
+                        {
+                            rowsAffected++;
+                        }
                     }
+                    transaction.Commit();
                 }
+
 
                 return rowsAffected;
             }
         }
 
-        private static int? UpdateOrInsert(T t, IDbConnection connection, IDbTransaction transaction = null)
+        protected void Execute(Action<LiteCollection<T>> action)
         {
-            if (t.Id <= 0)
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                var id = connection.Insert(t, transaction);
-                t.Id = id ?? 0;
-                return id;
+                var collection = db.GetCollection<T>(Table());
+                action.Invoke(collection);
             }
+        }
 
-            var epoch = DateTime.UtcNow.ToUnixTime();
-            t.DateUpdated = epoch;
-            var result = connection.Update(t, transaction);
-            return (int?)(result > 0 ? t.Id : 0);
+        protected IList<T> Execute(Func<LiteCollection<T>, IList<T>> function)
+        {
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
+            {
+                var collection = db.GetCollection<T>(Table());
+                return function.Invoke(collection);
+            }
+        }
+
+        protected T Execute(Func<LiteCollection<T>, T> function)
+        {
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
+            {
+                var collection = db.GetCollection<T>(Table());
+                return function.Invoke(collection);
+            }
+        }
+
+        protected int Execute(Func<LiteCollection<T>, int> function)
+        {
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
+            {
+                var collection = db.GetCollection<T>(Table());
+                return function.Invoke(collection);
+            }
+        }
+
+        protected static int Limit(int limit)
+        {
+            return limit > 0 ? limit : DefaultLimit;
         }
     }
 }

@@ -70,7 +70,7 @@
         public int CompareTo(LibraryTrack other)
         {
             var oIndex = other.Position;
-            return oIndex == this.Position ? 0 : oIndex > this.Position ? -1 : 1;
+            return oIndex == Position ? 0 : oIndex > Position ? -1 : 1;
         }
     }
 }

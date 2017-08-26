@@ -1,51 +1,51 @@
-﻿namespace MusicBeeRemoteData.Repository.Tests
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using MusicBeeRemoteData;
+using MusicBeeRemoteData.Entities;
+using MusicBeeRemoteData.Extensions;
+using MusicBeeRemoteData.Repository;
+using MusicBeeRemoteData.Repository.Interfaces;
+using NUnit.Framework;
+using Ploeh.AutoFixture;
+
+namespace mbrc_data.Tests.Repository
 {
-    using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
-    using System.Reflection;
-
-    using MusicBeeRemoteData.Entities;
-    using MusicBeeRemoteData.Extensions;
-    using MusicBeeRemoteData.Repository.Interfaces;
-
-    using NUnit.Framework;
-
-    using Ploeh.AutoFixture;
-
     [TestFixture]
     public class ArtistRepositoryTests
     {
+       
+        private string _directory;
 
+        private Fixture _fixture;
+
+        private DatabaseProvider _databaseProvider;
+        
         [SetUp]
         public void Setup()
         {
             var codeBase = Assembly.GetExecutingAssembly().CodeBase;
             var uri = new UriBuilder(codeBase);
             var path = Uri.UnescapeDataString(uri.Path);
-            this.directory = Path.GetDirectoryName(path);
-            this.fixture = new Fixture();
+            _directory = Path.GetDirectoryName(path);
+            _fixture = new Fixture();
         }
 
         [TearDown]
         public void Cleanup()
         {
-            this.databaseProvider.DeleteDatabase();
+            _databaseProvider.DeleteDatabase();
         }
 
-        private string directory;
-
-        private Fixture fixture;
-
-        private DatabaseProvider databaseProvider;
 
         
         private IArtistRepository Repository()
         {
-            this.databaseProvider = new DatabaseProvider(this.directory);
-            this.databaseProvider.ResetDatabase();
-            IArtistRepository repository = new ArtistRepository(this.databaseProvider);
+            _databaseProvider = new DatabaseProvider(_directory);
+            _databaseProvider.ResetDatabase();
+            IArtistRepository repository = new ArtistRepository(_databaseProvider);
             return repository;
         }
 
@@ -53,7 +53,7 @@
         {
             var epoch = DateTime.UtcNow.ToUnixTime();
             return
-                this.fixture.Build<LibraryArtist>()
+                _fixture.Build<LibraryArtist>()
                     .With(t => t.DateAdded, epoch)
                     .Without(t => t.DateUpdated)
                     .Without(t => t.DateDeleted)
@@ -66,7 +66,7 @@
         {
             var epoch = DateTime.UtcNow.ToUnixTime();
             return
-                this.fixture.Build<LibraryArtist>()
+                _fixture.Build<LibraryArtist>()
                     .With(t => t.DateAdded, epoch)
                     .Without(t => t.DateUpdated)
                     .Without(t => t.DateDeleted)
@@ -84,13 +84,13 @@
         [Test]
         public void TestSavingData()
         {
-            const int Number = 53;
-            var repository = this.Repository();
-            var artists = this.GenerateArtists(Number);
+            const int totalTracks = 53;
+            var repository = Repository();
+            var artists = GenerateArtists(totalTracks);
             var saved = repository.Save(artists);
-            Assert.AreEqual(Number, saved);
+            Assert.AreEqual(totalTracks, saved);
             var all = repository.GetAll();
-            Assert.AreEqual(Number, all.Count);
+            Assert.AreEqual(totalTracks, all.Count);
             Assert.AreEqual(artists[0].Name, all[0].Name);         
 
         }

@@ -1,9 +1,9 @@
-﻿namespace MusicBeeRemoteData.Entities
-{
-    using System;
-    using System.Linq;
-    using System.Runtime.Serialization;
+﻿using System;
+using System.Linq;
+using System.Runtime.Serialization;
 
+namespace MusicBeeRemoteData.Entities
+{
     /// <summary>
     ///     Represent a Playlist stored in the database.
     /// </summary>
@@ -31,15 +31,12 @@
         [DataMember(Name = "name")]
         public string Name
         {
-            get
-            {
-                return this._name;
-            }
+            get => _name;
 
             set
             {
-                this._name = value;
-                this.ReadOnly = this._readOnlyPlaylists.Contains(this._name);
+                _name = value;
+                ReadOnly = _readOnlyPlaylists.Contains(_name);
             }
         }
 
@@ -69,7 +66,7 @@
         /// <returns></returns>
         public int CompareTo(Playlist other)
         {
-            return string.Compare(this.Path, other.Path, StringComparison.Ordinal);
+            return string.Compare(Path, other.Path, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -85,7 +82,7 @@
                 return false;
             }
 
-            return ReferenceEquals(this, other) || this.Path.Equals(other.Path);
+            return ReferenceEquals(this, other) || Path.Equals(other.Path);
         }
     }
 }
