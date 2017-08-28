@@ -28,7 +28,7 @@
         /// </summary>
         /// <param name="id">The id of the playlist.</param>
         /// <returns>The list of tracks in the playlist</returns>
-        IList<PlaylistTrack> GetTracksForPlaylist(long id);
+        IList<PlaylistTrack> GetTracksForPlaylist(int id);
 
         /// <summary>
         /// Gets a page of updated tracks for the specified playlist.. 
@@ -44,7 +44,7 @@
         /// Soft deletes the playlist track entries that match the provided playlist ids.
         /// </summary>
         /// <param name="deletedIds">The ids of the tracks to soft delete.</param>
-        void DeleteTracksForPlaylists(IList<long> deletedIds);
+        void DeleteTracksForPlaylists(IList<int> deletedIds);
 
 
         /// <summary>

@@ -61,7 +61,7 @@ namespace MusicBeeRemoteData.Repository.Interfaces
             }
         }
 
-        public T GetById(long id)
+        public T GetById(int id)
         {
             using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {

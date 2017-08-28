@@ -53,7 +53,7 @@
         /// </summary>
         /// <param name="id">The id of the item.</param>
         /// <returns>The item matching the supplied id</returns>
-        T GetById(long id);
+        T GetById(int id);
 
         /// <summary>
         /// Gets the count of items stored in the repository.

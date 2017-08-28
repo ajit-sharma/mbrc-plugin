@@ -164,7 +164,7 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string[] GetAlbumTracksById(long id)
+        public string[] GetAlbumTracksById(int id)
         {
             var trackList = new List<string>();
             var tracks = trackRepository.GetTracksByAlbumId(id);
@@ -340,7 +340,7 @@ namespace MusicBeeRemoteCore.Modules
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public string[] GetTrackPathById(long id)
+        public string[] GetTrackPathById(int id)
         {
             var list = new List<string>();
             var track = trackRepository.GetById(id);

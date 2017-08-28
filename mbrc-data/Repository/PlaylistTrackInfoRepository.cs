@@ -20,11 +20,11 @@ namespace MusicBeeRemoteData.Repository
             using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
                 var collection = db.GetCollection<PlaylistTrackInfo>(Table());
-                return collection.FindAll().Select(info => (int) info.Id).ToList();
+                return collection.FindAll().Select(info => info.Id).ToList();
             }
         }
-
-        public IList<PlaylistTrackInfo> GetTracksForPlaylist(long id)
+       
+        public IList<PlaylistTrackInfo> GetTracksForPlaylist(int id)
         {
             using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {

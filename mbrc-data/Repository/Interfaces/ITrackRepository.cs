@@ -18,8 +18,8 @@
         /// <returns>
         /// The <see cref="IList"/> of tracks with the specified album id.
         /// </returns>
-        IList<LibraryTrack> GetTracksByAlbumId(long id);
+        IList<LibraryTrack> GetTracksByAlbumId(int id);
 
-        string GetFirstAlbumTrackPathById(long id);
+        string GetFirstAlbumTrackPathById(int id);
     }
 }

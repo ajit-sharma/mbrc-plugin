@@ -14,12 +14,12 @@
         {
         }
 
-        public string GetFirstAlbumTrackPathById(long id)
+        public string GetFirstAlbumTrackPathById(int id)
         {
             return Execute(collection => collection.FindOne(track => track.AlbumId == id)).Path;
         }
 
-        public IList<LibraryTrack> GetTracksByAlbumId(long id)
+        public IList<LibraryTrack> GetTracksByAlbumId(int id)
         {
             return Execute(collection => collection.Find(track => track.AlbumId == id).ToList());
         }

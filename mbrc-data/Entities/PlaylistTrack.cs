@@ -14,7 +14,7 @@ namespace MusicBeeRemoteData.Entities
         ///     The id of the playlist in which the entry exists.
         /// </summary>
         [DataMember(Name = "playlist_id")]
-        public long PlaylistId { get; set; }
+        public int PlaylistId { get; set; }
 
         /// <summary>
         ///     The position of the track in the playlist.
@@ -26,7 +26,7 @@ namespace MusicBeeRemoteData.Entities
         ///     The id of the track info related with the current entry.
         /// </summary>
         [DataMember(Name = "track_info_id")]
-        public long TrackInfoId { get; set; }
+        public int TrackInfoId { get; set; }
 
         /// <summary>
         ///     Checks if two <see cref="PlaylistTrack" />s are equal.
@@ -37,8 +37,10 @@ namespace MusicBeeRemoteData.Entities
         /// <returns></returns>
         public bool Equals(PlaylistTrack other)
         {
-            return TrackInfoId == other.TrackInfoId && PlaylistId == other.PlaylistId
-                   && Position == other.Position;
+            return other != null &&
+                   TrackInfoId == other.TrackInfoId &&
+                   PlaylistId == other.PlaylistId &&
+                   Position == other.Position;
         }
 
         public override string ToString()

@@ -6,7 +6,9 @@ using System.Reactive.Concurrency;
 using System.Reflection;
 using Microsoft.Reactive.Testing;
 using Moq;
+using MusicBeeRemoteCore;
 using MusicBeeRemoteCore.ApiAdapters;
+using MusicBeeRemoteCore.Modules;
 using MusicBeeRemoteData.Entities;
 using MusicBeeRemoteData.Extensions;
 using MusicBeeRemoteData.Repository.Interfaces;
@@ -16,7 +18,7 @@ using Ninject.MockingKernel.Moq;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
-namespace MusicBeeRemoteCore.Modules.Tests
+namespace mbrc_core.Tests.Modules
 {
     [TestFixture]
     public class PlaylistModuleTests
@@ -25,8 +27,8 @@ namespace MusicBeeRemoteCore.Modules.Tests
         public void Setup()
         {
             MusicBeeRemoteEntryPointImpl.InitializeLoggingConfiguration("");
-            kernel = new MoqMockingKernel();
-            fixture = new Fixture();
+            _kernel = new MoqMockingKernel();
+            _fixture = new Fixture();
             var assembly = Assembly.GetExecutingAssembly();
             var playlists = "mbrc_core.Tests.Data.playlist_data.json";
             var trackInfo = "mbrc_core.Tests.Data.track_info.json";
@@ -43,9 +45,9 @@ namespace MusicBeeRemoteCore.Modules.Tests
                 _playlistTrackInfos = JsonConvert.DeserializeObject<List<PlaylistTrackInfo>>(reader.ReadToEnd());
             }
 
-            mockRepo = new MockRepository();
-            mockRepo.Info.AddRange(_playlistTrackInfos);
-            mockRepo.Track.AddRange(_tracks);
+            _mockRepo = new MockRepository();
+            _mockRepo.Info.AddRange(_playlistTrackInfos);
+            _mockRepo.Track.AddRange(_tracks);
         }
 
         [TearDown]
@@ -55,35 +57,11 @@ namespace MusicBeeRemoteCore.Modules.Tests
 
         private const string Path = "/media/music/playlists.mbp";
         private const string Name = "My super empty playlist";
-        private Fixture fixture;
+        private Fixture _fixture;
         private List<PlaylistTrack> _tracks;
         private List<PlaylistTrackInfo> _playlistTrackInfos;
-        private MoqMockingKernel kernel;
-        private MockRepository mockRepo;
-
-        [Test]
-        public void CreateNewPlaylistTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void DeleteTrackFromPlaylistTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void GetAvailablePlaylistsTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void GetPlaylistTracksInfoTest()
-        {
-            Assert.Fail();
-        }
+        private MoqMockingKernel _kernel;
+        private MockRepository _mockRepo;
 
         [Test]
         public void GetPlaylistTracksTest()
@@ -92,18 +70,18 @@ namespace MusicBeeRemoteCore.Modules.Tests
 
             Playlist playlist = null;
 
-            kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            kernel.Bind<IScheduler>().ToMethod(context => scheduler);
+            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
+            _kernel.Bind<IScheduler>().ToMethod(context => scheduler);
 
-            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();
-            var repository = kernel.GetMock<IPlaylistRepository>();
+            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
+            var repository = _kernel.GetMock<IPlaylistRepository>();
 
             apiAdapter.Setup(adapter => adapter.CreatePlaylist(It.IsAny<string>(), It.IsAny<string[]>())).Returns(Path);
             repository.Setup(playlistRepository => playlistRepository.Save(It.IsNotNull<Playlist>()))
                 .Callback<Playlist>(saved => playlist = saved)
                 .Returns(1);
 
-            var module = kernel.Get<IPlaylistModule>();
+            var module = _kernel.Get<IPlaylistModule>();
             scheduler.Start();
             var success = module.CreateNewPlaylist(Name, new string[] {});
             scheduler.AdvanceBy(1000);
@@ -115,36 +93,12 @@ namespace MusicBeeRemoteCore.Modules.Tests
         }
 
         [Test]
-        public void MovePlaylistTrackTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void PlaylistAddTracksTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void PlaylistDeleteTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
-        public void PlaylistModuleTest()
-        {
-            Assert.Fail();
-        }
-
-        [Test]
         public void PlaylistPlayNowTest()
         {
-            kernel.Reset();
-            kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            var module = kernel.Get<IPlaylistModule>();
-            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();
+            _kernel.Reset();
+            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
+            var module = _kernel.Get<IPlaylistModule>();
+            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
             apiAdapter.Setup(adapter => adapter.PlayNow(It.IsAny<string>())).Returns(() => true);
             var playNow = module.PlaylistPlayNow(Path);
             Assert.AreEqual(true, playNow);
@@ -153,7 +107,7 @@ namespace MusicBeeRemoteCore.Modules.Tests
         [Test]
         public void SyncPlaylistDataWithCacheTestNoUpdateNeeded()
         {
-            kernel.Reset();
+            _kernel.Reset();
             var scheduler = new TestScheduler();
 
             var epoch = DateTime.UtcNow.ToUnixTime();
@@ -166,49 +120,49 @@ namespace MusicBeeRemoteCore.Modules.Tests
             };
 
 
-            kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            kernel.Bind<IScheduler>().ToMethod(context => scheduler);
+            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
+            _kernel.Bind<IScheduler>().ToMethod(context => scheduler);
 
-            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();
-            var trackRepository = kernel.GetMock<IPlaylistTrackRepository>();
-            var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
-            var playlistRepository = kernel.GetMock<IPlaylistRepository>();
+            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
+            var trackRepository = _kernel.GetMock<IPlaylistTrackRepository>();
+            var trackInfoRepository = _kernel.GetMock<IPlaylistTrackInfoRepository>();
+            var playlistRepository = _kernel.GetMock<IPlaylistRepository>();
 
-            var matches = mockRepo.GetPlaylistTracksJoin(true);
+            var matches = _mockRepo.GetPlaylistTracksJoin(true);
             
             apiAdapter.SetupSequence(adapter => adapter.GetPlaylistTracks(It.IsAny<string>()))
                 .Returns(matches.ToList())
                 .Returns(matches);
-            trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
+            trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<int>()))
                 .Returns(_tracks.ToList());
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>())).Returns(mockRepo.GetPlaylistTracksJoin(false));
-            trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<int>())).Returns(_mockRepo.GetPlaylistTracksJoin(false));
+            trackInfoRepository.Setup(repository => repository.GetAll()).Returns(_mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
-                .Callback<IList<PlaylistTrackInfo>>(list => mockRepo.Info.AddRange(list));
+                .Callback<IList<PlaylistTrackInfo>>(list => _mockRepo.Info.AddRange(list));
             trackRepository.Setup(repository => repository.Delete(It.IsAny<IList<PlaylistTrack>>()))
                 .Callback<IList<PlaylistTrack>>(
-                    list => list.ToList().ForEach(track => mockRepo.Track.Remove(track)));
+                    list => list.ToList().ForEach(track => _mockRepo.Track.Remove(track)));
             trackRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrack>>()))
-                .Callback<IList<PlaylistTrack>>(track => mockRepo.Track.AddRange(track));
+                .Callback<IList<PlaylistTrack>>(track => _mockRepo.Track.AddRange(track));
 
             playlistRepository.Setup(repository => repository.Save(It.IsAny<Playlist>()))
                 .Callback<Playlist>(playlist1 => playlist = playlist1)
                 .Returns(1);
 
-            var module = kernel.Get<IPlaylistModule>();
+            var module = _kernel.Get<IPlaylistModule>();
 
             var equal = module.SyncPlaylistDataWithCache(playlist);
 
             Assert.AreEqual(0, playlist.DateUpdated);
-            Assert.AreEqual(_playlistTrackInfos.Count, mockRepo.Info.Count);
-            Assert.AreEqual(_tracks.Count, mockRepo.Track.Count);
+            Assert.AreEqual(_playlistTrackInfos.Count, _mockRepo.Info.Count);
+            Assert.AreEqual(_tracks.Count, _mockRepo.Track.Count);
             Assert.IsTrue(equal);
         }
 
         [Test]
         public void SyncPlaylistDataWithCacheTestUpdateNeededDuplicates()
         {
-            kernel.Reset();
+            _kernel.Reset();
             var scheduler = new TestScheduler();
 
             var epoch = DateTime.UtcNow.ToUnixTime();
@@ -221,15 +175,15 @@ namespace MusicBeeRemoteCore.Modules.Tests
             };
 
 
-            kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            kernel.Bind<IScheduler>().ToMethod(context => scheduler);
+            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
+            _kernel.Bind<IScheduler>().ToMethod(context => scheduler);
 
-            var apiAdapter = kernel.GetMock<IPlaylistApiAdapter>();
-            var trackRepository = kernel.GetMock<IPlaylistTrackRepository>();
-            var trackInfoRepository = kernel.GetMock<IPlaylistTrackInfoRepository>();
-            var playlistRepository = kernel.GetMock<IPlaylistRepository>();
+            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
+            var trackRepository = _kernel.GetMock<IPlaylistTrackRepository>();
+            var trackInfoRepository = _kernel.GetMock<IPlaylistTrackInfoRepository>();
+            var playlistRepository = _kernel.GetMock<IPlaylistRepository>();
 
-            var matches = mockRepo.GetPlaylistTracksJoin(true);
+            var matches = _mockRepo.GetPlaylistTracksJoin(true);
             
 
             var position = matches.Select(lt => lt.Position).OrderBy(i => i).LastOrDefault();
@@ -255,20 +209,20 @@ namespace MusicBeeRemoteCore.Modules.Tests
                 .Returns(matches.ToList())
                 .Returns(matches);
 
-            trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
-                .Returns(mockRepo.Track);
+            trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<int>()))
+                .Returns(_mockRepo.Track);
 
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<long>()))
-                .Returns(() => mockRepo.GetPlaylistTracksJoin(false));
+            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<int>()))
+                .Returns(() => _mockRepo.GetPlaylistTracksJoin(false));
 
-            trackInfoRepository.Setup(repository => repository.GetAll()).Returns(mockRepo.Info);
+            trackInfoRepository.Setup(repository => repository.GetAll()).Returns(_mockRepo.Info);
             trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
-                .Callback<IList<PlaylistTrackInfo>>(list => MockRepository.Save(list, mockRepo.Info));
+                .Callback<IList<PlaylistTrackInfo>>(list => MockRepository.Save(list, _mockRepo.Info));
             trackRepository.Setup(repository => repository.Delete(It.IsAny<IList<PlaylistTrack>>()))
                 .Callback<IList<PlaylistTrack>>(
-                    list => list.ToList().ForEach(track => mockRepo.Track.Remove(track)));
+                    list => list.ToList().ForEach(track => _mockRepo.Track.Remove(track)));
             trackRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrack>>()))
-                .Callback<IList<PlaylistTrack>>(track => MockRepository.Save(track, mockRepo.Track));
+                .Callback<IList<PlaylistTrack>>(track => MockRepository.Save(track, _mockRepo.Track));
 
             playlistRepository.Setup(repository => repository.Save(It.IsAny<Playlist>()))
                 .Callback<Playlist>(playlist1 =>
@@ -278,13 +232,13 @@ namespace MusicBeeRemoteCore.Modules.Tests
                 })
                 .Returns(1);
 
-            var module = kernel.Get<IPlaylistModule>();
+            var module = _kernel.Get<IPlaylistModule>();
 
             var equal = module.SyncPlaylistDataWithCache(playlist);
 
             Assert.Greater(playlist.DateUpdated, 0);
-            Assert.AreEqual(_playlistTrackInfos.Count, mockRepo.Info.Count);
-            Assert.AreEqual(matches.Count, mockRepo.Track.Count);
+            Assert.AreEqual(_playlistTrackInfos.Count, _mockRepo.Info.Count);
+            Assert.AreEqual(matches.Count, _mockRepo.Track.Count);
             Assert.IsTrue(equal);
         }
     }

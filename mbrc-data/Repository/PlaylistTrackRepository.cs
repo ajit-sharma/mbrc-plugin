@@ -16,7 +16,7 @@ namespace MusicBeeRemoteData.Repository
             return Execute(collection => collection.Count(track => track.PlaylistId == id));
         }
 
-        public IList<PlaylistTrack> GetTracksForPlaylist(long id)
+        public IList<PlaylistTrack> GetTracksForPlaylist(int id)
         {
             return Execute(collection => collection.Find(track => track.PlaylistId == id).ToList());
         }
@@ -38,7 +38,7 @@ namespace MusicBeeRemoteData.Repository
             });
         }
 
-        public void DeleteTracksForPlaylists(IList<long> deletedIds)
+        public void DeleteTracksForPlaylists(IList<int> deletedIds)
         {
             if (deletedIds.Count == 0)
             {
