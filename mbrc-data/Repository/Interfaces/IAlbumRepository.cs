@@ -7,7 +7,7 @@
     /// The repository should contain only album specific repository methods.
     /// The generic repository methods should be in the <see cref="IRepository{T}"/>.
     /// </summary>
-    public interface IAlbumRepository : IRepository<LibraryAlbum>
+    public interface IAlbumRepository : IRepository<AlbumDao>
     {
     }
 }

@@ -20,7 +20,7 @@ namespace MusicBeeRemoteData.Repository.Interfaces
         /// <summary>
         /// The Logger instance for the current class.
         /// </summary>
-        protected static Logger Logger { get; } = LogManager.GetCurrentClassLogger();
+        protected static Logger _logger { get; } = LogManager.GetCurrentClassLogger();
 
         /// <summary>
         /// This constant defines the default limit of rows in a page in the case
@@ -90,12 +90,10 @@ namespace MusicBeeRemoteData.Repository.Interfaces
 
         public IList<T> GetDeleted()
         {
+            using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {
-                using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
-                {
-                    var collection = db.GetCollection<T>(Table());
-                    return collection.Find(Query.GT("DateDeleted", 0)).ToList();
-                }
+                var collection = db.GetCollection<T>(Table());
+                return collection.Find(Query.GT("DateDeleted", 0)).ToList();
             }
         }
 
@@ -143,7 +141,12 @@ namespace MusicBeeRemoteData.Repository.Interfaces
 
         public int Save(IList<T> t)
         {
-            Logger.Debug($"Saving {t.Count} {typeof(T)} entries");
+            _logger.Debug($"Saving {t.Count} {typeof(T)} entries");
+
+            if (t.Count == 0)
+            {
+                return 0;
+            }
 
             using (var db = new LiteDatabase(Provider.GetDatabaseFile()))
             {

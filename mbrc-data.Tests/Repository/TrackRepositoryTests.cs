@@ -53,11 +53,11 @@ namespace mbrc_data.Tests.Repository
             return repository;
         }
 
-        private List<LibraryTrack> GenerateTracks(int count)
+        private List<TrackDao> GenerateTracks(int count)
         {
             var epoch = DateTime.UtcNow.ToUnixTime() - 60;
             return
-                _fixture.Build<LibraryTrack>()
+                _fixture.Build<TrackDao>()
                     .With(t => t.DateAdded, epoch)
                     .Without(t => t.DateUpdated)
                     .Without(t => t.DateDeleted)
@@ -66,11 +66,11 @@ namespace mbrc_data.Tests.Repository
                     .ToList();
         }
 
-        private LibraryTrack GenerateTrack()
+        private TrackDao GenerateTrack()
         {
             var epoch = DateTime.UtcNow.ToUnixTime() - 60;
             return
-                _fixture.Build<LibraryTrack>()
+                _fixture.Build<TrackDao>()
                     .With(t => t.DateAdded, epoch)
                     .Without(t => t.DateUpdated)
                     .Without(t => t.DateDeleted)
@@ -89,8 +89,8 @@ namespace mbrc_data.Tests.Repository
             var tracks = repository.GetAll();
             Assert.AreEqual(100, tracks.Count);
 
-            tracks.Add(new LibraryTrack { Id = 19321 });
-            tracks.Add(new LibraryTrack { Id = 1249 });
+            tracks.Add(new TrackDao { Id = 19321 });
+            tracks.Add(new TrackDao { Id = 1249 });
 
             tracks = tracks.Reverse().ToList();
 

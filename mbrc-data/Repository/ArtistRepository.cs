@@ -6,7 +6,7 @@
     /// <summary>
     /// The artist repository.
     /// </summary>
-    public class ArtistRepository : GenericRepository<LibraryArtist>, IArtistRepository
+    public class ArtistRepository : GenericRepository<ArtistDao>, IArtistRepository
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ArtistRepository"/> class.

@@ -1,22 +1,21 @@
-﻿namespace plugin_tester
+﻿using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Model;
+using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+
+namespace plugin_tester
 {
     using System;
     using System.Collections.Generic;
-
-    using MusicBeeRemoteCore;
-    using MusicBeeRemoteCore.Model;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
     using MusicBeeRemoteData.Entities;
 
     internal class LibraryAdapter : ILibraryApiAdapter
     {
-        public ICollection<LibraryAlbum> GetAlbumList()
+        public ICollection<AlbumDao> GetAlbums()
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryArtist> GetArtistList()
+        public ICollection<ArtistDao> GetArtists()
         {
             throw new NotImplementedException();
         }
@@ -26,7 +25,7 @@
             throw new NotImplementedException();
         }
 
-        public byte[] GetCoverData(string path)
+        public byte[] GetCover(string path)
         {
             throw new NotImplementedException();
         }
@@ -36,7 +35,7 @@
             throw new NotImplementedException();
         }
 
-        public ICollection<LibraryGenre> GetGenreList()
+        public ICollection<GenreDao> GetGenres()
         {
             throw new NotImplementedException();
         }

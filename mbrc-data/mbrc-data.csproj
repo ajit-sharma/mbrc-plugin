@@ -89,11 +89,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseProvider.cs" />
-    <Compile Include="Entities\LibraryAlbum.cs" />
-    <Compile Include="Entities\LibraryArtist.cs" />
+    <Compile Include="Entities\AlbumDao.cs" />
+    <Compile Include="Entities\ArtistDao.cs" />
     <Compile Include="Entities\LibraryCover.cs" />
-    <Compile Include="Entities\LibraryGenre.cs" />
-    <Compile Include="Entities\LibraryTrack.cs" />
+    <Compile Include="Entities\GenreDao.cs" />
+    <Compile Include="Entities\TrackDao.cs" />
     <Compile Include="Entities\Playlist.cs" />
     <Compile Include="Entities\PlaylistTrack.cs" />
     <Compile Include="Entities\PlaylistTrackInfo.cs" />

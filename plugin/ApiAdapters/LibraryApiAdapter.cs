@@ -1,138 +1,322 @@
-﻿namespace MusicBeePlugin.ApiAdapters
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Feature.Library;
+using MusicBeeRemote.Core.Feature.Podcasts;
+using MusicBeeRemote.Core.Feature.Radio;
+using MusicBeeRemote.Core.Utilities;
+using static MusicBeePlugin.Plugin.MetaDataType;
+
+namespace MusicBeePlugin.ApiAdapters
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-
-    using MusicBeeRemoteCore;
-    using MusicBeeRemoteCore.Model;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
-    using MusicBeeRemoteData.Entities;
-
     /// <summary>
     /// The library api adapter.
     /// </summary>
     public class LibraryApiAdapter : ILibraryApiAdapter
     {
-        private readonly Plugin.MusicBeeApiInterface api;
-
-        /// <summary>
-        ///     The fields (MetaData) that MusicBee Remote caches.
-        /// </summary>
-        private readonly Plugin.MetaDataType[] fields =
-            {
-                Plugin.MetaDataType.Artist, Plugin.MetaDataType.AlbumArtist, 
-                Plugin.MetaDataType.Album, Plugin.MetaDataType.Genre, 
-                Plugin.MetaDataType.TrackTitle, Plugin.MetaDataType.Year, 
-                Plugin.MetaDataType.TrackNo, Plugin.MetaDataType.DiscNo
-            };
+        private readonly Plugin.MusicBeeApiInterface _api;
 
         public LibraryApiAdapter(Plugin.MusicBeeApiInterface api)
         {
-            this.api = api;
+            _api = api;
         }
 
-        public ICollection<LibraryAlbum> GetAlbumList()
+        private int GetTrackNumber(string currentTrack)
         {
-            var list = new List<LibraryAlbum>();
-            if (this.api.Library_QueryLookupTable("album", "count", null))
-            {
-                list.AddRange(
-                    this.api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
-                        .Select(artist => new LibraryAlbum { Name = artist.Split('\0')[0] }));
-            }
-
-            this.api.Library_QueryLookupTable(null, null, null);
-            return list;
+            int trackNumber;
+            int.TryParse(_api.Library_GetFileTag(currentTrack, TrackNo), out trackNumber);
+            return trackNumber;
         }
 
-        public ICollection<LibraryArtist> GetArtistList()
+        private int GetDiskNumber(string currentTrack)
         {
-            var artists = new List<LibraryArtist>();
-            if (this.api.Library_QueryLookupTable("artist", "count", string.Empty))
+            int discNumber;
+            int.TryParse(_api.Library_GetFileTag(currentTrack, DiscNo), out discNumber);
+            return discNumber;
+        }
+
+        private string GetGenreForTrack(string currentTrack)
+        {
+            return _api.Library_GetFileTag(currentTrack, Plugin.MetaDataType.Genre).Cleanup();
+        }
+
+        private string GetAlbumArtistForTrack(string currentTrack)
+        {
+            return _api.Library_GetFileTag(currentTrack, AlbumArtist).Cleanup();
+        }
+
+        private string GetAlbumForTrack(string currentTrack)
+        {
+            return _api.Library_GetFileTag(currentTrack, Plugin.MetaDataType.Album).Cleanup();
+        }
+
+        private string GetTitleForTrack(string currentTrack)
+        {
+            return _api.Library_GetFileTag(currentTrack, TrackTitle).Cleanup();
+        }
+
+        private string GetArtistForTrack(string currentTrack)
+        {
+            return _api.Library_GetFileTag(currentTrack, Plugin.MetaDataType.Artist).Cleanup();
+        }
+
+        private string GetAlbumYear(string currentTrack)
+        {
+            return _api.Library_GetFileTag(currentTrack, Year).Cleanup();
+        }
+
+        public IList<Track> GetTracks()
+        {
+            string[] files;
+            _api.Library_QueryFilesEx(null, out files);
+
+            return files.Select(currentTrack => new Track
             {
-                artists.AddRange(
-                    this.api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
-                        .Select(entry => entry.Split('\0'))
-                        .Select(artistInfo => new LibraryArtist(artistInfo[0])));
+                Artist = GetArtistForTrack(currentTrack),
+                Title = GetTitleForTrack(currentTrack),
+                Album = GetAlbumForTrack(currentTrack),
+                AlbumArtist = GetAlbumArtistForTrack(currentTrack),
+                Year = GetAlbumYear(currentTrack),
+                Genre = GetGenreForTrack(currentTrack),
+                Disc = GetDiskNumber(currentTrack),
+                Trackno = GetTrackNumber(currentTrack),
+                Src = currentTrack
+            }).ToList();
+        }
+
+        public IList<Genre> GetGenres(string filter)
+        {
+            IList<Genre> genres = new List<Genre>();
+
+            var query = string.IsNullOrEmpty(filter) ? null : filter;
+
+            if (_api.Library_QueryLookupTable("genre", "count", query))
+            {
+                genres = _api.Library_QueryGetLookupTableValue(null)
+                    .Split(new[] {"\0\0"}, StringSplitOptions.None)
+                    .Select(entry => entry.Split(new[] {'\0'}, StringSplitOptions.None))
+                    .Select(genreInfo => new Genre(genreInfo[0].Cleanup(), int.Parse(genreInfo[1])))
+                    .ToList();
             }
 
-            this.api.Library_QueryLookupTable(null, null, null);
+            _api.Library_QueryLookupTable(null, null, null);
+
+            return genres;
+        }
+
+        public IList<Artist> GetArtists(string filter)
+        {
+            IList<Artist> artists = new List<Artist>();
+
+            var query = string.IsNullOrEmpty(filter) ? null : filter;
+
+            if (_api.Library_QueryLookupTable("artist", "count", query))
+            {
+                artists = _api.Library_QueryGetLookupTableValue(null)
+                    .Split(new[] {"\0\0"}, StringSplitOptions.None)
+                    .Select(entry => entry.Split('\0'))
+                    .Select(artistInfo => new Artist(artistInfo[0].Cleanup(), int.Parse(artistInfo[1])))
+                    .ToList();
+            }
+
+            _api.Library_QueryLookupTable(null, null, null);
 
             return artists;
         }
 
+        public IList<RadioStation> GetRadioStations()
+        {
+            string[] radioStations;
+            var success = _api.Library_QueryFilesEx("domain=Radio", out radioStations);
+            List<RadioStation> stations;
+            if (success)
+            {
+                stations = radioStations.Select(s => new RadioStation
+                    {
+                        Url = s,
+                        Name = _api.Library_GetFileTag(s, TrackTitle)
+                    })
+                    .ToList();
+            }
+            else
+            {
+                stations = new List<RadioStation>();
+            }
+            return stations;
+        }
+
+        public IList<PodcastSubscription> GetPodcastSubscriptions()
+        {
+            var list = new List<PodcastSubscription>();
+            string[] subscriptionIds;
+            _api.Podcasts_QuerySubscriptions(null, out subscriptionIds);
+            var subscriptionConverter = new SubscriptionConverter();
+                   
+            foreach (var id in subscriptionIds)
+            {
+                string[] subscriptionMetadata;
+                if (_api.Podcasts_GetSubscription(id, out subscriptionMetadata))
+                {
+                    list.Add(subscriptionConverter.Convert(subscriptionMetadata));
+                }                
+            }
+            
+            return list;
+        }
+
+        public IList<PodcastEpisode> GetEpisodes(string subscriptionId)
+        {
+            string[] subscriptionIds;
+            _api.Podcasts_QuerySubscriptions(null, out subscriptionIds);
+
+            var converter = new EpisodeConverter();
+            var list = new List<PodcastEpisode>();
+
+            string[] episodes;
+            if (!_api.Podcasts_GetSubscriptionEpisodes(subscriptionId, out episodes))
+            {
+                return list;
+            }
+
+            for (var i = 0; i < episodes.Length; i++)
+            {
+                string[] episodeMetadata;
+                if (!_api.Podcasts_GetSubscriptionEpisode(subscriptionId, i, out episodeMetadata))
+                {
+                    break;
+                }
+                list.Add(converter.Convert(episodeMetadata));
+            }
+            
+            return list;
+        }
+
+        public byte[] GetPodcastSubscriptionArtwork(string subscriptionId)
+        {
+            byte[] artwork;
+            if (_api.Podcasts_GetSubscriptionArtwork(subscriptionId, 0, out artwork))
+            {
+                return Utilities.ToJpeg(artwork);
+            }
+            return new byte[] {};
+        }
+
+        public IList<Playlist> GetPlaylists()
+        {
+            _api.Playlist_QueryPlaylists();
+            var playlists = new List<Playlist>();
+            while (true)
+            {
+                var url = _api.Playlist_QueryGetNextPlaylist();
+
+                if (string.IsNullOrEmpty(url))
+                {
+                    break;
+                }
+
+                var name = _api.Playlist_GetName(url);
+
+                var playlist = new Playlist
+                {
+                    Name = name,
+                    Url = url
+                };
+                playlists.Add(playlist);
+            }
+            return playlists;
+        }
+
+        public IList<Album> GetAlbums(string filter = "")
+        {
+            IList<Album> albums = new List<Album>();
+
+            var query = string.IsNullOrEmpty(filter) ? null : filter;
+
+            if (_api.Library_QueryLookupTable("album", "albumartist" + '\0' + "album", query))
+            {
+                albums = _api.Library_QueryGetLookupTableValue(null)
+                    .Split(new[] {"\0\0"}, StringSplitOptions.None)
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .Select(s => s.Trim())
+                    .Select(CreateAlbum)
+                    .Distinct()
+                    .ToList();
+            }
+
+            _api.Library_QueryLookupTable(null, null, null);
+
+            return albums;
+        }
+
         public string GetArtistUrl(string name)
         {
-            string[] urls = { };
-            this.api.Library_GetArtistPictureUrls(name, true, ref urls);
+            string[] urls;
+            _api.Library_GetArtistPictureUrls(name, true, out urls);
             return urls.Length > 0 ? urls[0] : string.Empty;
         }
 
-        public byte[] GetCoverData(string path)
+        public byte[] GetCover(string path)
         {
-            string coverUrl = null;
-            var locations = Plugin.PictureLocations.None;
-            byte[] imageData = { };
-            this.api.Library_GetArtworkEx(path, 0, true, ref locations, ref coverUrl, ref imageData);
+            string coverUrl;
+            Plugin.PictureLocations locations;
+            byte[] imageData;
+            _api.Library_GetArtworkEx(path, 0, true, out locations, out coverUrl, out imageData);
             return imageData;
         }
 
         public string GetCoverUrl(string path)
         {
-            string coverUrl = null;
-            var locations = Plugin.PictureLocations.None;
-            byte[] imageData = { };
-            this.api.Library_GetArtworkEx(path, 0, false, ref locations, ref coverUrl, ref imageData);
+            string coverUrl;
+            Plugin.PictureLocations locations;
+            byte[] imageData;
+            _api.Library_GetArtworkEx(path, 0, false, out locations, out coverUrl, out imageData);
             return coverUrl;
         }
-
-        public ICollection<LibraryGenre> GetGenreList()
-        {
-            var list = new List<LibraryGenre>();
-            if (this.api.Library_QueryLookupTable("genre", "count", null))
-            {
-                list.AddRange(
-                    this.api.Library_QueryGetLookupTableValue(null)
-                        .Split(new[] { "\0\0" }, StringSplitOptions.None)
-                        .Select(artist => new LibraryGenre(artist.Split('\0')[0])));
-            }
-
-            this.api.Library_QueryLookupTable(null, null, null);
-            return list;
-        }
-
+        
         public string[] GetLibraryFiles()
         {
-            string[] files = { };
-            this.api.Library_QueryFilesEx(string.Empty, ref files);
+            string[] files;
+            _api.Library_QueryFilesEx(string.Empty, out files);
             return files;
         }
 
         public Modifications GetSyncDelta(string[] cachedFiles, DateTime lastSync)
         {
-            string[] newFiles = { };
-            string[] deletedFiles = { };
-            string[] updatedFiles = { };
+            string[] newFiles;
+            string[] deletedFiles;
+            string[] updatedFiles;
 
-            this.api.Library_GetSyncDelta(
+            _api.Library_GetSyncDelta(
                 cachedFiles, 
                 lastSync, 
                 Plugin.LibraryCategory.Music, 
-                ref newFiles, 
-                ref updatedFiles, 
-                ref deletedFiles);
+                out newFiles, 
+                out updatedFiles, 
+                out deletedFiles);
             return new Modifications(deletedFiles, newFiles, updatedFiles);
         }
 
-        public LibraryTrackEx GetTags(string file)
+        private static Album CreateAlbum(string queryResult)
         {
-            string[] tags = { };
-            this.api.Library_GetFileTags(file, this.fields, ref tags);
-            return new LibraryTrackEx(tags);
-        }
+            var albumInfo = queryResult.Split('\0');
+
+            albumInfo = albumInfo.Select(s => s.Cleanup()).ToArray();
+
+            if (albumInfo.Length == 1)
+            {
+                return new Album(albumInfo[0], string.Empty);
+            }
+            if (albumInfo.Length == 2 && queryResult.StartsWith("\0"))
+            {
+                return new Album(albumInfo[1], string.Empty);
+            }
+
+            var current = albumInfo.Length == 3
+                ? new Album(albumInfo[1], albumInfo[2])
+                : new Album(albumInfo[0], albumInfo[1]);
+
+            return current;
+        }             
     }
 }

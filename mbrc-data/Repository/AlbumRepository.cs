@@ -3,7 +3,7 @@
   using MusicBeeRemoteData.Entities;
   using Interfaces;
 
-  public class AlbumRepository : GenericRepository<LibraryAlbum>, IAlbumRepository
+  public class AlbumRepository : GenericRepository<AlbumDao>, IAlbumRepository
   {
     public AlbumRepository(DatabaseProvider provider) : base(provider)
     {

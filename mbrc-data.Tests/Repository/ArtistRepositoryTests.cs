@@ -49,11 +49,11 @@ namespace mbrc_data.Tests.Repository
             return repository;
         }
 
-        private IList<LibraryArtist> GenerateArtists(int count)
+        private IList<ArtistDao> GenerateArtists(int count)
         {
             var epoch = DateTime.UtcNow.ToUnixTime();
             return
-                _fixture.Build<LibraryArtist>()
+                _fixture.Build<ArtistDao>()
                     .With(t => t.DateAdded, epoch)
                     .Without(t => t.DateUpdated)
                     .Without(t => t.DateDeleted)
@@ -62,11 +62,11 @@ namespace mbrc_data.Tests.Repository
                     .ToList();
         }
 
-        private LibraryArtist GenerateArtist()
+        private ArtistDao GenerateArtist()
         {
             var epoch = DateTime.UtcNow.ToUnixTime();
             return
-                _fixture.Build<LibraryArtist>()
+                _fixture.Build<ArtistDao>()
                     .With(t => t.DateAdded, epoch)
                     .Without(t => t.DateUpdated)
                     .Without(t => t.DateDeleted)

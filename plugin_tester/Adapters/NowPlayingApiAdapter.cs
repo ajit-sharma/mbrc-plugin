@@ -1,29 +1,29 @@
-﻿namespace plugin_tester
+﻿using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+
+namespace plugin_tester
 {
     using System;
     using System.Collections.Generic;
 
-    using MusicBeeRemoteCore;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
     internal class NowPlayingApiAdapter : INowPlayingApiAdapter
     {
-        public ICollection<NowPlaying> GetNowPlayingList()
+        public ICollection<NowPlaying> GetTracks()
         {
             throw new NotImplementedException();
         }
 
-        public bool NowPlayingMoveTrack(int @from, int to)
+        public bool MoveTrack(int @from, int to)
         {
             throw new NotImplementedException();
         }
 
-        public bool NowPlayingRemove(int index)
+        public bool RemoveIndex(int index)
         {
             throw new NotImplementedException();
         }
 
-        public bool PlayNow(string path)
+        public bool PlayPath(string path)
         {
             throw new NotImplementedException();
         }

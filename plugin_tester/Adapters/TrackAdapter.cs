@@ -1,13 +1,12 @@
-﻿namespace plugin_tester
+﻿using System;
+using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Enumerations;
+using MusicBeeRemote.Core.Model;
+using MusicBeeRemote.Core.Rest.ServiceInterface;
+using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+
+namespace MusicBeeRemoteTester.Adapters
 {
-    using System;
-
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-    using MusicBeeRemoteCore.AndroidRemote.Model;
-    using MusicBeeRemoteCore.ApiAdapters;
-    using MusicBeeRemoteCore.Rest.ServiceInterface;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
     internal class TrackAdapter : ITrackApiAdapter
     {
         private const int DURATION = 200030303;
@@ -23,12 +22,12 @@
 
         public PositionResponse GetPosition()
         {
-            return new PositionResponse { Code = ApiCodes.Success, Position = this.position, Duration = DURATION };
+            return new PositionResponse { Code = ApiCodes.Success, Position = position, Duration = DURATION };
         }
 
         public float GetRating()
         {
-            return this.rating;
+            return rating;
         }
 
         public TrackInfoResponse GetTrackInfo()
@@ -51,8 +50,8 @@
 
         public PositionResponse SetPosition(int newPosition)
         {
-            this.position = newPosition <= DURATION ? newPosition : DURATION;
-            return new PositionResponse { Code = ApiCodes.Success, Duration = DURATION, Position = this.position };
+            position = newPosition <= DURATION ? newPosition : DURATION;
+            return new PositionResponse { Code = ApiCodes.Success, Duration = DURATION, Position = position };
         }
 
         public float SetRating(float rating)

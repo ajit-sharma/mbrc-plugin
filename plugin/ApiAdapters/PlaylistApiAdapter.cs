@@ -1,10 +1,9 @@
-﻿namespace MusicBeePlugin.ApiAdapters
+﻿using MusicBeeRemote.Core.ApiAdapters;
+
+namespace MusicBeePlugin.ApiAdapters
 {
     using System.Collections.Generic;
     using System.Linq;
-
-    using MusicBeeRemoteCore.ApiAdapters;
-
     using MusicBeeRemoteData.Entities;
 
     class PlaylistApiAdapter : IPlaylistApiAdapter
@@ -47,7 +46,7 @@
                     break;
                 }
 
-                var playlist = new Playlist { Name = name, Path = path, Tracks = tracks.Count() };
+                var playlist = new Playlist { Name = name, Url = path, Tracks = tracks.Count() };
                 playlists.Add(playlist);
             }
 

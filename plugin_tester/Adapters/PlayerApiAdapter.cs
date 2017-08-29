@@ -1,11 +1,11 @@
-﻿namespace plugin_tester
+﻿using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Enumerations;
+using MusicBeeRemote.Core.Rest.ServiceModel.Enum;
+using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+
+namespace plugin_tester
 {
     using System;
-
-    using MusicBeeRemoteCore;
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
 
     internal class PlayerApiAdapter : IPlayerApiAdapter
     {
@@ -49,7 +49,7 @@
             throw new NotImplementedException();
         }
 
-        public Shuffle GetShuffleState()
+        public ShuffleState GetShuffleState()
         {
             throw new NotImplementedException();
         }
@@ -104,7 +104,7 @@
             throw new NotImplementedException();
         }
 
-        public bool SetShuffleState(Shuffle state)
+        public bool SetShuffleState(ShuffleState state)
         {
             throw new NotImplementedException();
         }

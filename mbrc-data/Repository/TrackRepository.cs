@@ -8,7 +8,7 @@
     /// <summary>
     /// The track repository, gives access to all the track data in the plugin's cache.
     /// </summary>
-    public class TrackRepository : GenericRepository<LibraryTrack>, ITrackRepository
+    public class TrackRepository : GenericRepository<TrackDao>, ITrackRepository
     {
         public TrackRepository(DatabaseProvider provider) : base(provider)
         {
@@ -19,7 +19,7 @@
             return Execute(collection => collection.FindOne(track => track.AlbumId == id)).Path;
         }
 
-        public IList<LibraryTrack> GetTracksByAlbumId(int id)
+        public IList<TrackDao> GetTracksByAlbumId(int id)
         {
             return Execute(collection => collection.Find(track => track.AlbumId == id).ToList());
         }

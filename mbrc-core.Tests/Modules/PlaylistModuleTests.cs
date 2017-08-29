@@ -6,15 +6,12 @@ using System.Reactive.Concurrency;
 using System.Reflection;
 using Microsoft.Reactive.Testing;
 using Moq;
-using MusicBeeRemoteCore;
-using MusicBeeRemoteCore.ApiAdapters;
-using MusicBeeRemoteCore.Modules;
+using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Modules;
 using MusicBeeRemoteData.Entities;
 using MusicBeeRemoteData.Extensions;
 using MusicBeeRemoteData.Repository.Interfaces;
 using Newtonsoft.Json;
-using Ninject;
-using Ninject.MockingKernel.Moq;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
@@ -25,8 +22,7 @@ namespace mbrc_core.Tests.Modules
     {
         [SetUp]
         public void Setup()
-        {
-            MusicBeeRemoteEntryPointImpl.InitializeLoggingConfiguration("");
+        {            
             _kernel = new MoqMockingKernel();
             _fixture = new Fixture();
             var assembly = Assembly.GetExecutingAssembly();
@@ -88,7 +84,7 @@ namespace mbrc_core.Tests.Modules
 
             Assert.True(success);
             Assert.NotNull(playlist);
-            Assert.AreEqual(Path, playlist.Path);
+            Assert.AreEqual(Path, playlist.Url);
             Assert.AreEqual(Name, playlist.Name);
         }
 
@@ -115,7 +111,7 @@ namespace mbrc_core.Tests.Modules
             {
                 Id = 1,
                 Name = Name,
-                Path = Path,
+                Url = Path,
                 DateAdded = epoch
             };
 
@@ -170,7 +166,7 @@ namespace mbrc_core.Tests.Modules
             {
                 Id = 1,
                 Name = Name,
-                Path = Path,
+                Url = Path,
                 DateAdded = epoch
             };
 

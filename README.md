@@ -48,13 +48,17 @@ To build the plugin you have to open it with Visual Studio 2015. After opening t
 
 ### Credits
 
-*   [Dapper](https://github.com/StackExchange/dapper-dot-net)
+*   [StructureMap](https://github.com/structuremap/structuremap)
+    
+    [Apache v2](https://github.com/structuremap/structuremap/blob/master/LICENSE.TXT)
+    
+*   [TinyMessenger](https://github.com/grumpydev/TinyMessenger)
 
-    [Apache v2](http://www.apache.org/licenses/LICENSE-2.0)
-
-*   [Dapper.SimpleCRUD](https://github.com/ericdc1/Dapper.SimpleCRUD)
-
-    [Apache v2](http://www.apache.org/licenses/LICENSE-2.0)
+    [Microsoft Public License](https://github.com/grumpydev/TinyMessenger/blob/master/licence.txt)
+       
+*   [TinyMapper](https://github.com/TinyMapper/TinyMapper)
+    
+    [MIT](https://github.com/TinyMapper/TinyMapper/blob/master/LICENSE)
 
 *   [Reactive Extensions](https://rx.codeplex.com/)
 
@@ -68,9 +72,9 @@ To build the plugin you have to open it with Visual Studio 2015. After opening t
 
     [MIT](https://raw.githubusercontent.com/NancyFx/Nancy/master/license.txt)
 
-*   [Nancy.Bootstrappers.Ninject](https://raw.githubusercontent.com/NancyFx/Nancy.Bootstrappers.Ninject)
+*   [Nancy.Bootstrappers.StructureMap](https://github.com/NancyFx/Nancy.Bootstrappers.StructureMap)
 
-    [MIT](https://raw.githubusercontent.com/NancyFx/Nancy.Bootstrappers.Ninject/master/license.txt)
+    [MIT](https://github.com/NancyFx/Nancy.Bootstrappers.StructureMap/blob/master/license.txt)
 
 *   [Nancy.Serialization.JsonNet](https://github.com/NancyFx/Nancy.Serialization.JsonNet)
 
@@ -80,17 +84,13 @@ To build the plugin you have to open it with Visual Studio 2015. After opening t
 
     [MIT](https://raw.githubusercontent.com/JamesNK/Newtonsoft.Json/master/LICENSE.md)
 
-*   [SQLite](https://www.sqlite.org/)
+*   [LiteDB](https://github.com/mbdavid/LiteDB)
 
-    [Public Domain](https://www.sqlite.org/copyright.html)
+    [MIT](https://github.com/mbdavid/LiteDB/blob/master/LICENSE)
 
 *   [NLOG](https://github.com/NLog/NLog)
 
     [BSD LICENCE](https://github.com/NLog/NLog/blob/master/LICENSE.txt)
-
-*   [Ninject](https://github.com/ninject/ninject)
-
-    [Apache v2](https://github.com/ninject/Ninject/blob/master/LICENSE.txt)
 
 *   [NUnit](https://github.com/nunit/nunit)
 

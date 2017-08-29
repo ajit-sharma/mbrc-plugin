@@ -72,7 +72,6 @@
     <Compile Include="Adapters\LibraryAdapter.cs" />
     <Compile Include="Adapters\NowPlayingApiAdapter.cs" />
     <Compile Include="IpcServer.cs" />
-    <Compile Include="MyProvider.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Adapters\TrackAdapter.cs" />

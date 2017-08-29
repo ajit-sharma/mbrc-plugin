@@ -7,7 +7,7 @@
     /// <summary>
     /// The TrackRepository interface.
     /// </summary>
-    public interface ITrackRepository : IRepository<LibraryTrack>
+    public interface ITrackRepository : IRepository<TrackDao>
     {
         /// <summary>
         /// Gets the tracks for an album by the album id.
@@ -18,7 +18,7 @@
         /// <returns>
         /// The <see cref="IList"/> of tracks with the specified album id.
         /// </returns>
-        IList<LibraryTrack> GetTracksByAlbumId(int id);
+        IList<TrackDao> GetTracksByAlbumId(int id);
 
         string GetFirstAlbumTrackPathById(int id);
     }

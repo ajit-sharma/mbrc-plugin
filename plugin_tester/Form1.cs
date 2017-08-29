@@ -1,4 +1,7 @@
-﻿namespace plugin_tester
+﻿using MusicBeeRemote.Core;
+using MusicBeeRemoteTester.Adapters;
+
+namespace plugin_tester
 {
     using System;
     using System.Windows.Forms;
@@ -14,17 +17,6 @@
         {
             var path = System.Reflection.Assembly.GetEntryAssembly().Location;
             var directory = System.IO.Path.GetDirectoryName(path);
-
-            var entry = new MusicBeeRemoteCore.MusicBeeRemoteEntryPointImpl();
-            var provider = new MyProvider(
-                new PlayerApiAdapter(), 
-                new PlaylistAdapter(), 
-                new TrackAdapter(), 
-                new LibraryAdapter(), 
-                new NowPlayingApiAdapter());
-
-            entry.StoragePath = directory;
-            entry.Init(provider);
         }
     }
 }

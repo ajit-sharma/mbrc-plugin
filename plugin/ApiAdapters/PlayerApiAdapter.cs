@@ -1,200 +1,149 @@
+using System;
+using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Enumerations;
+using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+using static MusicBeePlugin.Plugin;
+
 namespace MusicBeePlugin.ApiAdapters
 {
-    using System;
-
-    using MusicBeeRemoteCore;
-    using MusicBeeRemoteCore.AndroidRemote.Enumerations;
-    using MusicBeeRemoteCore.Rest.ServiceInterface;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Enum;
-    using MusicBeeRemoteCore.Rest.ServiceModel.Type;
-
-    class PlayerApiAdapter : IPlayerApiAdapter
+    public class PlayerApiAdapter : IPlayerApiAdapter
     {
-        public Plugin.MusicBeeApiInterface api;
+        private readonly MusicBeeApiInterface _api;
 
-        public PlayerApiAdapter(Plugin.MusicBeeApiInterface api)
+        public PlayerApiAdapter(MusicBeeApiInterface api)
         {
-            this.api = api;
+            _api = api;
         }
 
-        public bool ChangeAutoDj(bool enabled)
+        public ShuffleState GetShuffleState()
         {
-            return enabled ? this.api.Player_StartAutoDj() : this.api.Player_EndAutoDj();
-        }
-
-        public bool ChangeRepeat()
-        {
-            var repeat = this.api.Player_GetRepeat();
-            Plugin.RepeatMode newMode;
-            switch (repeat)
+            var shuffleEnabled = _api.Player_GetShuffle();
+            var autoDjEnabled = _api.Player_GetAutoDjEnabled();
+            var state = ShuffleState.Off;
+            if (shuffleEnabled && !autoDjEnabled)
             {
-                case Plugin.RepeatMode.None:
-                    newMode = Plugin.RepeatMode.All;
-                    break;
-                case Plugin.RepeatMode.All:
-                    newMode = Plugin.RepeatMode.One;
-                    break;
-                default:
-                    newMode = Plugin.RepeatMode.None;
-                    break;
+                state = ShuffleState.Shuffle;
             }
-
-            return this.api.Player_SetRepeat(newMode);
-        }
-
-        public bool GetAutoDjState()
-        {
-            return this.api.Player_GetAutoDjEnabled();
-        }
-
-        public bool GetMuteState()
-        {
-            return this.api.Player_GetMute();
-        }
-
-        public OutputDevice GetOutputDevices()
-        {
-            string[] devices;
-            string active;
-            this.api.Player_GetOutputDevices(out devices, out active);
-
-            return new OutputDevice { Active = active, Devices = devices };
-        }
-
-        public string GetPlayState()
-        {
-            return this.api.Player_GetPlayState().ToString().ToLower();
-        }
-
-        public string GetRepeatState()
-        {
-            var repeatState = this.api.Player_GetRepeat().ToString();
-            return repeatState.ToLower();
-        }
-
-        public bool GetScrobbleState()
-        {
-            return this.api.Player_GetScrobbleEnabled();
-        }
-
-        public Shuffle GetShuffleState()
-        {
-            Shuffle state;
-            if (this.api.Player_GetAutoDjEnabled())
+            else if (autoDjEnabled)
             {
-                state = Shuffle.autodj;
-            }
-            else
-            {
-                var shuffleEnabled = this.api.Player_GetShuffle();
-                state = shuffleEnabled ? Shuffle.shuffle : Shuffle.off;
+                state = ShuffleState.Autodj;
             }
 
             return state;
         }
 
-        public PlayerStatus GetStatus()
+        public Repeat GetRepeatMode()
         {
-            return new PlayerStatus
-                       {
-                           Repeat = this.api.Player_GetRepeat().ToString().ToLower(), 
-                           Mute = this.api.Player_GetMute(), 
-                           Shuffle = this.GetShuffleState(), 
-                           Scrobble = this.api.Player_GetScrobbleEnabled(), 
-                           PlayerState = this.api.Player_GetPlayState().ToString().ToLower(), 
-                           Volume = (int)Math.Round(this.api.Player_GetVolume() * 100, 1), 
-                           Code = ApiCodes.Success
-                       };
-        }
-
-        public int GetVolume()
-        {
-            return (int)Math.Round(this.api.Player_GetVolume() * 100, 1);
-        }
-
-        public bool PausePlayback()
-        {
-            var success = false;
-            var playState = this.api.Player_GetPlayState();
-            if (playState == Plugin.PlayState.Playing)
+            var repeat = _api.Player_GetRepeat();
+            Repeat repeatMode;
+            switch (repeat)
             {
-                success = this.api.Player_PlayPause();
+                case RepeatMode.None:
+                    repeatMode = Repeat.None;
+                    break;
+                case RepeatMode.All:
+                    repeatMode = Repeat.All;
+                    break;
+                case RepeatMode.One:
+                    repeatMode = Repeat.One;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
+            return repeatMode;
+        }
 
-            return success;
+        public bool ToggleRepeatMode()
+        {
+            switch (_api.Player_GetRepeat())
+            {
+                case RepeatMode.None:
+                    return _api.Player_SetRepeat(RepeatMode.All);
+                case RepeatMode.All:
+                    return _api.Player_SetRepeat(RepeatMode.None);
+                case RepeatMode.One:
+                    return _api.Player_SetRepeat(RepeatMode.None);
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+
+        public bool ScrobblingEnabled()
+        {
+            return _api.Player_GetScrobbleEnabled();
         }
 
         public bool PlayNext()
         {
-            return this.api.Player_PlayNextTrack();
-        }
-
-        public bool PlayPause()
-        {
-            return this.api.Player_PlayPause();
+            return _api.Player_PlayNextTrack();
         }
 
         public bool PlayPrevious()
         {
-            return this.api.Player_PlayPreviousTrack();
+            return _api.Player_PlayPreviousTrack();
         }
 
-        public bool SetMute(bool enabled)
+        public bool StopPlayback()
         {
-            return this.api.Player_SetMute(enabled);
+            return _api.Player_Stop();
         }
 
-        public bool SetOutputDevice(string active)
+        public bool PlayPause()
         {
-            return this.api.Player_SetOutputDevice(active);
+            return _api.Player_PlayPause();
         }
 
-        public bool SetRepeatState(ApiRepeatMode mode)
+        public bool Play()
         {
-            var success = false;
-            Plugin.RepeatMode repeatMode;
+            return _api.Player_GetPlayState() != PlayState.Playing && _api.Player_PlayPause();
+        }
 
-            switch (mode)
+        public bool Pause()
+        {
+            return _api.Player_GetPlayState() == PlayState.Playing && _api.Player_PlayPause();
+        }
+
+        public PlayerStatus GetStatus()
+        {
+            return new PlayerStatus
             {
-                case ApiRepeatMode.all:
-                    repeatMode = Plugin.RepeatMode.All;
-                    break;
-                case ApiRepeatMode.none:
-                    repeatMode = Plugin.RepeatMode.None;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(mode), mode, null);
-            }
-
-            success = this.api.Player_SetRepeat(repeatMode);
-
-            return success;
+                Mute = _api.Player_GetMute(),
+                PlayerState = GetState(),
+                RepeatMode = GetRepeatMode(),
+                Scrobbling = ScrobblingEnabled(),
+                Shuffle = GetShuffleState(),
+                Volume = GetVolume()
+            };
         }
 
-        public bool SetScrobbleState(bool enabled)
+        public PlayerState GetState()
         {
-            return this.api.Player_SetScrobbleEnabled(enabled);
-        }
-
-        public bool SetShuffleState(Shuffle state)
-        {
-            var success = false;
-            switch (state)
+            switch (_api.Player_GetPlayState())
             {
-                case Shuffle.autodj:
-                    success = this.api.Player_StartAutoDj();
-                    break;
-                case Shuffle.off:
-                    success = this.api.Player_SetShuffle(false);
-                    break;
-                case Shuffle.shuffle:
-                    success = this.api.Player_SetShuffle(true);
-                    break;
+                case PlayState.Undefined:
+                    return PlayerState.Undefined;
+                case PlayState.Loading:
+                    return PlayerState.Loading;
+                case PlayState.Playing:
+                    return PlayerState.Playing;
+                case PlayState.Paused:
+                    return PlayerState.Paused;
+                case PlayState.Stopped:
+                    return PlayerState.Paused;
                 default:
-                    throw new ArgumentOutOfRangeException(nameof(state), state, null);
+                    throw new ArgumentOutOfRangeException();
             }
+        }
 
-            return success;
+        public bool ToggleScrobbling()
+        {
+            return _api.Player_SetScrobbleEnabled(!_api.Player_GetScrobbleEnabled());
+        }
+
+        public int GetVolume()
+        {
+            return (int) Math.Round(_api.Player_GetVolume() * 100, 1);
         }
 
         public bool SetVolume(int volume)
@@ -202,54 +151,83 @@ namespace MusicBeePlugin.ApiAdapters
             var success = false;
             if (volume >= 0)
             {
-                success = this.api.Player_SetVolume((float)volume / 100);
-            }
+                success = _api.Player_SetVolume((float) volume / 100);
 
-            if (this.api.Player_GetMute())
-            {
-                success = this.api.Player_SetMute(false);
-            }
-
-            return success;
-        }
-
-        public bool StartPlayback()
-        {
-            var success = false;
-            var playState = this.api.Player_GetPlayState();
-            if (playState != Plugin.PlayState.Playing)
-            {
-                success = this.api.Player_PlayPause();
+                if (_api.Player_GetMute())
+                {
+                    _api.Player_SetMute(false);
+                }
             }
 
             return success;
         }
 
-        public bool StopPlayback()
+        public void ToggleShuffleLegacy()
         {
-            return this.api.Player_Stop();
+            _api.Player_SetShuffle(!_api.Player_GetShuffle());
         }
 
-        public bool ToggleShuffle()
+        public bool GetShuffleLegacy()
         {
-            var success = false;
-            var shuffleEnabled = this.api.Player_GetShuffle();
-            var autoDjEnabled = this.api.Player_GetAutoDjEnabled();
+            return _api.Player_GetShuffle();
+        }
+
+        public ShuffleState SwitchShuffle()
+        {
+            var shuffleEnabled = _api.Player_GetShuffle();
+            var autoDjEnabled = _api.Player_GetAutoDjEnabled();
+
+            var shuffleState = GetShuffleState();
 
             if (shuffleEnabled && !autoDjEnabled)
             {
-                success = this.api.Player_StartAutoDj();
+                var success = _api.Player_StartAutoDj();
+                if (success)
+                {
+                    shuffleState = ShuffleState.Autodj;
+                }
             }
             else if (autoDjEnabled)
             {
-                success = this.api.Player_EndAutoDj();
+                _api.Player_EndAutoDj();
             }
             else
             {
-                success = this.api.Player_SetShuffle(true);
+                var success = _api.Player_SetShuffle(true);
+                if (success)
+                {
+                    shuffleState = ShuffleState.Shuffle;
+                }
             }
 
-            return success;
+            return shuffleState;
+        }
+
+        public bool IsMuted()
+        {
+            return _api.Player_GetMute();
+        }
+
+        public bool ToggleMute()
+        {
+            return _api.Player_SetMute(!_api.Player_GetMute());
+        }
+
+        public void ToggleAutoDjLegacy()
+        {
+            if (!_api.Player_GetAutoDjEnabled())
+            {
+                _api.Player_StartAutoDj();
+            }
+            else
+            {
+                _api.Player_EndAutoDj();
+            }
+        }
+
+        public bool IsAutoDjEnabledLegacy()
+        {
+            return _api.Player_GetAutoDjEnabled();
         }
     }
 }

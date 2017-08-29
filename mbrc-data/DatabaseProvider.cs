@@ -1,6 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Net;
+using System.Net.NetworkInformation;
+using LiteDB;
 using NLog;
+using Logger = NLog.Logger;
 
 namespace MusicBeeRemoteData
 {
@@ -22,6 +26,7 @@ namespace MusicBeeRemoteData
         /// <param name="storagePath">The storage path.</param>
         public DatabaseProvider(string storagePath)
         {
+            Configure();
             
             if (!storagePath.EndsWith("\\"))
             {
@@ -59,6 +64,25 @@ namespace MusicBeeRemoteData
             {
                 File.Delete(_dbFilePath);
             }
+        }
+
+        private void Configure()
+        {
+            //Bson serialization for client IP addresses
+            BsonMapper.Global.RegisterType(
+                ipAddress => ipAddress.ToString(),
+                bson => IPAddress.Parse(bson.AsString)
+            );
+
+            //Bson serialization for client Physical Addresses
+            BsonMapper.Global.RegisterType(
+                mac => mac.ToString(),
+                bson =>
+                {
+                    var newAddress = PhysicalAddress.Parse(bson);
+                    return PhysicalAddress.None.Equals(newAddress) ? null : newAddress;
+                }
+            );
         }
     }
 }

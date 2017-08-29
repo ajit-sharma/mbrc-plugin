@@ -1,10 +1,9 @@
-﻿namespace plugin_tester
+﻿using MusicBeeRemote.Core.ApiAdapters;
+
+namespace plugin_tester
 {
     using System;
     using System.Collections.Generic;
-
-    using MusicBeeRemoteCore.ApiAdapters;
-
     using MusicBeeRemoteData.Entities;
 
     internal class PlaylistAdapter : IPlaylistApiAdapter
