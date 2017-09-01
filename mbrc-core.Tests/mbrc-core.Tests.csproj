@@ -65,6 +65,12 @@
     <Reference Include="Ploeh.AutoFixture, Version=3.50.0.0, Culture=neutral, PublicKeyToken=b24654c590009d4f">
       <HintPath>..\packages\AutoFixture.3.50.6\lib\net40\Ploeh.AutoFixture.dll</HintPath>
     </Reference>
+    <Reference Include="StructureMap, Version=4.2.0.402, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\structuremap.4.2.0.402\lib\net40\StructureMap.dll</HintPath>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=4.2.0.402, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\structuremap.4.2.0.402\lib\net40\StructureMap.Net4.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Reactive.Core, Version=2.2.5.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Rx-Core.2.2.5\lib\net45\System.Reactive.Core.dll</HintPath>
@@ -84,6 +90,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AutoMocking\MoqAutoMocker.cs" />
+    <Compile Include="AutoMocking\MoqFactory.cs" />
+    <Compile Include="AutoMocking\MoqServiceLocator.cs" />
     <Compile Include="Modules\PlaylistModuleTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

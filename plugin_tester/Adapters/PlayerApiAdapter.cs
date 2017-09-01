@@ -1,70 +1,28 @@
-﻿using MusicBeeRemote.Core.ApiAdapters;
+﻿using System;
+using MusicBeeRemote.Core.ApiAdapters;
 using MusicBeeRemote.Core.Enumerations;
-using MusicBeeRemote.Core.Rest.ServiceModel.Enum;
 using MusicBeeRemote.Core.Rest.ServiceModel.Type;
 
-namespace plugin_tester
+namespace MusicBeeRemoteTester.Adapters
 {
-    using System;
-
     internal class PlayerApiAdapter : IPlayerApiAdapter
     {
-        public bool ChangeAutoDj(bool enabled)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool ChangeRepeat()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool GetAutoDjState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool GetMuteState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public OutputDevice GetOutputDevices()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetPlayState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public string GetRepeatState()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool GetScrobbleState()
-        {
-            throw new NotImplementedException();
-        }
-
         public ShuffleState GetShuffleState()
         {
             throw new NotImplementedException();
         }
 
-        public PlayerStatus GetStatus()
+        public Repeat GetRepeatMode()
         {
             throw new NotImplementedException();
         }
 
-        public int GetVolume()
+        public bool ToggleRepeatMode()
         {
             throw new NotImplementedException();
         }
 
-        public bool PausePlayback()
+        public bool ScrobblingEnabled()
         {
             throw new NotImplementedException();
         }
@@ -74,47 +32,7 @@ namespace plugin_tester
             throw new NotImplementedException();
         }
 
-        public bool PlayPause()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool PlayPrevious()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetMute(bool enabled)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetOutputDevice(string active)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetRepeatState(ApiRepeatMode mode)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetScrobbleState(bool enabled)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetShuffleState(ShuffleState state)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool SetVolume(int volume)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool StartPlayback()
         {
             throw new NotImplementedException();
         }
@@ -124,7 +42,57 @@ namespace plugin_tester
             throw new NotImplementedException();
         }
 
-        public bool ToggleShuffle()
+        public bool PlayPause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Play()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Pause()
+        {
+            throw new NotImplementedException();
+        }
+
+        public PlayerStatus GetStatus()
+        {
+            throw new NotImplementedException();
+        }
+
+        public PlayerState GetState()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ToggleScrobbling()
+        {
+            throw new NotImplementedException();
+        }
+
+        public int GetVolume()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool SetVolume(int volume)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ShuffleState SwitchShuffle()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsMuted()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool ToggleMute()
         {
             throw new NotImplementedException();
         }

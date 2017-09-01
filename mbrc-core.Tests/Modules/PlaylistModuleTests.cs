@@ -13,21 +13,27 @@ using MusicBeeRemoteData.Extensions;
 using MusicBeeRemoteData.Repository.Interfaces;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
+using StructureMap.AutoMocking.Moq;
 
 namespace mbrc_core.Tests.Modules
 {
     [TestFixture]
     public class PlaylistModuleTests
     {
+        private const string Path = "/media/music/playlists.mbp";
+        private const string Name = "My super empty playlist";
+
+        private List<PlaylistTrack> _tracks;
+        private List<PlaylistTrackInfo> _playlistTrackInfos;
+
+        private MockRepository _mockRepo;
+
         [SetUp]
         public void Setup()
-        {            
-            _kernel = new MoqMockingKernel();
-            _fixture = new Fixture();
+        {
             var assembly = Assembly.GetExecutingAssembly();
-            var playlists = "mbrc_core.Tests.Data.playlist_data.json";
-            var trackInfo = "mbrc_core.Tests.Data.track_info.json";
+            const string playlists = "mbrc_core.Tests.Data.playlist_data.json";
+            const string trackInfo = "mbrc_core.Tests.Data.track_info.json";
 
             using (var stream = assembly.GetManifestResourceStream(playlists))
             using (var reader = new StreamReader(stream))
@@ -51,13 +57,6 @@ namespace mbrc_core.Tests.Modules
         {
         }
 
-        private const string Path = "/media/music/playlists.mbp";
-        private const string Name = "My super empty playlist";
-        private Fixture _fixture;
-        private List<PlaylistTrack> _tracks;
-        private List<PlaylistTrackInfo> _playlistTrackInfos;
-        private MoqMockingKernel _kernel;
-        private MockRepository _mockRepo;
 
         [Test]
         public void GetPlaylistTracksTest()
@@ -66,20 +65,22 @@ namespace mbrc_core.Tests.Modules
 
             Playlist playlist = null;
 
-            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            _kernel.Bind<IScheduler>().ToMethod(context => scheduler);
+            var autoModule = new MoqAutoMocker<PlaylistModule>();
 
-            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
-            var repository = _kernel.GetMock<IPlaylistRepository>();
+            autoModule.Container.Configure(c => { c.For<IScheduler>().Use(() => scheduler); });
+
+            var apiAdapter = Mock.Get(autoModule.Get<IPlaylistApiAdapter>());
+            var repository = Mock.Get(autoModule.Get<IPlaylistRepository>());
 
             apiAdapter.Setup(adapter => adapter.CreatePlaylist(It.IsAny<string>(), It.IsAny<string[]>())).Returns(Path);
             repository.Setup(playlistRepository => playlistRepository.Save(It.IsNotNull<Playlist>()))
                 .Callback<Playlist>(saved => playlist = saved)
                 .Returns(1);
 
-            var module = _kernel.Get<IPlaylistModule>();
+            var module = autoModule.ClassUnderTest;
+
             scheduler.Start();
-            var success = module.CreateNewPlaylist(Name, new string[] {});
+            var success = module.CreateNewPlaylist(Name, new string[] { });
             scheduler.AdvanceBy(1000);
 
             Assert.True(success);
@@ -91,21 +92,18 @@ namespace mbrc_core.Tests.Modules
         [Test]
         public void PlaylistPlayNowTest()
         {
-            _kernel.Reset();
-            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            var module = _kernel.Get<IPlaylistModule>();
-            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
+            var autoModule = new MoqAutoMocker<PlaylistModule>();
+            var apiAdapter = Mock.Get(autoModule.Get<IPlaylistApiAdapter>());
+            var module = autoModule.ClassUnderTest;
             apiAdapter.Setup(adapter => adapter.PlayNow(It.IsAny<string>())).Returns(() => true);
             var playNow = module.PlaylistPlayNow(Path);
+
             Assert.AreEqual(true, playNow);
         }
 
         [Test]
         public void SyncPlaylistDataWithCacheTestNoUpdateNeeded()
         {
-            _kernel.Reset();
-            var scheduler = new TestScheduler();
-
             var epoch = DateTime.UtcNow.ToUnixTime();
             var playlist = new Playlist
             {
@@ -115,37 +113,44 @@ namespace mbrc_core.Tests.Modules
                 DateAdded = epoch
             };
 
+            var scheduler = new TestScheduler();
 
-            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            _kernel.Bind<IScheduler>().ToMethod(context => scheduler);
+            var autoModule = new MoqAutoMocker<PlaylistModule>();
+            autoModule.Container.Configure(c => { c.For<IScheduler>().Use(() => scheduler); });
 
-            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
-            var trackRepository = _kernel.GetMock<IPlaylistTrackRepository>();
-            var trackInfoRepository = _kernel.GetMock<IPlaylistTrackInfoRepository>();
-            var playlistRepository = _kernel.GetMock<IPlaylistRepository>();
+            var apiAdapter = Mock.Get(autoModule.Get<IPlaylistApiAdapter>());
+            var trackRepository = Mock.Get(autoModule.Get<IPlaylistTrackRepository>());
+            var trackInfoRepository = Mock.Get(autoModule.Get<IPlaylistTrackInfoRepository>());
+            var playlistRepository = Mock.Get(autoModule.Get<IPlaylistRepository>());
 
             var matches = _mockRepo.GetPlaylistTracksJoin(true);
-            
-            apiAdapter.SetupSequence(adapter => adapter.GetPlaylistTracks(It.IsAny<string>()))
+
+            apiAdapter.SetupSequence(a => a.GetPlaylistTracks(It.IsAny<string>()))
                 .Returns(matches.ToList())
                 .Returns(matches);
-            trackRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<int>()))
+            
+            trackRepository.Setup(r => r.GetTracksForPlaylist(It.IsAny<int>()))
                 .Returns(_tracks.ToList());
-            trackInfoRepository.Setup(repository => repository.GetTracksForPlaylist(It.IsAny<int>())).Returns(_mockRepo.GetPlaylistTracksJoin(false));
-            trackInfoRepository.Setup(repository => repository.GetAll()).Returns(_mockRepo.Info);
-            trackInfoRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
+            
+            trackInfoRepository.Setup(r => r.GetTracksForPlaylist(It.IsAny<int>()))
+                .Returns(_mockRepo.GetPlaylistTracksJoin(false));
+            
+            trackInfoRepository.Setup(r => r.GetAll()).Returns(_mockRepo.Info);
+            
+            trackInfoRepository.Setup(r => r.Save(It.IsAny<IList<PlaylistTrackInfo>>()))
                 .Callback<IList<PlaylistTrackInfo>>(list => _mockRepo.Info.AddRange(list));
-            trackRepository.Setup(repository => repository.Delete(It.IsAny<IList<PlaylistTrack>>()))
-                .Callback<IList<PlaylistTrack>>(
-                    list => list.ToList().ForEach(track => _mockRepo.Track.Remove(track)));
-            trackRepository.Setup(repository => repository.Save(It.IsAny<IList<PlaylistTrack>>()))
+            
+            trackRepository.Setup(r => r.Delete(It.IsAny<IList<PlaylistTrack>>()))
+                .Callback<IList<PlaylistTrack>>(list => list.ToList().ForEach(track => _mockRepo.Track.Remove(track)));
+            
+            trackRepository.Setup(r => r.Save(It.IsAny<IList<PlaylistTrack>>()))
                 .Callback<IList<PlaylistTrack>>(track => _mockRepo.Track.AddRange(track));
 
-            playlistRepository.Setup(repository => repository.Save(It.IsAny<Playlist>()))
+            playlistRepository.Setup(r => r.Save(It.IsAny<Playlist>()))
                 .Callback<Playlist>(playlist1 => playlist = playlist1)
                 .Returns(1);
 
-            var module = _kernel.Get<IPlaylistModule>();
+            var module = autoModule.ClassUnderTest;
 
             var equal = module.SyncPlaylistDataWithCache(playlist);
 
@@ -158,9 +163,6 @@ namespace mbrc_core.Tests.Modules
         [Test]
         public void SyncPlaylistDataWithCacheTestUpdateNeededDuplicates()
         {
-            _kernel.Reset();
-            var scheduler = new TestScheduler();
-
             var epoch = DateTime.UtcNow.ToUnixTime();
             var playlist = new Playlist
             {
@@ -170,17 +172,18 @@ namespace mbrc_core.Tests.Modules
                 DateAdded = epoch
             };
 
+            var scheduler = new TestScheduler();
+            var autoModule = new MoqAutoMocker<PlaylistModule>();
+            autoModule.Container.Configure(c => { c.For<IScheduler>().Use(() => scheduler); });
 
-            _kernel.Bind<IPlaylistModule>().To<PlaylistModule>();
-            _kernel.Bind<IScheduler>().ToMethod(context => scheduler);
 
-            var apiAdapter = _kernel.GetMock<IPlaylistApiAdapter>();
-            var trackRepository = _kernel.GetMock<IPlaylistTrackRepository>();
-            var trackInfoRepository = _kernel.GetMock<IPlaylistTrackInfoRepository>();
-            var playlistRepository = _kernel.GetMock<IPlaylistRepository>();
+            var apiAdapter = Mock.Get(autoModule.Get<IPlaylistApiAdapter>());
+            var trackRepository = Mock.Get(autoModule.Get<IPlaylistTrackRepository>());
+            var trackInfoRepository = Mock.Get(autoModule.Get<IPlaylistTrackInfoRepository>());
+            var playlistRepository = Mock.Get(autoModule.Get<IPlaylistRepository>());
 
             var matches = _mockRepo.GetPlaylistTracksJoin(true);
-            
+
 
             var position = matches.Select(lt => lt.Position).OrderBy(i => i).LastOrDefault();
             var item = matches[5];
@@ -189,7 +192,7 @@ namespace mbrc_core.Tests.Modules
             {
                 var info = new PlaylistTrackInfo
                 {
-                    Id =  0,
+                    Id = 0,
                     Artist = item.Artist,
                     Title = item.Title,
                     Path = item.Path,
@@ -228,7 +231,7 @@ namespace mbrc_core.Tests.Modules
                 })
                 .Returns(1);
 
-            var module = _kernel.Get<IPlaylistModule>();
+            var module = autoModule.ClassUnderTest;
 
             var equal = module.SyncPlaylistDataWithCache(playlist);
 
@@ -240,15 +243,12 @@ namespace mbrc_core.Tests.Modules
     }
 
 
-
-
-
     internal class MockRepository
     {
         public List<PlaylistTrackInfo> Info { get; } = new List<PlaylistTrackInfo>();
         public List<PlaylistTrack> Track { get; } = new List<PlaylistTrack>();
 
-        public static void Save<T>(IList<T> items, IList<T> repo) where T: TypeBase
+        public static void Save<T>(IList<T> items, IList<T> repo) where T : TypeBase
         {
             items.ToList().ForEach(item =>
             {
@@ -283,7 +283,7 @@ namespace mbrc_core.Tests.Modules
                         Artist = first.Artist,
                         Title = first.Title,
                         Path = first.Path,
-                        Id =  fromApi ? 0 : track.Id
+                        Id = fromApi ? 0 : track.Id
                     };
                 }
                 return null;
@@ -292,5 +292,4 @@ namespace mbrc_core.Tests.Modules
             return data;
         }
     }
-    
 }

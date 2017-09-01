@@ -1,11 +1,10 @@
-﻿using MusicBeeRemote.Core.ApiAdapters;
+﻿using System.Collections.Generic;
+using System.Linq;
+using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemoteData.Entities;
 
 namespace MusicBeePlugin.ApiAdapters
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using MusicBeeRemoteData.Entities;
-
     class PlaylistApiAdapter : IPlaylistApiAdapter
     {
         private readonly Plugin.MusicBeeApiInterface api;
@@ -17,36 +16,41 @@ namespace MusicBeePlugin.ApiAdapters
 
         public bool AddTracks(string path, string[] list)
         {
-            return this.api.Playlist_AppendFiles(path, list);
+            return api.Playlist_AppendFiles(path, list);
         }
 
         public string CreatePlaylist(string name, string[] list)
         {
-            return this.api.Playlist_CreatePlaylist(string.Empty, name, list);
+            return api.Playlist_CreatePlaylist(string.Empty, name, list);
         }
 
         public bool DeletePlaylist(string path)
         {
-            return this.api.Playlist_DeletePlaylist(path);
+            return api.Playlist_DeletePlaylist(path);
         }
 
         public List<Playlist> GetPlaylists()
         {
-            this.api.Playlist_QueryPlaylists();
+            api.Playlist_QueryPlaylists();
             var playlists = new List<Playlist>();
             while (true)
             {
-                var path = this.api.Playlist_QueryGetNextPlaylist();
-                var name = this.api.Playlist_GetName(path);
-                string[] tracks = { };
-                this.api.Playlist_QueryFilesEx(path, ref tracks);
+                var path = api.Playlist_QueryGetNextPlaylist();
+                var name = api.Playlist_GetName(path);
+                string[] tracks;
+                api.Playlist_QueryFilesEx(path, out tracks);
 
                 if (string.IsNullOrEmpty(path))
                 {
                     break;
                 }
 
-                var playlist = new Playlist { Name = name, Url = path, Tracks = tracks.Count() };
+                var playlist = new Playlist
+                {
+                    Name = name,
+                    Url = path,
+                    Tracks = tracks.Length
+                };
                 playlists.Add(playlist);
             }
 
@@ -56,34 +60,31 @@ namespace MusicBeePlugin.ApiAdapters
         public List<PlaylistTrackInfo> GetPlaylistTracks(string path)
         {
             var list = new List<PlaylistTrackInfo>();
-            var trackList = new string[] { };
-            if (this.api.Playlist_QueryFilesEx(path, ref trackList))
+            string[] trackList;
+            if (!api.Playlist_QueryFilesEx(path, out trackList))
             {
-                var position = 0;
-                list.AddRange(
-                    trackList.Select(
-                        trackPath =>
-                        new PlaylistTrackInfo
-                            {
-                                Path = trackPath, 
-                                Artist =
-                                    this.api.Library_GetFileTag(trackPath, Plugin.MetaDataType.Artist), 
-                                Title =
-                                    this.api.Library_GetFileTag(
-                                        trackPath, 
-                                        Plugin.MetaDataType.TrackTitle), 
-                                Position = position++
-                            }));
+                return list;
             }
+
+            var position = 0;
+            var tracks = trackList.Select(url => new PlaylistTrackInfo
+            {
+                Path = url,
+                Artist = api.Library_GetFileTag(url, Plugin.MetaDataType.Artist),
+                Title = api.Library_GetFileTag(url, Plugin.MetaDataType.TrackTitle),
+                Position = position++
+            });
+
+            list.AddRange(tracks);
 
             return list;
         }
 
-        public bool MoveTrack(string path, int @from, int to)
+        public bool MoveTrack(string path, int from, int to)
         {
-            int[] aFrom = { @from };
+            int[] aFrom = {from};
             int dIn;
-            if (@from > to)
+            if (from > to)
             {
                 dIn = to - 1;
             }
@@ -92,17 +93,17 @@ namespace MusicBeePlugin.ApiAdapters
                 dIn = to;
             }
 
-            return this.api.Playlist_MoveFiles(path, aFrom, dIn);
+            return api.Playlist_MoveFiles(path, aFrom, dIn);
         }
 
         public bool PlayNow(string path)
         {
-            return this.api.Playlist_PlayNow(path);
+            return api.Playlist_PlayNow(path);
         }
 
         public bool RemoveTrack(string path, int position)
         {
-            return this.api.Playlist_RemoveAt(path, position);
+            return api.Playlist_RemoveAt(path, position);
         }
     }
 }

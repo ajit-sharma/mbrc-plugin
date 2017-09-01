@@ -1,21 +1,55 @@
-﻿using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Model;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+﻿using System;
+using System.Collections.Generic;
+using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Feature.Library;
+using MusicBeeRemote.Core.Feature.Podcasts;
+using MusicBeeRemote.Core.Feature.Radio;
 
-namespace plugin_tester
+namespace MusicBeeRemoteTester.Adapters
 {
-    using System;
-    using System.Collections.Generic;
-    using MusicBeeRemoteData.Entities;
-
     internal class LibraryAdapter : ILibraryApiAdapter
     {
-        public ICollection<AlbumDao> GetAlbums()
+        public IList<Track> GetTracks(string[] tracks = null)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<ArtistDao> GetArtists()
+        public IList<Genre> GetGenres(string filter = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Album> GetAlbums(string filter = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Artist> GetArtists(string filter = "")
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<Playlist> GetPlaylists()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<RadioStation> GetRadioStations()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<PodcastSubscription> GetPodcastSubscriptions()
+        {
+            throw new NotImplementedException();
+        }
+
+        public IList<PodcastEpisode> GetEpisodes(string subscriptionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public byte[] GetPodcastSubscriptionArtwork(string subscriptionId)
         {
             throw new NotImplementedException();
         }
@@ -35,22 +69,12 @@ namespace plugin_tester
             throw new NotImplementedException();
         }
 
-        public ICollection<GenreDao> GetGenres()
-        {
-            throw new NotImplementedException();
-        }
-
         public string[] GetLibraryFiles()
         {
             throw new NotImplementedException();
         }
 
         public Modifications GetSyncDelta(string[] cachedFiles, DateTime lastSync)
-        {
-            throw new NotImplementedException();
-        }
-
-        public LibraryTrackEx GetTags(string file)
         {
             throw new NotImplementedException();
         }

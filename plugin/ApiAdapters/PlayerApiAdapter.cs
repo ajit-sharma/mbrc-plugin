@@ -148,15 +148,16 @@ namespace MusicBeePlugin.ApiAdapters
 
         public bool SetVolume(int volume)
         {
-            var success = false;
-            if (volume >= 0)
+            if (volume < 0)
             {
-                success = _api.Player_SetVolume((float) volume / 100);
+                return false;
+            }
 
-                if (_api.Player_GetMute())
-                {
-                    _api.Player_SetMute(false);
-                }
+            var success = _api.Player_SetVolume((float) volume / 100);
+
+            if (_api.Player_GetMute())
+            {
+                _api.Player_SetMute(false);
             }
 
             return success;

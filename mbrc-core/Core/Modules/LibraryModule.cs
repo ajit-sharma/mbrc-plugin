@@ -369,38 +369,40 @@ namespace MusicBeeRemote.Core.Modules
                 var info = TinyMapper.Map<CompareableAlbum>(album);
                 return info;
             }).ToList();
-                        
+
             var cached = _albumRepository.GetCached().Select(dao =>
             {
                 var info = TinyMapper.Map<CompareableAlbum>(dao);
                 info.Artist = artists[dao.ArtistId] ?? "";
                 return info;
             }).ToList();
-            
+
             var deleted = _albumRepository.GetDeleted().Select(dao =>
             {
-                var info = TinyMapper.Map<Album>(dao);
+                var info = TinyMapper.Map<CompareableAlbum>(dao);
                 info.Artist = artists[dao.ArtistId] ?? "";
                 return info;
             }).ToList();
 
-            var toInsert = albums.Except(cached).ToList();
-            var toRemove = cached.Except(albums).ToList();
+            var toInsert = albums.Except(cached, CompareableAlbum.NameArtistComparer)
+                .Select(album =>
+                {
+                    var matched = deleted.FirstOrDefault(deletedAlbum => album.Artist.Equals(deletedAlbum.Artist)
+                                                                         && album.Name.Equals(deletedAlbum.Name));
+                    album.Id = matched?.Id ?? 0;
+                    return album;
+                })
+                .Select(TinyMapper.Map<AlbumDao>)
+                .ToList();
+
+
+            var toRemove = cached.Except(albums, CompareableAlbum.NameArtistComparer)
+                .Select(TinyMapper.Map<AlbumDao>)
+                .ToList();
 
             _albumRepository.SoftDelete(toRemove);
             _logger.Debug($"Albums: {toRemove.Count} entries removed");
 
-            foreach (var albumEntry in toInsert)
-            {
-                var album =
-                    deleted.First(
-                        gen => gen.Name.Equals(albumEntry.Name, StringComparison.InvariantCultureIgnoreCase));
-                if (album != null)
-                {
-                    albumEntry.Id = album.Id;
-                }
-            }
-            
 
             _albumRepository.Save(toInsert);
             _logger.Debug($"Albums: {toInsert.Count} entries inserted");
@@ -463,7 +465,7 @@ namespace MusicBeeRemote.Core.Modules
                     genreDao.Id = match?.Id ?? 0;
                     return genreDao;
                 })
-                .ToList();            
+                .ToList();
             var toRemove = cached.Where(genre => !names.Contains(genre.Name)).ToList();
 
             _genreRepository.SoftDelete(toRemove);
@@ -488,7 +490,7 @@ namespace MusicBeeRemote.Core.Modules
             var deleted = _trackRepository.GetDeleted();
             var cachedPaths = cached.Select(tr => tr.Path).ToList();
 
-            var toInsert = files.Except(cachedPaths).ToList();
+            var toInsert = files.Except(cachedPaths).ToArray();
             var toDelete = cachedPaths.Except(files).ToList();
 
             cached.ToObservable()
@@ -505,21 +507,20 @@ namespace MusicBeeRemote.Core.Modules
                         _trackRepository.SoftDelete(list);
                     }, exception => _logger.Debug(exception));
 
-            _logger.Debug($"data to insert: {toInsert.Count}, data to delete: {toDelete.Count} ");
+            _logger.Debug($"data to insert: {toInsert.Length}, data to delete: {toDelete.Count} ");
 
             var updatedAlbums = new List<AlbumDao>();
 
-            var tracks = toInsert
+            
+            var tracks = _libraryAdapter.GetTracks(toInsert)
                 .Select(file =>
                 {
-                    var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file));
-
-                    var meta = _libraryAdapter.GetTags(file);
-
-                    var genre = genres.SingleOrDefault(q => q.Name == meta.Genre);
-                    var artist = artists.SingleOrDefault(q => q.Name == meta.Artist);
-                    var albumArtist = artists.SingleOrDefault(q => q.Name == meta.AlbumArtist);
-                    var album = albums.SingleOrDefault(q => q.Name == meta.Album);
+                    var deletedTrack = deleted.FirstOrDefault(tr => tr.Path.Equals(file.Url));
+                   
+                    var genre = genres.SingleOrDefault(q => q.Name == file.Genre);
+                    var artist = artists.SingleOrDefault(q => q.Name == file.Artist);
+                    var albumArtist = artists.SingleOrDefault(q => q.Name == file.AlbumArtist);
+                    var album = albums.SingleOrDefault(q => q.Name == file.Album);
 
                     if (album != null && albumArtist != null && album.ArtistId != albumArtist.Id)
                     {
@@ -529,15 +530,15 @@ namespace MusicBeeRemote.Core.Modules
 
                     var track = new TrackDao
                     {
-                        Title = meta.Title,
-                        Year = meta.Year,
-                        Position = meta.Position,
-                        Disc = meta.Disc,
+                        Title = file.Title,
+                        Year = file.Year,
+                        Position = file.TrackNo,
+                        Disc = file.Disc,
                         GenreId = genre?.Id ?? 0,
                         AlbumArtistId = albumArtist?.Id ?? 0,
                         ArtistId = artist?.Id ?? 0,
                         AlbumId = album?.Id ?? 0,
-                        Path = file
+                        Path = file.Url
                     };
 
                     // Current track was detected in the list of deleted tracks.
@@ -556,7 +557,7 @@ namespace MusicBeeRemote.Core.Modules
             _trackRepository.Save(tracks);
             _albumRepository.Save(updatedAlbums);
 
-            _logger.Debug($"Tracks: {toInsert.Count} entries inserted.");
+            _logger.Debug($"Tracks: {toInsert.Length} entries inserted.");
             _logger.Debug($"Tracks: {toDelete.Count} entries deleted.");
             _logger.Debug($"Updated {updatedAlbums.Count} album entries");
         }

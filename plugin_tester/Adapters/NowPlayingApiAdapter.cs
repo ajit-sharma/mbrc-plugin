@@ -1,14 +1,13 @@
-﻿using MusicBeeRemote.Core.ApiAdapters;
+﻿using System;
+using System.Collections.Generic;
+using MusicBeeRemote.Core.ApiAdapters;
 using MusicBeeRemote.Core.Rest.ServiceModel.Type;
 
-namespace plugin_tester
+namespace MusicBeeRemoteTester.Adapters
 {
-    using System;
-    using System.Collections.Generic;
-
     internal class NowPlayingApiAdapter : INowPlayingApiAdapter
     {
-        public ICollection<NowPlaying> GetTracks()
+        public IEnumerable<NowPlaying> GetTracks(int offset = 0, int limit = 5000)
         {
             throw new NotImplementedException();
         }
@@ -23,22 +22,12 @@ namespace plugin_tester
             throw new NotImplementedException();
         }
 
+        public bool PlayIndex(int index)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool PlayPath(string path)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool QueueLast(string[] tracklist)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool QueueNext(string[] tracklist)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool QueueNow(string[] tracklist)
         {
             throw new NotImplementedException();
         }

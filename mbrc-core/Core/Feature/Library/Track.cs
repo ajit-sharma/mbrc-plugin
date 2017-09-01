@@ -10,16 +10,16 @@ namespace MusicBeeRemote.Core.Feature.Library
         {
         }
 
-        public Track(string artist, string title, int trackNo, string src)
+        public Track(string artist, string title, int trackNo, string url)
         {
             Artist = artist;
             Title = title;
-            Src = src;
-            Trackno = trackNo;
+            Url = url;
+            TrackNo = trackNo;
         }
 
         [DataMember(Name = "src")]
-        public string Src { get; set; }
+        public string Url { get; set; }
 
         [DataMember(Name = "artist")]
         public string Artist { get; set; }
@@ -28,7 +28,7 @@ namespace MusicBeeRemote.Core.Feature.Library
         public string Title { get; set; }
 
         [DataMember(Name = "trackno")]
-        public int Trackno { get; set; }
+        public int TrackNo { get; set; }
 
         [DataMember(Name = "disc")]
         public int Disc { get; set; }
@@ -52,7 +52,7 @@ namespace MusicBeeRemote.Core.Feature.Library
 
         public int CompareTo(Track other)
         {
-            return other == null ? 1 : Trackno.CompareTo(other.Trackno);
+            return other == null ? 1 : TrackNo.CompareTo(other.TrackNo);
         }
     }
 }

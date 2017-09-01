@@ -66,10 +66,17 @@ namespace MusicBeePlugin.ApiAdapters
             return _api.Library_GetFileTag(currentTrack, Year).Cleanup();
         }
 
-        public IList<Track> GetTracks()
-        {
+        public IList<Track> GetTracks(string[] tracks = null)
+        {                       
             string[] files;
-            _api.Library_QueryFilesEx(null, out files);
+            if (tracks != null)
+            {
+                files = tracks;
+            }
+            else
+            {
+                _api.Library_QueryFilesEx(null, out files);    
+            }            
 
             return files.Select(currentTrack => new Track
             {
@@ -80,8 +87,8 @@ namespace MusicBeePlugin.ApiAdapters
                 Year = GetAlbumYear(currentTrack),
                 Genre = GetGenreForTrack(currentTrack),
                 Disc = GetDiskNumber(currentTrack),
-                Trackno = GetTrackNumber(currentTrack),
-                Src = currentTrack
+                TrackNo = GetTrackNumber(currentTrack),
+                Url = currentTrack
             }).ToList();
         }
 

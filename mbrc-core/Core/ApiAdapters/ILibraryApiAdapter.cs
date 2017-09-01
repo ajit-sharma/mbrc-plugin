@@ -8,7 +8,7 @@ namespace MusicBeeRemote.Core.ApiAdapters
 {
     public interface ILibraryApiAdapter
     {
-        IList<Track> GetTracks();
+        IList<Track> GetTracks(string[] tracks = null);
 
         IList<Genre> GetGenres(string filter = "");
 
