@@ -4,7 +4,6 @@ using MusicBeeRemote.Core.Rest.ServiceModel.Type;
 using MusicBeeRemote.Core.Rest.StatusCodeHandlers;
 using Nancy;
 using Nancy.Bootstrapper;
-using Nancy.Bootstrappers.StructureMap;
 using Nancy.Diagnostics;
 using Nancy.Responses;
 using StructureMap;

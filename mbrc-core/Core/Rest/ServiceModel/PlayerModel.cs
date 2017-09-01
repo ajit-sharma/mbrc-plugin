@@ -60,11 +60,11 @@ namespace MusicBeeRemote.Core.Rest.ServiceModel
     }
 
     [DataContract]
-    public class ShuffleState : ResponseBase
+    public class ShuffleStateResponse : ResponseBase
     {
         [DataMember(Name = "state")]
         [JsonConverter(typeof(StringEnumConverter))]
-        public Enumerations.ShuffleState State { get; set; }
+        public ShuffleState State { get; set; }
     }
 
     /// <summary>

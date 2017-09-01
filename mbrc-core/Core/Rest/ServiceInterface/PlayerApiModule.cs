@@ -37,7 +37,7 @@ namespace MusicBeeRemote.Core.Rest.ServiceInterface
                 var success = previousState != newShuffleState;
 
                 var code = success ? ApiCodes.Success : ApiCodes.Failure;
-                var shuffleState = new ServiceModel.ShuffleState
+                var shuffleState = new ShuffleStateResponse
                 {
                     Code = code,
                     State = adapter.GetShuffleState()

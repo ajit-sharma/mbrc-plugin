@@ -57,9 +57,6 @@
     <Reference Include="Nancy, Version=1.4.4.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\Nancy.1.4.4\lib\net40\Nancy.dll</HintPath>
     </Reference>
-    <Reference Include="Nancy.Bootstrappers.StructureMap, Version=1.4.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\Nancy.Bootstrappers.StructureMap.1.4.1\lib\net40\Nancy.Bootstrappers.StructureMap.dll</HintPath>
-    </Reference>
     <Reference Include="Nancy.Hosting.Self, Version=1.4.1.0, Culture=neutral">
       <HintPath>..\packages\Nancy.Hosting.Self.1.4.1\lib\net40\Nancy.Hosting.Self.dll</HintPath>
       <Private>False</Private>
@@ -239,6 +236,7 @@
     <Compile Include="Core\Settings\LimitedModeSettingsModel.cs" />
     <Compile Include="Core\Settings\PersistenceManager.cs" />
     <Compile Include="Core\Settings\UserSettingsModel.cs" />
+    <Compile Include="Core\StructureMapNancyBootstrapper.cs" />
     <Compile Include="Core\Tools\JsonAdapter.cs" />
     <Compile Include="Core\Utilities\ControlRemoveExtension.cs" />
     <Compile Include="Core\Utilities\IdGenerator.cs" />

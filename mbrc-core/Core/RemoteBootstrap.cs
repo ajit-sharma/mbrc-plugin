@@ -8,6 +8,7 @@ using MusicBeeRemote.Core.Settings.Dialog.BasePanel;
 using MusicBeeRemote.Core.Settings.Dialog.Commands;
 using MusicBeeRemote.Core.Settings.Dialog.Whitelist;
 using MusicBeeRemote.Core.Windows;
+using MusicBeeRemoteData;
 using MusicBeeRemoteData.Repository;
 using MusicBeeRemoteData.Repository.Interfaces;
 using Newtonsoft.Json;
@@ -65,7 +66,7 @@ namespace MusicBeeRemote.Core
                     .Use<StorageLocationProvider>()
                     .Ctor<string>()
                     .Is(dependencies.BaseStoragePath)
-                    .Singleton();
+                    .Singleton();                 
 
                 c.For<IVersionProvider>()
                     .Use<VersionProvider>()
@@ -76,6 +77,7 @@ namespace MusicBeeRemote.Core
                 c.For<IScheduler>().Use(() => ThreadPoolScheduler.Instance)
                     .Singleton();
                 c.For<ITrackRepository>().Use<TrackRepository>().Singleton();
+                c.For<IGenreRepository>().Use<GenreRepository>().Singleton();
                 c.For<ITinyMessengerHub>().Use<TinyMessengerHub>().Singleton();
                 c.For<IMusicBeeRemotePlugin>().Use<MusicBeeRemotePlugin>().Singleton();
 
