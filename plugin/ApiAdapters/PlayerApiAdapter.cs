@@ -1,7 +1,7 @@
 using System;
 using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Enumerations;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+using MusicBeeRemote.Core.Feature.Player;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
 using static MusicBeePlugin.Plugin;
 
 namespace MusicBeePlugin.ApiAdapters

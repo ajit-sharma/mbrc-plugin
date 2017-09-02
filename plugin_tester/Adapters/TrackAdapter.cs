@@ -1,9 +1,9 @@
 ﻿using System;
 using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Enumerations;
-using MusicBeeRemote.Core.Model;
-using MusicBeeRemote.Core.Rest.ServiceInterface;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+using MusicBeeRemote.Core.Feature;
+using MusicBeeRemote.Core.Feature.Player;
+using MusicBeeRemote.Core.Network.Http.Api;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
 
 namespace MusicBeeRemoteTester.Adapters
 {

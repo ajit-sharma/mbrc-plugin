@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
 
 namespace MusicBeeRemoteTester.Adapters
 {

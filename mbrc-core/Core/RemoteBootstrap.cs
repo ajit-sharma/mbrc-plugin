@@ -1,8 +1,8 @@
 ﻿using System.Reactive.Concurrency;
 using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Core.Feature;
+using MusicBeeRemote.Core.Feature.Playlists;
 using MusicBeeRemote.Core.Logging;
-using MusicBeeRemote.Core.Model;
-using MusicBeeRemote.Core.Modules;
 using MusicBeeRemote.Core.Network;
 using MusicBeeRemote.Core.Settings;
 using MusicBeeRemote.Core.Settings.Dialog.BasePanel;

@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
 
 namespace MusicBeePlugin.ApiAdapters
 {

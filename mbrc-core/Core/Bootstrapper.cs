@@ -1,7 +1,7 @@
-﻿using MusicBeeRemote.Core.Rest.Compression;
-using MusicBeeRemote.Core.Rest.ServiceInterface;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
-using MusicBeeRemote.Core.Rest.StatusCodeHandlers;
+﻿using MusicBeeRemote.Core.Network.Http.Api;
+using MusicBeeRemote.Core.Network.Http.Compression;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
+using MusicBeeRemote.Core.Network.Http.StatusCodeHandlers;
 using Nancy;
 using Nancy.Bootstrapper;
 using Nancy.Diagnostics;

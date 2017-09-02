@@ -1,6 +1,5 @@
 ﻿using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Model;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
 using static MusicBeePlugin.Plugin;
 
 namespace MusicBeePlugin.ApiAdapters

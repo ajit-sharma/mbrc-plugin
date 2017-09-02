@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
-using MusicBeeRemote.Core.Enumerations;
 
 namespace MusicBeeRemote.Core.Settings
 {

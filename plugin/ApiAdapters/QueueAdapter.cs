@@ -1,5 +1,5 @@
 ﻿using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Enumerations;
+using MusicBeeRemote.Core.Feature.NowPlaying;
 using static MusicBeePlugin.Plugin;
 
 namespace MusicBeePlugin.ApiAdapters

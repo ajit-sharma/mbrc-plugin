@@ -7,7 +7,7 @@ using System.Reflection;
 using Microsoft.Reactive.Testing;
 using Moq;
 using MusicBeeRemote.Core.ApiAdapters;
-using MusicBeeRemote.Core.Modules;
+using MusicBeeRemote.Core.Feature.Playlists;
 using MusicBeeRemote.Data.Entities;
 using MusicBeeRemote.Data.Extensions;
 using MusicBeeRemote.Data.Repository.Interfaces;

@@ -1,6 +1,6 @@
-﻿using MusicBeeRemote.Core.Enumerations;
-using MusicBeeRemote.Core.Model;
-using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+﻿using MusicBeeRemote.Core.Feature;
+using MusicBeeRemote.Core.Feature.Player;
+using MusicBeeRemote.Core.Network.Http.Responses.Type;
 
 namespace MusicBeeRemote.Core.ApiAdapters
 {

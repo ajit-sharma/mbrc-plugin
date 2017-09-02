@@ -1,4 +1,4 @@
-﻿using MusicBeeRemote.Core.Rest.ServiceModel.Type;
+﻿using MusicBeeRemote.Core.Network.Http.Responses.Type;
 
 namespace MusicBeeRemote.Core.ApiAdapters
 {

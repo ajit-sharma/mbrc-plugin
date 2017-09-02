@@ -1,4 +1,4 @@
-﻿using MusicBeeRemote.Core.Enumerations;
+﻿using MusicBeeRemote.Core.Feature.NowPlaying;
 
 namespace MusicBeeRemote.Core.ApiAdapters
 {
