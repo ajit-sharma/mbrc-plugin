@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using MusicBeeRemoteData;
-using MusicBeeRemoteData.Entities;
-using MusicBeeRemoteData.Extensions;
-using MusicBeeRemoteData.Repository;
-using MusicBeeRemoteData.Repository.Interfaces;
+using MusicBeeRemote.Data;
+using MusicBeeRemote.Data.Entities;
+using MusicBeeRemote.Data.Extensions;
+using MusicBeeRemote.Data.Repository;
+using MusicBeeRemote.Data.Repository.Interfaces;
 using NUnit.Framework;
 using Ploeh.AutoFixture;
 
@@ -21,7 +21,7 @@ namespace mbrc_data.Tests.Repository
 
         private Fixture _fixture;
 
-        private DatabaseProvider _databaseProvider;
+        private DatabaseManager _databaseManager;
         
         [SetUp]
         public void Setup()
@@ -36,16 +36,16 @@ namespace mbrc_data.Tests.Repository
         [TearDown]
         public void Cleanup()
         {
-            _databaseProvider.DeleteDatabase();
+            _databaseManager.DeleteDatabase();
         }
 
 
         
         private IArtistRepository Repository()
         {
-            _databaseProvider = new DatabaseProvider(_directory);
-            _databaseProvider.ResetDatabase();
-            IArtistRepository repository = new ArtistRepository(_databaseProvider);
+            _databaseManager = new DatabaseManager(_directory);
+            _databaseManager.DeleteDatabase();
+            IArtistRepository repository = new ArtistRepository(_databaseManager);
             return repository;
         }
 

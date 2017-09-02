@@ -67,7 +67,7 @@ namespace MusicBeePlugin.ApiAdapters
         }
 
         public IList<Track> GetTracks(string[] tracks = null)
-        {                       
+        {
             string[] files;
             if (tracks != null)
             {
@@ -75,8 +75,8 @@ namespace MusicBeePlugin.ApiAdapters
             }
             else
             {
-                _api.Library_QueryFilesEx(null, out files);    
-            }            
+                _api.Library_QueryFilesEx(null, out files);
+            }
 
             return files.Select(currentTrack => new Track
             {
@@ -159,16 +159,16 @@ namespace MusicBeePlugin.ApiAdapters
             string[] subscriptionIds;
             _api.Podcasts_QuerySubscriptions(null, out subscriptionIds);
             var subscriptionConverter = new SubscriptionConverter();
-                   
+
             foreach (var id in subscriptionIds)
             {
                 string[] subscriptionMetadata;
                 if (_api.Podcasts_GetSubscription(id, out subscriptionMetadata))
                 {
                     list.Add(subscriptionConverter.Convert(subscriptionMetadata));
-                }                
+                }
             }
-            
+
             return list;
         }
 
@@ -195,43 +195,16 @@ namespace MusicBeePlugin.ApiAdapters
                 }
                 list.Add(converter.Convert(episodeMetadata));
             }
-            
+
             return list;
         }
 
         public byte[] GetPodcastSubscriptionArtwork(string subscriptionId)
         {
             byte[] artwork;
-            if (_api.Podcasts_GetSubscriptionArtwork(subscriptionId, 0, out artwork))
-            {
-                return Utilities.ToJpeg(artwork);
-            }
-            return new byte[] {};
-        }
-
-        public IList<Playlist> GetPlaylists()
-        {
-            _api.Playlist_QueryPlaylists();
-            var playlists = new List<Playlist>();
-            while (true)
-            {
-                var url = _api.Playlist_QueryGetNextPlaylist();
-
-                if (string.IsNullOrEmpty(url))
-                {
-                    break;
-                }
-
-                var name = _api.Playlist_GetName(url);
-
-                var playlist = new Playlist
-                {
-                    Name = name,
-                    Url = url
-                };
-                playlists.Add(playlist);
-            }
-            return playlists;
+            return _api.Podcasts_GetSubscriptionArtwork(subscriptionId, 0, out artwork)
+                ? Utilities.ToJpeg(artwork)
+                : new byte[] { };
         }
 
         public IList<Album> GetAlbums(string filter = "")
@@ -280,7 +253,7 @@ namespace MusicBeePlugin.ApiAdapters
             _api.Library_GetArtworkEx(path, 0, false, out locations, out coverUrl, out imageData);
             return coverUrl;
         }
-        
+
         public string[] GetLibraryFiles()
         {
             string[] files;
@@ -295,11 +268,11 @@ namespace MusicBeePlugin.ApiAdapters
             string[] updatedFiles;
 
             _api.Library_GetSyncDelta(
-                cachedFiles, 
-                lastSync, 
-                Plugin.LibraryCategory.Music, 
-                out newFiles, 
-                out updatedFiles, 
+                cachedFiles,
+                lastSync,
+                Plugin.LibraryCategory.Music,
+                out newFiles,
+                out updatedFiles,
                 out deletedFiles);
             return new Modifications(deletedFiles, newFiles, updatedFiles);
         }
@@ -324,6 +297,6 @@ namespace MusicBeePlugin.ApiAdapters
                 : new Album(albumInfo[0], albumInfo[1]);
 
             return current;
-        }             
+        }
     }
 }

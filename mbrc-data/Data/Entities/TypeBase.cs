@@ -2,7 +2,7 @@
 using System.Runtime.Serialization;
 using MusicBeeRemote.Data.Extensions;
 
-namespace MusicBeeRemote.Core.Rest.ServiceModel.Type
+namespace MusicBeeRemote.Data.Entities
 {
     /// <summary>
     ///     The <c>base</c> of all the POCOs stored in the database.
@@ -36,8 +36,8 @@ namespace MusicBeeRemote.Core.Rest.ServiceModel.Type
 
         /// <summary>
         ///     The identity of the entry stored in the database.
-        /// </summary>
+        /// </summary>       
         [DataMember(Name = "id")]
-        public long Id { get; set; }
+        public int Id { get; set; }
     }
 }

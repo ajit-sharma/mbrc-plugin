@@ -2,15 +2,16 @@
 using MusicBeeRemote.Core.ApiAdapters;
 using MusicBeeRemote.Core.Logging;
 using MusicBeeRemote.Core.Model;
+using MusicBeeRemote.Core.Modules;
 using MusicBeeRemote.Core.Network;
 using MusicBeeRemote.Core.Settings;
 using MusicBeeRemote.Core.Settings.Dialog.BasePanel;
 using MusicBeeRemote.Core.Settings.Dialog.Commands;
 using MusicBeeRemote.Core.Settings.Dialog.Whitelist;
 using MusicBeeRemote.Core.Windows;
-using MusicBeeRemoteData;
-using MusicBeeRemoteData.Repository;
-using MusicBeeRemoteData.Repository.Interfaces;
+using MusicBeeRemote.Data;
+using MusicBeeRemote.Data.Repository;
+using MusicBeeRemote.Data.Repository.Interfaces;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using StructureMap;
@@ -49,6 +50,7 @@ namespace MusicBeeRemote.Core
                 c.For<IPlayerApiAdapter>().Use(() => dependencies.PlayerAdapter).Singleton();
                 c.For<IQueueAdapter>().Use(() => dependencies.QueueAdapter).Singleton();
                 c.For<ITrackApiAdapter>().Use(() => dependencies.TrackAdapter).Singleton();
+                c.For<IPlaylistApiAdapter>().Use(() => dependencies.PlaylistAdapter).Singleton();
                 c.For<IInvokeHandler>().Use(() => dependencies.InvokeHandler).Singleton();
 
                 c.For<IWindowManager>().Use<WindowManager>().Singleton();
@@ -66,8 +68,14 @@ namespace MusicBeeRemote.Core
                     .Use<StorageLocationProvider>()
                     .Ctor<string>()
                     .Is(dependencies.BaseStoragePath)
-                    .Singleton();                 
+                    .Singleton();
 
+                c.For<DatabaseManager>()
+                    .Use<DatabaseManager>()
+                    .Ctor<string>()
+                    .Is(context => context.GetInstance<IStorageLocationProvider>().DatabaseFile)
+                    .Singleton();
+                                     
                 c.For<IVersionProvider>()
                     .Use<VersionProvider>()
                     .Ctor<string>()
@@ -76,8 +84,19 @@ namespace MusicBeeRemote.Core
 
                 c.For<IScheduler>().Use(() => ThreadPoolScheduler.Instance)
                     .Singleton();
-                c.For<ITrackRepository>().Use<TrackRepository>().Singleton();
+                
                 c.For<IGenreRepository>().Use<GenreRepository>().Singleton();
+                c.For<IArtistRepository>().Use<ArtistRepository>().Singleton();
+                c.For<IAlbumRepository>().Use<AlbumRepository>().Singleton();
+                c.For<ITrackRepository>().Use<TrackRepository>().Singleton();
+                c.For<ICoverRepository>().Use<CoverRepository>().Singleton();
+                
+                c.For<IPlaylistRepository>().Use<PlaylistRepository>().Singleton();
+                c.For<IPlaylistTrackRepository>().Use<PlaylistTrackRepository>().Singleton();
+                c.For<IPlaylistTrackInfoRepository>().Use<PlaylistTrackInfoRepository>().Singleton();
+                                              
+                c.For<IPlaylistModule>().Use<PlaylistModule>().Singleton();
+                                
                 c.For<ITinyMessengerHub>().Use<TinyMessengerHub>().Singleton();
                 c.For<IMusicBeeRemotePlugin>().Use<MusicBeeRemotePlugin>().Singleton();
 

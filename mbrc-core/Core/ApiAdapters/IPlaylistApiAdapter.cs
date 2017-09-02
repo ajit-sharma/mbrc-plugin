@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using MusicBeeRemoteData.Entities;
+using MusicBeeRemote.Data.Entities;
 
 namespace MusicBeeRemote.Core.ApiAdapters
 {

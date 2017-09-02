@@ -7,7 +7,7 @@
     <ProjectGuid>{097FFCD1-5D60-42F9-B621-3D8DC016780E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MusicBeeRemoteData</RootNamespace>
+    <RootNamespace>MusicBeeRemote</RootNamespace>
     <AssemblyName>mbrc_data</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -88,36 +88,36 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseProvider.cs" />
-    <Compile Include="Entities\AlbumDao.cs" />
-    <Compile Include="Entities\ArtistDao.cs" />
-    <Compile Include="Entities\LibraryCover.cs" />
-    <Compile Include="Entities\GenreDao.cs" />
-    <Compile Include="Entities\TrackDao.cs" />
-    <Compile Include="Entities\Playlist.cs" />
-    <Compile Include="Entities\PlaylistTrack.cs" />
-    <Compile Include="Entities\PlaylistTrackInfo.cs" />
-    <Compile Include="Entities\TypeBase.cs" />
-    <Compile Include="Extensions\Epoch.cs" />
+    <Compile Include="Data\DatabaseManager.cs" />
+    <Compile Include="Data\Entities\AlbumDao.cs" />
+    <Compile Include="Data\Entities\ArtistDao.cs" />
+    <Compile Include="Data\Entities\GenreDao.cs" />
+    <Compile Include="Data\Entities\LibraryCover.cs" />
+    <Compile Include="Data\Entities\Playlist.cs" />
+    <Compile Include="Data\Entities\PlaylistTrack.cs" />
+    <Compile Include="Data\Entities\PlaylistTrackInfo.cs" />
+    <Compile Include="Data\Entities\TrackDao.cs" />
+    <Compile Include="Data\Entities\TypeBase.cs" />
+    <Compile Include="Data\Extensions\Epoch.cs" />
+    <Compile Include="Data\Repository\AlbumRepository.cs" />
+    <Compile Include="Data\Repository\ArtistRepository.cs" />
+    <Compile Include="Data\Repository\CoverRepository.cs" />
+    <Compile Include="Data\Repository\GenreRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\GenericRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IAlbumRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IArtistRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\ICoverRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IGenreRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IPlaylistRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IPlaylistTrackInfoRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IPlaylistTrackRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\IRepository.cs" />
+    <Compile Include="Data\Repository\Interfaces\ITrackRepository.cs" />
+    <Compile Include="Data\Repository\PlaylistRepository.cs" />
+    <Compile Include="Data\Repository\PlaylistTrackInfoRepository.cs" />
+    <Compile Include="Data\Repository\PlaylistTrackRepository.cs" />
+    <Compile Include="Data\Repository\TrackRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\AlbumRepository.cs" />
-    <Compile Include="Repository\ArtistRepository.cs" />
-    <Compile Include="Repository\CoverRepository.cs" />
-    <Compile Include="Repository\GenreRepository.cs" />
-    <Compile Include="Repository\Interfaces\GenericRepository.cs" />
-    <Compile Include="Repository\Interfaces\IAlbumRepository.cs" />
-    <Compile Include="Repository\Interfaces\IArtistRepository.cs" />
-    <Compile Include="Repository\Interfaces\ICoverRepository.cs" />
-    <Compile Include="Repository\Interfaces\IGenreRepository.cs" />
-    <Compile Include="Repository\Interfaces\IPlaylistRepository.cs" />
-    <Compile Include="Repository\Interfaces\IPlaylistTrackInfoRepository.cs" />
-    <Compile Include="Repository\Interfaces\IPlaylistTrackRepository.cs" />
-    <Compile Include="Repository\Interfaces\IRepository.cs" />
-    <Compile Include="Repository\Interfaces\ITrackRepository.cs" />
-    <Compile Include="Repository\PlaylistRepository.cs" />
-    <Compile Include="Repository\PlaylistTrackInfoRepository.cs" />
-    <Compile Include="Repository\PlaylistTrackRepository.cs" />
-    <Compile Include="Repository\TrackRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

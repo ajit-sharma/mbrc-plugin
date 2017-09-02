@@ -11,6 +11,7 @@ namespace MusicBeeRemote.Core
             IQueueAdapter queueAdapter,
             ITrackApiAdapter trackAdapter,
             IInvokeHandler invokeHandler,
+            IPlaylistApiAdapter playlistAdapter,
             string baseStoragePath,
             string currentVersion)
         {
@@ -21,6 +22,7 @@ namespace MusicBeeRemote.Core
             QueueAdapter = queueAdapter;
             TrackAdapter = trackAdapter;
             InvokeHandler = invokeHandler;
+            PlaylistAdapter = playlistAdapter;
             BaseStoragePath = baseStoragePath;
             CurrentVersion = currentVersion;
         }
@@ -32,6 +34,7 @@ namespace MusicBeeRemote.Core
         public IQueueAdapter QueueAdapter { get; }
         public ITrackApiAdapter TrackAdapter { get; }
         public IInvokeHandler InvokeHandler { get; }
+        public IPlaylistApiAdapter PlaylistAdapter { get; }
         public string BaseStoragePath { get; }
         public string CurrentVersion { get; }
     }

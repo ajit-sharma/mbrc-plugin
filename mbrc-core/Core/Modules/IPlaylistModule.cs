@@ -1,5 +1,5 @@
 using MusicBeeRemote.Core.Rest.ServiceModel.Type;
-using MusicBeeRemoteData.Entities;
+using MusicBeeRemote.Data.Entities;
 
 namespace MusicBeeRemote.Core.Modules
 {

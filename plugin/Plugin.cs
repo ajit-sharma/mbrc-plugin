@@ -51,6 +51,7 @@ namespace MusicBeePlugin
             var playerApiAdapter = new PlayerApiAdapter(_api);
             var queueAdapter = new QueueAdapter(_api);
             var trackApiAdapter = new TrackApiAdapter(_api);
+            var playlistApiAdapter = new PlaylistApiAdapter(_api);
             var invokeHandler = new InvokeHandler(_api);
             var baseStoragePath = _api.Setting_GetPersistentStoragePath();
 
@@ -60,8 +61,9 @@ namespace MusicBeePlugin
                 outputApiAdapter,
                 playerApiAdapter,
                 queueAdapter,
-                trackApiAdapter,
+                trackApiAdapter,                
                 invokeHandler,
+                playlistApiAdapter,
                 baseStoragePath,
                 currentVersion
             );
@@ -154,7 +156,7 @@ namespace MusicBeePlugin
                 case NotificationType.NowPlayingArtworkReady:
                     _musicBeeRemotePlugin.NotifyArtworkReady();
                     break;
-                case NotificationType.NowPlayingListChanged:
+                case NotificationType.PlayingTracksChanged:
                     _musicBeeRemotePlugin.NotifyNowPlayingListChanged();
                     break;
             }

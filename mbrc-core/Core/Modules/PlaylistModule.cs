@@ -6,9 +6,9 @@ using System.Reactive.Linq;
 using MusicBeeRemote.Core.ApiAdapters;
 using MusicBeeRemote.Core.Comparers;
 using MusicBeeRemote.Core.Rest.ServiceModel.Type;
-using MusicBeeRemoteData.Entities;
-using MusicBeeRemoteData.Extensions;
-using MusicBeeRemoteData.Repository.Interfaces;
+using MusicBeeRemote.Data.Entities;
+using MusicBeeRemote.Data.Extensions;
+using MusicBeeRemote.Data.Repository.Interfaces;
 using NLog;
 
 namespace MusicBeeRemote.Core.Modules

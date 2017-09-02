@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using MusicBeeRemoteData.Entities;
+using MusicBeeRemote.Data.Entities;
 
 namespace MusicBeeRemote.Core.Rest.ServiceModel.Type
 {

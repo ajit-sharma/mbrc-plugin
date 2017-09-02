@@ -1,10 +1,10 @@
 ﻿using MusicBeeRemote.Core.ApiAdapters;
+using MusicBeeRemote.Data.Entities;
 
 namespace plugin_tester
 {
     using System;
     using System.Collections.Generic;
-    using MusicBeeRemoteData.Entities;
 
     internal class PlaylistAdapter : IPlaylistApiAdapter
     {

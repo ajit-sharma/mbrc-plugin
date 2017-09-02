@@ -14,9 +14,7 @@ namespace MusicBeeRemote.Core.ApiAdapters
 
         IList<Album> GetAlbums(string filter = "");
 
-        IList<Artist> GetArtists(string filter = "");
-        
-        IList<Playlist> GetPlaylists();
+        IList<Artist> GetArtists(string filter = "");             
 
         IList<RadioStation> GetRadioStations();
 
