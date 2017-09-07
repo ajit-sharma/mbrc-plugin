@@ -23,8 +23,6 @@ namespace MusicBeeRemote.Core.Network
 
         private readonly ITinyMessengerHub _hub;
 
-        private bool _isRunning;
-
         private WebSocketServer _server;
 
         /// <summary>
@@ -40,12 +38,7 @@ namespace MusicBeeRemote.Core.Network
 
         /// <summary>
         /// </summary>
-        public bool IsRunning
-        {
-            get => _isRunning;
-
-            private set { _isRunning = value; }
-        }
+        public bool IsRunning { get; private set; }
 
         /// <summary>
         ///     Disposes anything Related to the socket _server at the end of life of the Object.
@@ -99,24 +92,21 @@ namespace MusicBeeRemote.Core.Network
                 }
 
                 _server = new WebSocketServer($"ws://0.0.0.0:{_manager.UserSettingsModel.WebSocketPort}");
-                _server.Start(
-                    socket =>
+                _server.Start(socket =>
+                {
+                    socket.OnOpen = () =>
                     {
-                        socket.OnOpen = () =>
-                        {
-                            Logger.Debug($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
-                            _allSockets.Add(socket);
-                        };
+                        Logger.Debug($"New client connected: {socket.ConnectionInfo.ClientIpAddress}");
+                        _allSockets.Add(socket);                       
+                    };
 
-                        socket.OnClose =
-                            () =>
-                            {
-                                Logger.Debug(
-                                    $"Client has been disconnected: {socket.ConnectionInfo.ClientIpAddress}");
-                            };
+                    socket.OnClose = () =>
+                    {
+                        Logger.Debug($"Client has been disconnected: {socket.ConnectionInfo.ClientIpAddress}");
+                    };
 
-                        socket.OnMessage = message => { Logger.Debug($"New message received: {message}"); };
-                    });
+                    socket.OnMessage = message => { Logger.Debug($"New message received: {message}"); };
+                });
 
                 IsRunning = true;
             }

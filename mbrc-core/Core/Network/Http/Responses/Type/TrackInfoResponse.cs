@@ -7,7 +7,7 @@ namespace MusicBeeRemote.Core.Network.Http.Responses.Type
     /// Such as used in the display of the currently playing track.
     /// </summary>
     [DataContract]
-    public class TrackInfoResponse : ResponseBase
+    public class TrackInfoResponse : ApiResponse
     {
         /// <summary>
         /// The album the track is part of.

@@ -10,12 +10,11 @@ namespace MusicBeeRemote.Core.Network.Http.StatusCodeHandlers
 {
     class JsonStatusHandler : IStatusCodeHandler
     {
-
-        private Dictionary<HttpStatusCode, string> messages = new Dictionary<HttpStatusCode, string>();
+        private readonly Dictionary<HttpStatusCode, string> messages = new Dictionary<HttpStatusCode, string>();
 
         public JsonStatusHandler()
         {
-			messages.Add(HttpStatusCode.NotFound, "Not found");
+            messages.Add(HttpStatusCode.NotFound, "Not found");
             messages.Add(HttpStatusCode.Forbidden, "Access forbidden");
             messages.Add(HttpStatusCode.Unauthorized, "Unauthorized");
         }
@@ -23,9 +22,8 @@ namespace MusicBeeRemote.Core.Network.Http.StatusCodeHandlers
         public void Handle(HttpStatusCode statusCode, NancyContext context)
         {
             var exception = context.GetException();
-            string defaultMessage;
 
-            if (!messages.TryGetValue(statusCode, out defaultMessage))
+            if (!messages.TryGetValue(statusCode, out var defaultMessage))
             {
                 defaultMessage = "There was a problem";
             }
@@ -43,8 +41,10 @@ namespace MusicBeeRemote.Core.Network.Http.StatusCodeHandlers
 
         public bool HandlesStatusCode(HttpStatusCode statusCode, NancyContext context)
         {
-            return statusCode == HttpStatusCode.NotFound || statusCode == HttpStatusCode.InternalServerError
-                   || statusCode == HttpStatusCode.Forbidden || statusCode == HttpStatusCode.Unauthorized;
+            return statusCode == HttpStatusCode.NotFound
+                   || statusCode == HttpStatusCode.InternalServerError
+                   || statusCode == HttpStatusCode.Forbidden
+                   || statusCode == HttpStatusCode.Unauthorized;
         }
     }
 }

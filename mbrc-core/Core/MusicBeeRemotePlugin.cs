@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using MusicBeeRemote.Core.Events.Notifications;
+using MusicBeeRemote.Core.Feature.Monitoring;
 using MusicBeeRemote.Core.Network;
 using MusicBeeRemote.Core.Settings;
 using MusicBeeRemote.Core.Windows;
@@ -23,7 +24,8 @@ namespace MusicBeeRemote.Core
         private readonly ITinyMessengerHub _hub;
 
         private NancyHost _nancyHost;
-        private IWindowManager _windowManager;
+        private readonly IWindowManager _windowManager;
+        private readonly CacheManager _cacheManager;
 
         public MusicBeeRemotePlugin(
             Bootstrapper bootstrapper,
@@ -31,6 +33,7 @@ namespace MusicBeeRemote.Core
             SocketServer socketServer,
             ServiceDiscovery serviceDiscovery,
             IWindowManager windowManager,
+            CacheManager cacheManager,
             ITinyMessengerHub hub
         )
         {
@@ -39,6 +42,7 @@ namespace MusicBeeRemote.Core
             _socketServer = socketServer;
             _serviceDiscovery = serviceDiscovery;
             _windowManager = windowManager;
+            _cacheManager = cacheManager;
 
             _hub = hub;
         }
@@ -49,6 +53,7 @@ namespace MusicBeeRemote.Core
             _socketServer.Start();
             StartHttp();
             StartProxy();
+            _cacheManager.Start();
         }
 
         private void StartHttp()

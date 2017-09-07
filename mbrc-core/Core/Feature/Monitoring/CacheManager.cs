@@ -20,7 +20,7 @@ namespace MusicBeeRemote.Core.Feature.Monitoring
             _playlistModule = playlistModule;
         }
 
-        private void BuildCache()
+        public void Start()
         {
             var observable = Observable.Create<string>(
                 o =>

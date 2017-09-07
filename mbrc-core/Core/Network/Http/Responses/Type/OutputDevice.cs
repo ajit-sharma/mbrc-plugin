@@ -2,7 +2,7 @@
 
 namespace MusicBeeRemote.Core.Network.Http.Responses.Type
 {
-    [DataContract]
+    [DataContract(Name = "output")]
     public class OutputDevice
     {
         public OutputDevice(string[] deviceNames, string activeDeviceName)

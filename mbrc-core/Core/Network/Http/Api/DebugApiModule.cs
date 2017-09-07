@@ -13,7 +13,7 @@ namespace MusicBeeRemote.Core.Network.Http.Api
         /// </summary>
         public DebugApiModule() : base("/debug")
         {
-            Get["/"] = _ => Response.AsJson(new ResponseBase {Code = ApiCodes.Success});
+            Get["/"] = _ => Response.AsJson(new ApiResponse {Code = ApiCodes.Success});
         }
     }
 }

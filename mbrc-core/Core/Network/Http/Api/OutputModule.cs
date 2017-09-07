@@ -9,7 +9,7 @@ namespace MusicBeeRemote.Core.Network.Http.Api
         {
             Get["/"] = parameters =>
             {
-                return apiAdapter.GetOutputDevices()
+                return apiAdapter.GetOutputDevices();
             };
         }
     }

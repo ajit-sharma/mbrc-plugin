@@ -50,7 +50,7 @@ namespace MusicBeeRemote.Core.Network.Http.Responses
     }
 
     [DataContract]
-    public class OutputDeviceResponse : ResponseBase
+    public class OutputDeviceResponse : ApiResponse
     {
         [DataMember(Name = "active")]
         public string Active { get; set; }
@@ -60,7 +60,7 @@ namespace MusicBeeRemote.Core.Network.Http.Responses
     }
 
     [DataContract]
-    public class ShuffleStateResponse : ResponseBase
+    public class ShuffleStateResponse : ApiResponse
     {
         [DataMember(Name = "state")]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -71,14 +71,14 @@ namespace MusicBeeRemote.Core.Network.Http.Responses
     ///     A response that returns the status of a functionality (enabled/disabled)
     /// </summary>
     [DataContract]
-    public class StatusResponse : ResponseBase
+    public class StatusResponse : ApiResponse
     {
         [DataMember(Name = "enabled")]
         public bool Enabled { get; set; }
     }
 
     [DataContract]
-    public class ShuffleResponse : ResponseBase
+    public class ShuffleResponse : ApiResponse
     {
         [DataMember(Name = "state")]
         [JsonConverter(typeof(StringEnumConverter))]
@@ -86,14 +86,14 @@ namespace MusicBeeRemote.Core.Network.Http.Responses
     }
 
     [DataContract]
-    public class VolumeResponse : ResponseBase
+    public class VolumeResponse : ApiResponse
     {
         [DataMember(Name = "value")]
         public int Value { get; set; }
     }
 
     [DataContract]
-    public class ValueResponse : ResponseBase
+    public class ValueResponse : ApiResponse
     {
         [DataMember(Name = "value")]
         public string Value { get; set; }

@@ -167,7 +167,6 @@
     <Compile Include="Core\Logging\PluginLogManager.cs" />
     <Compile Include="Core\MusicBeeDependencies.cs" />
     <Compile Include="Core\MusicBeeRemotePlugin.cs" />
-    <Compile Include="Core\Network\Constants.cs" />
     <Compile Include="Core\Network\Http\Api\ApiCodes.cs" />
     <Compile Include="Core\Network\Http\Api\AppApiModule.cs" />
     <Compile Include="Core\Network\Http\Api\DebugApiModule.cs" />
@@ -187,6 +186,7 @@
     <Compile Include="Core\Network\Http\Responses\NowPlayingModel.cs" />
     <Compile Include="Core\Network\Http\Responses\PlayerModel.cs" />
     <Compile Include="Core\Network\Http\Responses\PlaylistModel.cs" />
+    <Compile Include="Core\Network\Http\Responses\AppModuleResponses.cs" />
     <Compile Include="Core\Network\Http\Responses\TrackModel.cs" />
     <Compile Include="Core\Network\Http\Responses\Type\NowPlaying.cs" />
     <Compile Include="Core\Network\Http\Responses\Type\OutputDevice.cs" />
@@ -197,7 +197,6 @@
     <Compile Include="Core\Network\Http\Responses\Type\TrackInfoResponse.cs" />
     <Compile Include="Core\Network\Http\Responses\Type\TypeBase.cs" />
     <Compile Include="Core\Network\Http\StatusCodeHandlers\JsonStatusHandler.cs" />
-    <Compile Include="Core\Network\JsonAdapter.cs" />
     <Compile Include="Core\Network\NotificationMessage.cs" />
     <Compile Include="Core\Network\Tools.cs" />
     <Compile Include="Core\Network\ServiceDiscovery.cs" />

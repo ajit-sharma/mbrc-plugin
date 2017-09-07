@@ -11,11 +11,6 @@ namespace MusicBeeRemote.Core.Network.Http.Api
     public class LibraryApiModule : NancyModule
     {
         /// <summary>
-        /// The module is providing access to the player API Data
-        /// </summary>
-        private readonly LibraryModule _module;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="LibraryApiModule"/> class.
         /// </summary>
         /// <param name="module">
@@ -23,87 +18,84 @@ namespace MusicBeeRemote.Core.Network.Http.Api
         /// </param>
         public LibraryApiModule(LibraryModule module) : base("/library")
         {
-            _module = module;
-
             Get["/tracks"] = _ =>
-                {
-                    var limit = (int)Request.Query["limit"];
-                    var offset = (int)Request.Query["offset"];
-                    var after = (int)Request.Query["after"];
+            {
+                var limit = (int) Request.Query["limit"];
+                var offset = (int) Request.Query["offset"];
+                var after = (int) Request.Query["after"];
 
-                    return Response.AsJson(_module.GetAllTracks(limit, offset, after));
-                };
+                return Response.AsJson(module.GetAllTracks(limit, offset, after));
+            };
 
             Get["/tracks/{id}"] = parameters =>
-                {
-                    var id = (int)parameters.id;
-                    return Response.AsJson(_module.GetTrackById(id));
-                };
+            {
+                var id = (int) parameters.id;
+                return Response.AsJson(module.GetTrackById(id));
+            };
 
             Get["/artists"] = _ =>
-                {
-                    var limit = (int)Request.Query["limit"];
-                    var offset = (int)Request.Query["offset"];
-                    var after = (int)Request.Query["after"];
+            {
+                var limit = (int) Request.Query["limit"];
+                var offset = (int) Request.Query["offset"];
+                var after = (int) Request.Query["after"];
 
-                    return Response.AsJson(_module.GetAllArtists(limit, offset, after));
-                };
+                return Response.AsJson(module.GetAllArtists(limit, offset, after));
+            };
 
             Get["/artists/{id}"] = parameters =>
-                {
-                    var id = (int)parameters.id;
-                    return Response.AsJson(_module.GetArtistById(id));
-                };
+            {
+                var id = (int) parameters.id;
+                return Response.AsJson(module.GetArtistById(id));
+            };
 
             Get["/genres"] = _ =>
-                {
-                    var limit = (int)Request.Query["limit"];
-                    var offset = (int)Request.Query["offset"];
-                    var after = (int)Request.Query["after"];
+            {
+                var limit = (int) Request.Query["limit"];
+                var offset = (int) Request.Query["offset"];
+                var after = (int) Request.Query["after"];
 
-                    return Response.AsJson(_module.GetAllGenres(limit, offset, after));
-                };
+                return Response.AsJson(module.GetAllGenres(limit, offset, after));
+            };
 
             Get["/albums"] = _ =>
-                {
-                    var limit = (int)Request.Query["limit"];
-                    var offset = (int)Request.Query["offset"];
-                    var after = (int)Request.Query["after"];
+            {
+                var limit = (int) Request.Query["limit"];
+                var offset = (int) Request.Query["offset"];
+                var after = (int) Request.Query["after"];
 
-                    return Response.AsJson(_module.GetAllAlbums(limit, offset, after));
-                };
+                return Response.AsJson(module.GetAllAlbums(limit, offset, after));
+            };
 
             Get["/covers"] = _ =>
-                {
-                    var limit = (int)Request.Query["limit"];
-                    var offset = (int)Request.Query["offset"];
-                    var after = (int)Request.Query["after"];
-                    return Response.AsJson(_module.GetAllCovers(offset, limit, after));
-                };
+            {
+                var limit = (int) Request.Query["limit"];
+                var offset = (int) Request.Query["offset"];
+                var after = (int) Request.Query["after"];
+                return Response.AsJson(module.GetAllCovers(offset, limit, after));
+            };
 
             Get["/covers/{id}"] = parameters =>
-                {
-                    var id = (int)parameters.id;
-                    return Response.AsJson(_module.GetLibraryCover(id, true));
-                };
+            {
+                var id = (int) parameters.id;
+                return Response.AsJson(module.GetLibraryCover(id, true));
+            };
 
             Get["/covers/{id}/raw"] = parameters =>
             {
-
                 Response response;
                 try
                 {
-                    response = Response.FromStream(_module.GetCoverData((int)parameters.id), "image/jpeg");
+                    response = Response.FromStream(module.GetCoverData((int) parameters.id), "image/jpeg");
                 }
                 catch (FileNotFoundException)
                 {
-                    response = Response.AsJson(new ResponseBase
+                    response = Response.AsJson(new ApiResponse
                     {
                         Code = ApiCodes.NotFound
                     });
                     response.StatusCode = HttpStatusCode.NotFound;
                 }
-                
+
                 return response;
             };
         }

@@ -6,8 +6,8 @@ namespace MusicBeeRemote.Core.Network.Http
     {
         public CustomJsonSerializer()
         {
-            this.Formatting = Formatting.None;
-            this.NullValueHandling = NullValueHandling.Ignore;
+            Formatting = Formatting.None;
+            NullValueHandling = NullValueHandling.Ignore;
         }
     }
 }

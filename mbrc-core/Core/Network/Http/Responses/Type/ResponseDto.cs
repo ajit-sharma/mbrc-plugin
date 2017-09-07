@@ -5,14 +5,14 @@ using MusicBeeRemote.Core.Network.Http.Api;
 namespace MusicBeeRemote.Core.Network.Http.Responses.Type
 {
     [DataContract]
-    public class ResponseBase
+    public class ApiResponse
     {
         [DataMember(Name = "code")]
         public int Code { get; set; } = ApiCodes.Success;
     }
 
     [DataContract]
-    public class ErrorResponse : ResponseBase
+    public class ErrorResponse : ApiResponse
     {
         [DataMember(Name = "message")]
         public string Message { get; set; }
@@ -22,21 +22,21 @@ namespace MusicBeeRemote.Core.Network.Http.Responses.Type
     }
 
     [DataContract]
-    public class LyricsResponse : ResponseBase
+    public class LyricsResponse : ApiResponse
     {
         [DataMember(Name = "lyrics")]
         public string Lyrics { get; set; }
     }
 
     [DataContract]
-    public class RatingResponse : ResponseBase
+    public class RatingResponse : ApiResponse
     {
         [DataMember(Name = "rating")]
         public float Rating { get; set; }
     }
 
     [DataContract]
-    public class PositionResponse : ResponseBase
+    public class PositionResponse : ApiResponse
     {
         [DataMember(Name = "duration")]
         public int Duration { get; set; }
@@ -46,7 +46,7 @@ namespace MusicBeeRemote.Core.Network.Http.Responses.Type
     }
 
     [DataContract]
-    public class LfmRatingResponse : ResponseBase
+    public class LfmRatingResponse : ApiResponse
     {
         [DataMember(Name = "status")]
         public LastfmStatus Status { get; set; }

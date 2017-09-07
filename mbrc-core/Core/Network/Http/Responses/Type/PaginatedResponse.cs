@@ -8,7 +8,7 @@ namespace MusicBeeRemote.Core.Network.Http.Responses.Type
     /// </summary>
     /// <typeparam name="T"></typeparam>
     [DataContract]
-    public abstract class PaginatedResponse<T> : ResponseBase
+    public abstract class PaginatedResponse<T> : ApiResponse
     {
         [DataMember(Name = "data")]
         public virtual List<T> Data { get; set; }

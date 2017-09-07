@@ -72,7 +72,7 @@ namespace MusicBeeRemote.Core.Network.Http.Api
                         break;
                 }
 
-                var response = new ResponseBase
+                var response = new ApiResponse
                 {
                     Code = success ? ApiCodes.Success : ApiCodes.Failure
                 };
@@ -173,33 +173,6 @@ namespace MusicBeeRemote.Core.Network.Http.Api
                 return Response.AsJson(response);
             };
 
-            //todo: move to OutputApi
-//            Get["/output"] = _ =>
-//                {
-//                    var outputDevices = adapter.GetOutputDevices();
-//                    var response = new OutputDeviceResponse
-//                                       {
-//                                           Active = outputDevices.ActiveDeviceName, 
-//                                           Devices = outputDevices.DeviceNames, 
-//                                           Code = ApiCodes.Success
-//                                       };
-//                    return Response.AsJson(response);
-//                };
-//
-//            Put["/output"] = _ =>
-//                {
-//                    var request = this.Bind<PutOutputDevice>();
-//                    var success = adapter.SetOutputDevice(request.Active);
-//                    var outputDevices = adapter.GetOutputDevices();
-//                    var response = new OutputDeviceResponse
-//                                       {
-//                                           Active = outputDevices.ActiveDeviceName, 
-//                                           Devices = outputDevices.DeviceNames, 
-//                                           Code = success ? ApiCodes.Success : ApiCodes.Failure
-//                                       };
-//
-//                    return Response.AsJson(response);
-//                };
         }
     }
 }

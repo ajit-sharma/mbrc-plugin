@@ -149,12 +149,12 @@ namespace MusicBeeRemote.Core.Network
         {
             foreach (var address in _udpClients.Keys)
             {
-                UdpClient client;
-                if (_udpClients.TryRemove(address, out client))
+                if (!_udpClients.TryRemove(address, out var client))
                 {
-                    client.DropMulticastGroup(MulticastAddress);
-                    client.Close();
+                    continue;
                 }
+                client.DropMulticastGroup(MulticastAddress);
+                client.Close();
             }
         }
     }

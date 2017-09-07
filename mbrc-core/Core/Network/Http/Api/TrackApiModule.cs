@@ -13,8 +13,9 @@ namespace MusicBeeRemote.Core.Network.Http.Api
     /// </summary>
     public class TrackApiModule : NancyModule
     {
+        /// <inheritdoc />
         /// <summary>
-        /// Initializes a new instance of the <see cref="TrackApiModule"/> class.
+        /// Initializes a new instance of the <see cref="T:MusicBeeRemote.Core.Network.Http.Api.TrackApiModule" /> class.
         /// </summary>
         /// <param name="module">
         /// The module.
@@ -25,69 +26,69 @@ namespace MusicBeeRemote.Core.Network.Http.Api
         public TrackApiModule(TrackModule module, LyricCoverModel model) : base("/track")
         {
             Get["/"] = _ =>
-                {
-                    var trackInfo = module.GetTrackInfo();
-                    return Response.AsJson(trackInfo);
-                };
+            {
+                var trackInfo = module.GetTrackInfo();
+                return Response.AsJson(trackInfo);
+            };
 
             Get["/lyrics"] = _ =>
-                {
-                    var response = new LyricsResponse { Lyrics = model.Lyrics };
-                    return Response.AsJson(response);
-                };
+            {
+                var response = new LyricsResponse {Lyrics = model.Lyrics};
+                return Response.AsJson(response);
+            };
 
             Get["/rating"] = _ =>
-                {
-                    var response = new RatingResponse { Rating = module.GetRating() };
-                    return Response.AsJson(response);
-                };
+            {
+                var response = new RatingResponse {Rating = module.GetRating()};
+                return Response.AsJson(response);
+            };
 
             Put["/rating"] = _ =>
-                {
-                    var request = this.Bind<SetTrackRating>();
-                    var response = new RatingResponse { Rating = module.SetRating(request.Rating ?? -1) };
-                    return Response.AsJson(response);
-                };
+            {
+                var request = this.Bind<SetTrackRating>();
+                var response = new RatingResponse {Rating = module.SetRating(request.Rating ?? -1)};
+                return Response.AsJson(response);
+            };
 
             Get["/position"] = _ =>
-                {
-                    var position = module.GetPosition();
-                    return Response.AsJson(position);
-                };
+            {
+                var position = module.GetPosition();
+                return Response.AsJson(position);
+            };
 
             Put["/position"] = _ =>
-                {
-                    var request = this.Bind<SetTrackPosition>();
-                    var response = module.SetPosition(request.Position);
-                    return Response.AsJson(response);
-                };
+            {
+                var request = this.Bind<SetTrackPosition>();
+                var response = module.SetPosition(request.Position);
+                return Response.AsJson(response);
+            };
 
             Get["/lfmrating"] = _ =>
+            {
+                var response = new LfmRatingResponse
                 {
-                    var response = new LfmRatingResponse
-                                       {
-                                           Status = module.RequestLoveStatus(string.Empty), 
-                                           Code = ApiCodes.Success
-                                       };
-                    return Response.AsJson(response);
+                    Status = module.RequestLoveStatus(string.Empty),
+                    Code = ApiCodes.Success
                 };
+                return Response.AsJson(response);
+            };
 
             Put["/lfmrating"] = _ =>
+            {
+                var request = this.Bind<PutLfmRating>();
+                var response = new LfmRatingResponse
                 {
-                    var request = this.Bind<PutLfmRating>();
-                    var response = new LfmRatingResponse
-                                       {
-                                           Status = module.RequestLoveStatus(request.Status), 
-                                           Code = ApiCodes.Success
-                                       };
-                    return Response.AsJson(response);
+                    Status = module.RequestLoveStatus(request.Status),
+                    Code = ApiCodes.Success
                 };
+                return Response.AsJson(response);
+            };
 
             Get["/cover"] = _ => Response.FromStream(module.GetBinaryCoverData(), "image/jpeg");
 
             Get["/lyrics/raw"] = _ => new Response
             {
-                ContentType = "text/plain", 
+                ContentType = "text/plain",
                 Contents = stream =>
                 {
                     var data1 = Encoding.UTF8.GetBytes(model.Lyrics);

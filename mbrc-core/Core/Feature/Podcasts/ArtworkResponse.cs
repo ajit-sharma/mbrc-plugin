@@ -4,7 +4,7 @@ using MusicBeeRemote.Core.Network.Http.Responses.Type;
 namespace MusicBeeRemote.Core.Feature.Podcasts
 {
     [DataContract]
-    public class ArtworkResponse : ResponseBase
+    public class ArtworkResponse : ApiResponse
     {
         [DataMember(Name = "artwork")]
         public string Artwork { get; set; }
